@@ -1,0 +1,1 @@
+go run ./server/ grpc-ge-server

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+package go.base.v1;
+option go_package = "./pb";
+
+service GoBaseService {
+    rpc HealthCheck(Empty) returns (HealthCheckResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/health-check"
+        };
+    };
+}
+
+message User {
+    string username = 1;
+    string password = 2;
+    string role = 3;
+}
+
+message HealthCheckResponse {
+    string message = 1;
+}
+
+message Empty {}
+
+message InvalidKeyError {
+    string key = 1;
+    string message = 2;
+}
