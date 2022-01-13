@@ -1,17 +1,5 @@
 #!/bin/bash
 
-# go get -u github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
-# go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
-
-# go get -u github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
-# go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
-
-# go get -u google.golang.org/protobuf/cmd/protoc-gen-go
-# go install google.golang.org/protobuf/cmd/protoc-gen-go
-
-# go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
-# go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
-
 protoc --proto_path=./proto ./proto/*.proto \
     --proto_path=./vendor \
     --plugin=$(go env GOPATH)/bin/protoc-gen-grpc-gateway \
