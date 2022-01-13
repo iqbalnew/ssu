@@ -22,9 +22,9 @@ import (
 	"github.com/urfave/cli"
 )
 
-const (
-	defaultPort = 3035
-)
+const defaultPort = 3035
+
+var s *grpc.Server
 
 func main() {
 
@@ -35,7 +35,8 @@ func main() {
 	app.Commands = []cli.Command{
 		grpcServerCmd(),
 		gatewayServerCmd(),
-		allServerCmd(),
+		grpcGatewayServerCmd(),
+		runMigrationCmd(),
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -57,25 +58,25 @@ func grpcServerCmd() cli.Command {
 		Action: func(c *cli.Context) error {
 			port := c.Int("port")
 
-			// initDBConnection()
+			startDBConnection()
 
-			logrus.Printf("Starting RPC server on port %d...", port)
-			list, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
-			if err != nil {
-				return err
-			}
+			go func() {
+				if err := grpcServer(port); err != nil {
+					logrus.Fatalf("failed RPC serve: %v", err)
+				}
+			}()
 
-			// interceptorOpt := grpc.UnaryInterceptor(api.Interceptors())
-			interceptorOpt := grpc.UnaryInterceptor(nil)
-			s := grpc.NewServer(interceptorOpt)
-			pb.RegisterGoBaseServiceServer(s, api.New())
+			// Wait for Control C to exit
+			ch := make(chan os.Signal, 1)
+			signal.Notify(ch, os.Interrupt)
+			// Block until a signal is received
+			<-ch
 
-			if err := s.Serve(list); err != nil {
-				return err
-			}
+			closeDBConnections()
 
-			// closeDBConnections()
-
+			logrus.Println("Stopping RPC server")
+			s.Stop()
+			logrus.Println("RPC server stopped")
 			return nil
 		},
 	}
@@ -92,33 +93,33 @@ func gatewayServerCmd() cli.Command {
 			},
 			cli.StringFlag{
 				Name:  "grpc-endpoint",
-				Value: "127.0.0.1:3035",
+				Value: "127.0.0.1:" + fmt.Sprint(defaultPort),
 				Usage: "the address of the running gRPC server to transcode to",
 			},
 		},
 		Action: func(c *cli.Context) error {
-			ctx := context.Background()
-			ctx, cancel := context.WithCancel(ctx)
-			defer cancel()
+			port, grpcEndpoint := c.Int("port"), c.String("grpc-endpoint")
 
-			mux := runtime.NewServeMux()
-			fs := http.FileServer(http.Dir("./swagger-ui"))
-			http.Handle("/doc", http.StripPrefix("/doc", fs))
+			go func() {
+				if err := httpGatewayServer(port, grpcEndpoint); err != nil {
+					logrus.Fatalf("failed JSON Gateway serve: %v", err)
+				}
+			}()
 
-			opts := []grpc.DialOption{grpc.WithInsecure()}
-			err := pb.RegisterGoBaseServiceHandlerFromEndpoint(ctx, mux, c.String("grpc-endpoint"), opts)
-			if err != nil {
-				return err
-			}
+			// Wait for Control C to exit
+			ch := make(chan os.Signal, 1)
+			signal.Notify(ch, os.Interrupt)
+			// Block until a signal is received
+			<-ch
 
-			logrus.Printf("Starting JSON Gateway server on port %d...", c.Int("port"))
+			logrus.Println("JSON Gateway server stopped")
 
-			return http.ListenAndServe(fmt.Sprintf("127.0.0.1:%d", c.Int("port")), mux)
+			return nil
 		},
 	}
 }
 
-func allServerCmd() cli.Command {
+func grpcGatewayServerCmd() cli.Command {
 	return cli.Command{
 		Name:  "grpc-gw-server",
 		Usage: "Starts gRPC and Gateway server",
@@ -133,52 +134,24 @@ func allServerCmd() cli.Command {
 			},
 			cli.StringFlag{
 				Name:  "grpc-endpoint",
-				Value: "127.0.0.1:3035",
+				Value: "127.0.0.1:" + fmt.Sprint(defaultPort),
 				Usage: "the address of the running gRPC server to transcode to",
 			},
 		},
 		Action: func(c *cli.Context) error {
-			port1, port2 := c.Int("port1"), c.Int("port2")
+			rpcPort, httpPort, grpcEndpoint := c.Int("port1"), c.Int("port2"), c.String("grpc-endpoint")
 
-			// initDBConnection()
-
-			// RPC
-			logrus.Printf("Starting RPC server on port %d...", port1)
-			list, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port1))
-			if err != nil {
-				return err
-			}
-
-			// interceptorOpt := grpc.UnaryInterceptor(api.Interceptors())
-			interceptorOpt := grpc.UnaryInterceptor(nil)
-
-			s := grpc.NewServer(interceptorOpt)
-			pb.RegisterGoBaseServiceServer(s, api.New())
-
-			// Gatewaty
-			ctx := context.Background()
-			ctx, cancel := context.WithCancel(ctx)
-			defer cancel()
-
-			mux := runtime.NewServeMux()
-
-			opts := []grpc.DialOption{grpc.WithInsecure()}
-			err = pb.RegisterGoBaseServiceHandlerFromEndpoint(ctx, mux, c.String("grpc-endpoint"), opts)
-			if err != nil {
-				return err
-			}
+			startDBConnection()
 
 			go func() {
-				if err := s.Serve(list); err != nil {
-					log.Fatalf("failed RPC serve: %v", err)
+				if err := grpcServer(rpcPort); err != nil {
+					logrus.Fatalf("failed RPC serve: %v", err)
 				}
 			}()
 
 			go func() {
-				logrus.Printf("Starting JSON Gateway server on port %d...", port2)
-
-				if err := http.ListenAndServe(fmt.Sprintf("127.0.0.1:%d", port2), mux); err != nil {
-					log.Fatalf("failed Gateway serve: %v", err)
+				if err := httpGatewayServer(httpPort, grpcEndpoint); err != nil {
+					logrus.Fatalf("failed JSON Gateway serve: %v", err)
 				}
 			}()
 
@@ -188,39 +161,72 @@ func allServerCmd() cli.Command {
 			// Block until a signal is received
 			<-ch
 
-			// closeDBConnections()
-
-			fmt.Println("Stopping the server")
+			closeDBConnections()
+			logrus.Println("Stopping RPC server")
 			s.Stop()
+			logrus.Println("RPC server stopped")
+			logrus.Println("JSON Gateway server stopped")
 
 			return nil
 		},
 	}
 }
 
-func swaggerHandler(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	fs := http.FileServer(http.Dir("../swagger-ui"))
-	// // w.Write([]byte("hello " + pathParams["name"]))
-	// // Serve Swagger Doc
-	// // fs := http.FileServer(http.Dir("../swagger-ui"))
-	http.Handle("/swaggerui/", http.StripPrefix("/swaggerui/", fs))
-	// http.ServeFile(w, r, "./swagger-ui")
-	// path := filepath.Join("./swagger-ui", "index.html")
-	// fileName := "index.html"
-	// if pathParams["fileName"] != "" {
-	// 	path = filepath.Join("./swagger-ui", pathParams["fileName"])
-	// 	fileName = pathParams["fileName"]
-	// }
-	// fmt.Println("--> %v", fileName)
+func grpcServer(port int) error {
+	// RPC
+	logrus.Printf("Starting RPC server on port %d...", port)
+	list, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+	if err != nil {
+		return err
+	}
 
-	// tmpl, err := template.ParseFiles(path)
-	// if err != nil {
-	// 	log.Fatalf("Swagger Parse File Failure : %v", err)
-	// }
+	apiServer := api.New(db_main)
+	authInterceptor := api.NewAuthInterceptor(apiServer.GetManager())
 
-	// fmt.Println("--> %v", fp)
+	unaryInterceptorOpt := grpc.UnaryInterceptor(api.UnaryInterceptors(authInterceptor))
+	streamInterceptorOpt := grpc.StreamInterceptor(api.StreamInterceptors(authInterceptor))
 
-	// if err := tmpl.ExecuteTemplate(w, fileName, nil); err != nil {
-	// 	log.Fatalf("Execute Swagger Template Failure : %v", err)
-	// }
+	s = grpc.NewServer(unaryInterceptorOpt, streamInterceptorOpt)
+	pb.RegisterBaseServiceServer(s, apiServer)
+
+	return s.Serve(list)
+}
+
+func httpGatewayServer(port int, grpcEndpoint string) error {
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	// Connect to the GRPC server
+	conn, err := grpc.Dial(grpcEndpoint, grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	rmux := runtime.NewServeMux()
+	// opts := []grpc.DialOption{grpc.WithInsecure()}
+	// err := pb.RegisterBaseServiceHandlerFromEndpoint(ctx, rmux, grpcEndpoint, opts)
+	client := pb.NewBaseServiceClient(conn)
+	err = pb.RegisterBaseServiceHandlerClient(ctx, rmux, client)
+	if err != nil {
+		return err
+	}
+
+	// Serve the swagger-ui and swagger file
+	mux := http.NewServeMux()
+	mux.Handle("/", rmux)
+
+	mux.HandleFunc("/swagger.json", serveSwagger)
+	fs := http.FileServer(http.Dir("www/swagger-ui"))
+	mux.Handle("/api/docs/", http.StripPrefix("/api/docs/", fs))
+
+	// Start
+	logrus.Printf("Starting JSON Gateway server on port %d...", port)
+
+	return http.ListenAndServe(fmt.Sprintf("127.0.0.1:%d", port), mux)
+}
+
+func serveSwagger(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "www/swagger.json")
 }
