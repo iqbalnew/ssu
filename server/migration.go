@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/if-itb/siasn-ssjpt-backend/server/pb"
+	"github.com/ordentco/go-base/server/pb"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
