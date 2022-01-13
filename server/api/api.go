@@ -7,23 +7,26 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 
-	manager "github.com/ordentco/go-base/server/api/jwt"
+	"github.com/ordentco/go-base/server/db"
+	manager "github.com/ordentco/go-base/server/jwt"
 	pb "github.com/ordentco/go-base/server/pb"
 	"github.com/sirupsen/logrus"
 )
 
+const apiServicePath string = "/go.base.v1.GoBaseService/"
+
 // Server represents the server implementation of the SW API.
 type Server struct {
-	// provider db.Provider
-	manager manager.JWTManager
+	provider *db.GormProvider
+	manager  *manager.JWTManager
+
 	pb.GoBaseServiceServer
 }
 
 func New(
-// db01 *gorm.DB,
-// db02 *gorm.DB,
-// db03 *gorm.DB,
+	db01 *gorm.DB,
 ) *Server {
 	secret := os.Getenv("JWT_SECRET")
 	tokenDuration, err := time.ParseDuration(os.Getenv("JWT_DURATION"))
@@ -32,10 +35,14 @@ func New(
 	}
 
 	return &Server{
-		// provider:           db.NewProvider(db01),
-		manager:             *manager.NewJWTManager(secret, tokenDuration),
+		provider:            db.NewProvider(db01),
+		manager:             manager.NewJWTManager(secret, tokenDuration),
 		GoBaseServiceServer: nil,
 	}
+}
+
+func (s *Server) GetManager() *manager.JWTManager {
+	return s.manager
 }
 
 func (s *Server) notImplementedError() error {
