@@ -21,8 +21,7 @@ type Config struct {
 	CorsAllowedOrigins []string `config:"CORS_ALLOWED_ORIGINS"`
 
 	JWTSecret string `config:"JWT_SECRET"`
-	// Dsn string `config:"DSN"`
-
+	Dsn       string `config:"DB_DSN"`
 }
 
 var config *Config
@@ -42,7 +41,7 @@ func initConfig() {
 		CorsAllowedMethods: []string{"GET", "POST", "PATCH", "DELETE", "PUT"},
 		CorsAllowedOrigins: []string{},
 		JWTSecret:          os.Getenv("JWT_SECRET"),
-		// Dsn:                os.Getenv("DSN"),
+		Dsn:                os.Getenv("DB_DSN"),
 	}
 
 }

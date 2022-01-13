@@ -13,12 +13,6 @@ service GoBaseService {
     };
 }
 
-message User {
-    string username = 1;
-    string password = 2;
-    string role = 3;
-}
-
 message HealthCheckResponse {
     string message = 1;
 }
