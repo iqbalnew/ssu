@@ -1,0 +1,14 @@
+---
+version: 2
+plan:
+  project-key: ADDONS
+  key: SAMPLE
+  name: Build the sample
+stages:
+  - Build hull:
+    - Build
+
+Build:
+  tasks:
+    - script:
+      - echo 'Hello World!'
