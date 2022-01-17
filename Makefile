@@ -29,7 +29,7 @@ guard-%:
 
 build:
 	@echo "Executing go build"
-	go build -v -buildmode=pie -ldflags "-X main.version=$(BUILD_VERSION)" -o ./build/ ./server/
+	go build -v -buildmode=pie -ldflags "-X main.version=$(BUILD_VERSION)" -o app ./server/
 	@echo "Binary ready"
 
 vet:

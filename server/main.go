@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -187,7 +186,7 @@ func grpcServer(port int) error {
 	streamInterceptorOpt := grpc.StreamInterceptor(api.StreamInterceptors(authInterceptor))
 
 	s = grpc.NewServer(unaryInterceptorOpt, streamInterceptorOpt)
-	pb.RegisterBaseServiceServer(s, apiServer)
+	pb.RegisterGoBaseServiceServer(s, apiServer)
 
 	return s.Serve(list)
 }
@@ -207,8 +206,8 @@ func httpGatewayServer(port int, grpcEndpoint string) error {
 	rmux := runtime.NewServeMux()
 	// opts := []grpc.DialOption{grpc.WithInsecure()}
 	// err := pb.RegisterBaseServiceHandlerFromEndpoint(ctx, rmux, grpcEndpoint, opts)
-	client := pb.NewBaseServiceClient(conn)
-	err = pb.RegisterBaseServiceHandlerClient(ctx, rmux, client)
+	client := pb.NewGoBaseServiceClient(conn)
+	err = pb.RegisterGoBaseServiceHandlerClient(ctx, rmux, client)
 	if err != nil {
 		return err
 	}

@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 
-	"github.com/ordentco/go-base/server/pb"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )

@@ -8,6 +8,7 @@ import (
 	math "math"
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "github.com/mwitkow/go-proto-validators"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -15,6 +16,12 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+func (this *LoginRequest) Validate() error {
+	return nil
+}
+func (this *LoginResponse) Validate() error {
+	return nil
+}
 func (this *HealthCheckResponse) Validate() error {
 	return nil
 }

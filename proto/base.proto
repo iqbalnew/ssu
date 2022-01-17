@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
+import "mwitkow/go-proto-validators/validator.proto";
 
 package go.base.v1;
 option go_package = "./pb";
@@ -11,6 +12,15 @@ service GoBaseService {
             get: "/api/v1/health-check"
         };
     };
+}
+
+message LoginRequest {
+    string username = 1 [(validator.field) = {msg_exists : true}];
+    string password = 2 [(validator.field) = {msg_exists : true}];
+}
+
+message LoginResponse {
+    string access_token = 1;
 }
 
 message HealthCheckResponse {
