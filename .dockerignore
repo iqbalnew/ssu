@@ -1,0 +1,6 @@
+.editorconfig
+.git
+generate.sh
+start-server.sh
+README.md
+build/
