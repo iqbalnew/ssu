@@ -22,7 +22,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -v -ldflags "-X main.version=$(BUILD_VE
 
 FROM $BASE_IMAGE
 
-RUN install_packages ca-certificates
+# RUN install_packages ca-certificates
 
 WORKDIR /usr/app
 
