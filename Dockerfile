@@ -17,6 +17,8 @@ ENV BUILD_VERSION=$BUILD_VERSION
 ENV GOPROXY=$GOPROXY
 ENV GOSUMDB=$GOSUMDB
 
+RUN go mod vendor
+
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux go build -a -v -ldflags "-X main.version=$(BUILD_VERSION)" -installsuffix cgo -o app ./server
 
