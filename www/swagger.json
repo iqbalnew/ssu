@@ -18,7 +18,7 @@
   "paths": {
     "/api/task": {
       "get": {
-        "operationId": "TaskService_GetTask",
+        "operationId": "TaskService_GetListTask",
         "responses": {
           "200": {
             "description": "A successful response.",

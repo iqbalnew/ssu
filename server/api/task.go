@@ -13,6 +13,32 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+func (s *Server) GetListTask(ctx context.Context, req *pb.ListRequest) (*pb.ListTaskResponse, error) {
+	result := pb.ListTaskResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Announcement List",
+		Data:    []*pb.Task{},
+	}
+
+	list, err := s.provider.GetListTask(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, v := range list {
+		task, err := v.ToPB(ctx)
+		if err != nil {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		result.Data = append(result.Data, &task)
+	}
+
+	return &result, nil
+
+}
+
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
 	task, _ := req.Task.ToORM(ctx)
 	var err error

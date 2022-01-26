@@ -25,7 +25,7 @@ type TaskServiceClient interface {
 	HealthCheck(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	SaveTaskWithData(ctx context.Context, in *SaveTaskRequest, opts ...grpc.CallOption) (*SaveTaskResponse, error)
 	SetTask(ctx context.Context, in *SetTaskRequest, opts ...grpc.CallOption) (*SetTaskResponse, error)
-	GetTask(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
+	GetListTask(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
 	GetTaskGraph(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
 }
 
@@ -64,9 +64,9 @@ func (c *taskServiceClient) SetTask(ctx context.Context, in *SetTaskRequest, opt
 	return out, nil
 }
 
-func (c *taskServiceClient) GetTask(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error) {
+func (c *taskServiceClient) GetListTask(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error) {
 	out := new(ListTaskResponse)
-	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetTask", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetListTask", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ type TaskServiceServer interface {
 	HealthCheck(context.Context, *Empty) (*HealthCheckResponse, error)
 	SaveTaskWithData(context.Context, *SaveTaskRequest) (*SaveTaskResponse, error)
 	SetTask(context.Context, *SetTaskRequest) (*SetTaskResponse, error)
-	GetTask(context.Context, *ListRequest) (*ListTaskResponse, error)
+	GetListTask(context.Context, *ListRequest) (*ListTaskResponse, error)
 	GetTaskGraph(context.Context, *ListRequest) (*ListTaskResponse, error)
 	mustEmbedUnimplementedTaskServiceServer()
 }
@@ -107,8 +107,8 @@ func (UnimplementedTaskServiceServer) SaveTaskWithData(context.Context, *SaveTas
 func (UnimplementedTaskServiceServer) SetTask(context.Context, *SetTaskRequest) (*SetTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetTask not implemented")
 }
-func (UnimplementedTaskServiceServer) GetTask(context.Context, *ListRequest) (*ListTaskResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTask not implemented")
+func (UnimplementedTaskServiceServer) GetListTask(context.Context, *ListRequest) (*ListTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListTask not implemented")
 }
 func (UnimplementedTaskServiceServer) GetTaskGraph(context.Context, *ListRequest) (*ListTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskGraph not implemented")
@@ -180,20 +180,20 @@ func _TaskService_SetTask_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TaskService_GetTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TaskService_GetListTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TaskServiceServer).GetTask(ctx, in)
+		return srv.(TaskServiceServer).GetListTask(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/task.service.v1.TaskService/GetTask",
+		FullMethod: "/task.service.v1.TaskService/GetListTask",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TaskServiceServer).GetTask(ctx, req.(*ListRequest))
+		return srv.(TaskServiceServer).GetListTask(ctx, req.(*ListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -236,8 +236,8 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TaskService_SetTask_Handler,
 		},
 		{
-			MethodName: "GetTask",
-			Handler:    _TaskService_GetTask_Handler,
+			MethodName: "GetListTask",
+			Handler:    _TaskService_GetListTask_Handler,
 		},
 		{
 			MethodName: "GetTaskGraph",
