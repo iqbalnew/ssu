@@ -11,7 +11,7 @@ option go_package = "./pb";
 service TaskService {
     rpc HealthCheck(Empty) returns (HealthCheckResponse) {
         option (google.api.http) = {
-            get: "/api/v1/health-check"
+            get: "/api/task/health"
         };
     };
 
@@ -19,7 +19,7 @@ service TaskService {
 
     rpc SetTask(SetTaskRequest) returns (SetTaskResponse) {
         option (google.api.http) = {
-            put: "/api/v1/task/{taskID}"
+            put: "/api/task/{taskID}"
             body: "*"
         };
     };

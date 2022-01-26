@@ -1,7 +1,7 @@
 DOCKERCMD=docker
 
-DOCKER_CONTAINER_NAME?=go-base
-DOCKER_CONTAINER_IMAGE?=go-base:latest
+DOCKER_CONTAINER_NAME?=addons-task-service
+DOCKER_CONTAINER_IMAGE?=addons-task-service:latest
 DOCKER_BUILD_ARGS?=
 DOCKER_DEBIAN_MIRROR?=http://deb.debian.org/debian
 
@@ -9,7 +9,7 @@ BUILD_DATE?=$(shell date -u +'%Y-%m-%dT00:00:00Z')
 BUILD_VERSION?=0.1.0
 
 TOPDIR=$(PWD)
-BINARY=go-base
+BINARY=ddons-task-service
 
 .FORCE:
 .PHONY: build

@@ -25,6 +25,9 @@ type ApiServiceClient interface {
 	GenerateTokenByRole(ctx context.Context, in *TempGenToken, opts ...grpc.CallOption) (*JWTTokenResponse, error)
 	ListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementResponse, error)
 	CreateAnnouncement(ctx context.Context, in *CreateAnnouncementRequest, opts ...grpc.CallOption) (*CreateAnnouncementResponse, error)
+	CreateAnnouncementTask(ctx context.Context, in *CreateAnnouncementRequest, opts ...grpc.CallOption) (*CreateAnnouncementResponse, error)
+	ListAnnouncementActive(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementResponse, error)
+	ListEventType(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListEventTypeResponse, error)
 }
 
 type apiServiceClient struct {
@@ -62,6 +65,33 @@ func (c *apiServiceClient) CreateAnnouncement(ctx context.Context, in *CreateAnn
 	return out, nil
 }
 
+func (c *apiServiceClient) CreateAnnouncementTask(ctx context.Context, in *CreateAnnouncementRequest, opts ...grpc.CallOption) (*CreateAnnouncementResponse, error) {
+	out := new(CreateAnnouncementResponse)
+	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/CreateAnnouncementTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ListAnnouncementActive(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementResponse, error) {
+	out := new(ListAnnouncementResponse)
+	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/ListAnnouncementActive", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ListEventType(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListEventTypeResponse, error) {
+	out := new(ListEventTypeResponse)
+	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/ListEventType", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
@@ -69,6 +99,9 @@ type ApiServiceServer interface {
 	GenerateTokenByRole(context.Context, *TempGenToken) (*JWTTokenResponse, error)
 	ListAnnouncement(context.Context, *ListRequest) (*ListAnnouncementResponse, error)
 	CreateAnnouncement(context.Context, *CreateAnnouncementRequest) (*CreateAnnouncementResponse, error)
+	CreateAnnouncementTask(context.Context, *CreateAnnouncementRequest) (*CreateAnnouncementResponse, error)
+	ListAnnouncementActive(context.Context, *ListRequest) (*ListAnnouncementResponse, error)
+	ListEventType(context.Context, *ListRequest) (*ListEventTypeResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -84,6 +117,15 @@ func (UnimplementedApiServiceServer) ListAnnouncement(context.Context, *ListRequ
 }
 func (UnimplementedApiServiceServer) CreateAnnouncement(context.Context, *CreateAnnouncementRequest) (*CreateAnnouncementResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAnnouncement not implemented")
+}
+func (UnimplementedApiServiceServer) CreateAnnouncementTask(context.Context, *CreateAnnouncementRequest) (*CreateAnnouncementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAnnouncementTask not implemented")
+}
+func (UnimplementedApiServiceServer) ListAnnouncementActive(context.Context, *ListRequest) (*ListAnnouncementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAnnouncementActive not implemented")
+}
+func (UnimplementedApiServiceServer) ListEventType(context.Context, *ListRequest) (*ListEventTypeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListEventType not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -152,6 +194,60 @@ func _ApiService_CreateAnnouncement_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_CreateAnnouncementTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAnnouncementRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CreateAnnouncementTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/announcement.service.v1.ApiService/CreateAnnouncementTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CreateAnnouncementTask(ctx, req.(*CreateAnnouncementRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ListAnnouncementActive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListAnnouncementActive(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/announcement.service.v1.ApiService/ListAnnouncementActive",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListAnnouncementActive(ctx, req.(*ListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ListEventType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListEventType(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/announcement.service.v1.ApiService/ListEventType",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListEventType(ctx, req.(*ListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -170,6 +266,18 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateAnnouncement",
 			Handler:    _ApiService_CreateAnnouncement_Handler,
+		},
+		{
+			MethodName: "CreateAnnouncementTask",
+			Handler:    _ApiService_CreateAnnouncementTask_Handler,
+		},
+		{
+			MethodName: "ListAnnouncementActive",
+			Handler:    _ApiService_ListAnnouncementActive_Handler,
+		},
+		{
+			MethodName: "ListEventType",
+			Handler:    _ApiService_ListEventType_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

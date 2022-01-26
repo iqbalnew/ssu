@@ -219,9 +219,9 @@ func httpGatewayServer(port int, grpcEndpoint string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/", rmux)
 
-	mux.HandleFunc("/swagger.json", serveSwagger)
+	mux.HandleFunc("/api/task/docs/swagger.json", serveSwagger)
 	fs := http.FileServer(http.Dir("www/swagger-ui"))
-	mux.Handle("/api/docs/", http.StripPrefix("/api/docs/", fs))
+	mux.Handle("/api/task/docs/", http.StripPrefix("/api/task/docs/", fs))
 
 	// Start
 	logrus.Printf("Starting JSON Gateway server on port %d...", port)

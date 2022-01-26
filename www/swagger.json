@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/health-check": {
+    "/api/task/health-check": {
       "get": {
         "operationId": "TaskService_HealthCheck",
         "responses": {
@@ -38,7 +38,7 @@
         ]
       }
     },
-    "/api/v1/task/{taskID}": {
+    "/api/task/{taskID}": {
       "put": {
         "operationId": "TaskService_SetTask",
         "responses": {

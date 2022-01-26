@@ -129,7 +129,7 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/HealthCheck", runtime.WithHTTPPathPattern("/api/v1/health-check"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/HealthCheck", runtime.WithHTTPPathPattern("/api/task/health-check"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -152,7 +152,7 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/SetTask", runtime.WithHTTPPathPattern("/api/v1/task/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/SetTask", runtime.WithHTTPPathPattern("/api/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -214,7 +214,7 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/HealthCheck", runtime.WithHTTPPathPattern("/api/v1/health-check"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/HealthCheck", runtime.WithHTTPPathPattern("/api/task/health-check"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -234,7 +234,7 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/SetTask", runtime.WithHTTPPathPattern("/api/v1/task/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/SetTask", runtime.WithHTTPPathPattern("/api/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -254,9 +254,9 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 }
 
 var (
-	pattern_TaskService_HealthCheck_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "health-check"}, ""))
+	pattern_TaskService_HealthCheck_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "task", "health-check"}, ""))
 
-	pattern_TaskService_SetTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "task", "taskID"}, ""))
+	pattern_TaskService_SetTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "task", "taskID"}, ""))
 )
 
 var (

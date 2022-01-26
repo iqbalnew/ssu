@@ -545,6 +545,77 @@ func (x *CreateAnnouncementResponse) GetData() *Announcement {
 	return nil
 }
 
+type ListEventTypeResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Error   bool                     `protobuf:"varint,1,opt,name=error,proto3" json:"error,omitempty"`
+	Code    uint32                   `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
+	Message string                   `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Data    []*AnnouncementEventType `protobuf:"bytes,4,rep,name=data,proto3" json:"data,omitempty"`
+}
+
+func (x *ListEventTypeResponse) Reset() {
+	*x = ListEventTypeResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_announcement_payload_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListEventTypeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListEventTypeResponse) ProtoMessage() {}
+
+func (x *ListEventTypeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_announcement_payload_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListEventTypeResponse.ProtoReflect.Descriptor instead.
+func (*ListEventTypeResponse) Descriptor() ([]byte, []int) {
+	return file_announcement_payload_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *ListEventTypeResponse) GetError() bool {
+	if x != nil {
+		return x.Error
+	}
+	return false
+}
+
+func (x *ListEventTypeResponse) GetCode() uint32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *ListEventTypeResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *ListEventTypeResponse) GetData() []*AnnouncementEventType {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
 var File_announcement_payload_proto protoreflect.FileDescriptor
 
 var file_announcement_payload_proto_rawDesc = []byte{
@@ -602,8 +673,18 @@ var file_announcement_payload_proto_rawDesc = []byte{
 	0x65, 0x12, 0x39, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32,
 	0x25, 0x2e, 0x61, 0x6e, 0x6e, 0x6f, 0x75, 0x6e, 0x63, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x2e, 0x73,
 	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x6e, 0x6e, 0x6f, 0x75, 0x6e,
-	0x63, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x42, 0x06, 0x5a, 0x04,
-	0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x63, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x9f, 0x01, 0x0a,
+	0x15, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x12, 0x0a, 0x04,
+	0x63, 0x6f, 0x64, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65,
+	0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x42, 0x0a, 0x04, 0x64, 0x61,
+	0x74, 0x61, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2e, 0x2e, 0x61, 0x6e, 0x6e, 0x6f, 0x75,
+	0x6e, 0x63, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e,
+	0x76, 0x31, 0x2e, 0x41, 0x6e, 0x6e, 0x6f, 0x75, 0x6e, 0x63, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x42, 0x06,
+	0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -618,7 +699,7 @@ func file_announcement_payload_proto_rawDescGZIP() []byte {
 	return file_announcement_payload_proto_rawDescData
 }
 
-var file_announcement_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_announcement_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_announcement_payload_proto_goTypes = []interface{}{
 	(*LoginRequest)(nil),               // 0: announcement.service.v1.LoginRequest
 	(*LoginResponse)(nil),              // 1: announcement.service.v1.LoginResponse
@@ -630,17 +711,20 @@ var file_announcement_payload_proto_goTypes = []interface{}{
 	(*ListAnnouncementResponse)(nil),   // 7: announcement.service.v1.ListAnnouncementResponse
 	(*CreateAnnouncementRequest)(nil),  // 8: announcement.service.v1.CreateAnnouncementRequest
 	(*CreateAnnouncementResponse)(nil), // 9: announcement.service.v1.CreateAnnouncementResponse
-	(*Announcement)(nil),               // 10: announcement.service.v1.Announcement
+	(*ListEventTypeResponse)(nil),      // 10: announcement.service.v1.ListEventTypeResponse
+	(*Announcement)(nil),               // 11: announcement.service.v1.Announcement
+	(*AnnouncementEventType)(nil),      // 12: announcement.service.v1.AnnouncementEventType
 }
 var file_announcement_payload_proto_depIdxs = []int32{
-	10, // 0: announcement.service.v1.ListAnnouncementResponse.data:type_name -> announcement.service.v1.Announcement
-	10, // 1: announcement.service.v1.CreateAnnouncementRequest.data:type_name -> announcement.service.v1.Announcement
-	10, // 2: announcement.service.v1.CreateAnnouncementResponse.data:type_name -> announcement.service.v1.Announcement
-	3,  // [3:3] is the sub-list for method output_type
-	3,  // [3:3] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	11, // 0: announcement.service.v1.ListAnnouncementResponse.data:type_name -> announcement.service.v1.Announcement
+	11, // 1: announcement.service.v1.CreateAnnouncementRequest.data:type_name -> announcement.service.v1.Announcement
+	11, // 2: announcement.service.v1.CreateAnnouncementResponse.data:type_name -> announcement.service.v1.Announcement
+	12, // 3: announcement.service.v1.ListEventTypeResponse.data:type_name -> announcement.service.v1.AnnouncementEventType
+	4,  // [4:4] is the sub-list for method output_type
+	4,  // [4:4] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_announcement_payload_proto_init() }
@@ -770,6 +854,18 @@ func file_announcement_payload_proto_init() {
 				return nil
 			}
 		}
+		file_announcement_payload_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListEventTypeResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -777,7 +873,7 @@ func file_announcement_payload_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_announcement_payload_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

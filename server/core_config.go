@@ -24,8 +24,8 @@ type Config struct {
 	Dsn       string `config:"DB_DSN"`
 
 	AnnouncementService string `config:"ANNOUNCEMENT_SERVICE"`
-	AccountService      string `config:"ACCOUNT_SERVICE"`
-	CompanyService      string `config:"COMPANY_SERVICE"`
+	// AccountService      string `config:"ACCOUNT_SERVICE"`
+	// CompanyService      string `config:"COMPANY_SERVICE"`
 }
 
 var config *Config
@@ -46,9 +46,9 @@ func initConfig() {
 		CorsAllowedOrigins:  []string{},
 		JWTSecret:           os.Getenv("JWT_SECRET"),
 		Dsn:                 os.Getenv("DB_DSN"),
-		AnnouncementService: os.Getenv("ANNOUNCEMENT_SERVICE"),
-		AccountService:      os.Getenv("ACCOUNT_SERVICE"),
-		CompanyService:      os.Getenv("COMPANY_SERVICE"),
+		AnnouncementService: getEnv("ANNOUNCEMENT_SERVICE", ":9091"),
+		// AccountService:      os.Getenv("ACCOUNT_SERVICE"),
+		// CompanyService:      os.Getenv("COMPANY_SERVICE"),
 	}
 
 }
@@ -56,4 +56,11 @@ func initConfig() {
 func (c *Config) AsString() string {
 	data, _ := json.Marshal(c)
 	return string(data)
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }

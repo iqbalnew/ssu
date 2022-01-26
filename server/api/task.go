@@ -3,10 +3,14 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"os"
 
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/announcement_pb"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
 	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
@@ -108,11 +112,22 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if sendTask {
 		switch updatedTask.Type {
 		case "announcement":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			announcementConn, err := grpc.Dial(getEnv("ANNOUNCEMENT_SERVICE", ":9091"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Announcement Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer announcementConn.Close()
+
+			announcementClient := announcement_pb.NewApiServiceClient(announcementConn)
+
 			annoncement, err := s.provider.GetAnnouncementTaskById(ctx, req.TaskID)
 			if err != nil {
 				return nil, err
 			}
-			announcementClient := announcement_pb.NewApiServiceClient(s.announcementConn)
 			data := announcement_pb.Announcement{}
 			json.Unmarshal([]byte(annoncement.Data), &data)
 			send := &announcement_pb.CreateAnnouncementRequest{
@@ -128,4 +143,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	return result, nil
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }
