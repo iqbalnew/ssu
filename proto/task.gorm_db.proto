@@ -32,17 +32,17 @@ message Task {
     string type = 2 [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
     
     enum statuses{
-      Draft = 0;
-      Pending = 1;
-      Returned = 2;
-      Approved = 3;
-      Rejected = 4;
+        Pending = 0;
+        Draft = 1;
+        Returned = 2;
+        Approved = 3;
+        Rejected = 4;
     }
     statuses status = 3 [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
     
     enum steps{
-        Checker = 0;
-        Maker = 1;
+        Maker = 0;
+        Checker = 1;
         Signer = 2;
         Releaser = 3;
     }
