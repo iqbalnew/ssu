@@ -51,3 +51,14 @@ message SetTaskResponse {
     string message = 3;
     Task data = 5;
 }
+
+message ListRequest {
+
+}
+
+message ListTaskResponse {
+    bool error = 1;
+    uint32 code = 2;
+    string message = 3;
+    repeated Task data = 4;
+}

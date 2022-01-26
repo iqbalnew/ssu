@@ -25,6 +25,8 @@ type TaskServiceClient interface {
 	HealthCheck(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	SaveTaskWithData(ctx context.Context, in *SaveTaskRequest, opts ...grpc.CallOption) (*SaveTaskResponse, error)
 	SetTask(ctx context.Context, in *SetTaskRequest, opts ...grpc.CallOption) (*SetTaskResponse, error)
+	GetTask(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
+	GetTaskGraph(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
 }
 
 type taskServiceClient struct {
@@ -62,6 +64,24 @@ func (c *taskServiceClient) SetTask(ctx context.Context, in *SetTaskRequest, opt
 	return out, nil
 }
 
+func (c *taskServiceClient) GetTask(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error) {
+	out := new(ListTaskResponse)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceClient) GetTaskGraph(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error) {
+	out := new(ListTaskResponse)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetTaskGraph", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TaskServiceServer is the server API for TaskService service.
 // All implementations must embed UnimplementedTaskServiceServer
 // for forward compatibility
@@ -69,6 +89,8 @@ type TaskServiceServer interface {
 	HealthCheck(context.Context, *Empty) (*HealthCheckResponse, error)
 	SaveTaskWithData(context.Context, *SaveTaskRequest) (*SaveTaskResponse, error)
 	SetTask(context.Context, *SetTaskRequest) (*SetTaskResponse, error)
+	GetTask(context.Context, *ListRequest) (*ListTaskResponse, error)
+	GetTaskGraph(context.Context, *ListRequest) (*ListTaskResponse, error)
 	mustEmbedUnimplementedTaskServiceServer()
 }
 
@@ -84,6 +106,12 @@ func (UnimplementedTaskServiceServer) SaveTaskWithData(context.Context, *SaveTas
 }
 func (UnimplementedTaskServiceServer) SetTask(context.Context, *SetTaskRequest) (*SetTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetTask not implemented")
+}
+func (UnimplementedTaskServiceServer) GetTask(context.Context, *ListRequest) (*ListTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTask not implemented")
+}
+func (UnimplementedTaskServiceServer) GetTaskGraph(context.Context, *ListRequest) (*ListTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTaskGraph not implemented")
 }
 func (UnimplementedTaskServiceServer) mustEmbedUnimplementedTaskServiceServer() {}
 
@@ -152,6 +180,42 @@ func _TaskService_SetTask_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskService_GetTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GetTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/GetTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GetTask(ctx, req.(*ListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskService_GetTaskGraph_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GetTaskGraph(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/GetTaskGraph",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GetTaskGraph(ctx, req.(*ListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TaskService_ServiceDesc is the grpc.ServiceDesc for TaskService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -170,6 +234,14 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetTask",
 			Handler:    _TaskService_SetTask_Handler,
+		},
+		{
+			MethodName: "GetTask",
+			Handler:    _TaskService_GetTask_Handler,
+		},
+		{
+			MethodName: "GetTaskGraph",
+			Handler:    _TaskService_GetTaskGraph_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

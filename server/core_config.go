@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -20,8 +19,9 @@ type Config struct {
 	CorsAllowedMethods []string `config:"CORS_ALLOWED_METHODS"`
 	CorsAllowedOrigins []string `config:"CORS_ALLOWED_ORIGINS"`
 
-	JWTSecret string `config:"JWT_SECRET"`
-	Dsn       string `config:"DB_DSN"`
+	JWTSecret   string `config:"JWT_SECRET"`
+	JWTDuration string `config:"JWT_DURATION"`
+	Dsn         string `config:"DB_DSN"`
 
 	AnnouncementService string `config:"ANNOUNCEMENT_SERVICE"`
 	// AccountService      string `config:"ACCOUNT_SERVICE"`
@@ -33,19 +33,16 @@ var config *Config
 func initConfig() {
 	// Todo: add env checker
 
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Println(err)
-		log.Fatalf("Error loading .env file")
-	}
+	godotenv.Load(".env")
 
 	config = &Config{
 		ListenAddress:       fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")),
 		CorsAllowedHeaders:  []string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Content-Disposition", "Origin", "X-Requested-With", "X-Forwarded-For"},
 		CorsAllowedMethods:  []string{"GET", "POST", "PATCH", "DELETE", "PUT"},
 		CorsAllowedOrigins:  []string{},
-		JWTSecret:           os.Getenv("JWT_SECRET"),
-		Dsn:                 os.Getenv("DB_DSN"),
+		JWTSecret:           getEnv("JWT_SECRET", "secret"),
+		JWTDuration:         getEnv("JWT_DURATION", "48h"),
+		Dsn:                 getEnv("DB_DSN", ""),
 		AnnouncementService: getEnv("ANNOUNCEMENT_SERVICE", ":9091"),
 		// AccountService:      os.Getenv("ACCOUNT_SERVICE"),
 		// CompanyService:      os.Getenv("COMPANY_SERVICE"),
