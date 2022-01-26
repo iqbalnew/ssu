@@ -21,7 +21,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-const defaultPort = 3035
+const defaultPort = 9090
 
 var s *grpc.Server
 
@@ -58,6 +58,7 @@ func grpcServerCmd() cli.Command {
 			port := c.Int("port")
 
 			startDBConnection()
+			initOtherServicesConn()
 
 			go func() {
 				if err := grpcServer(port); err != nil {
@@ -88,11 +89,11 @@ func gatewayServerCmd() cli.Command {
 		Flags: []cli.Flag{
 			cli.IntFlag{
 				Name:  "port",
-				Value: 3001,
+				Value: 3000,
 			},
 			cli.StringFlag{
 				Name:  "grpc-endpoint",
-				Value: "127.0.0.1:" + fmt.Sprint(defaultPort),
+				Value: ":" + fmt.Sprint(defaultPort),
 				Usage: "the address of the running gRPC server to transcode to",
 			},
 		},
@@ -129,11 +130,11 @@ func grpcGatewayServerCmd() cli.Command {
 			},
 			cli.IntFlag{
 				Name:  "port2",
-				Value: 3001,
+				Value: 3000,
 			},
 			cli.StringFlag{
 				Name:  "grpc-endpoint",
-				Value: "127.0.0.1:" + fmt.Sprint(defaultPort),
+				Value: ":" + fmt.Sprint(defaultPort),
 				Usage: "the address of the running gRPC server to transcode to",
 			},
 		},
@@ -141,6 +142,7 @@ func grpcGatewayServerCmd() cli.Command {
 			rpcPort, httpPort, grpcEndpoint := c.Int("port1"), c.Int("port2"), c.String("grpc-endpoint")
 
 			startDBConnection()
+			initOtherServicesConn()
 
 			go func() {
 				if err := grpcServer(rpcPort); err != nil {
@@ -161,6 +163,7 @@ func grpcGatewayServerCmd() cli.Command {
 			<-ch
 
 			closeDBConnections()
+
 			logrus.Println("Stopping RPC server")
 			s.Stop()
 			logrus.Println("RPC server stopped")
@@ -174,19 +177,19 @@ func grpcGatewayServerCmd() cli.Command {
 func grpcServer(port int) error {
 	// RPC
 	logrus.Printf("Starting RPC server on port %d...", port)
-	list, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+	list, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		return err
 	}
 
-	apiServer := api.New(db_main)
+	apiServer := api.New(db_main, announcementConn)
 	authInterceptor := api.NewAuthInterceptor(apiServer.GetManager())
 
 	unaryInterceptorOpt := grpc.UnaryInterceptor(api.UnaryInterceptors(authInterceptor))
 	streamInterceptorOpt := grpc.StreamInterceptor(api.StreamInterceptors(authInterceptor))
 
 	s = grpc.NewServer(unaryInterceptorOpt, streamInterceptorOpt)
-	pb.RegisterGoBaseServiceServer(s, apiServer)
+	pb.RegisterTaskServiceServer(s, apiServer)
 
 	return s.Serve(list)
 }
@@ -206,8 +209,8 @@ func httpGatewayServer(port int, grpcEndpoint string) error {
 	rmux := runtime.NewServeMux()
 	// opts := []grpc.DialOption{grpc.WithInsecure()}
 	// err := pb.RegisterBaseServiceHandlerFromEndpoint(ctx, rmux, grpcEndpoint, opts)
-	client := pb.NewGoBaseServiceClient(conn)
-	err = pb.RegisterGoBaseServiceHandlerClient(ctx, rmux, client)
+	client := pb.NewTaskServiceClient(conn)
+	err = pb.RegisterTaskServiceHandlerClient(ctx, rmux, client)
 	if err != nil {
 		return err
 	}
@@ -223,7 +226,7 @@ func httpGatewayServer(port int, grpcEndpoint string) error {
 	// Start
 	logrus.Printf("Starting JSON Gateway server on port %d...", port)
 
-	return http.ListenAndServe(fmt.Sprintf("127.0.0.1:%d", port), mux)
+	return http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 }
 
 func serveSwagger(w http.ResponseWriter, r *http.Request) {

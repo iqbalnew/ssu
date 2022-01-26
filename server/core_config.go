@@ -22,6 +22,10 @@ type Config struct {
 
 	JWTSecret string `config:"JWT_SECRET"`
 	Dsn       string `config:"DB_DSN"`
+
+	AnnouncementService string `config:"ANNOUNCEMENT_SERVICE"`
+	AccountService      string `config:"ACCOUNT_SERVICE"`
+	CompanyService      string `config:"COMPANY_SERVICE"`
 }
 
 var config *Config
@@ -36,12 +40,15 @@ func initConfig() {
 	}
 
 	config = &Config{
-		ListenAddress:      fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")),
-		CorsAllowedHeaders: []string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Content-Disposition", "Origin", "X-Requested-With", "X-Forwarded-For"},
-		CorsAllowedMethods: []string{"GET", "POST", "PATCH", "DELETE", "PUT"},
-		CorsAllowedOrigins: []string{},
-		JWTSecret:          os.Getenv("JWT_SECRET"),
-		Dsn:                os.Getenv("DB_DSN"),
+		ListenAddress:       fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")),
+		CorsAllowedHeaders:  []string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Content-Disposition", "Origin", "X-Requested-With", "X-Forwarded-For"},
+		CorsAllowedMethods:  []string{"GET", "POST", "PATCH", "DELETE", "PUT"},
+		CorsAllowedOrigins:  []string{},
+		JWTSecret:           os.Getenv("JWT_SECRET"),
+		Dsn:                 os.Getenv("DB_DSN"),
+		AnnouncementService: os.Getenv("ANNOUNCEMENT_SERVICE"),
+		AccountService:      os.Getenv("ACCOUNT_SERVICE"),
+		CompanyService:      os.Getenv("COMPANY_SERVICE"),
 	}
 
 }

@@ -25,8 +25,8 @@ func accessibleRoles() map[string][]string {
 
 	// restricted api
 	return map[string][]string{
-		apiServicePath + "CreateUser": {"admin"},
-		apiServicePath + "GetMe":      {"user", "admin"},
+		TaskServicePath + "CreateUser": {"admin"},
+		TaskServicePath + "GetMe":      {"user", "admin"},
 	}
 }
 

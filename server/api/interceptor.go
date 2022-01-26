@@ -21,7 +21,7 @@ import (
 const AuthTokenKey = "authentication"
 
 var authFilteredModule = []string{
-	apiServicePath + "GetUser",
+	TaskServicePath + "GetUser",
 }
 
 var (

@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
@@ -12,21 +13,24 @@ import (
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/db"
 	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
+
 	"github.com/sirupsen/logrus"
 )
 
-const apiServicePath string = "/go.base.v1.GoBaseService/"
+const TaskServicePath string = "/task.service.v1.TaskService/"
 
 // Server represents the server implementation of the SW API.
 type Server struct {
-	provider *db.GormProvider
-	manager  *manager.JWTManager
+	provider         *db.GormProvider
+	manager          *manager.JWTManager
+	announcementConn *grpc.ClientConn
 
-	pb.GoBaseServiceServer
+	pb.TaskServiceServer
 }
 
 func New(
 	db01 *gorm.DB,
+	conn01 *grpc.ClientConn,
 ) *Server {
 	secret := os.Getenv("JWT_SECRET")
 	tokenDuration, err := time.ParseDuration(os.Getenv("JWT_DURATION"))
@@ -35,9 +39,10 @@ func New(
 	}
 
 	return &Server{
-		provider:            db.NewProvider(db01),
-		manager:             manager.NewJWTManager(secret, tokenDuration),
-		GoBaseServiceServer: nil,
+		provider:          db.NewProvider(db01),
+		announcementConn:  conn01,
+		manager:           manager.NewJWTManager(secret, tokenDuration),
+		TaskServiceServer: nil,
 	}
 }
 
