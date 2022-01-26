@@ -63,5 +63,28 @@ func (this *Announcement) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
 		}
 	}
+	if this.EventType != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.EventType); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("EventType", err)
+		}
+	}
+	return nil
+}
+func (this *AnnouncementEventType) Validate() error {
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	if this.DeletedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
+		}
+	}
 	return nil
 }
