@@ -5,11 +5,16 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
+
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
 )
 
 func migrationStart() {
 	if err := db_main.AutoMigrate(
-	// &pb.UserORM{},
+		&pb.TaskORM{},
+		&pb.AccountTaskORM{},
+		&pb.CompanyTaskORM{},
+		&pb.AnnouncementTaskORM{},
 	); err != nil {
 		logrus.Fatalf("Migration failed: %v", err)
 		os.Exit(1)

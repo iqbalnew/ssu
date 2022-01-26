@@ -28,28 +28,32 @@ message Task {
         ormable:true,
         table: "tasks",
     };
-    uint64 id = 1 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {primary_key: true not_null: true}];
-    string type = 2;
+    uint64 TaskID = 1 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {primary_key: true not_null: true}];
+    string type = 2 [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
+    
     enum statuses{
-      DRAFT = 0;
-      PENDING = 1;
-      RETURNED = 2;
-      APPROVED = 3;
-      REJECTED = 4;
+      Draft = 0;
+      Pending = 1;
+      Returned = 2;
+      Approved = 3;
+      Rejected = 4;
     }
-    statuses status = 3;
+    statuses status = 3 [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
+    
     enum steps{
-        MAKER = 0;
-        CHECKER = 1;
-        SIGNER = 2;
-        RELEASER = 3;
+        Checker = 0;
+        Maker = 1;
+        Signer = 2;
+        Releaser = 3;
     }
-    steps step = 4;
-    uint64 created_by_id = 5;
-    uint64 last_approved_by_id = 6;
-    uint64 last_rejected_by_id = 7;
-    google.protobuf.Timestamp created_at = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
-    google.protobuf.Timestamp updated_at = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+    steps step = 4 [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
+    
+    uint64 createdByID = 5 [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
+    uint64 lastApprovedByID = 6 [(google.api.field_behavior) = OPTIONAL];
+    uint64 lastRejectedByID = 7 [(google.api.field_behavior) = OPTIONAL];
+
+    google.protobuf.Timestamp createdAt = 101 [(google.api.field_behavior) = OUTPUT_ONLY];
+    google.protobuf.Timestamp updatedAt = 102 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CompanyTask {
@@ -57,12 +61,14 @@ message CompanyTask {
         ormable:true,
         table: "company_tasks",
     };
-    uint64 id = 1 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {primary_key: true not_null: true}];
-    string type = 2;
-    uint64 company_id = 3;
-    string data = 4;
-    google.protobuf.Timestamp created_at = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-    google.protobuf.Timestamp updated_at = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+    uint64 TaskID = 1 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {primary_key: true not_null: true}];
+    string type = 2  [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
+    string data = 3  [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
+
+    Task task = 51 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).belongs_to = { foreignkey: "task_id" }];
+
+    google.protobuf.Timestamp createdAt = 101 [(google.api.field_behavior) = OUTPUT_ONLY];
+    google.protobuf.Timestamp updatedAt = 102 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message AnnouncementTask {
@@ -70,12 +76,14 @@ message AnnouncementTask {
         ormable:true,
         table: "announcement_tasks",
     };
-    uint64 id = 1 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {primary_key: true not_null: true}];
-    string type = 2;
-    uint64 announcement_id = 3;
-    string data = 4;
-    google.protobuf.Timestamp created_at = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-    google.protobuf.Timestamp updated_at = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+    uint64 TaskID = 1 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {primary_key: true not_null: true}];
+    string type = 2  [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
+    string data = 3  [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
+
+    Task task = 51 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).belongs_to = { foreignkey: "task_id" }];
+
+    google.protobuf.Timestamp createdAt = 101 [(google.api.field_behavior) = OUTPUT_ONLY];
+    google.protobuf.Timestamp updatedAt = 102 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message AccountTask {
@@ -83,11 +91,12 @@ message AccountTask {
         ormable:true,
         table: "account_tasks",
     };
-    uint64 id = 1 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {primary_key: true not_null: true}];
-    string type = 2;
-    uint64 company_id = 3;
-    uint64 account_id = 4;
-    string data = 5;
-    google.protobuf.Timestamp created_at = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
-    google.protobuf.Timestamp updated_at = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+    uint64 TaskID = 1 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {primary_key: true not_null: true}];
+    string type = 2  [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
+    string data = 3  [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
+
+    Task task = 51 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).belongs_to = { foreignkey: "task_id" }];
+
+    google.protobuf.Timestamp createdAt = 101 [(google.api.field_behavior) = OUTPUT_ONLY];
+    google.protobuf.Timestamp updatedAt = 102 [(google.api.field_behavior) = OUTPUT_ONLY];
 }

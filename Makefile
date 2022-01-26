@@ -45,6 +45,12 @@ unit-test:
 generate:
 	go generate ./...
 
+run:
+	go run ./server/ grpc-gw-server
+
+migrate-db:
+	go run ./server/ db-migrate
+
 depend:
 	@echo "Pulling all Go dependencies"
 	go mod download

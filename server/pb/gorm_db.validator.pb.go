@@ -38,6 +38,21 @@ func (this *User) Validate() error {
 	return nil
 }
 func (this *Task) Validate() error {
+	if this.CompanyTask != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CompanyTask); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CompanyTask", err)
+		}
+	}
+	if this.AnnouncementTask != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.AnnouncementTask); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("AnnouncementTask", err)
+		}
+	}
+	if this.AccountTask != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.AccountTask); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("AccountTask", err)
+		}
+	}
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
