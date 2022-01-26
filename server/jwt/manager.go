@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/ordentco/go-base/server/pb"
 )
 
 type JWTManager struct {

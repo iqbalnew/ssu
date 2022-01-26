@@ -9,9 +9,9 @@ import (
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 
-	"github.com/ordentco/go-base/server/db"
-	manager "github.com/ordentco/go-base/server/jwt"
-	pb "github.com/ordentco/go-base/server/pb"
+	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/db"
+	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
 	"github.com/sirupsen/logrus"
 )
 

@@ -1,4 +1,4 @@
-module github.com/ordentco/go-base
+module bitbucket.bri.co.id/scm/addons/addons-task-service
 
 go 1.17
 

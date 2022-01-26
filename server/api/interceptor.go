@@ -14,7 +14,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/ordentco/go-base/server/db"
+	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/db"
 )
 
 // AuthTokenKey is the key used within our metadata to store a JWT

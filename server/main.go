@@ -11,9 +11,9 @@ import (
 	"fmt"
 	"net"
 
-	pb "github.com/ordentco/go-base/server/pb"
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
 
-	"github.com/ordentco/go-base/server/api"
+	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/api"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/sirupsen/logrus"
