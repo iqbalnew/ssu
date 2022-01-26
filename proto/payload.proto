@@ -1,18 +1,11 @@
 syntax = "proto3";
 
-import "google/api/annotations.proto";
-import "mwitkow/go-proto-validators/validator.proto";
+import "gorm_db.proto";
 
-package go.base.v1;
+package task.service.v1;
 option go_package = "./pb";
 
-service GoBaseService {
-    rpc HealthCheck(Empty) returns (HealthCheckResponse) {
-        option (google.api.http) = {
-            get: "/api/v1/health-check"
-        };
-    };
-}
+import "mwitkow/go-proto-validators/validator.proto";
 
 message LoginRequest {
     string username = 1 [(validator.field) = {msg_exists : true}];

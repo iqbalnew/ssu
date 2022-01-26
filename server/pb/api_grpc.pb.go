@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.6.1
-// source: base.proto
+// source: api.proto
 
 package pb
 
@@ -35,7 +35,7 @@ func NewGoBaseServiceClient(cc grpc.ClientConnInterface) GoBaseServiceClient {
 
 func (c *goBaseServiceClient) HealthCheck(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
 	out := new(HealthCheckResponse)
-	err := c.cc.Invoke(ctx, "/go.base.v1.GoBaseService/HealthCheck", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/task.service.v1.GoBaseService/HealthCheck", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func _GoBaseService_HealthCheck_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/go.base.v1.GoBaseService/HealthCheck",
+		FullMethod: "/task.service.v1.GoBaseService/HealthCheck",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GoBaseServiceServer).HealthCheck(ctx, req.(*Empty))
@@ -92,7 +92,7 @@ func _GoBaseService_HealthCheck_Handler(srv interface{}, ctx context.Context, de
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var GoBaseService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "go.base.v1.GoBaseService",
+	ServiceName: "task.service.v1.GoBaseService",
 	HandlerType: (*GoBaseServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -101,5 +101,5 @@ var GoBaseService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "base.proto",
+	Metadata: "api.proto",
 }
