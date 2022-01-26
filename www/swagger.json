@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "api.proto",
+    "title": "task.api.proto",
     "version": "version not set"
   },
   "tags": [
     {
-      "name": "GoBaseService"
+      "name": "TaskService"
     }
   ],
   "consumes": [
@@ -18,7 +18,7 @@
   "paths": {
     "/api/v1/health-check": {
       "get": {
-        "operationId": "GoBaseService_HealthCheck",
+        "operationId": "TaskService_HealthCheck",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -34,12 +34,77 @@
           }
         },
         "tags": [
-          "GoBaseService"
+          "TaskService"
+        ]
+      }
+    },
+    "/api/v1/task/{taskID}": {
+      "put": {
+        "operationId": "TaskService_SetTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SetTaskResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "taskID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "action": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "TaskService"
         ]
       }
     }
   },
   "definitions": {
+    "Taskstatuses": {
+      "type": "string",
+      "enum": [
+        "Pending",
+        "Draft",
+        "Returned",
+        "Approved",
+        "Rejected"
+      ],
+      "default": "Pending"
+    },
+    "Tasksteps": {
+      "type": "string",
+      "enum": [
+        "Maker",
+        "Checker",
+        "Signer",
+        "Releaser"
+      ],
+      "default": "Maker"
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -74,6 +139,83 @@
           "type": "string"
         }
       }
+    },
+    "v1SaveTaskResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1SetTaskResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/v1Task"
+        }
+      }
+    },
+    "v1Task": {
+      "type": "object",
+      "properties": {
+        "TaskID": {
+          "type": "string",
+          "format": "uint64",
+          "readOnly": true
+        },
+        "type": {
+          "type": "string",
+          "required": [
+            "type"
+          ]
+        },
+        "status": {
+          "$ref": "#/definitions/Taskstatuses"
+        },
+        "step": {
+          "$ref": "#/definitions/Tasksteps"
+        },
+        "createdByID": {
+          "type": "string",
+          "format": "uint64",
+          "required": [
+            "createdByID"
+          ]
+        },
+        "lastApprovedByID": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "lastRejectedByID": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "type",
+        "createdByID"
+      ]
     }
   }
 }

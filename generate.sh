@@ -27,7 +27,7 @@ protoc --proto_path=./proto ./proto/*.proto \
     --go_out=./server/pb --go_opt paths=source_relative \
     --govalidators_out=./server
 
-protoc --proto_path=./proto ./proto/api.proto \
+protoc --proto_path=./proto ./proto/task.api.proto \
     --proto_path=./proto/libs \
     --proto_path=./vendor \
     --plugin=$(go env GOPATH)/bin/protoc-gen-grpc-gateway \
@@ -39,9 +39,9 @@ protoc --proto_path=./proto ./proto/api.proto \
     --openapiv2_out ./proto \
     --openapiv2_opt logtostderr=true,repeated_path_param_separator=ssv
 
-mv ./proto/api.swagger.json ./www/swagger.json
+mv ./proto/task.api.swagger.json ./www/swagger.json
 
-protoc --proto_path=./proto ./proto/gorm_db.proto \
+protoc --proto_path=./proto ./proto/task.gorm_db.proto \
     --proto_path=./proto/libs \
     --plugin=$(go env GOPATH)/bin/protoc-gen-gorm \
     --gorm_out=./server
