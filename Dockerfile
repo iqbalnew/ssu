@@ -29,6 +29,8 @@ FROM $BASE_IMAGE
 WORKDIR /usr/app
 
 COPY --from=builder /root/go/src/app/app /usr/app/app
+COPY --from=builder /root/go/src/app/www /usr/app/www
+COPY --from=builder /root/go/src/app/grpc_health_probe-linux-amd64 /usr/app/grpc_health_probe-linux-amd64
 
 LABEL authors="Arya Utama Putra <arya@ordent.co>"
 
@@ -38,4 +40,8 @@ LABEL org.opencontainers.image.title="go-base"
 LABEL org.opencontainers.image.description="create go bases server"
 LABEL org.opencontainers.image.vendor=""
 
+EXPOSE 9090
+EXPOSE 3000
+
 ENTRYPOINT ["/usr/app/app"]
+CMD ["grpc-gw-server", "--port1", "9090", "--port2", "3000", "--grpc-endpoint", ":9090"]
