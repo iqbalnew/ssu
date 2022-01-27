@@ -6,6 +6,8 @@ import (
 	"os"
 
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/announcement_pb"
+	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/company_pb"
+
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -202,6 +204,28 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Data: &data,
 			}
 			res, err := announcementClient.CreateAnnouncement(ctx, send)
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
+
+		case "Company":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Company Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer companyConn.Close()
+
+			companyClient := company_pb.NewApiServiceClient(companyConn)
+
+			data := company_pb.CreateCompanyGroupRequest{}
+			json.Unmarshal([]byte(task.Data), &data)
+
+			res, err := companyClient.CreateCompanyGroup(ctx, &data)
 			if err != nil {
 				return nil, err
 			}

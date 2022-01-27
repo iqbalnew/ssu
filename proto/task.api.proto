@@ -38,7 +38,7 @@ service TaskService {
             get: "/api/task/Graph"
         };
     };
-
+    
 
 }
 
