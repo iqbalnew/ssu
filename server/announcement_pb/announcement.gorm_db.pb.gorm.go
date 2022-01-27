@@ -831,7 +831,7 @@ func DefaultReadAnnouncement(ctx context.Context, in *Announcement, db *gorm.DB)
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.EventTypeID == 0 {
+	if ormObj.AnnouncementID == 0 {
 		return nil, errors.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(AnnouncementORMWithBeforeReadApplyQuery); ok {
@@ -914,17 +914,17 @@ func DefaultDeleteAnnouncementSet(ctx context.Context, in []*Announcement, db *g
 		if err != nil {
 			return err
 		}
-		if ormObj.AnnouncementID == 0 {
+		if ormObj.CompanyID == 0 {
 			return errors.EmptyIdError
 		}
-		keys = append(keys, ormObj.AnnouncementID)
+		keys = append(keys, ormObj.CompanyID)
 	}
 	if hook, ok := (interface{}(&AnnouncementORM{})).(AnnouncementORMWithBeforeDeleteSet); ok {
 		if db, err = hook.BeforeDeleteSet(ctx, in, db); err != nil {
 			return err
 		}
 	}
-	err = db.Where("announcement_id in (?)", keys).Delete(&AnnouncementORM{}).Error
+	err = db.Where("company_id in (?)", keys).Delete(&AnnouncementORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -951,7 +951,7 @@ func DefaultStrictUpdateAnnouncement(ctx context.Context, in *Announcement, db *
 		return nil, err
 	}
 	lockedRow := &AnnouncementORM{}
-	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("announcement_id=?", ormObj.AnnouncementID).First(lockedRow)
+	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("company_id=?", ormObj.CompanyID).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(AnnouncementORMWithBeforeStrictUpdateCleanup); ok {
 		if db, err = hook.BeforeStrictUpdateCleanup(ctx, db); err != nil {
 			return nil, err

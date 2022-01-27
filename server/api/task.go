@@ -148,6 +148,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 			defer announcementConn.Close()
 
+			logrus.Println("===========> %s", announcementConn.GetState().String())
 			announcementClient := announcement_pb.NewApiServiceClient(announcementConn)
 
 			annoncement, err := s.provider.GetAnnouncementTaskById(ctx, req.TaskID)

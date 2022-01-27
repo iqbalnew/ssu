@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ApiServiceClient interface {
+	HealthCheck(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	GenerateTokenByRole(ctx context.Context, in *TempGenToken, opts ...grpc.CallOption) (*JWTTokenResponse, error)
 	ListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementResponse, error)
 	CreateAnnouncement(ctx context.Context, in *CreateAnnouncementRequest, opts ...grpc.CallOption) (*CreateAnnouncementResponse, error)
@@ -36,6 +37,15 @@ type apiServiceClient struct {
 
 func NewApiServiceClient(cc grpc.ClientConnInterface) ApiServiceClient {
 	return &apiServiceClient{cc}
+}
+
+func (c *apiServiceClient) HealthCheck(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
+	out := new(HealthCheckResponse)
+	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/HealthCheck", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *apiServiceClient) GenerateTokenByRole(ctx context.Context, in *TempGenToken, opts ...grpc.CallOption) (*JWTTokenResponse, error) {
@@ -96,6 +106,7 @@ func (c *apiServiceClient) ListEventType(ctx context.Context, in *ListRequest, o
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
 type ApiServiceServer interface {
+	HealthCheck(context.Context, *Empty) (*HealthCheckResponse, error)
 	GenerateTokenByRole(context.Context, *TempGenToken) (*JWTTokenResponse, error)
 	ListAnnouncement(context.Context, *ListRequest) (*ListAnnouncementResponse, error)
 	CreateAnnouncement(context.Context, *CreateAnnouncementRequest) (*CreateAnnouncementResponse, error)
@@ -109,6 +120,9 @@ type ApiServiceServer interface {
 type UnimplementedApiServiceServer struct {
 }
 
+func (UnimplementedApiServiceServer) HealthCheck(context.Context, *Empty) (*HealthCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
+}
 func (UnimplementedApiServiceServer) GenerateTokenByRole(context.Context, *TempGenToken) (*JWTTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GenerateTokenByRole not implemented")
 }
@@ -138,6 +152,24 @@ type UnsafeApiServiceServer interface {
 
 func RegisterApiServiceServer(s grpc.ServiceRegistrar, srv ApiServiceServer) {
 	s.RegisterService(&ApiService_ServiceDesc, srv)
+}
+
+func _ApiService_HealthCheck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).HealthCheck(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/announcement.service.v1.ApiService/HealthCheck",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).HealthCheck(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ApiService_GenerateTokenByRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -255,6 +287,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "announcement.service.v1.ApiService",
 	HandlerType: (*ApiServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "HealthCheck",
+			Handler:    _ApiService_HealthCheck_Handler,
+		},
 		{
 			MethodName: "GenerateTokenByRole",
 			Handler:    _ApiService_GenerateTokenByRole_Handler,
