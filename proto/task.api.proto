@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "google/api/annotations.proto";
 import "mwitkow/go-proto-validators/validator.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 import "task.payload.proto";
 
@@ -24,7 +25,7 @@ service TaskService {
         };
     };
 
-    rpc GetListTask(ListRequest) returns (ListTaskResponse) {
+    rpc GetListTask(ListTaskRequest) returns (ListTaskResponse) {
         option (google.api.http) = {
             get: "/api/task"
         };

@@ -13,7 +13,11 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) GetListTask(ctx context.Context, req *pb.ListRequest) (*pb.ListTaskResponse, error) {
+func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
+	// logrus.Println("After %v", pb)
+
+	dataorm, _ := req.Task.ToORM(ctx)
+
 	result := pb.ListTaskResponse{
 		Error:   false,
 		Code:    200,
@@ -21,7 +25,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListRequest) (*pb.List
 		Data:    []*pb.Task{},
 	}
 
-	list, err := s.provider.GetListTask(ctx)
+	list, err := s.provider.GetListTaskWithFilter(ctx, &dataorm)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +39,24 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListRequest) (*pb.List
 		result.Data = append(result.Data, &task)
 	}
 
-	return &result, nil
+	return &result, err
+
+	// list, err := s.provider.GetListTaskWithFilter(ctx)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// for _, v := range list {
+	// 	task, err := v.ToPB(ctx)
+	// 	if err != nil {
+	// 		logrus.Errorln(err)
+	// 		return nil, status.Errorf(codes.Internal, "Internal Error")
+	// 	}
+	// 	result.Data = append(result.Data, &task)
+	// }
+
+	// return &result, nil
+	return nil, nil
 
 }
 

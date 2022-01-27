@@ -236,6 +236,9 @@ func serveSwagger(w http.ResponseWriter, r *http.Request) {
 }
 
 func allowedOrigin(origin string) bool {
+	if viper.GetString("cors") == "https://addons-web-client.vercel.app" {
+		return true
+	}
 	if viper.GetString("cors") == "*" {
 		return true
 	}

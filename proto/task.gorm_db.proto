@@ -4,6 +4,7 @@ import "google/protobuf/timestamp.proto";
 import "google/api/field_behavior.proto";
 import "protoc-gen-gorm/options/gorm.proto";
 import "mwitkow/go-proto-validators/validator.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 package task.service.v1;
 option go_package = "./pb";
@@ -23,29 +24,49 @@ message User {
     google.protobuf.Timestamp deleted_at = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
+enum statuses{
+    Pending = 0;
+    Draft = 1;
+    Returned = 2;
+    Approved = 3;
+    Rejected = 4;
+}
+
+enum steps{
+    Maker = 0;
+    Checker = 1;
+    Signer = 2;
+    Releaser = 3;
+}
+
 message Task {
     option (gorm.opts) = {
         ormable:true,
         table: "tasks",
     };
+    uint64 TaskID = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {type: INTEGER}, (gorm.field).tag = {primary_key: true not_null: true}];
+    string type = 2 [(gorm.field).tag = { not_null: true}];
+    
+    statuses status = 3 [(gorm.field).tag = { not_null: true}];
+
+    steps step = 4 [(gorm.field).tag = { not_null: true}];
+    
+    uint64 createdByID = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {type: INTEGER}, (gorm.field).tag = { not_null: true}];
+    uint64 lastApprovedByID = 6 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {type: INTEGER}];
+    uint64 lastRejectedByID = 7 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {type: INTEGER}];
+
+    string data = 8;
+
+    google.protobuf.Timestamp createdAt = 101;
+    google.protobuf.Timestamp updatedAt = 102;
+}
+
+message TaskRequest {
     uint64 TaskID = 1 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {primary_key: true not_null: true}];
     string type = 2 [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
     
-    enum statuses{
-        Pending = 0;
-        Draft = 1;
-        Returned = 2;
-        Approved = 3;
-        Rejected = 4;
-    }
     statuses status = 3 [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
-    
-    enum steps{
-        Maker = 0;
-        Checker = 1;
-        Signer = 2;
-        Releaser = 3;
-    }
+
     steps step = 4 [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];
     
     uint64 createdByID = 5 [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];

@@ -33,6 +33,89 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "task.TaskID",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "uint64"
+          },
+          {
+            "name": "task.type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Pending",
+              "Draft",
+              "Returned",
+              "Approved",
+              "Rejected"
+            ],
+            "default": "Pending"
+          },
+          {
+            "name": "task.step",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Maker",
+              "Checker",
+              "Signer",
+              "Releaser"
+            ],
+            "default": "Maker"
+          },
+          {
+            "name": "task.createdByID",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "uint64"
+          },
+          {
+            "name": "task.lastApprovedByID",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "uint64"
+          },
+          {
+            "name": "task.lastRejectedByID",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "uint64"
+          },
+          {
+            "name": "task.data",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.createdAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "task.updatedAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
         "tags": [
           "TaskService"
         ]
@@ -128,27 +211,6 @@
     }
   },
   "definitions": {
-    "Taskstatuses": {
-      "type": "string",
-      "enum": [
-        "Pending",
-        "Draft",
-        "Returned",
-        "Approved",
-        "Rejected"
-      ],
-      "default": "Pending"
-    },
-    "Tasksteps": {
-      "type": "string",
-      "enum": [
-        "Maker",
-        "Checker",
-        "Signer",
-        "Releaser"
-      ],
-      "default": "Maker"
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -235,59 +297,63 @@
       "type": "object",
       "properties": {
         "TaskID": {
-          "type": "string",
-          "format": "uint64",
-          "readOnly": true
+          "type": "integer",
+          "format": "uint64"
         },
         "type": {
-          "type": "string",
-          "required": [
-            "type"
-          ]
+          "type": "string"
         },
         "status": {
-          "$ref": "#/definitions/Taskstatuses"
+          "$ref": "#/definitions/v1statuses"
         },
         "step": {
-          "$ref": "#/definitions/Tasksteps"
+          "$ref": "#/definitions/v1steps"
         },
         "createdByID": {
-          "type": "string",
-          "format": "uint64",
-          "required": [
-            "createdByID"
-          ]
+          "type": "integer",
+          "format": "uint64"
         },
         "lastApprovedByID": {
-          "type": "string",
+          "type": "integer",
           "format": "uint64"
         },
         "lastRejectedByID": {
-          "type": "string",
+          "type": "integer",
           "format": "uint64"
         },
         "data": {
-          "type": "string",
-          "required": [
-            "data"
-          ]
+          "type": "string"
         },
         "createdAt": {
           "type": "string",
-          "format": "date-time",
-          "readOnly": true
+          "format": "date-time"
         },
         "updatedAt": {
           "type": "string",
-          "format": "date-time",
-          "readOnly": true
+          "format": "date-time"
         }
-      },
-      "required": [
-        "type",
-        "createdByID",
-        "data"
-      ]
+      }
+    },
+    "v1statuses": {
+      "type": "string",
+      "enum": [
+        "Pending",
+        "Draft",
+        "Returned",
+        "Approved",
+        "Rejected"
+      ],
+      "default": "Pending"
+    },
+    "v1steps": {
+      "type": "string",
+      "enum": [
+        "Maker",
+        "Checker",
+        "Signer",
+        "Releaser"
+      ],
+      "default": "Maker"
     }
   }
 }

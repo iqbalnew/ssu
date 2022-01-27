@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/api/field_behavior.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 import "task.gorm_db.proto";
 
@@ -52,6 +53,10 @@ message SetTaskResponse {
 
 message ListRequest {
 
+}
+
+message ListTaskRequest {
+    Task task = 1;
 }
 
 message ListTaskResponse {

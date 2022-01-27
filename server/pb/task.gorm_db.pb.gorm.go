@@ -173,8 +173,8 @@ func (m *TaskORM) ToPB(ctx context.Context) (Task, error) {
 	}
 	to.TaskID = m.TaskID
 	to.Type = m.Type
-	to.Status = TaskStatuses(m.Status)
-	to.Step = TaskSteps(m.Step)
+	to.Status = Statuses(m.Status)
+	to.Step = Steps(m.Step)
 	to.CreatedByID = m.CreatedByID
 	to.LastApprovedByID = m.LastApprovedByID
 	to.LastRejectedByID = m.LastRejectedByID
