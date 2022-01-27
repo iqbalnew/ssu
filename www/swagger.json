@@ -266,6 +266,12 @@
           "type": "string",
           "format": "uint64"
         },
+        "data": {
+          "type": "string",
+          "required": [
+            "data"
+          ]
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",
@@ -279,7 +285,8 @@
       },
       "required": [
         "type",
-        "createdByID"
+        "createdByID",
+        "data"
       ]
     }
   }

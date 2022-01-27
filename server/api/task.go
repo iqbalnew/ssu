@@ -39,6 +39,31 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListRequest) (*pb.List
 
 }
 
+func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (*pb.ListTaskResponse, error) {
+	result := pb.ListTaskResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Announcement List",
+		Data:    []*pb.Task{},
+	}
+
+	list, err := s.provider.GetListTaskWithFilter(ctx, &pb.TaskORM{Type: "Announcement"})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, v := range list {
+		task, err := v.ToPB(ctx)
+		if err != nil {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		result.Data = append(result.Data, &task)
+	}
+
+	return &result, nil
+}
+
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
 	task, _ := req.Task.ToORM(ctx)
 	var err error
@@ -48,9 +73,9 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	}
 	if req.TaskID > 0 {
 		req.Task.Step = 0
-		_, err = s.provider.UpdateTask(ctx, &task, req.Data)
+		_, err = s.provider.UpdateTask(ctx, &task)
 	} else {
-		_, err = s.provider.CreateTask(ctx, &task, req.Data)
+		_, err = s.provider.CreateTask(ctx, &task)
 	}
 
 	if err != nil {
@@ -84,12 +109,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
-				Message: "Task Status Alredy Approved",
+				Message: "Task Status Already Approved",
 				Data:    &taskPb,
 			}, nil
 		}
 
-		if task.Type == "announcement" || task.Type == "notification" || task.Type == "menu" {
+		if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu" {
 			if currentStep == 0 {
 				task.Status = 0
 				task.Step = 2
@@ -100,7 +125,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 		} else {
 			if currentStep >= 3 {
-				if task.Type == "company" || task.Type == "account" || task.Type == "user" || task.Type == "role" {
+				if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" {
 					if currentStep == 4 {
 						sendTask = true
 						task.Status = 3
@@ -121,7 +146,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Status = 4
 	}
 
-	updatedTask, err := s.provider.UpdateTask(ctx, task, "")
+	updatedTask, err := s.provider.UpdateTask(ctx, task)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +162,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	if sendTask {
 		switch updatedTask.Type {
-		case "announcement":
+		case "Announcement":
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -148,15 +173,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 			defer announcementConn.Close()
 
-			logrus.Println("===========> %s", announcementConn.GetState().String())
 			announcementClient := announcement_pb.NewApiServiceClient(announcementConn)
 
-			annoncement, err := s.provider.GetAnnouncementTaskById(ctx, req.TaskID)
-			if err != nil {
-				return nil, err
-			}
 			data := announcement_pb.Announcement{}
-			json.Unmarshal([]byte(annoncement.Data), &data)
+			json.Unmarshal([]byte(task.Data), &data)
 			send := &announcement_pb.CreateAnnouncementRequest{
 				Data: &data,
 			}

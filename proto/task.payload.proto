@@ -31,9 +31,7 @@ message InvalidKeyError {
 
 message SaveTaskRequest {
     uint64 taskID = 1;
-    string action = 2;
     Task task = 3 [(google.api.field_behavior) = OPTIONAL];
-    string data = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message SaveTaskResponse {

@@ -831,7 +831,7 @@ func DefaultReadAnnouncement(ctx context.Context, in *Announcement, db *gorm.DB)
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.AnnouncementID == 0 {
+	if ormObj.CompanyID == 0 {
 		return nil, errors.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(AnnouncementORMWithBeforeReadApplyQuery); ok {
@@ -878,7 +878,7 @@ func DefaultDeleteAnnouncement(ctx context.Context, in *Announcement, db *gorm.D
 	if err != nil {
 		return err
 	}
-	if ormObj.CompanyID == 0 {
+	if ormObj.EventTypeID == 0 {
 		return errors.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(AnnouncementORMWithBeforeDelete_); ok {
@@ -914,17 +914,17 @@ func DefaultDeleteAnnouncementSet(ctx context.Context, in []*Announcement, db *g
 		if err != nil {
 			return err
 		}
-		if ormObj.CompanyID == 0 {
+		if ormObj.AnnouncementID == 0 {
 			return errors.EmptyIdError
 		}
-		keys = append(keys, ormObj.CompanyID)
+		keys = append(keys, ormObj.AnnouncementID)
 	}
 	if hook, ok := (interface{}(&AnnouncementORM{})).(AnnouncementORMWithBeforeDeleteSet); ok {
 		if db, err = hook.BeforeDeleteSet(ctx, in, db); err != nil {
 			return err
 		}
 	}
-	err = db.Where("company_id in (?)", keys).Delete(&AnnouncementORM{}).Error
+	err = db.Where("announcement_id in (?)", keys).Delete(&AnnouncementORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -1288,7 +1288,7 @@ func DefaultListAnnouncement(ctx context.Context, db *gorm.DB) ([]*Announcement,
 		}
 	}
 	db = db.Where(&ormObj)
-	db = db.Order("company_id")
+	db = db.Order("announcement_id")
 	ormResponse := []AnnouncementORM{}
 	if err := db.Find(&ormResponse).Error; err != nil {
 		return nil, err

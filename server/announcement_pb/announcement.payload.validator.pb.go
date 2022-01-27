@@ -37,6 +37,22 @@ func (this *JWTTokenResponse) Validate() error {
 func (this *ListRequest) Validate() error {
 	return nil
 }
+func (this *AnnouncementTask) Validate() error {
+	return nil
+}
+func (this *AnnouncementWithTask) Validate() error {
+	if this.Announcement != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Announcement); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Announcement", err)
+		}
+	}
+	if this.Task != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
+		}
+	}
+	return nil
+}
 func (this *ListAnnouncementResponse) Validate() error {
 	for _, item := range this.Data {
 		if item != nil {

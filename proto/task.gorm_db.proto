@@ -52,6 +52,8 @@ message Task {
     uint64 lastApprovedByID = 6 [(google.api.field_behavior) = OPTIONAL];
     uint64 lastRejectedByID = 7 [(google.api.field_behavior) = OPTIONAL];
 
+    string data = 8  [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = {}];
+
     google.protobuf.Timestamp createdAt = 101 [(google.api.field_behavior) = OUTPUT_ONLY];
     google.protobuf.Timestamp updatedAt = 102 [(google.api.field_behavior) = OUTPUT_ONLY];
 }

@@ -114,6 +114,7 @@ type UserWithAfterToPB interface {
 type TaskORM struct {
 	CreatedAt        *time.Time
 	CreatedByID      uint64 `gorm:"not null"`
+	Data             string
 	LastApprovedByID uint64
 	LastRejectedByID uint64
 	Status           int32  `gorm:"not null"`
@@ -145,6 +146,7 @@ func (m *Task) ToORM(ctx context.Context) (TaskORM, error) {
 	to.CreatedByID = m.CreatedByID
 	to.LastApprovedByID = m.LastApprovedByID
 	to.LastRejectedByID = m.LastRejectedByID
+	to.Data = m.Data
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -176,6 +178,7 @@ func (m *TaskORM) ToPB(ctx context.Context) (Task, error) {
 	to.CreatedByID = m.CreatedByID
 	to.LastApprovedByID = m.LastApprovedByID
 	to.LastRejectedByID = m.LastRejectedByID
+	to.Data = m.Data
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -1254,6 +1257,10 @@ func DefaultApplyFieldMaskTask(ctx context.Context, patchee *Task, patcher *Task
 		}
 		if f == prefix+"LastRejectedByID" {
 			patchee.LastRejectedByID = patcher.LastRejectedByID
+			continue
+		}
+		if f == prefix+"Data" {
+			patchee.Data = patcher.Data
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {

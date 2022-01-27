@@ -30,6 +30,8 @@ service TaskService {
         };
     };
 
+    rpc GetListAnnouncement(ListRequest) returns (ListTaskResponse);
+
     rpc GetTaskGraph(ListRequest) returns (ListTaskResponse) {
         option (google.api.http) = {
             get: "/api/task/Graph"
