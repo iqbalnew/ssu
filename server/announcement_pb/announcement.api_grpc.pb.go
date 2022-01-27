@@ -27,7 +27,7 @@ type ApiServiceClient interface {
 	ListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementResponse, error)
 	CreateAnnouncement(ctx context.Context, in *CreateAnnouncementRequest, opts ...grpc.CallOption) (*CreateAnnouncementResponse, error)
 	CreateAnnouncementTask(ctx context.Context, in *CreateAnnouncementRequest, opts ...grpc.CallOption) (*CreateAnnouncementResponse, error)
-	ListAnnouncementActive(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementResponse, error)
+	ListAnnouncementActive(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementActiveResponse, error)
 	ListEventType(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListEventTypeResponse, error)
 }
 
@@ -84,8 +84,8 @@ func (c *apiServiceClient) CreateAnnouncementTask(ctx context.Context, in *Creat
 	return out, nil
 }
 
-func (c *apiServiceClient) ListAnnouncementActive(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementResponse, error) {
-	out := new(ListAnnouncementResponse)
+func (c *apiServiceClient) ListAnnouncementActive(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementActiveResponse, error) {
+	out := new(ListAnnouncementActiveResponse)
 	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/ListAnnouncementActive", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -111,7 +111,7 @@ type ApiServiceServer interface {
 	ListAnnouncement(context.Context, *ListRequest) (*ListAnnouncementResponse, error)
 	CreateAnnouncement(context.Context, *CreateAnnouncementRequest) (*CreateAnnouncementResponse, error)
 	CreateAnnouncementTask(context.Context, *CreateAnnouncementRequest) (*CreateAnnouncementResponse, error)
-	ListAnnouncementActive(context.Context, *ListRequest) (*ListAnnouncementResponse, error)
+	ListAnnouncementActive(context.Context, *ListRequest) (*ListAnnouncementActiveResponse, error)
 	ListEventType(context.Context, *ListRequest) (*ListEventTypeResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
@@ -135,7 +135,7 @@ func (UnimplementedApiServiceServer) CreateAnnouncement(context.Context, *Create
 func (UnimplementedApiServiceServer) CreateAnnouncementTask(context.Context, *CreateAnnouncementRequest) (*CreateAnnouncementResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAnnouncementTask not implemented")
 }
-func (UnimplementedApiServiceServer) ListAnnouncementActive(context.Context, *ListRequest) (*ListAnnouncementResponse, error) {
+func (UnimplementedApiServiceServer) ListAnnouncementActive(context.Context, *ListRequest) (*ListAnnouncementActiveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAnnouncementActive not implemented")
 }
 func (UnimplementedApiServiceServer) ListEventType(context.Context, *ListRequest) (*ListEventTypeResponse, error) {

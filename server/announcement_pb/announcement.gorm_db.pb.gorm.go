@@ -122,7 +122,7 @@ type AnnouncementORM struct {
 	DeletedByID    uint64
 	Description    string `gorm:"type:text;not null"`
 	EndTo          *time.Time
-	EventType      *AnnouncementEventTypeORM `gorm:"foreignkey:EventTypeId;association_foreignkey:EventTypeID"`
+	EventType      *AnnouncementEventTypeORM `gorm:"foreignkey:EventTypeId;association_foreignkey:EventTypeID;preload:true"`
 	EventTypeID    uint64                    `gorm:"primary_key;not null"`
 	EventTypeId    *uint64
 	IsAutoClose    bool       `gorm:"not null"`
@@ -878,7 +878,7 @@ func DefaultDeleteAnnouncement(ctx context.Context, in *Announcement, db *gorm.D
 	if err != nil {
 		return err
 	}
-	if ormObj.EventTypeID == 0 {
+	if ormObj.AnnouncementID == 0 {
 		return errors.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(AnnouncementORMWithBeforeDelete_); ok {
@@ -914,17 +914,17 @@ func DefaultDeleteAnnouncementSet(ctx context.Context, in []*Announcement, db *g
 		if err != nil {
 			return err
 		}
-		if ormObj.AnnouncementID == 0 {
+		if ormObj.EventTypeID == 0 {
 			return errors.EmptyIdError
 		}
-		keys = append(keys, ormObj.AnnouncementID)
+		keys = append(keys, ormObj.EventTypeID)
 	}
 	if hook, ok := (interface{}(&AnnouncementORM{})).(AnnouncementORMWithBeforeDeleteSet); ok {
 		if db, err = hook.BeforeDeleteSet(ctx, in, db); err != nil {
 			return err
 		}
 	}
-	err = db.Where("announcement_id in (?)", keys).Delete(&AnnouncementORM{}).Error
+	err = db.Where("event_type_id in (?)", keys).Delete(&AnnouncementORM{}).Error
 	if err != nil {
 		return err
 	}
