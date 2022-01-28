@@ -238,7 +238,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			notificationConn, err := grpc.Dial(getEnv("NOTIFICATION_SERVICE", ":9094"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Company Service: %v", err)
+				logrus.Errorln("Failed connect to Notification Service: %v", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer notificationConn.Close()
