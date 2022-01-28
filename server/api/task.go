@@ -180,7 +180,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		Error:   false,
 		Code:    200,
 		Message: "Task Updated",
-		Data:    &taskPb,
+		Data:    &taskPb,	
 	}
 
 	if sendTask {

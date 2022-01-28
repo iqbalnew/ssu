@@ -60,7 +60,6 @@ func grpcServerCmd() cli.Command {
 			port := c.Int("port")
 
 			startDBConnection()
-			initOtherServicesConn()
 
 			go func() {
 				if err := grpcServer(port); err != nil {
@@ -144,7 +143,6 @@ func grpcGatewayServerCmd() cli.Command {
 			rpcPort, httpPort, grpcEndpoint := c.Int("port1"), c.Int("port2"), c.String("grpc-endpoint")
 
 			startDBConnection()
-			initOtherServicesConn()
 
 			go func() {
 				if err := grpcServer(rpcPort); err != nil {
