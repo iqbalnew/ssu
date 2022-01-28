@@ -7,6 +7,7 @@ import (
 
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/announcement_pb"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/company_pb"
+	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/notification_pb"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
 	"github.com/sirupsen/logrus"
@@ -180,7 +181,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		Error:   false,
 		Code:    200,
 		Message: "Task Updated",
-		Data:    &taskPb,	
+		Data:    &taskPb,
 	}
 
 	if sendTask {
@@ -226,6 +227,28 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data)
 
 			res, err := companyClient.CreateCompanyGroup(ctx, &data)
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
+
+		case "Notification":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			notificationConn, err := grpc.Dial(getEnv("NOTIFICATION_SERVICE", ":9094"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Company Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer notificationConn.Close()
+
+			companyClient := notification_pb.NewApiServiceClient(notificationConn)
+
+			data := notification_pb.CreateNotificationRequest{}
+			json.Unmarshal([]byte(task.Data), &data)
+
+			res, err := companyClient.CreateNotification(ctx, &data)
 			if err != nil {
 				return nil, err
 			}
