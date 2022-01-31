@@ -11,8 +11,8 @@ import (
 	"gorm.io/gorm"
 
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/db"
-	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
-	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
+	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/jwt"
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 
 	"github.com/sirupsen/logrus"
 )

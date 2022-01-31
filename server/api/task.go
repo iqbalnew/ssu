@@ -6,11 +6,11 @@ import (
 	"os"
 	"strings"
 
-	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/announcement_pb"
-	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/company_pb"
-	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/notification_pb"
+	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
+	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
+	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
 
-	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

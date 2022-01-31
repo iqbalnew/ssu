@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 
-	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 )
 
 func migrationStart() {

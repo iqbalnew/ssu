@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 
-	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

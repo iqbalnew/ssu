@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
+	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/jwt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

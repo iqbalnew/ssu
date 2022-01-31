@@ -45,3 +45,7 @@ protoc --proto_path=./proto ./proto/task.gorm_db.proto \
     --proto_path=./proto/libs \
     --plugin=$(go env GOPATH)/bin/protoc-gen-gorm \
     --gorm_out=./server
+
+if [ -d "./server/pb" ] ; then
+    mv -v ./server/pb ./server/lib/server
+fi

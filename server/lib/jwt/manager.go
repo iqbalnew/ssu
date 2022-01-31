@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 

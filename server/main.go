@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"net"
 
-	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/api"
 

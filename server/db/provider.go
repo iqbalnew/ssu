@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 
-	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/pb"
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"gorm.io/gorm"
 )
 
