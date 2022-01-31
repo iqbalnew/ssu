@@ -23,6 +23,7 @@ require (
 
 require (
 	github.com/golang/protobuf v1.5.2
+	github.com/streadway/amqp v1.0.0
 	gorm.io/driver/postgres v1.2.3
 )
 
