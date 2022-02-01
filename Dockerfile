@@ -24,7 +24,15 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -v -ldflags "-X main.version=$(BUILD_VE
 
 FROM $BASE_IMAGE
 
+ENV http_proxy 'http://172.18.104.20:1707'
+ENV https_proxy 'http://172.18.104.20:1707'
+
 # RUN install_packages ca-certificates
+
+RUN install_packages curl
+
+ENV http_proxy=
+ENV https_proxy=
 
 WORKDIR /usr/app
 
