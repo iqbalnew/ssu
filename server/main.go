@@ -24,6 +24,7 @@ import (
 )
 
 const defaultPort = 9090
+const serviceName = "Task"
 
 var s *grpc.Server
 
@@ -176,6 +177,7 @@ func grpcGatewayServerCmd() cli.Command {
 
 func grpcServer(port int) error {
 	// RPC
+	logrus.Printf("Starting %s Service ................", serviceName)
 	logrus.Printf("Starting RPC server on port %d...", port)
 	list, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
