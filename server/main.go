@@ -21,6 +21,9 @@ import (
 
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
+
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
 const defaultPort = 9090
@@ -192,6 +195,7 @@ func grpcServer(port int) error {
 
 	s = grpc.NewServer(unaryInterceptorOpt, streamInterceptorOpt)
 	pb.RegisterTaskServiceServer(s, apiServer)
+	grpc_health_v1.RegisterHealthServer(s, health.NewServer())
 
 	return s.Serve(list)
 }
