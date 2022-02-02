@@ -23,6 +23,8 @@ type Config struct {
 	JWTDuration string `config:"JWT_DURATION"`
 	Dsn         string `config:"DB_DSN"`
 
+	AmqpURI string `config:"AMQP_URI`
+
 	AnnouncementService string `config:"ANNOUNCEMENT_SERVICE"`
 	// AccountService      string `config:"ACCOUNT_SERVICE"`
 	// CompanyService      string `config:"COMPANY_SERVICE"`
@@ -43,6 +45,7 @@ func initConfig() {
 		JWTSecret:           getEnv("JWT_SECRET", "secret"),
 		JWTDuration:         getEnv("JWT_DURATION", "48h"),
 		Dsn:                 getEnv("DB_DSN", ""),
+		AmqpURI:             getEnv("AMQP_URI", ""),
 		AnnouncementService: getEnv("ANNOUNCEMENT_SERVICE", ":9091"),
 		// AccountService:      os.Getenv("ACCOUNT_SERVICE"),
 		// CompanyService:      os.Getenv("COMPANY_SERVICE"),

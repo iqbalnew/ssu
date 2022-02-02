@@ -19,6 +19,11 @@ import (
 
 const TaskServicePath string = "/task.service.v1.TaskService/"
 
+type dataPublish struct {
+	DataType string
+	Data     string
+}
+
 // Server represents the server implementation of the SW API.
 type Server struct {
 	provider         *db.GormProvider

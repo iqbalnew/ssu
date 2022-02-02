@@ -6,7 +6,10 @@ import (
 	"os"
 	"strings"
 
-	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
+	"github.com/ThreeDotsLabs/watermill"
+	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
+	"github.com/ThreeDotsLabs/watermill/message"
+
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
 
@@ -191,30 +194,55 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if sendTask {
-		switch updatedTask.Type {
+		switch task.Type {
 		case "Announcement":
-			var opts []grpc.DialOption
-			opts = append(opts, grpc.WithInsecure())
+			data := &dataPublish{
+				DataType: "create-task",
+				Data:     task.Data,
+			}
 
-			announcementConn, err := grpc.Dial(getEnv("ANNOUNCEMENT_SERVICE", ":9091"), opts...)
+			out, err := json.Marshal(data)
 			if err != nil {
-				logrus.Errorln("Failed connect to Announcement Service: %v", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
+				panic(err)
 			}
-			defer announcementConn.Close()
 
-			announcementClient := announcement_pb.NewApiServiceClient(announcementConn)
+			amqpConfig := amqp.NewDurableQueueConfig(getEnv("AMQP_URI", "amqp://user:bitnami@localhost:5672"))
 
-			data := announcement_pb.Announcement{}
-			json.Unmarshal([]byte(task.Data), &data)
-			send := &announcement_pb.CreateAnnouncementRequest{
-				Data: &data,
-			}
-			res, err := announcementClient.CreateAnnouncement(ctx, send)
+			publisher, err := amqp.NewPublisher(amqpConfig, watermill.NewStdLogger(false, false))
 			if err != nil {
-				return nil, err
+				logrus.Errorf("Failed to create publisher: %s", err)
+				return nil, status.Errorf(codes.Internal, "Failed to create publisher: %s", err)
 			}
-			logrus.Println(res)
+
+			msg := message.NewMessage(watermill.NewUUID(), out)
+
+			if err := publisher.Publish("announcement.topic", msg); err != nil {
+				logrus.Errorf("Failed to publish: %s", err)
+				return nil, status.Errorf(codes.Internal, "Failed to publish: %s", err)
+			}
+
+			// var opts []grpc.DialOption
+			// opts = append(opts, grpc.WithInsecure())
+
+			// announcementConn, err := grpc.Dial(getEnv("ANNOUNCEMENT_SERVICE", ":9091"), opts...)
+			// if err != nil {
+			// 	logrus.Errorln("Failed connect to Announcement Service: %v", err)
+			// 	return nil, status.Errorf(codes.Internal, "Internal Error")
+			// }
+			// defer announcementConn.Close()
+
+			// announcementClient := announcement_pb.NewApiServiceClient(announcementConn)
+
+			// data := announcement_pb.Announcement{}
+			// json.Unmarshal([]byte(task.Data), &data)
+			// send := &announcement_pb.CreateAnnouncementRequest{
+			// 	Data: &data,
+			// }
+			// res, err := announcementClient.CreateAnnouncement(ctx, send)
+			// if err != nil {
+			// 	return nil, err
+			// }
+			// logrus.Println(res)
 
 		case "Company":
 			var opts []grpc.DialOption
