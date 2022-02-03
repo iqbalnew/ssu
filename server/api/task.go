@@ -6,10 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ThreeDotsLabs/watermill"
-	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
-	"github.com/ThreeDotsLabs/watermill/message"
-
+	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
+	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
 
@@ -159,7 +157,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		} else {
 			if currentStep >= 3 {
 				if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" {
-					if currentStep == 4 {
+					if currentStep == 3 {
 						sendTask = true
 						task.Status = 3
 					} else {
@@ -196,53 +194,52 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if sendTask {
 		switch task.Type {
 		case "Announcement":
-			data := &dataPublish{
-				DataType: "create-task",
-				Data:     task.Data,
-			}
+			// data := &dataPublish{
+			// 	DataType: "create-task",
+			// 	Data:     task.Data,
+			// }
 
-			out, err := json.Marshal(data)
-			if err != nil {
-				panic(err)
-			}
-
-			amqpConfig := amqp.NewDurableQueueConfig(getEnv("AMQP_URI", "amqp://user:bitnami@localhost:5672"))
-
-			publisher, err := amqp.NewPublisher(amqpConfig, watermill.NewStdLogger(false, false))
-			if err != nil {
-				logrus.Errorf("Failed to create publisher: %s", err)
-				return nil, status.Errorf(codes.Internal, "Failed to create publisher: %s", err)
-			}
-
-			msg := message.NewMessage(watermill.NewUUID(), out)
-
-			if err := publisher.Publish("announcement.topic", msg); err != nil {
-				logrus.Errorf("Failed to publish: %s", err)
-				return nil, status.Errorf(codes.Internal, "Failed to publish: %s", err)
-			}
-
-			// var opts []grpc.DialOption
-			// opts = append(opts, grpc.WithInsecure())
-
-			// announcementConn, err := grpc.Dial(getEnv("ANNOUNCEMENT_SERVICE", ":9091"), opts...)
+			// out, err := json.Marshal(data)
 			// if err != nil {
-			// 	logrus.Errorln("Failed connect to Announcement Service: %v", err)
-			// 	return nil, status.Errorf(codes.Internal, "Internal Error")
+			// 	panic(err)
 			// }
-			// defer announcementConn.Close()
 
-			// announcementClient := announcement_pb.NewApiServiceClient(announcementConn)
+			// amqpConfig := amqp.NewDurableQueueConfig(getEnv("AMQP_URI", "amqp://user:bitnami@localhost:5672"))
 
-			// data := announcement_pb.Announcement{}
-			// json.Unmarshal([]byte(task.Data), &data)
-			// send := &announcement_pb.CreateAnnouncementRequest{
-			// 	Data: &data,
-			// }
-			// res, err := announcementClient.CreateAnnouncement(ctx, send)
+			// publisher, err := amqp.NewPublisher(amqpConfig, watermill.NewStdLogger(false, false))
 			// if err != nil {
-			// 	return nil, err
+			// 	logrus.Errorf("Failed to create publisher: %s", err)
+			// 	return nil, status.Errorf(codes.Internal, "Failed to create publisher: %s", err)
 			// }
-			// logrus.Println(res)
+
+			// msg := message.NewMessage(watermill.NewUUID(), out)
+
+			// if err := publisher.Publish("announcement.topic", msg); err != nil {
+			// 	logrus.Errorf("Failed to publish: %s", err)
+			// 	return nil, status.Errorf(codes.Internal, "Failed to publish: %s", err)
+			// }
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			announcementConn, err := grpc.Dial(getEnv("ANNOUNCEMENT_SERVICE", ":9091"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Announcement Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer announcementConn.Close()
+
+			announcementClient := announcement_pb.NewApiServiceClient(announcementConn)
+
+			data := announcement_pb.Announcement{}
+			json.Unmarshal([]byte(task.Data), &data)
+			send := &announcement_pb.CreateAnnouncementRequest{
+				Data: &data,
+			}
+			res, err := announcementClient.CreateAnnouncement(ctx, send)
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
 
 		case "Company":
 			var opts []grpc.DialOption
@@ -261,6 +258,56 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data)
 
 			res, err := companyClient.CreateCompanyGroup(ctx, &data)
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
+
+		case "Account":
+			// data := &dataPublish{
+			// 	DataType: "create-account",
+			// 	Data:     task.Data,
+			// }
+
+			// out, err := json.Marshal(data)
+			// if err != nil {
+			// 	panic(err)
+			// }
+
+			// amqpConfig := amqp.NewDurableQueueConfig(getEnv("AMQP_URI", "amqp://user:bitnami@localhost:5672"))
+
+			// publisher, err := amqp.NewPublisher(amqpConfig, watermill.NewStdLogger(false, false))
+			// if err != nil {
+			// 	logrus.Errorf("Failed to create publisher: %s", err)
+			// 	return nil, status.Errorf(codes.Internal, "Failed to create publisher: %s", err)
+			// }
+
+			// msg := message.NewMessage(watermill.NewUUID(), out)
+
+			// if err := publisher.Publish("account.topic", msg); err != nil {
+			// 	logrus.Errorf("Failed to publish: %s", err)
+			// 	return nil, status.Errorf(codes.Internal, "Failed to publish: %s", err)
+			// }
+
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9093"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Company Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer accountConn.Close()
+
+			companyClient := account_pb.NewApiServiceClient(accountConn)
+
+			data := account_pb.CreateAccountRequest{}
+			account := account_pb.Account{}
+			json.Unmarshal([]byte(task.Data), &account)
+
+			data.Data = &account
+
+			res, err := companyClient.CreateAccount(ctx, &data)
 			if err != nil {
 				return nil, err
 			}
