@@ -66,19 +66,57 @@ message ListTaskResponse {
     repeated Task data = 4;
 }
 
-message GraphRequest {
-    statuses status = 1;
+message GraphStatusRequest {
+    enum Status{
+        All = 0;
+        Pending = 1;
+        Draft = 2;
+        Returned = 3;
+        Approved = 4;
+        Rejected = 5;
+    }
+    
+    Status status = 1;
+    string service = 2;
 }
 
-message Graph {
-    statuses step = 1;
+message GraphStatus {
+    GraphStatusRequest.Status status = 1;
     string type = 2;
     uint64 total = 3;
 }
 
-message GraphResponse {
+message GraphStatusResponse {
     bool error = 1;
     uint32 code = 2;
     string message = 3;
-    repeated Graph data = 4;
+    repeated GraphStatus data = 4;
+}
+
+message GraphStepRequest {
+    enum Steps{
+        All = 0;
+        Maker = 1;
+        Checker = 2;
+        Signer = 3;
+        Releaser = 4;
+    }
+
+    Steps step = 1;
+    string service = 2;
+    bool isIncludeApprove = 3;
+    bool isIncludeReject = 4;
+}
+
+message GraphStep {
+    GraphStepRequest.Steps step = 1;
+    string type = 2;
+    uint64 total = 3;
+}
+
+message GraphStepResponse {
+    bool error = 1;
+    uint32 code = 2;
+    string message = 3;
+    repeated GraphStep data = 4;
 }

@@ -31,9 +31,15 @@ service TaskService {
         };
     };
 
-    rpc GetTaskGraph(GraphRequest) returns (GraphResponse) {
+    rpc GetTaskGraphStatus(GraphStatusRequest) returns (GraphStatusResponse) {
         option (google.api.http) = {
-            get: "/api/task/graph"
+            get: "/api/task/graph/status"
+        };
+    };
+
+    rpc GetTaskGraphStep(GraphStepRequest) returns (GraphStepResponse) {
+        option (google.api.http) = {
+            get: "/api/task/graph/steps"
         };
     };
 

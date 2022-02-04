@@ -13,13 +13,70 @@ import (
 )
 
 type GraphResult struct {
-	Step  uint32
+	Name  uint32
 	Type  string
 	Total uint64
 }
 
-func (p *GormProvider) GetGraph(ctx context.Context, stat uint32) (result []*GraphResult, err error) {
-	if err = p.db_main.Model(&pb.TaskORM{}).Select("step, type, count(*) as total").Where(fmt.Sprintf("status = %v", stat)).Group("step, type").Find(&result).Error; err != nil {
+func (p *GormProvider) GetGraphStep(ctx context.Context, service string, step uint, isIncludeApprove bool, isIncludeReject bool) (result []*GraphResult, err error) {
+	selectOpt := fmt.Sprintf("step as name, type, count(*) as total")
+	query := p.db_main.Model(&pb.TaskORM{}).Select(selectOpt)
+	whereOpt := ""
+	if service != "" {
+		whereOpt = fmt.Sprintf("type = '%v'", service)
+	}
+	if !isIncludeApprove {
+		if whereOpt != "" {
+			whereOpt = whereOpt + " AND "
+		}
+		whereOpt = whereOpt + "status != 3"
+	}
+	if !isIncludeReject {
+		if whereOpt != "" {
+			whereOpt = whereOpt + " AND "
+		}
+		whereOpt = whereOpt + "status != 4"
+	}
+	if step < 10 {
+		if whereOpt != "" {
+			whereOpt = whereOpt + " AND "
+		}
+		whereOpt = fmt.Sprintf("%v step = %v", whereOpt, step)
+	}
+	if whereOpt != "" {
+		query = query.Where(whereOpt)
+	}
+
+	query = query.Group("step, type")
+
+	if err = query.Find(&result).Error; err != nil {
+		logrus.Errorln(err)
+		return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+	}
+	return result, nil
+}
+
+func (p *GormProvider) GetGraphStatus(ctx context.Context, service string, stat uint) (result []*GraphResult, err error) {
+
+	selectOpt := fmt.Sprintf("status as name, type, count(*) as total")
+	query := p.db_main.Model(&pb.TaskORM{}).Select(selectOpt)
+	whereOpt := ""
+	if service != "" {
+		whereOpt = fmt.Sprintf("type = '%v'", service)
+	}
+	if stat < 10 {
+		if whereOpt != "" {
+			whereOpt = whereOpt + " AND "
+		}
+		whereOpt = fmt.Sprintf("%v status = %v", whereOpt, stat)
+	}
+	if whereOpt != "" {
+		query = query.Where(whereOpt)
+	}
+
+	query = query.Group("status, type")
+
+	if err = query.Find(&result).Error; err != nil {
 		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 	}

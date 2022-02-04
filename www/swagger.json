@@ -29,7 +29,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -121,20 +121,20 @@
         ]
       }
     },
-    "/api/task/graph": {
+    "/api/task/graph/status": {
       "get": {
-        "operationId": "TaskService_GetTaskGraph",
+        "operationId": "TaskService_GetTaskGraphStatus",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1GraphResponse"
+              "$ref": "#/definitions/v1GraphStatusResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -145,13 +145,76 @@
             "required": false,
             "type": "string",
             "enum": [
+              "All",
               "Pending",
               "Draft",
               "Returned",
               "Approved",
               "Rejected"
             ],
-            "default": "Pending"
+            "default": "All"
+          },
+          {
+            "name": "service",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TaskService"
+        ]
+      }
+    },
+    "/api/task/graph/steps": {
+      "get": {
+        "operationId": "TaskService_GetTaskGraphStep",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GraphStepResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "step",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "All",
+              "Maker",
+              "Checker",
+              "Signer",
+              "Releaser"
+            ],
+            "default": "All"
+          },
+          {
+            "name": "service",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "isIncludeApprove",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "isIncludeReject",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -172,7 +235,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -194,7 +257,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -227,16 +290,18 @@
     }
   },
   "definitions": {
-    "protobufAny": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": {}
+    "GraphStepRequestSteps": {
+      "type": "string",
+      "enum": [
+        "All",
+        "Maker",
+        "Checker",
+        "Signer",
+        "Releaser"
+      ],
+      "default": "All"
     },
-    "rpcStatus": {
+    "googlerpcStatus": {
       "type": "object",
       "properties": {
         "code": {
@@ -254,11 +319,20 @@
         }
       }
     },
-    "v1Graph": {
+    "protobufAny": {
       "type": "object",
       "properties": {
-        "step": {
-          "$ref": "#/definitions/v1statuses"
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "v1GraphStatus": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/v1GraphStatusRequestStatus"
         },
         "type": {
           "type": "string"
@@ -269,7 +343,19 @@
         }
       }
     },
-    "v1GraphResponse": {
+    "v1GraphStatusRequestStatus": {
+      "type": "string",
+      "enum": [
+        "All",
+        "Pending",
+        "Draft",
+        "Returned",
+        "Approved",
+        "Rejected"
+      ],
+      "default": "All"
+    },
+    "v1GraphStatusResponse": {
       "type": "object",
       "properties": {
         "error": {
@@ -285,7 +371,43 @@
         "data": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/v1Graph"
+            "$ref": "#/definitions/v1GraphStatus"
+          }
+        }
+      }
+    },
+    "v1GraphStep": {
+      "type": "object",
+      "properties": {
+        "step": {
+          "$ref": "#/definitions/GraphStepRequestSteps"
+        },
+        "type": {
+          "type": "string"
+        },
+        "total": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "v1GraphStepResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1GraphStep"
           }
         }
       }

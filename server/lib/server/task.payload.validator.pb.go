@@ -76,13 +76,29 @@ func (this *ListTaskResponse) Validate() error {
 	}
 	return nil
 }
-func (this *GraphRequest) Validate() error {
+func (this *GraphStatusRequest) Validate() error {
 	return nil
 }
-func (this *Graph) Validate() error {
+func (this *GraphStatus) Validate() error {
 	return nil
 }
-func (this *GraphResponse) Validate() error {
+func (this *GraphStatusResponse) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *GraphStepRequest) Validate() error {
+	return nil
+}
+func (this *GraphStep) Validate() error {
+	return nil
+}
+func (this *GraphStepResponse) Validate() error {
 	for _, item := range this.Data {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {

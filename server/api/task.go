@@ -65,18 +65,53 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 }
 
-func (s *Server) GetTaskGraph(ctx context.Context, req *pb.GraphRequest) (*pb.GraphResponse, error) {
-	data, err := s.provider.GetGraph(ctx, uint32(req.Status))
+func (s *Server) GetTaskGraphStatus(ctx context.Context, req *pb.GraphStatusRequest) (*pb.GraphStatusResponse, error) {
+	stat := req.Status.Number()
+	if stat == 0 {
+		stat = 10
+	} else {
+		stat--
+	}
+	data, err := s.provider.GetGraphStatus(ctx, req.Service, uint(stat))
 	if err != nil {
 		return nil, err
 	}
-	res := &pb.GraphResponse{}
+	res := &pb.GraphStatusResponse{}
 	res.Code = 200
 	res.Error = false
 	res.Message = "Graph Data"
 	for _, v := range data {
-		val := &pb.Graph{
-			Step:  pb.Statuses(v.Step),
+		val := &pb.GraphStatus{
+			Status: pb.GraphStatusRequest_Status(v.Name + 1),
+			Type:   v.Type,
+			Total:  v.Total,
+		}
+
+		res.Data = append(res.Data, val)
+	}
+
+	return res, nil
+}
+
+func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest) (*pb.GraphStepResponse, error) {
+	step := req.Step.Number()
+	if step == 0 {
+		step = 10
+	} else {
+		step--
+	}
+
+	data, err := s.provider.GetGraphStep(ctx, req.Service, uint(step), req.IsIncludeApprove, req.IsIncludeReject)
+	if err != nil {
+		return nil, err
+	}
+	res := &pb.GraphStepResponse{}
+	res.Code = 200
+	res.Error = false
+	res.Message = "Graph Data"
+	for _, v := range data {
+		val := &pb.GraphStep{
+			Step:  pb.GraphStepRequest_Steps(v.Name + 1),
 			Type:  v.Type,
 			Total: v.Total,
 		}
