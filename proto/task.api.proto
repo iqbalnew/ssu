@@ -31,13 +31,13 @@ service TaskService {
         };
     };
 
-    rpc GetListAnnouncement(ListRequest) returns (ListTaskResponse);
-
-    rpc GetTaskGraph(ListRequest) returns (ListTaskResponse) {
+    rpc GetTaskGraph(GraphRequest) returns (GraphResponse) {
         option (google.api.http) = {
-            get: "/api/task/Graph"
+            get: "/api/task/graph"
         };
     };
+
+    rpc GetListAnnouncement(ListRequest) returns (ListTaskResponse);
     
 
 }

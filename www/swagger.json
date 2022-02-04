@@ -121,14 +121,14 @@
         ]
       }
     },
-    "/api/task/Graph": {
+    "/api/task/graph": {
       "get": {
         "operationId": "TaskService_GetTaskGraph",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ListTaskResponse"
+              "$ref": "#/definitions/v1GraphResponse"
             }
           },
           "default": {
@@ -138,6 +138,22 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Pending",
+              "Draft",
+              "Returned",
+              "Approved",
+              "Rejected"
+            ],
+            "default": "Pending"
+          }
+        ],
         "tags": [
           "TaskService"
         ]
@@ -234,6 +250,42 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1Graph": {
+      "type": "object",
+      "properties": {
+        "step": {
+          "$ref": "#/definitions/v1statuses"
+        },
+        "type": {
+          "type": "string"
+        },
+        "total": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "v1GraphResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Graph"
           }
         }
       }

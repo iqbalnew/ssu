@@ -47,5 +47,6 @@ protoc --proto_path=./proto ./proto/task.gorm_db.proto \
     --gorm_out=./server
 
 if [ -d "./server/pb" ] ; then
-    mv -v ./server/pb ./server/lib/server
+    rsync -a ./server/pb/ ./server/lib/server/
+    rm -rf ./server/pb
 fi

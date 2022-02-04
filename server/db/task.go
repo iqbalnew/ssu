@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/sirupsen/logrus"
@@ -10,6 +11,20 @@ import (
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 )
+
+type GraphResult struct {
+	Step  uint32
+	Type  string
+	Total uint64
+}
+
+func (p *GormProvider) GetGraph(ctx context.Context, stat uint32) (result []*GraphResult, err error) {
+	if err = p.db_main.Model(&pb.TaskORM{}).Select("step, type, count(*) as total").Where(fmt.Sprintf("status = %v", stat)).Group("step, type").Find(&result).Error; err != nil {
+		logrus.Errorln(err)
+		return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+	}
+	return result, nil
+}
 
 func (p *GormProvider) CreateTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {
 	if err := p.db_main.Create(&task).Error; err != nil {

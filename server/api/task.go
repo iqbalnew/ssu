@@ -65,6 +65,28 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 }
 
+func (s *Server) GetTaskGraph(ctx context.Context, req *pb.GraphRequest) (*pb.GraphResponse, error) {
+	data, err := s.provider.GetGraph(ctx, uint32(req.Status))
+	if err != nil {
+		return nil, err
+	}
+	res := &pb.GraphResponse{}
+	res.Code = 200
+	res.Error = false
+	res.Message = "Graph Data"
+	for _, v := range data {
+		val := &pb.Graph{
+			Step:  pb.Statuses(v.Step),
+			Type:  v.Type,
+			Total: v.Total,
+		}
+
+		res.Data = append(res.Data, val)
+	}
+
+	return res, nil
+}
+
 func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (*pb.ListTaskResponse, error) {
 	result := pb.ListTaskResponse{
 		Error:   false,

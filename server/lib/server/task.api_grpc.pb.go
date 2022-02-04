@@ -26,8 +26,8 @@ type TaskServiceClient interface {
 	SaveTaskWithData(ctx context.Context, in *SaveTaskRequest, opts ...grpc.CallOption) (*SaveTaskResponse, error)
 	SetTask(ctx context.Context, in *SetTaskRequest, opts ...grpc.CallOption) (*SetTaskResponse, error)
 	GetListTask(ctx context.Context, in *ListTaskRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
+	GetTaskGraph(ctx context.Context, in *GraphRequest, opts ...grpc.CallOption) (*GraphResponse, error)
 	GetListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
-	GetTaskGraph(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
 }
 
 type taskServiceClient struct {
@@ -74,18 +74,18 @@ func (c *taskServiceClient) GetListTask(ctx context.Context, in *ListTaskRequest
 	return out, nil
 }
 
-func (c *taskServiceClient) GetListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error) {
-	out := new(ListTaskResponse)
-	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetListAnnouncement", in, out, opts...)
+func (c *taskServiceClient) GetTaskGraph(ctx context.Context, in *GraphRequest, opts ...grpc.CallOption) (*GraphResponse, error) {
+	out := new(GraphResponse)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetTaskGraph", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *taskServiceClient) GetTaskGraph(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error) {
+func (c *taskServiceClient) GetListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error) {
 	out := new(ListTaskResponse)
-	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetTaskGraph", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetListAnnouncement", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -100,8 +100,8 @@ type TaskServiceServer interface {
 	SaveTaskWithData(context.Context, *SaveTaskRequest) (*SaveTaskResponse, error)
 	SetTask(context.Context, *SetTaskRequest) (*SetTaskResponse, error)
 	GetListTask(context.Context, *ListTaskRequest) (*ListTaskResponse, error)
+	GetTaskGraph(context.Context, *GraphRequest) (*GraphResponse, error)
 	GetListAnnouncement(context.Context, *ListRequest) (*ListTaskResponse, error)
-	GetTaskGraph(context.Context, *ListRequest) (*ListTaskResponse, error)
 	mustEmbedUnimplementedTaskServiceServer()
 }
 
@@ -121,11 +121,11 @@ func (UnimplementedTaskServiceServer) SetTask(context.Context, *SetTaskRequest) 
 func (UnimplementedTaskServiceServer) GetListTask(context.Context, *ListTaskRequest) (*ListTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListTask not implemented")
 }
+func (UnimplementedTaskServiceServer) GetTaskGraph(context.Context, *GraphRequest) (*GraphResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTaskGraph not implemented")
+}
 func (UnimplementedTaskServiceServer) GetListAnnouncement(context.Context, *ListRequest) (*ListTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListAnnouncement not implemented")
-}
-func (UnimplementedTaskServiceServer) GetTaskGraph(context.Context, *ListRequest) (*ListTaskResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTaskGraph not implemented")
 }
 func (UnimplementedTaskServiceServer) mustEmbedUnimplementedTaskServiceServer() {}
 
@@ -212,6 +212,24 @@ func _TaskService_GetListTask_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskService_GetTaskGraph_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GraphRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GetTaskGraph(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/GetTaskGraph",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GetTaskGraph(ctx, req.(*GraphRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TaskService_GetListAnnouncement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListRequest)
 	if err := dec(in); err != nil {
@@ -226,24 +244,6 @@ func _TaskService_GetListAnnouncement_Handler(srv interface{}, ctx context.Conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TaskServiceServer).GetListAnnouncement(ctx, req.(*ListRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _TaskService_GetTaskGraph_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TaskServiceServer).GetTaskGraph(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/task.service.v1.TaskService/GetTaskGraph",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TaskServiceServer).GetTaskGraph(ctx, req.(*ListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -272,12 +272,12 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TaskService_GetListTask_Handler,
 		},
 		{
-			MethodName: "GetListAnnouncement",
-			Handler:    _TaskService_GetListAnnouncement_Handler,
-		},
-		{
 			MethodName: "GetTaskGraph",
 			Handler:    _TaskService_GetTaskGraph_Handler,
+		},
+		{
+			MethodName: "GetListAnnouncement",
+			Handler:    _TaskService_GetListAnnouncement_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -65,3 +65,20 @@ message ListTaskResponse {
     string message = 3;
     repeated Task data = 4;
 }
+
+message GraphRequest {
+    statuses status = 1;
+}
+
+message Graph {
+    statuses step = 1;
+    string type = 2;
+    uint64 total = 3;
+}
+
+message GraphResponse {
+    bool error = 1;
+    uint32 code = 2;
+    string message = 3;
+    repeated Graph data = 4;
+}

@@ -153,9 +153,20 @@ func local_request_TaskService_GetListTask_0(ctx context.Context, marshaler runt
 
 }
 
+var (
+	filter_TaskService_GetTaskGraph_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+)
+
 func request_TaskService_GetTaskGraph_0(ctx context.Context, marshaler runtime.Marshaler, client TaskServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListRequest
+	var protoReq GraphRequest
 	var metadata runtime.ServerMetadata
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_TaskService_GetTaskGraph_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	msg, err := client.GetTaskGraph(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -163,8 +174,15 @@ func request_TaskService_GetTaskGraph_0(ctx context.Context, marshaler runtime.M
 }
 
 func local_request_TaskService_GetTaskGraph_0(ctx context.Context, marshaler runtime.Marshaler, server TaskServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListRequest
+	var protoReq GraphRequest
 	var metadata runtime.ServerMetadata
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_TaskService_GetTaskGraph_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	msg, err := server.GetTaskGraph(ctx, &protoReq)
 	return msg, metadata, err
@@ -252,7 +270,7 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetTaskGraph", runtime.WithHTTPPathPattern("/api/task/Graph"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetTaskGraph", runtime.WithHTTPPathPattern("/api/task/graph"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -374,7 +392,7 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetTaskGraph", runtime.WithHTTPPathPattern("/api/task/Graph"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetTaskGraph", runtime.WithHTTPPathPattern("/api/task/graph"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -400,7 +418,7 @@ var (
 
 	pattern_TaskService_GetListTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "task"}, ""))
 
-	pattern_TaskService_GetTaskGraph_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "task", "Graph"}, ""))
+	pattern_TaskService_GetTaskGraph_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "task", "graph"}, ""))
 )
 
 var (

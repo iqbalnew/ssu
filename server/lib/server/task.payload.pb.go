@@ -649,6 +649,187 @@ func (x *ListTaskResponse) GetData() []*Task {
 	return nil
 }
 
+type GraphRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Status Statuses `protobuf:"varint,1,opt,name=status,proto3,enum=task.service.v1.Statuses" json:"status,omitempty"`
+}
+
+func (x *GraphRequest) Reset() {
+	*x = GraphRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_task_payload_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GraphRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GraphRequest) ProtoMessage() {}
+
+func (x *GraphRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_task_payload_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GraphRequest.ProtoReflect.Descriptor instead.
+func (*GraphRequest) Descriptor() ([]byte, []int) {
+	return file_task_payload_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *GraphRequest) GetStatus() Statuses {
+	if x != nil {
+		return x.Status
+	}
+	return Statuses_Pending
+}
+
+type Graph struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Step  Statuses `protobuf:"varint,1,opt,name=step,proto3,enum=task.service.v1.Statuses" json:"step,omitempty"`
+	Type  string   `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	Total uint64   `protobuf:"varint,3,opt,name=total,proto3" json:"total,omitempty"`
+}
+
+func (x *Graph) Reset() {
+	*x = Graph{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_task_payload_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Graph) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Graph) ProtoMessage() {}
+
+func (x *Graph) ProtoReflect() protoreflect.Message {
+	mi := &file_task_payload_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Graph.ProtoReflect.Descriptor instead.
+func (*Graph) Descriptor() ([]byte, []int) {
+	return file_task_payload_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *Graph) GetStep() Statuses {
+	if x != nil {
+		return x.Step
+	}
+	return Statuses_Pending
+}
+
+func (x *Graph) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *Graph) GetTotal() uint64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type GraphResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Error   bool     `protobuf:"varint,1,opt,name=error,proto3" json:"error,omitempty"`
+	Code    uint32   `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
+	Message string   `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Data    []*Graph `protobuf:"bytes,4,rep,name=data,proto3" json:"data,omitempty"`
+}
+
+func (x *GraphResponse) Reset() {
+	*x = GraphResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_task_payload_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GraphResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GraphResponse) ProtoMessage() {}
+
+func (x *GraphResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_task_payload_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GraphResponse.ProtoReflect.Descriptor instead.
+func (*GraphResponse) Descriptor() ([]byte, []int) {
+	return file_task_payload_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *GraphResponse) GetError() bool {
+	if x != nil {
+		return x.Error
+	}
+	return false
+}
+
+func (x *GraphResponse) GetCode() uint32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *GraphResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *GraphResponse) GetData() []*Graph {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
 var File_task_payload_proto protoreflect.FileDescriptor
 
 var file_task_payload_proto_rawDesc = []byte{
@@ -713,8 +894,27 @@ var file_task_payload_proto_rawDesc = []byte{
 	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
 	0x12, 0x29, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x15,
 	0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31,
-	0x2e, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x42, 0x06, 0x5a, 0x04, 0x2e,
-	0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x2e, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x41, 0x0a, 0x0c, 0x47,
+	0x72, 0x61, 0x70, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x31, 0x0a, 0x06, 0x73,
+	0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x19, 0x2e, 0x74, 0x61,
+	0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x73, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x65, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x22, 0x60,
+	0x0a, 0x05, 0x47, 0x72, 0x61, 0x70, 0x68, 0x12, 0x2d, 0x0a, 0x04, 0x73, 0x74, 0x65, 0x70, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x19, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x65, 0x73,
+	0x52, 0x04, 0x73, 0x74, 0x65, 0x70, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f,
+	0x74, 0x61, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x74, 0x6f, 0x74, 0x61, 0x6c,
+	0x22, 0x7f, 0x0a, 0x0d, 0x47, 0x72, 0x61, 0x70, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x6d,
+	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65,
+	0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x2a, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x52, 0x04, 0x64, 0x61, 0x74,
+	0x61, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -729,7 +929,7 @@ func file_task_payload_proto_rawDescGZIP() []byte {
 	return file_task_payload_proto_rawDescData
 }
 
-var file_task_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_task_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_task_payload_proto_goTypes = []interface{}{
 	(*LoginRequest)(nil),        // 0: task.service.v1.LoginRequest
 	(*LoginResponse)(nil),       // 1: task.service.v1.LoginResponse
@@ -743,18 +943,25 @@ var file_task_payload_proto_goTypes = []interface{}{
 	(*ListRequest)(nil),         // 9: task.service.v1.ListRequest
 	(*ListTaskRequest)(nil),     // 10: task.service.v1.ListTaskRequest
 	(*ListTaskResponse)(nil),    // 11: task.service.v1.ListTaskResponse
-	(*Task)(nil),                // 12: task.service.v1.Task
+	(*GraphRequest)(nil),        // 12: task.service.v1.GraphRequest
+	(*Graph)(nil),               // 13: task.service.v1.Graph
+	(*GraphResponse)(nil),       // 14: task.service.v1.GraphResponse
+	(*Task)(nil),                // 15: task.service.v1.Task
+	(Statuses)(0),               // 16: task.service.v1.statuses
 }
 var file_task_payload_proto_depIdxs = []int32{
-	12, // 0: task.service.v1.SaveTaskRequest.task:type_name -> task.service.v1.Task
-	12, // 1: task.service.v1.SetTaskResponse.data:type_name -> task.service.v1.Task
-	12, // 2: task.service.v1.ListTaskRequest.task:type_name -> task.service.v1.Task
-	12, // 3: task.service.v1.ListTaskResponse.data:type_name -> task.service.v1.Task
-	4,  // [4:4] is the sub-list for method output_type
-	4,  // [4:4] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	15, // 0: task.service.v1.SaveTaskRequest.task:type_name -> task.service.v1.Task
+	15, // 1: task.service.v1.SetTaskResponse.data:type_name -> task.service.v1.Task
+	15, // 2: task.service.v1.ListTaskRequest.task:type_name -> task.service.v1.Task
+	15, // 3: task.service.v1.ListTaskResponse.data:type_name -> task.service.v1.Task
+	16, // 4: task.service.v1.GraphRequest.status:type_name -> task.service.v1.statuses
+	16, // 5: task.service.v1.Graph.step:type_name -> task.service.v1.statuses
+	13, // 6: task.service.v1.GraphResponse.data:type_name -> task.service.v1.Graph
+	7,  // [7:7] is the sub-list for method output_type
+	7,  // [7:7] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_task_payload_proto_init() }
@@ -908,6 +1115,42 @@ func file_task_payload_proto_init() {
 				return nil
 			}
 		}
+		file_task_payload_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GraphRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_task_payload_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Graph); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_task_payload_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GraphResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -915,7 +1158,7 @@ func file_task_payload_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_task_payload_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
