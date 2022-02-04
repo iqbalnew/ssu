@@ -188,6 +188,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if err != nil {
 		return nil, err
 	}
+	if req.Comment != "" {
+		task.Comment = req.Comment
+	}
 
 	sendTask := false
 	currentStep := task.Step

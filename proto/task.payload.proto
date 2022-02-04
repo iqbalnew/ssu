@@ -46,6 +46,7 @@ message SetTaskRequest {
                (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
                  description: "Action: 'approve', 'rework', 'reject'"
                }];
+    string comment = 3;
 }
 
 message SetTaskResponse {

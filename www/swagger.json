@@ -302,6 +302,9 @@
                 "action": {
                   "type": "string",
                   "description": "Action: 'approve', 'rework', 'reject'"
+                },
+                "comment": {
+                  "type": "string"
                 }
               }
             }
