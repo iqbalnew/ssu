@@ -29,7 +29,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 	result := pb.ListTaskResponse{
 		Error:   false,
 		Code:    200,
-		Message: "Announcement List",
+		Message: "Task List",
 		Data:    []*pb.Task{},
 	}
 
