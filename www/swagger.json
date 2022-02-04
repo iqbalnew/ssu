@@ -206,6 +206,21 @@
             "default": "All"
           },
           {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "All",
+              "Pending",
+              "Draft",
+              "Returned",
+              "Approved",
+              "Rejected"
+            ],
+            "default": "All"
+          },
+          {
             "name": "service",
             "description": "Service: 'Announcement', 'Company', 'Account', 'Notification'",
             "in": "query",

@@ -104,7 +104,14 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 		step--
 	}
 
-	data, err := s.provider.GetGraphStep(ctx, req.Service, uint(step), req.IsIncludeApprove, req.IsIncludeReject)
+	stat := req.Status.Number()
+	if stat == 0 {
+		stat = 10
+	} else {
+		stat--
+	}
+
+	data, err := s.provider.GetGraphStep(ctx, req.Service, uint(step), uint(stat), req.IsIncludeApprove, req.IsIncludeReject)
 	if err != nil {
 		return nil, err
 	}

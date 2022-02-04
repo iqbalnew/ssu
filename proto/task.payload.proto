@@ -110,12 +110,13 @@ message GraphStepRequest {
     }
 
     Steps step = 1;
-    string service = 2 [
+    GraphStatusRequest.Status status = 2;
+    string service = 3 [
         (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
           description: "Service: 'Announcement', 'Company', 'Account', 'Notification'"
         }];
-    bool isIncludeApprove = 3;
-    bool isIncludeReject = 4;
+    bool isIncludeApprove = 4;
+    bool isIncludeReject = 5;
 }
 
 message GraphStep {

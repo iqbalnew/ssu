@@ -18,7 +18,7 @@ type GraphResult struct {
 	Total uint64
 }
 
-func (p *GormProvider) GetGraphStep(ctx context.Context, service string, step uint, isIncludeApprove bool, isIncludeReject bool) (result []*GraphResult, err error) {
+func (p *GormProvider) GetGraphStep(ctx context.Context, service string, step uint, stat uint, isIncludeApprove bool, isIncludeReject bool) (result []*GraphResult, err error) {
 	selectOpt := fmt.Sprintf("step as name, type, count(*) as total")
 	query := p.db_main.Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := ""
@@ -36,6 +36,12 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, service string, step ui
 			whereOpt = whereOpt + " AND "
 		}
 		whereOpt = whereOpt + "status != 4"
+	}
+	if stat < 10 {
+		if whereOpt != "" {
+			whereOpt = whereOpt + " AND "
+		}
+		whereOpt = fmt.Sprintf("%v status = %v", whereOpt, stat)
 	}
 	if step < 10 {
 		if whereOpt != "" {
