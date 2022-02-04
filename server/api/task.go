@@ -21,7 +21,10 @@ import (
 func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
 	// logrus.Println("After %v", pb)
 
-	dataorm, _ := req.Task.ToORM(ctx)
+	var dataorm pb.TaskORM
+	if req.Task != nil {
+		dataorm, _ = req.Task.ToORM(ctx)
+	}
 
 	result := pb.ListTaskResponse{
 		Error:   false,

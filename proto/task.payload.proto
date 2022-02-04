@@ -40,8 +40,12 @@ message SaveTaskResponse {
 }
 
 message SetTaskRequest {
+
     uint64 taskID = 1;
-    string action = 2;
+    string action = 2 [
+               (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+                 description: "Action: 'approve', 'rework', 'reject'"
+               }];
 }
 
 message SetTaskResponse {
@@ -77,7 +81,10 @@ message GraphStatusRequest {
     }
     
     Status status = 1;
-    string service = 2;
+    string service = 2 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          description: "Service: 'Announcement', 'Company', 'Account', 'Notification'"
+        }];
 }
 
 message GraphStatus {
@@ -103,7 +110,10 @@ message GraphStepRequest {
     }
 
     Steps step = 1;
-    string service = 2;
+    string service = 2 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          description: "Service: 'Announcement', 'Company', 'Account', 'Notification'"
+        }];
     bool isIncludeApprove = 3;
     bool isIncludeReject = 4;
 }

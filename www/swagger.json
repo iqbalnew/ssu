@@ -102,6 +102,12 @@
             "type": "string"
           },
           {
+            "name": "task.comment",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "task.createdAt",
             "in": "query",
             "required": false,
@@ -156,6 +162,7 @@
           },
           {
             "name": "service",
+            "description": "Service: 'Announcement', 'Company', 'Account', 'Notification'",
             "in": "query",
             "required": false,
             "type": "string"
@@ -200,6 +207,7 @@
           },
           {
             "name": "service",
+            "description": "Service: 'Announcement', 'Company', 'Account', 'Notification'",
             "in": "query",
             "required": false,
             "type": "string"
@@ -277,7 +285,8 @@
               "type": "object",
               "properties": {
                 "action": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Action: 'approve', 'rework', 'reject'"
                 }
               }
             }
@@ -496,6 +505,9 @@
           "format": "uint64"
         },
         "data": {
+          "type": "string"
+        },
+        "comment": {
           "type": "string"
         },
         "createdAt": {
