@@ -399,6 +399,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data := notification_pb.CreateNotificationRequest{}
 			json.Unmarshal([]byte(task.Data), &data)
 
+			data.TaskID = task.TaskID
 			res, err := companyClient.CreateNotification(ctx, &data)
 			if err != nil {
 				return nil, err
