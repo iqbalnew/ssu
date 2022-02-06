@@ -23,13 +23,20 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ApiServiceClient interface {
 	HealthCheck(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
-	GenerateTokenByRole(ctx context.Context, in *TempGenToken, opts ...grpc.CallOption) (*JWTTokenResponse, error)
 	GetNotifications(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListNotificationResponse, error)
 	CreateNotification(ctx context.Context, in *CreateNotificationRequest, opts ...grpc.CallOption) (*CommonResponse, error)
 	CreateNotificationTask(ctx context.Context, in *CreateNotificationTaskRequest, opts ...grpc.CallOption) (*CreateNotificationTaskResponse, error)
 	GetNotificationTask(ctx context.Context, in *GetNotificationTaskRequest, opts ...grpc.CallOption) (*GetNotificationTaskResponse, error)
 	GetNotificationModules(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListNotificationModuleResponse, error)
 	GetModuleEvents(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListModuleEventResponse, error)
+	BRIGateSendEmail(ctx context.Context, in *SendEmailRequest, opts ...grpc.CallOption) (*BRIGateNotificationResponse, error)
+	BRIGateSendSms(ctx context.Context, in *SendSmsRequest, opts ...grpc.CallOption) (*BRIGateNotificationResponse, error)
+	SaveNotificationModule(ctx context.Context, in *NotificationModule, opts ...grpc.CallOption) (*NotificationModule, error)
+	SaveModuleEvent(ctx context.Context, in *ModuleEvent, opts ...grpc.CallOption) (*ModuleEvent, error)
+	ListEventVariable(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListVariableResponse, error)
+	SaveEventVariable(ctx context.Context, in *EventVariable, opts ...grpc.CallOption) (*EventVariable, error)
+	ListClient(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListClientResponse, error)
+	SaveClient(ctx context.Context, in *TempClient, opts ...grpc.CallOption) (*TempClient, error)
 }
 
 type apiServiceClient struct {
@@ -43,15 +50,6 @@ func NewApiServiceClient(cc grpc.ClientConnInterface) ApiServiceClient {
 func (c *apiServiceClient) HealthCheck(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
 	out := new(HealthCheckResponse)
 	err := c.cc.Invoke(ctx, "/notification.service.v1.ApiService/HealthCheck", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) GenerateTokenByRole(ctx context.Context, in *TempGenToken, opts ...grpc.CallOption) (*JWTTokenResponse, error) {
-	out := new(JWTTokenResponse)
-	err := c.cc.Invoke(ctx, "/notification.service.v1.ApiService/GenerateTokenByRole", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -112,18 +110,97 @@ func (c *apiServiceClient) GetModuleEvents(ctx context.Context, in *ListRequest,
 	return out, nil
 }
 
+func (c *apiServiceClient) BRIGateSendEmail(ctx context.Context, in *SendEmailRequest, opts ...grpc.CallOption) (*BRIGateNotificationResponse, error) {
+	out := new(BRIGateNotificationResponse)
+	err := c.cc.Invoke(ctx, "/notification.service.v1.ApiService/BRIGateSendEmail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) BRIGateSendSms(ctx context.Context, in *SendSmsRequest, opts ...grpc.CallOption) (*BRIGateNotificationResponse, error) {
+	out := new(BRIGateNotificationResponse)
+	err := c.cc.Invoke(ctx, "/notification.service.v1.ApiService/BRIGateSendSms", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) SaveNotificationModule(ctx context.Context, in *NotificationModule, opts ...grpc.CallOption) (*NotificationModule, error) {
+	out := new(NotificationModule)
+	err := c.cc.Invoke(ctx, "/notification.service.v1.ApiService/SaveNotificationModule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) SaveModuleEvent(ctx context.Context, in *ModuleEvent, opts ...grpc.CallOption) (*ModuleEvent, error) {
+	out := new(ModuleEvent)
+	err := c.cc.Invoke(ctx, "/notification.service.v1.ApiService/SaveModuleEvent", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ListEventVariable(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListVariableResponse, error) {
+	out := new(ListVariableResponse)
+	err := c.cc.Invoke(ctx, "/notification.service.v1.ApiService/ListEventVariable", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) SaveEventVariable(ctx context.Context, in *EventVariable, opts ...grpc.CallOption) (*EventVariable, error) {
+	out := new(EventVariable)
+	err := c.cc.Invoke(ctx, "/notification.service.v1.ApiService/SaveEventVariable", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ListClient(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListClientResponse, error) {
+	out := new(ListClientResponse)
+	err := c.cc.Invoke(ctx, "/notification.service.v1.ApiService/ListClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) SaveClient(ctx context.Context, in *TempClient, opts ...grpc.CallOption) (*TempClient, error) {
+	out := new(TempClient)
+	err := c.cc.Invoke(ctx, "/notification.service.v1.ApiService/SaveClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
 type ApiServiceServer interface {
 	HealthCheck(context.Context, *Empty) (*HealthCheckResponse, error)
-	GenerateTokenByRole(context.Context, *TempGenToken) (*JWTTokenResponse, error)
 	GetNotifications(context.Context, *ListRequest) (*ListNotificationResponse, error)
 	CreateNotification(context.Context, *CreateNotificationRequest) (*CommonResponse, error)
 	CreateNotificationTask(context.Context, *CreateNotificationTaskRequest) (*CreateNotificationTaskResponse, error)
 	GetNotificationTask(context.Context, *GetNotificationTaskRequest) (*GetNotificationTaskResponse, error)
 	GetNotificationModules(context.Context, *ListRequest) (*ListNotificationModuleResponse, error)
 	GetModuleEvents(context.Context, *ListRequest) (*ListModuleEventResponse, error)
+	BRIGateSendEmail(context.Context, *SendEmailRequest) (*BRIGateNotificationResponse, error)
+	BRIGateSendSms(context.Context, *SendSmsRequest) (*BRIGateNotificationResponse, error)
+	SaveNotificationModule(context.Context, *NotificationModule) (*NotificationModule, error)
+	SaveModuleEvent(context.Context, *ModuleEvent) (*ModuleEvent, error)
+	ListEventVariable(context.Context, *Empty) (*ListVariableResponse, error)
+	SaveEventVariable(context.Context, *EventVariable) (*EventVariable, error)
+	ListClient(context.Context, *Empty) (*ListClientResponse, error)
+	SaveClient(context.Context, *TempClient) (*TempClient, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -133,9 +210,6 @@ type UnimplementedApiServiceServer struct {
 
 func (UnimplementedApiServiceServer) HealthCheck(context.Context, *Empty) (*HealthCheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
-}
-func (UnimplementedApiServiceServer) GenerateTokenByRole(context.Context, *TempGenToken) (*JWTTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateTokenByRole not implemented")
 }
 func (UnimplementedApiServiceServer) GetNotifications(context.Context, *ListRequest) (*ListNotificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNotifications not implemented")
@@ -154,6 +228,30 @@ func (UnimplementedApiServiceServer) GetNotificationModules(context.Context, *Li
 }
 func (UnimplementedApiServiceServer) GetModuleEvents(context.Context, *ListRequest) (*ListModuleEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetModuleEvents not implemented")
+}
+func (UnimplementedApiServiceServer) BRIGateSendEmail(context.Context, *SendEmailRequest) (*BRIGateNotificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BRIGateSendEmail not implemented")
+}
+func (UnimplementedApiServiceServer) BRIGateSendSms(context.Context, *SendSmsRequest) (*BRIGateNotificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BRIGateSendSms not implemented")
+}
+func (UnimplementedApiServiceServer) SaveNotificationModule(context.Context, *NotificationModule) (*NotificationModule, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveNotificationModule not implemented")
+}
+func (UnimplementedApiServiceServer) SaveModuleEvent(context.Context, *ModuleEvent) (*ModuleEvent, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveModuleEvent not implemented")
+}
+func (UnimplementedApiServiceServer) ListEventVariable(context.Context, *Empty) (*ListVariableResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListEventVariable not implemented")
+}
+func (UnimplementedApiServiceServer) SaveEventVariable(context.Context, *EventVariable) (*EventVariable, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveEventVariable not implemented")
+}
+func (UnimplementedApiServiceServer) ListClient(context.Context, *Empty) (*ListClientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListClient not implemented")
+}
+func (UnimplementedApiServiceServer) SaveClient(context.Context, *TempClient) (*TempClient, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveClient not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -182,24 +280,6 @@ func _ApiService_HealthCheck_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).HealthCheck(ctx, req.(*Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_GenerateTokenByRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TempGenToken)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).GenerateTokenByRole(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/notification.service.v1.ApiService/GenerateTokenByRole",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GenerateTokenByRole(ctx, req.(*TempGenToken))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -312,6 +392,150 @@ func _ApiService_GetModuleEvents_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_BRIGateSendEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).BRIGateSendEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification.service.v1.ApiService/BRIGateSendEmail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).BRIGateSendEmail(ctx, req.(*SendEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_BRIGateSendSms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendSmsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).BRIGateSendSms(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification.service.v1.ApiService/BRIGateSendSms",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).BRIGateSendSms(ctx, req.(*SendSmsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_SaveNotificationModule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NotificationModule)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).SaveNotificationModule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification.service.v1.ApiService/SaveNotificationModule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).SaveNotificationModule(ctx, req.(*NotificationModule))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_SaveModuleEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ModuleEvent)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).SaveModuleEvent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification.service.v1.ApiService/SaveModuleEvent",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).SaveModuleEvent(ctx, req.(*ModuleEvent))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ListEventVariable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListEventVariable(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification.service.v1.ApiService/ListEventVariable",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListEventVariable(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_SaveEventVariable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EventVariable)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).SaveEventVariable(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification.service.v1.ApiService/SaveEventVariable",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).SaveEventVariable(ctx, req.(*EventVariable))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ListClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification.service.v1.ApiService/ListClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListClient(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_SaveClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TempClient)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).SaveClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification.service.v1.ApiService/SaveClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).SaveClient(ctx, req.(*TempClient))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -322,10 +546,6 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HealthCheck",
 			Handler:    _ApiService_HealthCheck_Handler,
-		},
-		{
-			MethodName: "GenerateTokenByRole",
-			Handler:    _ApiService_GenerateTokenByRole_Handler,
 		},
 		{
 			MethodName: "GetNotifications",
@@ -350,6 +570,38 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetModuleEvents",
 			Handler:    _ApiService_GetModuleEvents_Handler,
+		},
+		{
+			MethodName: "BRIGateSendEmail",
+			Handler:    _ApiService_BRIGateSendEmail_Handler,
+		},
+		{
+			MethodName: "BRIGateSendSms",
+			Handler:    _ApiService_BRIGateSendSms_Handler,
+		},
+		{
+			MethodName: "SaveNotificationModule",
+			Handler:    _ApiService_SaveNotificationModule_Handler,
+		},
+		{
+			MethodName: "SaveModuleEvent",
+			Handler:    _ApiService_SaveModuleEvent_Handler,
+		},
+		{
+			MethodName: "ListEventVariable",
+			Handler:    _ApiService_ListEventVariable_Handler,
+		},
+		{
+			MethodName: "SaveEventVariable",
+			Handler:    _ApiService_SaveEventVariable_Handler,
+		},
+		{
+			MethodName: "ListClient",
+			Handler:    _ApiService_ListClient_Handler,
+		},
+		{
+			MethodName: "SaveClient",
+			Handler:    _ApiService_SaveClient_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

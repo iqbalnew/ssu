@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "github.com/infobloxopen/protoc-gen-gorm/options"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	_ "github.com/infobloxopen/protoc-gen-gorm/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -148,6 +148,14 @@ func (this *Notification) Validate() error {
 	}
 	return nil
 }
+func (this *NotificationTask) Validate() error {
+	if this.Notification != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Notification); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Notification", err)
+		}
+	}
+	return nil
+}
 func (this *NotificationSMS) Validate() error {
 	if this.Notification != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Notification); err != nil {
@@ -192,5 +200,8 @@ func (this *NotificationEmail) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
 		}
 	}
+	return nil
+}
+func (this *TempClient) Validate() error {
 	return nil
 }

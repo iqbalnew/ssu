@@ -9,6 +9,7 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "github.com/mwitkow/go-proto-validators"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -106,7 +107,7 @@ func (this *CreateNotificationTask) Validate() error {
 	}
 	return nil
 }
-func (this *NotificationTask) Validate() error {
+func (this *NotificationTaskDto) Validate() error {
 	return nil
 }
 func (this *ListNotificationModuleResponse) Validate() error {
@@ -125,6 +126,26 @@ func (this *ListModuleEventResponse) Validate() error {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
 				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 			}
+		}
+	}
+	return nil
+}
+func (this *TempGenToken) Validate() error {
+	return nil
+}
+func (this *SendEmailRequest) Validate() error {
+	return nil
+}
+func (this *SendSmsRequest) Validate() error {
+	return nil
+}
+func (this *BRIGateResponseDetail) Validate() error {
+	return nil
+}
+func (this *BRIGateNotificationResponse) Validate() error {
+	if this.Detail != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Detail); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Detail", err)
 		}
 	}
 	return nil
