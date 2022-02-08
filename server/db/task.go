@@ -37,13 +37,13 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, service string, step ui
 		}
 		whereOpt = whereOpt + "status != 4"
 	}
-	if stat < 10 {
+	if stat > 0 {
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
 		}
 		whereOpt = fmt.Sprintf("%v status = %v", whereOpt, stat)
 	}
-	if step < 10 {
+	if step > 0 {
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
 		}
@@ -70,7 +70,7 @@ func (p *GormProvider) GetGraphStatus(ctx context.Context, service string, stat 
 	if service != "" {
 		whereOpt = fmt.Sprintf("type = '%v'", service)
 	}
-	if stat < 10 {
+	if stat > 0 {
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
 		}
