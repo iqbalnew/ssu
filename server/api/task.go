@@ -143,13 +143,13 @@ func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
 	task, _ := req.Task.ToORM(ctx)
 	var err error
-	req.Task.Step = 2
-	req.Task.Status = 1
+	task.Step = 2
+	task.Status = 1
 	if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu" {
-		req.Task.Step = 3
+		task.Step = 3
 	}
 	if req.TaskID > 0 {
-		req.Task.Step = 1
+		task.Step = 1
 		task.TaskID = req.TaskID
 		task.Status = 1
 		_, err = s.provider.UpdateTask(ctx, &task)
