@@ -150,6 +150,8 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	}
 	if req.TaskID > 0 {
 		req.Task.Step = 1
+		task.TaskID = req.TaskID
+		task.Status = 1
 		_, err = s.provider.UpdateTask(ctx, &task)
 	} else {
 		_, err = s.provider.CreateTask(ctx, &task)
@@ -286,7 +288,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data := announcement_pb.Announcement{}
 			json.Unmarshal([]byte(task.Data), &data)
 			send := &announcement_pb.CreateAnnouncementRequest{
-				Data: &data,
+				TaskID: task.TaskID,
+				Data:   &data,
 			}
 			res, err := announcementClient.CreateAnnouncement(ctx, send)
 			if err != nil {
