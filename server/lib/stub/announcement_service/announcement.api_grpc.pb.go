@@ -23,12 +23,12 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ApiServiceClient interface {
 	HealthCheck(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
-	GenerateTokenByRole(ctx context.Context, in *TempGenToken, opts ...grpc.CallOption) (*JWTTokenResponse, error)
-	ListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementResponse, error)
+	ListAnnouncementTask(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListAnnouncementResponse, error)
 	CreateAnnouncement(ctx context.Context, in *CreateAnnouncementRequest, opts ...grpc.CallOption) (*CreateAnnouncementResponse, error)
-	CreateAnnouncementTask(ctx context.Context, in *CreateAnnouncementRequest, opts ...grpc.CallOption) (*CreateAnnouncementResponse, error)
-	ListAnnouncementActive(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementActiveResponse, error)
-	ListEventType(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListEventTypeResponse, error)
+	CreateAnnouncementTask(ctx context.Context, in *CreateAnnouncementTaskRequest, opts ...grpc.CallOption) (*CreateAnnouncementResponse, error)
+	GetAnnouncementTaskByID(ctx context.Context, in *GetByTaskID, opts ...grpc.CallOption) (*ListAnnouncementResponse, error)
+	ListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementActiveResponse, error)
+	ListEventType(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListEventTypeResponse, error)
 }
 
 type apiServiceClient struct {
@@ -48,18 +48,9 @@ func (c *apiServiceClient) HealthCheck(ctx context.Context, in *Empty, opts ...g
 	return out, nil
 }
 
-func (c *apiServiceClient) GenerateTokenByRole(ctx context.Context, in *TempGenToken, opts ...grpc.CallOption) (*JWTTokenResponse, error) {
-	out := new(JWTTokenResponse)
-	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/GenerateTokenByRole", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) ListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementResponse, error) {
+func (c *apiServiceClient) ListAnnouncementTask(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListAnnouncementResponse, error) {
 	out := new(ListAnnouncementResponse)
-	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/ListAnnouncement", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/ListAnnouncementTask", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +66,7 @@ func (c *apiServiceClient) CreateAnnouncement(ctx context.Context, in *CreateAnn
 	return out, nil
 }
 
-func (c *apiServiceClient) CreateAnnouncementTask(ctx context.Context, in *CreateAnnouncementRequest, opts ...grpc.CallOption) (*CreateAnnouncementResponse, error) {
+func (c *apiServiceClient) CreateAnnouncementTask(ctx context.Context, in *CreateAnnouncementTaskRequest, opts ...grpc.CallOption) (*CreateAnnouncementResponse, error) {
 	out := new(CreateAnnouncementResponse)
 	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/CreateAnnouncementTask", in, out, opts...)
 	if err != nil {
@@ -84,16 +75,25 @@ func (c *apiServiceClient) CreateAnnouncementTask(ctx context.Context, in *Creat
 	return out, nil
 }
 
-func (c *apiServiceClient) ListAnnouncementActive(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementActiveResponse, error) {
-	out := new(ListAnnouncementActiveResponse)
-	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/ListAnnouncementActive", in, out, opts...)
+func (c *apiServiceClient) GetAnnouncementTaskByID(ctx context.Context, in *GetByTaskID, opts ...grpc.CallOption) (*ListAnnouncementResponse, error) {
+	out := new(ListAnnouncementResponse)
+	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/GetAnnouncementTaskByID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *apiServiceClient) ListEventType(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListEventTypeResponse, error) {
+func (c *apiServiceClient) ListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListAnnouncementActiveResponse, error) {
+	out := new(ListAnnouncementActiveResponse)
+	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/ListAnnouncement", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ListEventType(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListEventTypeResponse, error) {
 	out := new(ListEventTypeResponse)
 	err := c.cc.Invoke(ctx, "/announcement.service.v1.ApiService/ListEventType", in, out, opts...)
 	if err != nil {
@@ -107,12 +107,12 @@ func (c *apiServiceClient) ListEventType(ctx context.Context, in *ListRequest, o
 // for forward compatibility
 type ApiServiceServer interface {
 	HealthCheck(context.Context, *Empty) (*HealthCheckResponse, error)
-	GenerateTokenByRole(context.Context, *TempGenToken) (*JWTTokenResponse, error)
-	ListAnnouncement(context.Context, *ListRequest) (*ListAnnouncementResponse, error)
+	ListAnnouncementTask(context.Context, *Empty) (*ListAnnouncementResponse, error)
 	CreateAnnouncement(context.Context, *CreateAnnouncementRequest) (*CreateAnnouncementResponse, error)
-	CreateAnnouncementTask(context.Context, *CreateAnnouncementRequest) (*CreateAnnouncementResponse, error)
-	ListAnnouncementActive(context.Context, *ListRequest) (*ListAnnouncementActiveResponse, error)
-	ListEventType(context.Context, *ListRequest) (*ListEventTypeResponse, error)
+	CreateAnnouncementTask(context.Context, *CreateAnnouncementTaskRequest) (*CreateAnnouncementResponse, error)
+	GetAnnouncementTaskByID(context.Context, *GetByTaskID) (*ListAnnouncementResponse, error)
+	ListAnnouncement(context.Context, *ListRequest) (*ListAnnouncementActiveResponse, error)
+	ListEventType(context.Context, *Empty) (*ListEventTypeResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -123,22 +123,22 @@ type UnimplementedApiServiceServer struct {
 func (UnimplementedApiServiceServer) HealthCheck(context.Context, *Empty) (*HealthCheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
 }
-func (UnimplementedApiServiceServer) GenerateTokenByRole(context.Context, *TempGenToken) (*JWTTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateTokenByRole not implemented")
-}
-func (UnimplementedApiServiceServer) ListAnnouncement(context.Context, *ListRequest) (*ListAnnouncementResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListAnnouncement not implemented")
+func (UnimplementedApiServiceServer) ListAnnouncementTask(context.Context, *Empty) (*ListAnnouncementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAnnouncementTask not implemented")
 }
 func (UnimplementedApiServiceServer) CreateAnnouncement(context.Context, *CreateAnnouncementRequest) (*CreateAnnouncementResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAnnouncement not implemented")
 }
-func (UnimplementedApiServiceServer) CreateAnnouncementTask(context.Context, *CreateAnnouncementRequest) (*CreateAnnouncementResponse, error) {
+func (UnimplementedApiServiceServer) CreateAnnouncementTask(context.Context, *CreateAnnouncementTaskRequest) (*CreateAnnouncementResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAnnouncementTask not implemented")
 }
-func (UnimplementedApiServiceServer) ListAnnouncementActive(context.Context, *ListRequest) (*ListAnnouncementActiveResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListAnnouncementActive not implemented")
+func (UnimplementedApiServiceServer) GetAnnouncementTaskByID(context.Context, *GetByTaskID) (*ListAnnouncementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAnnouncementTaskByID not implemented")
 }
-func (UnimplementedApiServiceServer) ListEventType(context.Context, *ListRequest) (*ListEventTypeResponse, error) {
+func (UnimplementedApiServiceServer) ListAnnouncement(context.Context, *ListRequest) (*ListAnnouncementActiveResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAnnouncement not implemented")
+}
+func (UnimplementedApiServiceServer) ListEventType(context.Context, *Empty) (*ListEventTypeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListEventType not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
@@ -172,38 +172,20 @@ func _ApiService_HealthCheck_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_GenerateTokenByRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TempGenToken)
+func _ApiService_ListAnnouncementTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).GenerateTokenByRole(ctx, in)
+		return srv.(ApiServiceServer).ListAnnouncementTask(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/announcement.service.v1.ApiService/GenerateTokenByRole",
+		FullMethod: "/announcement.service.v1.ApiService/ListAnnouncementTask",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GenerateTokenByRole(ctx, req.(*TempGenToken))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_ListAnnouncement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).ListAnnouncement(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/announcement.service.v1.ApiService/ListAnnouncement",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).ListAnnouncement(ctx, req.(*ListRequest))
+		return srv.(ApiServiceServer).ListAnnouncementTask(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -227,7 +209,7 @@ func _ApiService_CreateAnnouncement_Handler(srv interface{}, ctx context.Context
 }
 
 func _ApiService_CreateAnnouncementTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateAnnouncementRequest)
+	in := new(CreateAnnouncementTaskRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -239,31 +221,49 @@ func _ApiService_CreateAnnouncementTask_Handler(srv interface{}, ctx context.Con
 		FullMethod: "/announcement.service.v1.ApiService/CreateAnnouncementTask",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CreateAnnouncementTask(ctx, req.(*CreateAnnouncementRequest))
+		return srv.(ApiServiceServer).CreateAnnouncementTask(ctx, req.(*CreateAnnouncementTaskRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_ListAnnouncementActive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ApiService_GetAnnouncementTaskByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetByTaskID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetAnnouncementTaskByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/announcement.service.v1.ApiService/GetAnnouncementTaskByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetAnnouncementTaskByID(ctx, req.(*GetByTaskID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ListAnnouncement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).ListAnnouncementActive(ctx, in)
+		return srv.(ApiServiceServer).ListAnnouncement(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/announcement.service.v1.ApiService/ListAnnouncementActive",
+		FullMethod: "/announcement.service.v1.ApiService/ListAnnouncement",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).ListAnnouncementActive(ctx, req.(*ListRequest))
+		return srv.(ApiServiceServer).ListAnnouncement(ctx, req.(*ListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ApiService_ListEventType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRequest)
+	in := new(Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -275,7 +275,7 @@ func _ApiService_ListEventType_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/announcement.service.v1.ApiService/ListEventType",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).ListEventType(ctx, req.(*ListRequest))
+		return srv.(ApiServiceServer).ListEventType(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -292,12 +292,8 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_HealthCheck_Handler,
 		},
 		{
-			MethodName: "GenerateTokenByRole",
-			Handler:    _ApiService_GenerateTokenByRole_Handler,
-		},
-		{
-			MethodName: "ListAnnouncement",
-			Handler:    _ApiService_ListAnnouncement_Handler,
+			MethodName: "ListAnnouncementTask",
+			Handler:    _ApiService_ListAnnouncementTask_Handler,
 		},
 		{
 			MethodName: "CreateAnnouncement",
@@ -308,8 +304,12 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_CreateAnnouncementTask_Handler,
 		},
 		{
-			MethodName: "ListAnnouncementActive",
-			Handler:    _ApiService_ListAnnouncementActive_Handler,
+			MethodName: "GetAnnouncementTaskByID",
+			Handler:    _ApiService_GetAnnouncementTaskByID_Handler,
+		},
+		{
+			MethodName: "ListAnnouncement",
+			Handler:    _ApiService_ListAnnouncement_Handler,
 		},
 		{
 			MethodName: "ListEventType",

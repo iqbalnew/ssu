@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "github.com/mwitkow/go-proto-validators"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
@@ -35,9 +36,22 @@ func (this *JWTTokenResponse) Validate() error {
 	return nil
 }
 func (this *ListRequest) Validate() error {
+	if this.Announcement != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Announcement); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Announcement", err)
+		}
+	}
 	return nil
 }
-func (this *AnnouncementTask) Validate() error {
+func (this *ListEventTypeRequest) Validate() error {
+	if this.Announcement != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Announcement); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Announcement", err)
+		}
+	}
+	return nil
+}
+func (this *AnnouncementTaskResponse) Validate() error {
 	return nil
 }
 func (this *AnnouncementWithTask) Validate() error {
@@ -79,6 +93,17 @@ func (this *CreateAnnouncementRequest) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 		}
 	}
+	return nil
+}
+func (this *CreateAnnouncementTaskRequest) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *GetByTaskID) Validate() error {
 	return nil
 }
 func (this *CreateAnnouncementResponse) Validate() error {

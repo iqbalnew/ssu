@@ -68,6 +68,11 @@ func (this *Announcement) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("EventType", err)
 		}
 	}
+	if this.Task != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
+		}
+	}
 	return nil
 }
 func (this *AnnouncementEventType) Validate() error {
@@ -86,5 +91,8 @@ func (this *AnnouncementEventType) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
 		}
 	}
+	return nil
+}
+func (this *AnnouncementTask) Validate() error {
 	return nil
 }
