@@ -79,7 +79,7 @@ func (s *Server) GetTaskGraphStatus(ctx context.Context, req *pb.GraphStatusRequ
 	res.Message = "Graph Data"
 	for _, v := range data {
 		val := &pb.GraphStatus{
-			Status: pb.Statuses(v.Name + 1),
+			Status: pb.Statuses(v.Name),
 			Type:   v.Type,
 			Total:  v.Total,
 		}
@@ -104,7 +104,7 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 	res.Message = "Graph Data"
 	for _, v := range data {
 		val := &pb.GraphStep{
-			Step:  pb.Steps(v.Name + 1),
+			Step:  pb.Steps(v.Name),
 			Type:  v.Type,
 			Total: v.Total,
 		}
