@@ -64,17 +64,11 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 	// }
 
 	// return &result, nil
-	return nil, nil
 
 }
 
 func (s *Server) GetTaskGraphStatus(ctx context.Context, req *pb.GraphStatusRequest) (*pb.GraphStatusResponse, error) {
 	stat := req.Status.Number()
-	if stat == 0 {
-		stat = 10
-	} else {
-		stat--
-	}
 	data, err := s.provider.GetGraphStatus(ctx, req.Service, uint(stat))
 	if err != nil {
 		return nil, err
@@ -85,7 +79,7 @@ func (s *Server) GetTaskGraphStatus(ctx context.Context, req *pb.GraphStatusRequ
 	res.Message = "Graph Data"
 	for _, v := range data {
 		val := &pb.GraphStatus{
-			Status: pb.GraphStatusRequest_Status(v.Name + 1),
+			Status: pb.Statuses(v.Name + 1),
 			Type:   v.Type,
 			Total:  v.Total,
 		}
@@ -98,18 +92,7 @@ func (s *Server) GetTaskGraphStatus(ctx context.Context, req *pb.GraphStatusRequ
 
 func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest) (*pb.GraphStepResponse, error) {
 	step := req.Step.Number()
-	if step == 0 {
-		step = 10
-	} else {
-		step--
-	}
-
 	stat := req.Status.Number()
-	if stat == 0 {
-		stat = 10
-	} else {
-		stat--
-	}
 
 	data, err := s.provider.GetGraphStep(ctx, req.Service, uint(step), uint(stat), req.IsIncludeApprove, req.IsIncludeReject)
 	if err != nil {
@@ -121,7 +104,7 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 	res.Message = "Graph Data"
 	for _, v := range data {
 		val := &pb.GraphStep{
-			Step:  pb.GraphStepRequest_Steps(v.Name + 1),
+			Step:  pb.Steps(v.Name + 1),
 			Type:  v.Type,
 			Total: v.Total,
 		}
@@ -160,13 +143,13 @@ func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
 	task, _ := req.Task.ToORM(ctx)
 	var err error
-	req.Task.Step = 1
-	req.Task.Status = 0
+	req.Task.Step = 2
+	req.Task.Status = 1
 	if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu" {
-		req.Task.Step = 2
+		req.Task.Step = 3
 	}
 	if req.TaskID > 0 {
-		req.Task.Step = 0
+		req.Task.Step = 1
 		_, err = s.provider.UpdateTask(ctx, &task)
 	} else {
 		_, err = s.provider.CreateTask(ctx, &task)
@@ -197,12 +180,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	currentStatus := task.Status
 	switch strings.ToLower(req.Action) {
 	case "rework":
-		task.Status = 1
-		task.Step = 0
+		task.Status = 2
+		task.Step = 1
 	case "approve":
 
 		taskPb, _ := task.ToPB(ctx)
-		if currentStatus == 3 {
+		if currentStatus == 4 {
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
@@ -212,39 +195,39 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 		if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu" {
-			if currentStep == 0 {
-				task.Status = 0
-				task.Step = 2
-			}
-			if currentStep == 2 {
-				task.Status = 0
-				task.Step = 3
+			if currentStep == 1 {
+				task.Status = 1
+				task.Step = 4
 			}
 			if currentStep == 3 {
+				task.Status = 1
+				task.Step = 4
+			}
+			if currentStep == 4 {
 				sendTask = true
-				task.Status = 3
+				task.Status = 4
 			}
 		} else {
 			if currentStep >= 3 {
 				if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" {
-					if currentStep == 3 {
+					if currentStep == 4 {
 						sendTask = true
-						task.Status = 3
+						task.Status = 4
 					} else {
-						task.Status = 0
+						task.Status = 1
 						task.Step++
 					}
 				} else {
 					sendTask = true
-					task.Status = 3
+					task.Status = 4
 				}
 			} else {
-				task.Status = 0
+				task.Status = 1
 				task.Step++
 			}
 		}
 	case "reject":
-		task.Status = 4
+		task.Status = 5
 	}
 
 	updatedTask, err := s.provider.UpdateTask(ctx, task)

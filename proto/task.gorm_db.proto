@@ -25,18 +25,20 @@ message User {
 }
 
 enum statuses{
-    Pending = 0;
-    Draft = 1;
-    Returned = 2;
-    Approved = 3;
-    Rejected = 4;
+    NullStatus = 0;
+    Pending = 1;
+    Draft = 2;
+    Returned = 3;
+    Approved = 4;
+    Rejected = 5;
 }
 
 enum steps{
-    Maker = 0;
-    Checker = 1;
-    Signer = 2;
-    Releaser = 3;
+    NullStep = 0;
+    Maker = 1;
+    Checker = 2;
+    Signer = 3;
+    Releaser = 4;
 }
 
 message Task {
@@ -47,9 +49,9 @@ message Task {
     uint64 TaskID = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {type: INTEGER}, (gorm.field).tag = {primary_key: true not_null: true}];
     string type = 2 [(gorm.field).tag = { not_null: true}];
     
-    statuses status = 3 [(gorm.field).tag = { not_null: true}];
+    statuses status = 3 [(gorm.field).tag = { default: "1" not_null: true}];
 
-    steps step = 4 [(gorm.field).tag = { not_null: true}];
+    steps step = 4 [(gorm.field).tag = { default: "1" not_null: true}];
     
     uint64 createdByID = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {type: INTEGER}, (gorm.field).tag = { not_null: true}];
     uint64 lastApprovedByID = 6 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {type: INTEGER}];

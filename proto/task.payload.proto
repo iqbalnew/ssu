@@ -72,16 +72,8 @@ message ListTaskResponse {
 }
 
 message GraphStatusRequest {
-    enum Status{
-        All = 0;
-        Pending = 1;
-        Draft = 2;
-        Returned = 3;
-        Approved = 4;
-        Rejected = 5;
-    }
     
-    Status status = 1;
+    statuses status = 1;
     string service = 2 [
         (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
           description: "Service: 'Announcement', 'Company', 'Account', 'Notification'"
@@ -89,7 +81,7 @@ message GraphStatusRequest {
 }
 
 message GraphStatus {
-    GraphStatusRequest.Status status = 1;
+    statuses status = 1;
     string type = 2;
     uint64 total = 3;
 }
@@ -102,16 +94,8 @@ message GraphStatusResponse {
 }
 
 message GraphStepRequest {
-    enum Steps{
-        All = 0;
-        Maker = 1;
-        Checker = 2;
-        Signer = 3;
-        Releaser = 4;
-    }
-
-    Steps step = 1;
-    GraphStatusRequest.Status status = 2;
+    steps step = 1;
+    statuses status = 2;
     string service = 3 [
         (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
           description: "Service: 'Announcement', 'Company', 'Account', 'Notification'"
@@ -121,7 +105,7 @@ message GraphStepRequest {
 }
 
 message GraphStep {
-    GraphStepRequest.Steps step = 1;
+    steps step = 1;
     string type = 2;
     uint64 total = 3;
 }

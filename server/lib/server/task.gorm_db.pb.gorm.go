@@ -118,8 +118,8 @@ type TaskORM struct {
 	Data             string `gorm:"type:jsonb"`
 	LastApprovedByID uint64
 	LastRejectedByID uint64
-	Status           int32  `gorm:"not null"`
-	Step             int32  `gorm:"not null"`
+	Status           int32  `gorm:"default:1;not null"`
+	Step             int32  `gorm:"default:1;not null"`
 	TaskID           uint64 `gorm:"primary_key;not null"`
 	Type             string `gorm:"not null"`
 	UpdatedAt        *time.Time

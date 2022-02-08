@@ -29,7 +29,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -53,13 +53,14 @@
             "required": false,
             "type": "string",
             "enum": [
+              "NullStatus",
               "Pending",
               "Draft",
               "Returned",
               "Approved",
               "Rejected"
             ],
-            "default": "Pending"
+            "default": "NullStatus"
           },
           {
             "name": "task.step",
@@ -67,12 +68,13 @@
             "required": false,
             "type": "string",
             "enum": [
+              "NullStep",
               "Maker",
               "Checker",
               "Signer",
               "Releaser"
             ],
-            "default": "Maker"
+            "default": "NullStep"
           },
           {
             "name": "task.createdByID",
@@ -140,7 +142,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -151,14 +153,14 @@
             "required": false,
             "type": "string",
             "enum": [
-              "All",
+              "NullStatus",
               "Pending",
               "Draft",
               "Returned",
               "Approved",
               "Rejected"
             ],
-            "default": "All"
+            "default": "NullStatus"
           },
           {
             "name": "service",
@@ -186,7 +188,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -197,13 +199,13 @@
             "required": false,
             "type": "string",
             "enum": [
-              "All",
+              "NullStep",
               "Maker",
               "Checker",
               "Signer",
               "Releaser"
             ],
-            "default": "All"
+            "default": "NullStep"
           },
           {
             "name": "status",
@@ -211,14 +213,14 @@
             "required": false,
             "type": "string",
             "enum": [
-              "All",
+              "NullStatus",
               "Pending",
               "Draft",
               "Returned",
               "Approved",
               "Rejected"
             ],
-            "default": "All"
+            "default": "NullStatus"
           },
           {
             "name": "service",
@@ -258,7 +260,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -280,7 +282,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -317,18 +319,16 @@
     }
   },
   "definitions": {
-    "GraphStepRequestSteps": {
-      "type": "string",
-      "enum": [
-        "All",
-        "Maker",
-        "Checker",
-        "Signer",
-        "Releaser"
-      ],
-      "default": "All"
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
     },
-    "googlerpcStatus": {
+    "rpcStatus": {
       "type": "object",
       "properties": {
         "code": {
@@ -346,20 +346,11 @@
         }
       }
     },
-    "protobufAny": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": {}
-    },
     "v1GraphStatus": {
       "type": "object",
       "properties": {
         "status": {
-          "$ref": "#/definitions/v1GraphStatusRequestStatus"
+          "$ref": "#/definitions/v1statuses"
         },
         "type": {
           "type": "string"
@@ -369,18 +360,6 @@
           "format": "uint64"
         }
       }
-    },
-    "v1GraphStatusRequestStatus": {
-      "type": "string",
-      "enum": [
-        "All",
-        "Pending",
-        "Draft",
-        "Returned",
-        "Approved",
-        "Rejected"
-      ],
-      "default": "All"
     },
     "v1GraphStatusResponse": {
       "type": "object",
@@ -407,7 +386,7 @@
       "type": "object",
       "properties": {
         "step": {
-          "$ref": "#/definitions/GraphStepRequestSteps"
+          "$ref": "#/definitions/v1steps"
         },
         "type": {
           "type": "string"
@@ -541,23 +520,25 @@
     "v1statuses": {
       "type": "string",
       "enum": [
+        "NullStatus",
         "Pending",
         "Draft",
         "Returned",
         "Approved",
         "Rejected"
       ],
-      "default": "Pending"
+      "default": "NullStatus"
     },
     "v1steps": {
       "type": "string",
       "enum": [
+        "NullStep",
         "Maker",
         "Checker",
         "Signer",
         "Releaser"
       ],
-      "default": "Maker"
+      "default": "NullStep"
     }
   }
 }
