@@ -68,18 +68,23 @@ func ErrorsInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySer
 // LoggingInterceptor adds logging around every gRPC call. It includes the method name and timing information.
 // if the given handler raises an error, it also appends that to a key.
 func LoggingInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (out interface{}, err error) {
-	entry := logrus.WithField("method", info.FullMethod)
-	start := time.Now()
-	out, err = handler(ctx, req)
-	duration := time.Since(start)
+	if info.FullMethod == "/grpc.health.v1.Health/Check" {
+		out, err = handler(ctx, req)
 
-	if err != nil {
-		entry = entry.WithError(err)
+		return out, err
+	} else {
+		entry := logrus.WithField("method", info.FullMethod)
+		start := time.Now()
+		out, err = handler(ctx, req)
+		duration := time.Since(start)
+
+		if err != nil {
+			entry = entry.WithError(err)
+		}
+
+		entry.WithField("duration", duration.String()).Info("finished RPC")
+		return out, err
 	}
-
-	entry.WithField("duration", duration.String()).Info("finished RPC")
-
-	return out, err
 }
 
 // AuthenticationInterceptor validates a JWT token and appends the username to the
