@@ -10,7 +10,7 @@ import (
 
 func Search(v *pb.Search) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		if v == nil {
+		if v == nil || v.Value == "" || v.Columns == "" {
 			return db
 		}
 
@@ -42,7 +42,7 @@ func Search(v *pb.Search) func(db *gorm.DB) *gorm.DB {
 }
 
 func searchColumnsLoop(db *gorm.DB, columns []string, expresion string, value string) *gorm.DB {
-	for _, s := range columns {
+	for j, s := range columns {
 		if strings.Contains(s, "->") {
 			nested := strings.Split(s, "->")
 			s = ""
@@ -58,10 +58,11 @@ func searchColumnsLoop(db *gorm.DB, columns []string, expresion string, value st
 		} else {
 			s = fmt.Sprintf("\"%s\"", s)
 		}
-		db = db.Or(fmt.Sprintf("%s %s ?", s, expresion), value)
-	}
-	if len(columns) > 0 {
-		db.Where(db)
+		if j == 0 {
+			db = db.Where(fmt.Sprintf("%s %s ?", s, expresion), value)
+		} else {
+			db = db.Or(fmt.Sprintf("%s %s ?", s, expresion), value)
+		}
 	}
 	return db
 }
