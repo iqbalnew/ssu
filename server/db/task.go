@@ -131,14 +131,30 @@ func (p *GormProvider) GetListTask(ctx context.Context) (tasks []*pb.TaskORM, er
 	return tasks, nil
 }
 
-func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskORM) (tasks []*pb.TaskORM, err error) {
-	if err := p.db_main.Where(&task).Find(&tasks).Error; err != nil {
+func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskORM, pagination *pb.Pagination, sort *pb.Sort) (tasks []*pb.TaskORM, err error) {
+	res := p.db_main.Debug().Where(&task)
+	if pagination != nil {
+		p.PaginationQuery(res, *pagination)
+	}
+	if sort != nil {
+		p.SortQuery(res, *sort)
+	}
+	err = res.Find(&tasks).Error
+	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 	}
 	return tasks, nil
+}
+
+func (p *GormProvider) PaginationQuery(DB *gorm.DB, pagination pb.Pagination) *gorm.DB {
+	return DB.Limit(int(pagination.Limit)).Offset(int(pagination.Offset))
+}
+
+func (p *GormProvider) SortQuery(DB *gorm.DB, sort pb.Sort) *gorm.DB {
+	return DB.Order(sort.Column + " " + sort.Direction)
 }
 
 func (p *GormProvider) SaveTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {

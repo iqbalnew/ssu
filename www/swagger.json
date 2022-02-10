@@ -122,6 +122,32 @@
             "required": false,
             "type": "string",
             "format": "date-time"
+          },
+          {
+            "name": "pagination.limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pagination.offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "sort.column",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sort.direction",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -447,6 +473,19 @@
         }
       }
     },
+    "v1Pagination": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "v1SaveTaskResponse": {
       "type": "object",
       "properties": {
@@ -470,6 +509,17 @@
         },
         "data": {
           "$ref": "#/definitions/v1Task"
+        }
+      }
+    },
+    "v1Sort": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "type": "string"
+        },
+        "direction": {
+          "type": "string"
         }
       }
     },
