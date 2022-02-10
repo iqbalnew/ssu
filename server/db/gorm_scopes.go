@@ -56,7 +56,10 @@ func searchColumnsLoop(db *gorm.DB, columns []string, expresion string, value st
 				}
 			}
 		}
-		db = db.Where(fmt.Sprintf("%s %s ?", s, expresion), value)
+		db = db.Or(fmt.Sprintf("%s %s ?", s, expresion), value)
+	}
+	if len(columns) > 0 {
+		db.Where(db)
 	}
 	return db
 }
