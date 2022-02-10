@@ -55,6 +55,8 @@ func searchColumnsLoop(db *gorm.DB, columns []string, expresion string, value st
 					s = s + fmt.Sprintf("->'%s'", t)
 				}
 			}
+		} else {
+			s = fmt.Sprintf("\"%s\"", s)
 		}
 		db = db.Or(fmt.Sprintf("%s %s ?", s, expresion), value)
 	}
