@@ -64,6 +64,7 @@ message ListTaskRequest {
     Task task = 1;
     Pagination pagination = 2;
     Sort sort = 3;
+    Search search = 4;
 }
 
 message Pagination {
@@ -74,6 +75,11 @@ message Pagination {
 message Sort {
     string column = 1;
     string direction = 2;
+}
+
+message Search {
+    string value = 1;
+    string columns = 2;
 }
 
 message ListTaskResponse {

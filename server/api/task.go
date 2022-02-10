@@ -123,7 +123,7 @@ func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (
 		Data:    []*pb.Task{},
 	}
 
-	list, err := s.provider.GetListTaskWithFilter(ctx, &pb.TaskORM{Type: "Announcement"},nil,nil)
+	list, err := s.provider.GetListTaskWithFilter(ctx, &pb.TaskORM{Type: "Announcement"}, nil, nil)
 	if err != nil {
 		return nil, err
 	}

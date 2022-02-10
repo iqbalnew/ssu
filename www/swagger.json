@@ -148,6 +148,18 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "search.value",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "search.columns",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -491,6 +503,17 @@
       "properties": {
         "success": {
           "type": "boolean"
+        }
+      }
+    },
+    "v1Search": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "columns": {
+          "type": "string"
         }
       }
     },

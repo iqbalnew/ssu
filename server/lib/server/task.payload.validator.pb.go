@@ -74,12 +74,20 @@ func (this *ListTaskRequest) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Sort", err)
 		}
 	}
+	if this.Search != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Search); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Search", err)
+		}
+	}
 	return nil
 }
 func (this *Pagination) Validate() error {
 	return nil
 }
 func (this *Sort) Validate() error {
+	return nil
+}
+func (this *Search) Validate() error {
 	return nil
 }
 func (this *ListTaskResponse) Validate() error {

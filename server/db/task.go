@@ -121,8 +121,13 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context) (tasks []*pb.TaskORM, err error) {
-	if err := p.db_main.Find(&tasks).Error; err != nil {
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, search *pb.Search) (tasks []*pb.TaskORM, err error) {
+	query := p.db_main
+	if filter != nil {
+		query = query.Where(&filter)
+	}
+	query = query.Scopes(Search(search))
+	if err := query.Find(&tasks).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -132,12 +137,12 @@ func (p *GormProvider) GetListTask(ctx context.Context) (tasks []*pb.TaskORM, er
 }
 
 func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskORM, pagination *pb.Pagination, sort *pb.Sort) (tasks []*pb.TaskORM, err error) {
-	res := p.db_main.Debug().Where(&task)
+	res := p.db_main.Where(&task)
 	if pagination != nil {
-		p.PaginationQuery(res, *pagination)
+		res = PaginationQuery(res, *pagination)
 	}
 	if sort != nil {
-		p.SortQuery(res, *sort)
+		res = SortQuery(res, *sort)
 	}
 	err = res.Find(&tasks).Error
 	if err != nil {
@@ -147,14 +152,6 @@ func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskO
 		}
 	}
 	return tasks, nil
-}
-
-func (p *GormProvider) PaginationQuery(DB *gorm.DB, pagination pb.Pagination) *gorm.DB {
-	return DB.Limit(int(pagination.Limit)).Offset(int(pagination.Offset))
-}
-
-func (p *GormProvider) SortQuery(DB *gorm.DB, sort pb.Sort) *gorm.DB {
-	return DB.Order(sort.Column + " " + sort.Direction)
 }
 
 func (p *GormProvider) SaveTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {
