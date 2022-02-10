@@ -33,7 +33,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		Data:    []*pb.Task{},
 	}
 
-	list, err := s.provider.GetListTaskWithFilter(ctx, &dataorm)
+	list, err := s.provider.GetListTask(ctx, &dataorm, req.Search)
 	if err != nil {
 		return nil, err
 	}
