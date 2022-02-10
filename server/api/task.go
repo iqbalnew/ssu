@@ -33,7 +33,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		Data:    []*pb.Task{},
 	}
 
-	list, err := s.provider.GetListTask(ctx, &dataorm, req.Search)
+	list, err := s.provider.GetListTaskWithFilter(ctx, &dataorm, req.Pagination, req.Sort)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (
 		Data:    []*pb.Task{},
 	}
 
-	list, err := s.provider.GetListTaskWithFilter(ctx, &pb.TaskORM{Type: "Announcement"})
+	list, err := s.provider.GetListTaskWithFilter(ctx, &pb.TaskORM{Type: "Announcement"}, nil, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -8,6 +8,24 @@ import (
 	"gorm.io/gorm"
 )
 
+func Paginate(pagination *pb.Pagination) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if pagination != nil {
+			return db.Limit(int(pagination.Limit)).Offset(int(pagination.Offset))
+		}
+		return db
+	}
+}
+
+func Sort(sort *pb.Sort) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if sort != nil {
+			return db.Order(sort.Column + " " + sort.Direction)
+		}
+		return db
+	}
+}
+
 func Search(v *pb.Search) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if v == nil {
