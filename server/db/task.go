@@ -137,13 +137,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, sear
 }
 
 func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskORM, pagination *pb.Pagination, sort *pb.Sort) (tasks []*pb.TaskORM, err error) {
-	res := p.db_main.Where(&task)
-	if pagination != nil {
-		res = PaginationQuery(res, *pagination)
-	}
-	if sort != nil {
-		res = SortQuery(res, *sort)
-	}
+	res := p.db_main.Debug().Where(&task).Scopes(Paginate(pagination), Sort(sort))
 	err = res.Find(&tasks).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
