@@ -62,6 +62,12 @@ message ListRequest {
 
 message ListTaskRequest {
     Task task = 1;
+    Search search = 4;
+}
+
+message Search {
+    string value = 1;
+    string columns = 2;
 }
 
 message ListTaskResponse {
