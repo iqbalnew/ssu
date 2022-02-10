@@ -397,7 +397,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
-			notificationConn, err := grpc.Dial(getEnv("USER_SERVICE", ":9094"), opts...)
+			notificationConn, err := grpc.Dial(getEnv("USER_SERVICE", ":9095"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to User Service: %v", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
