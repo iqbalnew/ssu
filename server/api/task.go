@@ -10,6 +10,7 @@ import (
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
+	user_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/sirupsen/logrus"
@@ -387,6 +388,29 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			data.TaskID = task.TaskID
 			res, err := companyClient.CreateNotification(ctx, &data)
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
+
+		case "User":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			notificationConn, err := grpc.Dial(getEnv("USER_SERVICE", ":9094"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to User Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer notificationConn.Close()
+
+			companyClient := user_pb.NewApiServiceClient(notificationConn)
+
+			data := user_pb.CreateUserRequest{}
+			json.Unmarshal([]byte(task.Data), &data)
+
+			data.TaskID = task.TaskID
+			res, err := companyClient.CreateUser(ctx, &data)
 			if err != nil {
 				return nil, err
 			}
