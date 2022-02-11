@@ -512,9 +512,13 @@
           "type": "integer",
           "format": "int64"
         },
-        "total": {
+        "totalRows": {
           "type": "string",
-          "format": "uint64"
+          "format": "int64"
+        },
+        "totalPages": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

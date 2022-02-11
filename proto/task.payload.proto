@@ -75,7 +75,8 @@ message Pagination {
 message PaginationResponse {
     uint32 limit = 1;
     uint32 page = 2;
-    uint64 total =3;
+    int64 totalRows = 3;   
+    int32 totalPages = 4;   
 }
 
 message Sort {
