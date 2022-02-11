@@ -127,13 +127,12 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, sear
 		query = query.Where(&filter)
 	}
 	query = query.Scopes(Search(search))
-	query = query.Scopes(Sort(sort))
-	query = query.Scopes(Paginate(tasks, pagination, query))
+	query = query.Scopes(Paginate(tasks, pagination, query), Sort(sort))
 	result := query.Find(&tasks)
 	if err := result.Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
+			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 		}
 	}
 	return tasks, nil

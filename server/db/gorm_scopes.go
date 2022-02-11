@@ -10,14 +10,20 @@ import (
 )
 
 func Paginate(value interface{}, v *pb.PaginationResponse, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
-	var totalRows int64
-	db.Model(value).Count(&totalRows)
+	if v.Limit > 0 || v.Page > 0 {
+		var totalRows int64
+		db.Model(value).Count(&totalRows)
 
-	v.TotalRows = totalRows
-	totalPages := int(math.Ceil(float64(totalRows) / float64(v.Limit)))
-	v.TotalPages = int32(totalPages)
+		v.TotalRows = totalRows
+		totalPages := int(math.Ceil(float64(totalRows) / float64(v.Limit)))
+		v.TotalPages = int32(totalPages)
+	}
 
 	return func(db *gorm.DB) *gorm.DB {
+		if v.Limit < 1 || v.Page < 1 {
+			return db
+		}
+
 		offset := (v.Page - 1) * v.Limit
 		if v != nil {
 			return db.Limit(int(v.Limit)).Offset(int(offset))

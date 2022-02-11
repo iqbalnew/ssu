@@ -24,7 +24,11 @@ func setPagination(v *pb.Pagination) *pb.PaginationResponse {
 		Page:  1,
 	}
 
-	if v != nil {
+	if v == nil {
+		res.Limit = -1
+		res.Page = -1
+		return res
+	} else {
 		res.Limit = v.Limit
 		res.Page = v.Page
 	}
@@ -68,7 +72,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		task, err := v.ToPB(ctx)
 		if err != nil {
 			logrus.Errorln(err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
+			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 		}
 		result.Data = append(result.Data, &task)
 	}
