@@ -2,13 +2,21 @@ package db
 
 import (
 	"fmt"
+	"math"
 	"strings"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"gorm.io/gorm"
 )
 
-func Paginate(v *pb.Pagination) func(db *gorm.DB) *gorm.DB {
+func Paginate(value interface{}, v *pb.PaginationResponse, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
+	var totalRows int64
+	db.Model(value).Count(&totalRows)
+
+	v.TotalRows = totalRows
+	totalPages := int(math.Ceil(float64(totalRows) / float64(v.Limit)))
+	v.TotalPages = int32(totalPages)
+
 	return func(db *gorm.DB) *gorm.DB {
 		offset := (v.Page - 1) * v.Limit
 		if v != nil {
