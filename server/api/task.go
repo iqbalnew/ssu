@@ -18,6 +18,27 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+func setPagination(v *pb.Pagination) *pb.Pagination {
+	if v == nil {
+		v = &pb.Pagination{
+			Limit: 10,
+			Page:  1,
+		}
+	}
+	if v.Page == 0 {
+		v.Page = 1
+	}
+
+	switch {
+	case v.Limit > 100:
+		v.Limit = 100
+	case v.Limit <= 0:
+		v.Limit = 10
+	}
+
+	return v
+}
+
 func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
 	// logrus.Println("After %v", pb)
 
@@ -33,7 +54,8 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		Data:    []*pb.Task{},
 	}
 
-	list, err := s.provider.GetListTaskWithFilter(ctx, &dataorm, req.Pagination, req.Sort)
+	req.Pagination = setPagination(req.Pagination)
+	list, total, err := s.provider.GetListTask(ctx, &dataorm, req.Search, req.Pagination, req.Sort)
 	if err != nil {
 		return nil, err
 	}
@@ -45,6 +67,11 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 		result.Data = append(result.Data, &task)
+	}
+	result.Pagination = &pb.PaginationResponse{
+		Page:  req.Pagination.Page,
+		Limit: req.Pagination.Limit,
+		Total: uint64(total),
 	}
 
 	return &result, err
