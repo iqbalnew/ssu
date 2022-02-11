@@ -136,8 +136,10 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, sear
 	return tasks, nil
 }
 
-func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskORM) (tasks []*pb.TaskORM, err error) {
-	if err := p.db_main.Where(&task).Find(&tasks).Error; err != nil {
+func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskORM, pagination *pb.Pagination, sort *pb.Sort) (tasks []*pb.TaskORM, err error) {
+	res := p.db_main.Debug().Where(&task).Scopes(Paginate(pagination), Sort(sort))
+	err = res.Find(&tasks).Error
+	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
