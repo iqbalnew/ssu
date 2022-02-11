@@ -69,7 +69,13 @@ message ListTaskRequest {
 
 message Pagination {
     uint32 limit = 1;
-    uint32 offset = 2;
+    uint32 page = 2;
+}
+
+message PaginationResponse {
+    uint32 limit = 1;
+    uint32 page = 2;
+    uint64 total =3;
 }
 
 message Sort {
@@ -87,6 +93,7 @@ message ListTaskResponse {
     uint32 code = 2;
     string message = 3;
     repeated Task data = 4;
+    PaginationResponse pagination = 5;
 }
 
 message GraphStatusRequest {

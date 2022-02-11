@@ -131,7 +131,7 @@
             "format": "int64"
           },
           {
-            "name": "pagination.offset",
+            "name": "pagination.page",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -482,6 +482,9 @@
           "items": {
             "$ref": "#/definitions/v1Task"
           }
+        },
+        "pagination": {
+          "$ref": "#/definitions/v1PaginationResponse"
         }
       }
     },
@@ -492,9 +495,26 @@
           "type": "integer",
           "format": "int64"
         },
-        "offset": {
+        "page": {
           "type": "integer",
           "format": "int64"
+        }
+      }
+    },
+    "v1PaginationResponse": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "total": {
+          "type": "string",
+          "format": "uint64"
         }
       }
     },

@@ -84,6 +84,9 @@ func (this *ListTaskRequest) Validate() error {
 func (this *Pagination) Validate() error {
 	return nil
 }
+func (this *PaginationResponse) Validate() error {
+	return nil
+}
 func (this *Sort) Validate() error {
 	return nil
 }
@@ -96,6 +99,11 @@ func (this *ListTaskResponse) Validate() error {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
 				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
 		}
 	}
 	return nil
