@@ -2,25 +2,44 @@ package db
 
 import (
 	"fmt"
+	"math"
 	"strings"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"gorm.io/gorm"
 )
 
-func Paginate(pagination *pb.Pagination) func(db *gorm.DB) *gorm.DB {
+func Paginate(value interface{}, v *pb.PaginationResponse, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
+	if v.Limit > 0 || v.Page > 0 {
+		var totalRows int64
+		db.Model(value).Count(&totalRows)
+
+		v.TotalRows = totalRows
+		totalPages := int(math.Ceil(float64(totalRows) / float64(v.Limit)))
+		v.TotalPages = int32(totalPages)
+	}
+
 	return func(db *gorm.DB) *gorm.DB {
-		if pagination != nil {
-			return db.Limit(int(pagination.Limit)).Offset(int(pagination.Offset))
+		if v.Limit < 1 || v.Page < 1 {
+			return db
+		}
+
+		offset := (v.Page - 1) * v.Limit
+		if v != nil {
+			return db.Limit(int(v.Limit)).Offset(int(offset))
 		}
 		return db
 	}
 }
 
-func Sort(sort *pb.Sort) func(db *gorm.DB) *gorm.DB {
+func Sort(v *pb.Sort) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		if sort != nil {
-			return db.Order(sort.Column + " " + sort.Direction)
+		if v == nil || v.Column == "" {
+			return db
+		}
+		v.Column = columnNameBuilder(v.Column)
+		if v != nil {
+			return db.Order(v.Column + " " + v.Direction)
 		}
 		return db
 	}
@@ -28,7 +47,7 @@ func Sort(sort *pb.Sort) func(db *gorm.DB) *gorm.DB {
 
 func Search(v *pb.Search) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		if v == nil {
+		if v == nil || v.Value == "" || v.Columns == "" {
 			return db
 		}
 
@@ -60,21 +79,33 @@ func Search(v *pb.Search) func(db *gorm.DB) *gorm.DB {
 }
 
 func searchColumnsLoop(db *gorm.DB, columns []string, expresion string, value string) *gorm.DB {
-	for _, s := range columns {
-		if strings.Contains(s, "->") {
-			nested := strings.Split(s, "->")
-			s = ""
-			for i, t := range nested {
-				if i == 0 {
-					s = fmt.Sprintf("\"%s\"", t)
-				} else if i == len(nested)-1 {
-					s = s + fmt.Sprintf("->>'%s'", t)
-				} else {
-					s = s + fmt.Sprintf("->'%s'", t)
-				}
-			}
+	for j, s := range columns {
+		s = columnNameBuilder(s)
+		if j == 0 {
+			db = db.Where(fmt.Sprintf("%s %s ?", s, expresion), value)
+		} else {
+			db = db.Or(fmt.Sprintf("%s %s ?", s, expresion), value)
 		}
-		db = db.Where(fmt.Sprintf("%s %s ?", s, expresion), value)
 	}
 	return db
+}
+
+func columnNameBuilder(s string) string {
+	if strings.Contains(s, "->") {
+		nested := strings.Split(s, "->")
+		s = ""
+		for i, t := range nested {
+			if i == 0 {
+				s = fmt.Sprintf("\"%s\"", t)
+			} else if i == len(nested)-1 {
+				s = s + fmt.Sprintf("->>'%s'", t)
+			} else {
+				s = s + fmt.Sprintf("->'%s'", t)
+			}
+		}
+	} else {
+		s = fmt.Sprintf("\"%s\"", s)
+	}
+
+	return s
 }

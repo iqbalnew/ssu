@@ -121,23 +121,25 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, search *pb.Search) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, search *pb.Search, pagination *pb.PaginationResponse, sort *pb.Sort) (tasks []*pb.TaskORM, err error) {
 	query := p.db_main
 	if filter != nil {
 		query = query.Where(&filter)
 	}
 	query = query.Scopes(Search(search))
-	if err := query.Find(&tasks).Error; err != nil {
+	query = query.Scopes(Paginate(tasks, pagination, query), Sort(sort))
+	result := query.Find(&tasks)
+	if err := result.Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
+			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 		}
 	}
 	return tasks, nil
 }
 
-func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskORM, pagination *pb.Pagination, sort *pb.Sort) (tasks []*pb.TaskORM, err error) {
-	res := p.db_main.Debug().Where(&task).Scopes(Paginate(pagination), Sort(sort))
+func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskORM, pagination *pb.PaginationResponse, sort *pb.Sort) (tasks []*pb.TaskORM, err error) {
+	res := p.db_main.Debug().Where(&task).Scopes(Paginate(tasks, pagination, p.db_main), Sort(sort))
 	err = res.Find(&tasks).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
