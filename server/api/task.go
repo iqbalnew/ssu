@@ -397,20 +397,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
-			notificationConn, err := grpc.Dial(getEnv("USER_SERVICE", ":9095"), opts...)
+			userConn, err := grpc.Dial(getEnv("USER_SERVICE", ":9095"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to User Service: %v", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
-			defer notificationConn.Close()
+			defer userConn.Close()
 
-			companyClient := user_pb.NewApiServiceClient(notificationConn)
+			userClient := user_pb.NewApiServiceClient(userConn)
 
 			data := user_pb.CreateUserRequest{}
 			json.Unmarshal([]byte(task.Data), &data)
 
 			data.TaskID = task.TaskID
-			res, err := companyClient.CreateUser(ctx, &data)
+			res, err := userClient.CreateUser(ctx, &data)
 			if err != nil {
 				return nil, err
 			}
