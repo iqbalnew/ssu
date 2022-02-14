@@ -47,5 +47,6 @@ service TaskService {
     
     rpc AssignTypeID(AssignaTypeIDRequest) returns (AssignaTypeIDResponse);
 
-}
+    rpc GetTaskByTypeID(GetTaskByTypeIDReq) returns (GetTaskByTypeIDRes);
 
+}

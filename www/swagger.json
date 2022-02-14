@@ -319,6 +319,43 @@
         ]
       }
     },
+    "/api/task/type/{ID}": {
+      "get": {
+        "operationId": "TaskService_GetTaskByTypeID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetTaskByTypeIDRes"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TaskService"
+        ]
+      }
+    },
     "/api/task/{taskID}": {
       "put": {
         "operationId": "TaskService_SetTask",
@@ -418,6 +455,17 @@
         },
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "v1GetTaskByTypeIDRes": {
+      "type": "object",
+      "properties": {
+        "found": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "#/definitions/v1Task"
         }
       }
     },

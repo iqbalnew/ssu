@@ -132,3 +132,14 @@ func (this *AssignaTypeIDRequest) Validate() error {
 func (this *AssignaTypeIDResponse) Validate() error {
 	return nil
 }
+func (this *GetTaskByTypeIDReq) Validate() error {
+	return nil
+}
+func (this *GetTaskByTypeIDRes) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
