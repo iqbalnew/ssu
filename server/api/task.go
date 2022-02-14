@@ -53,18 +53,27 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		Data:  nil,
 	}
 
+	if req.ID < 1 {
+		return res, nil
+	}
+
 	filter := pb.TaskORM{
 		Type:      req.Type,
 		FeatureID: req.ID,
 	}
 
-	list, err := s.provider.GetListTask(ctx, &filter, "", "", nil, nil)
+	list, err := s.provider.GetListTask(ctx, &filter, "", "", &pb.PaginationResponse{}, &pb.Sort{})
 	if err != nil {
 		return nil, err
 	}
 	if len(list) > 0 {
 		res.Found = true
-		res.Data, err = list[0].ToPB(ctx)
+		data, err := list[0].ToPB(ctx)
+		if err != nil {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+		}
+		res.Data = &data
 	}
 
 	return res, nil
