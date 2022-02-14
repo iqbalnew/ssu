@@ -18,13 +18,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func setPagination(v *pb.Pagination) *pb.PaginationResponse {
+func setPagination(v *pb.ListTaskRequest) *pb.PaginationResponse {
 	res := &pb.PaginationResponse{
 		Limit: 10,
 		Page:  1,
 	}
 
-	if v == nil {
+	if v == nil || v.Limit == 0 && v.Page == 0 {
 		res.Limit = -1
 		res.Page = -1
 		return res
@@ -62,8 +62,12 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		Data:    []*pb.Task{},
 	}
 
-	result.Pagination = setPagination(req.Pagination)
-	list, err := s.provider.GetListTask(ctx, &dataorm, req.Search, result.Pagination, req.Sort)
+	result.Pagination = setPagination(req)
+	sort := &pb.Sort{
+		Column:    req.GetSort(),
+		Direction: req.GetDir().Enum().String(),
+	}
+	list, err := s.provider.GetListTask(ctx, &dataorm, req.Filter, req.Query, result.Pagination, sort)
 	if err != nil {
 		return nil, err
 	}
