@@ -393,6 +393,21 @@
         }
       }
     },
+    "v1AssignaTypeIDResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "v1GraphStatus": {
       "type": "object",
       "properties": {

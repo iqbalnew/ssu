@@ -36,7 +36,7 @@ var file_task_api_proto_rawDesc = []byte{
 	0x76, 0x32, 0x2f, 0x6f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x61, 0x6e, 0x6e, 0x6f, 0x74,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x12, 0x74, 0x61,
 	0x73, 0x6b, 0x2e, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x32, 0xf6, 0x05, 0x0a, 0x0b, 0x54, 0x61, 0x73, 0x6b, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x32, 0xd5, 0x06, 0x0a, 0x0b, 0x54, 0x61, 0x73, 0x6b, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
 	0x12, 0x65, 0x0a, 0x0b, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x12,
 	0x16, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76,
 	0x31, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x24, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73,
@@ -83,24 +83,32 @@ var file_task_api_proto_rawDesc = []byte{
 	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x52,
 	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65,
 	0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x54, 0x61, 0x73,
-	0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70,
-	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0c, 0x41, 0x73, 0x73,
+	0x69, 0x67, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x49, 0x44, 0x12, 0x25, 0x2e, 0x74, 0x61, 0x73, 0x6b,
+	0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x73, 0x73, 0x69,
+	0x67, 0x6e, 0x61, 0x54, 0x79, 0x70, 0x65, 0x49, 0x44, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x26, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e,
+	0x76, 0x31, 0x2e, 0x41, 0x73, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x54, 0x79, 0x70, 0x65, 0x49, 0x44,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var file_task_api_proto_goTypes = []interface{}{
-	(*Empty)(nil),               // 0: task.service.v1.Empty
-	(*SaveTaskRequest)(nil),     // 1: task.service.v1.SaveTaskRequest
-	(*SetTaskRequest)(nil),      // 2: task.service.v1.SetTaskRequest
-	(*ListTaskRequest)(nil),     // 3: task.service.v1.ListTaskRequest
-	(*GraphStatusRequest)(nil),  // 4: task.service.v1.GraphStatusRequest
-	(*GraphStepRequest)(nil),    // 5: task.service.v1.GraphStepRequest
-	(*ListRequest)(nil),         // 6: task.service.v1.ListRequest
-	(*HealthCheckResponse)(nil), // 7: task.service.v1.HealthCheckResponse
-	(*SaveTaskResponse)(nil),    // 8: task.service.v1.SaveTaskResponse
-	(*SetTaskResponse)(nil),     // 9: task.service.v1.SetTaskResponse
-	(*ListTaskResponse)(nil),    // 10: task.service.v1.ListTaskResponse
-	(*GraphStatusResponse)(nil), // 11: task.service.v1.GraphStatusResponse
-	(*GraphStepResponse)(nil),   // 12: task.service.v1.GraphStepResponse
+	(*Empty)(nil),                 // 0: task.service.v1.Empty
+	(*SaveTaskRequest)(nil),       // 1: task.service.v1.SaveTaskRequest
+	(*SetTaskRequest)(nil),        // 2: task.service.v1.SetTaskRequest
+	(*ListTaskRequest)(nil),       // 3: task.service.v1.ListTaskRequest
+	(*GraphStatusRequest)(nil),    // 4: task.service.v1.GraphStatusRequest
+	(*GraphStepRequest)(nil),      // 5: task.service.v1.GraphStepRequest
+	(*ListRequest)(nil),           // 6: task.service.v1.ListRequest
+	(*AssignaTypeIDRequest)(nil),  // 7: task.service.v1.AssignaTypeIDRequest
+	(*HealthCheckResponse)(nil),   // 8: task.service.v1.HealthCheckResponse
+	(*SaveTaskResponse)(nil),      // 9: task.service.v1.SaveTaskResponse
+	(*SetTaskResponse)(nil),       // 10: task.service.v1.SetTaskResponse
+	(*ListTaskResponse)(nil),      // 11: task.service.v1.ListTaskResponse
+	(*GraphStatusResponse)(nil),   // 12: task.service.v1.GraphStatusResponse
+	(*GraphStepResponse)(nil),     // 13: task.service.v1.GraphStepResponse
+	(*AssignaTypeIDResponse)(nil), // 14: task.service.v1.AssignaTypeIDResponse
 }
 var file_task_api_proto_depIdxs = []int32{
 	0,  // 0: task.service.v1.TaskService.HealthCheck:input_type -> task.service.v1.Empty
@@ -110,15 +118,17 @@ var file_task_api_proto_depIdxs = []int32{
 	4,  // 4: task.service.v1.TaskService.GetTaskGraphStatus:input_type -> task.service.v1.GraphStatusRequest
 	5,  // 5: task.service.v1.TaskService.GetTaskGraphStep:input_type -> task.service.v1.GraphStepRequest
 	6,  // 6: task.service.v1.TaskService.GetListAnnouncement:input_type -> task.service.v1.ListRequest
-	7,  // 7: task.service.v1.TaskService.HealthCheck:output_type -> task.service.v1.HealthCheckResponse
-	8,  // 8: task.service.v1.TaskService.SaveTaskWithData:output_type -> task.service.v1.SaveTaskResponse
-	9,  // 9: task.service.v1.TaskService.SetTask:output_type -> task.service.v1.SetTaskResponse
-	10, // 10: task.service.v1.TaskService.GetListTask:output_type -> task.service.v1.ListTaskResponse
-	11, // 11: task.service.v1.TaskService.GetTaskGraphStatus:output_type -> task.service.v1.GraphStatusResponse
-	12, // 12: task.service.v1.TaskService.GetTaskGraphStep:output_type -> task.service.v1.GraphStepResponse
-	10, // 13: task.service.v1.TaskService.GetListAnnouncement:output_type -> task.service.v1.ListTaskResponse
-	7,  // [7:14] is the sub-list for method output_type
-	0,  // [0:7] is the sub-list for method input_type
+	7,  // 7: task.service.v1.TaskService.AssignTypeID:input_type -> task.service.v1.AssignaTypeIDRequest
+	8,  // 8: task.service.v1.TaskService.HealthCheck:output_type -> task.service.v1.HealthCheckResponse
+	9,  // 9: task.service.v1.TaskService.SaveTaskWithData:output_type -> task.service.v1.SaveTaskResponse
+	10, // 10: task.service.v1.TaskService.SetTask:output_type -> task.service.v1.SetTaskResponse
+	11, // 11: task.service.v1.TaskService.GetListTask:output_type -> task.service.v1.ListTaskResponse
+	12, // 12: task.service.v1.TaskService.GetTaskGraphStatus:output_type -> task.service.v1.GraphStatusResponse
+	13, // 13: task.service.v1.TaskService.GetTaskGraphStep:output_type -> task.service.v1.GraphStepResponse
+	11, // 14: task.service.v1.TaskService.GetListAnnouncement:output_type -> task.service.v1.ListTaskResponse
+	14, // 15: task.service.v1.TaskService.AssignTypeID:output_type -> task.service.v1.AssignaTypeIDResponse
+	8,  // [8:16] is the sub-list for method output_type
+	0,  // [0:8] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

@@ -1328,6 +1328,132 @@ func (x *GraphStepResponse) GetData() []*GraphStep {
 	return nil
 }
 
+type AssignaTypeIDRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TaskID    uint64 `protobuf:"varint,1,opt,name=taskID,proto3" json:"taskID,omitempty"`
+	FeatureID uint64 `protobuf:"varint,2,opt,name=featureID,proto3" json:"featureID,omitempty"`
+	Type      string `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
+}
+
+func (x *AssignaTypeIDRequest) Reset() {
+	*x = AssignaTypeIDRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_task_payload_proto_msgTypes[22]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AssignaTypeIDRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssignaTypeIDRequest) ProtoMessage() {}
+
+func (x *AssignaTypeIDRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_task_payload_proto_msgTypes[22]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssignaTypeIDRequest.ProtoReflect.Descriptor instead.
+func (*AssignaTypeIDRequest) Descriptor() ([]byte, []int) {
+	return file_task_payload_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *AssignaTypeIDRequest) GetTaskID() uint64 {
+	if x != nil {
+		return x.TaskID
+	}
+	return 0
+}
+
+func (x *AssignaTypeIDRequest) GetFeatureID() uint64 {
+	if x != nil {
+		return x.FeatureID
+	}
+	return 0
+}
+
+func (x *AssignaTypeIDRequest) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+type AssignaTypeIDResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Error   bool   `protobuf:"varint,1,opt,name=error,proto3" json:"error,omitempty"`
+	Code    uint32 `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
+	Message string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+}
+
+func (x *AssignaTypeIDResponse) Reset() {
+	*x = AssignaTypeIDResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_task_payload_proto_msgTypes[23]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AssignaTypeIDResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AssignaTypeIDResponse) ProtoMessage() {}
+
+func (x *AssignaTypeIDResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_task_payload_proto_msgTypes[23]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AssignaTypeIDResponse.ProtoReflect.Descriptor instead.
+func (*AssignaTypeIDResponse) Descriptor() ([]byte, []int) {
+	return file_task_payload_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *AssignaTypeIDResponse) GetError() bool {
+	if x != nil {
+		return x.Error
+	}
+	return false
+}
+
+func (x *AssignaTypeIDResponse) GetCode() uint32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *AssignaTypeIDResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_task_payload_proto protoreflect.FileDescriptor
 
 var file_task_payload_proto_rawDesc = []byte{
@@ -1491,8 +1617,19 @@ var file_task_payload_proto_rawDesc = []byte{
 	0x65, 0x12, 0x2e, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32,
 	0x1a, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76,
 	0x31, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x53, 0x74, 0x65, 0x70, 0x52, 0x04, 0x64, 0x61, 0x74,
-	0x61, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x61, 0x22, 0x60, 0x0a, 0x14, 0x41, 0x73, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x54, 0x79, 0x70, 0x65,
+	0x49, 0x44, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x74, 0x61, 0x73,
+	0x6b, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x74, 0x61, 0x73, 0x6b, 0x49,
+	0x44, 0x12, 0x1c, 0x0a, 0x09, 0x66, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x49, 0x44, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x66, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x49, 0x44, 0x12,
+	0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74,
+	0x79, 0x70, 0x65, 0x22, 0x5b, 0x0a, 0x15, 0x41, 0x73, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x54, 0x79,
+	0x70, 0x65, 0x49, 0x44, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05,
+	0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x65, 0x72, 0x72,
+	0x6f, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d,
+	0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67,
+	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1507,49 +1644,51 @@ func file_task_payload_proto_rawDescGZIP() []byte {
 	return file_task_payload_proto_rawDescData
 }
 
-var file_task_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_task_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_task_payload_proto_goTypes = []interface{}{
-	(*LoginRequest)(nil),        // 0: task.service.v1.LoginRequest
-	(*LoginResponse)(nil),       // 1: task.service.v1.LoginResponse
-	(*HealthCheckResponse)(nil), // 2: task.service.v1.HealthCheckResponse
-	(*Empty)(nil),               // 3: task.service.v1.Empty
-	(*InvalidKeyError)(nil),     // 4: task.service.v1.InvalidKeyError
-	(*SaveTaskRequest)(nil),     // 5: task.service.v1.SaveTaskRequest
-	(*SaveTaskResponse)(nil),    // 6: task.service.v1.SaveTaskResponse
-	(*SetTaskRequest)(nil),      // 7: task.service.v1.SetTaskRequest
-	(*SetTaskResponse)(nil),     // 8: task.service.v1.SetTaskResponse
-	(*ListRequest)(nil),         // 9: task.service.v1.ListRequest
-	(*ListTaskRequest)(nil),     // 10: task.service.v1.ListTaskRequest
-	(*Pagination)(nil),          // 11: task.service.v1.Pagination
-	(*PaginationResponse)(nil),  // 12: task.service.v1.PaginationResponse
-	(*Sort)(nil),                // 13: task.service.v1.Sort
-	(*Search)(nil),              // 14: task.service.v1.Search
-	(*ListTaskResponse)(nil),    // 15: task.service.v1.ListTaskResponse
-	(*GraphStatusRequest)(nil),  // 16: task.service.v1.GraphStatusRequest
-	(*GraphStatus)(nil),         // 17: task.service.v1.GraphStatus
-	(*GraphStatusResponse)(nil), // 18: task.service.v1.GraphStatusResponse
-	(*GraphStepRequest)(nil),    // 19: task.service.v1.GraphStepRequest
-	(*GraphStep)(nil),           // 20: task.service.v1.GraphStep
-	(*GraphStepResponse)(nil),   // 21: task.service.v1.GraphStepResponse
-	(*Task)(nil),                // 22: task.service.v1.Task
-	(Statuses)(0),               // 23: task.service.v1.statuses
-	(Steps)(0),                  // 24: task.service.v1.steps
+	(*LoginRequest)(nil),          // 0: task.service.v1.LoginRequest
+	(*LoginResponse)(nil),         // 1: task.service.v1.LoginResponse
+	(*HealthCheckResponse)(nil),   // 2: task.service.v1.HealthCheckResponse
+	(*Empty)(nil),                 // 3: task.service.v1.Empty
+	(*InvalidKeyError)(nil),       // 4: task.service.v1.InvalidKeyError
+	(*SaveTaskRequest)(nil),       // 5: task.service.v1.SaveTaskRequest
+	(*SaveTaskResponse)(nil),      // 6: task.service.v1.SaveTaskResponse
+	(*SetTaskRequest)(nil),        // 7: task.service.v1.SetTaskRequest
+	(*SetTaskResponse)(nil),       // 8: task.service.v1.SetTaskResponse
+	(*ListRequest)(nil),           // 9: task.service.v1.ListRequest
+	(*ListTaskRequest)(nil),       // 10: task.service.v1.ListTaskRequest
+	(*Pagination)(nil),            // 11: task.service.v1.Pagination
+	(*PaginationResponse)(nil),    // 12: task.service.v1.PaginationResponse
+	(*Sort)(nil),                  // 13: task.service.v1.Sort
+	(*Search)(nil),                // 14: task.service.v1.Search
+	(*ListTaskResponse)(nil),      // 15: task.service.v1.ListTaskResponse
+	(*GraphStatusRequest)(nil),    // 16: task.service.v1.GraphStatusRequest
+	(*GraphStatus)(nil),           // 17: task.service.v1.GraphStatus
+	(*GraphStatusResponse)(nil),   // 18: task.service.v1.GraphStatusResponse
+	(*GraphStepRequest)(nil),      // 19: task.service.v1.GraphStepRequest
+	(*GraphStep)(nil),             // 20: task.service.v1.GraphStep
+	(*GraphStepResponse)(nil),     // 21: task.service.v1.GraphStepResponse
+	(*AssignaTypeIDRequest)(nil),  // 22: task.service.v1.AssignaTypeIDRequest
+	(*AssignaTypeIDResponse)(nil), // 23: task.service.v1.AssignaTypeIDResponse
+	(*Task)(nil),                  // 24: task.service.v1.Task
+	(Statuses)(0),                 // 25: task.service.v1.statuses
+	(Steps)(0),                    // 26: task.service.v1.steps
 }
 var file_task_payload_proto_depIdxs = []int32{
-	22, // 0: task.service.v1.SaveTaskRequest.task:type_name -> task.service.v1.Task
-	22, // 1: task.service.v1.SetTaskResponse.data:type_name -> task.service.v1.Task
-	22, // 2: task.service.v1.ListTaskRequest.task:type_name -> task.service.v1.Task
+	24, // 0: task.service.v1.SaveTaskRequest.task:type_name -> task.service.v1.Task
+	24, // 1: task.service.v1.SetTaskResponse.data:type_name -> task.service.v1.Task
+	24, // 2: task.service.v1.ListTaskRequest.task:type_name -> task.service.v1.Task
 	11, // 3: task.service.v1.ListTaskRequest.pagination:type_name -> task.service.v1.Pagination
 	13, // 4: task.service.v1.ListTaskRequest.sort:type_name -> task.service.v1.Sort
 	14, // 5: task.service.v1.ListTaskRequest.search:type_name -> task.service.v1.Search
-	22, // 6: task.service.v1.ListTaskResponse.data:type_name -> task.service.v1.Task
+	24, // 6: task.service.v1.ListTaskResponse.data:type_name -> task.service.v1.Task
 	12, // 7: task.service.v1.ListTaskResponse.pagination:type_name -> task.service.v1.PaginationResponse
-	23, // 8: task.service.v1.GraphStatusRequest.status:type_name -> task.service.v1.statuses
-	23, // 9: task.service.v1.GraphStatus.status:type_name -> task.service.v1.statuses
+	25, // 8: task.service.v1.GraphStatusRequest.status:type_name -> task.service.v1.statuses
+	25, // 9: task.service.v1.GraphStatus.status:type_name -> task.service.v1.statuses
 	17, // 10: task.service.v1.GraphStatusResponse.data:type_name -> task.service.v1.GraphStatus
-	24, // 11: task.service.v1.GraphStepRequest.step:type_name -> task.service.v1.steps
-	23, // 12: task.service.v1.GraphStepRequest.status:type_name -> task.service.v1.statuses
-	24, // 13: task.service.v1.GraphStep.step:type_name -> task.service.v1.steps
+	26, // 11: task.service.v1.GraphStepRequest.step:type_name -> task.service.v1.steps
+	25, // 12: task.service.v1.GraphStepRequest.status:type_name -> task.service.v1.statuses
+	26, // 13: task.service.v1.GraphStep.step:type_name -> task.service.v1.steps
 	20, // 14: task.service.v1.GraphStepResponse.data:type_name -> task.service.v1.GraphStep
 	15, // [15:15] is the sub-list for method output_type
 	15, // [15:15] is the sub-list for method input_type
@@ -1829,6 +1968,30 @@ func file_task_payload_proto_init() {
 				return nil
 			}
 		}
+		file_task_payload_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AssignaTypeIDRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_task_payload_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AssignaTypeIDResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1836,7 +1999,7 @@ func file_task_payload_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_task_payload_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   22,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
