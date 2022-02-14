@@ -27,6 +27,7 @@ type ApiServiceClient interface {
 	CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*CreateAccountResponse, error)
 	CreateAccountTask(ctx context.Context, in *CreateAccountTaskRequest, opts ...grpc.CallOption) (*CreateAccountTaskResponse, error)
 	ListAccountTask(ctx context.Context, in *ListAccountTaskRequest, opts ...grpc.CallOption) (*ListAccountTaskResponse, error)
+	GetAccountTaskByID(ctx context.Context, in *GetAccountTaskByIDRequest, opts ...grpc.CallOption) (*ListAccountTaskResponse, error)
 	ValidateAccount(ctx context.Context, in *ValidateAccountRequest, opts ...grpc.CallOption) (*ValidateAccountResponse, error)
 }
 
@@ -83,6 +84,15 @@ func (c *apiServiceClient) ListAccountTask(ctx context.Context, in *ListAccountT
 	return out, nil
 }
 
+func (c *apiServiceClient) GetAccountTaskByID(ctx context.Context, in *GetAccountTaskByIDRequest, opts ...grpc.CallOption) (*ListAccountTaskResponse, error) {
+	out := new(ListAccountTaskResponse)
+	err := c.cc.Invoke(ctx, "/account.service.v1.ApiService/GetAccountTaskByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) ValidateAccount(ctx context.Context, in *ValidateAccountRequest, opts ...grpc.CallOption) (*ValidateAccountResponse, error) {
 	out := new(ValidateAccountResponse)
 	err := c.cc.Invoke(ctx, "/account.service.v1.ApiService/ValidateAccount", in, out, opts...)
@@ -101,6 +111,7 @@ type ApiServiceServer interface {
 	CreateAccount(context.Context, *CreateAccountRequest) (*CreateAccountResponse, error)
 	CreateAccountTask(context.Context, *CreateAccountTaskRequest) (*CreateAccountTaskResponse, error)
 	ListAccountTask(context.Context, *ListAccountTaskRequest) (*ListAccountTaskResponse, error)
+	GetAccountTaskByID(context.Context, *GetAccountTaskByIDRequest) (*ListAccountTaskResponse, error)
 	ValidateAccount(context.Context, *ValidateAccountRequest) (*ValidateAccountResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
@@ -123,6 +134,9 @@ func (UnimplementedApiServiceServer) CreateAccountTask(context.Context, *CreateA
 }
 func (UnimplementedApiServiceServer) ListAccountTask(context.Context, *ListAccountTaskRequest) (*ListAccountTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAccountTask not implemented")
+}
+func (UnimplementedApiServiceServer) GetAccountTaskByID(context.Context, *GetAccountTaskByIDRequest) (*ListAccountTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountTaskByID not implemented")
 }
 func (UnimplementedApiServiceServer) ValidateAccount(context.Context, *ValidateAccountRequest) (*ValidateAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateAccount not implemented")
@@ -230,6 +244,24 @@ func _ApiService_ListAccountTask_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_GetAccountTaskByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccountTaskByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetAccountTaskByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/account.service.v1.ApiService/GetAccountTaskByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetAccountTaskByID(ctx, req.(*GetAccountTaskByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_ValidateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ValidateAccountRequest)
 	if err := dec(in); err != nil {
@@ -274,6 +306,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListAccountTask",
 			Handler:    _ApiService_ListAccountTask_Handler,
+		},
+		{
+			MethodName: "GetAccountTaskByID",
+			Handler:    _ApiService_GetAccountTaskByID_Handler,
 		},
 		{
 			MethodName: "ValidateAccount",

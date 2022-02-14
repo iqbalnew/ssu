@@ -7,8 +7,8 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -28,7 +28,15 @@ func (this *ValidateAccountResponse) Validate() error {
 	}
 	return nil
 }
+func (this *ValidateAccountResponse_Detail) Validate() error {
+	return nil
+}
 func (this *ValidateAccountResponse_Response) Validate() error {
+	if this.Detail != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Detail); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Detail", err)
+		}
+	}
 	return nil
 }
 func (this *TempGenToken) Validate() error {

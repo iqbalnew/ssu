@@ -447,6 +447,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &account)
 
 			data.Data = &account
+			data.TaskID = task.TaskID
 
 			res, err := companyClient.CreateAccount(ctx, &data)
 			if err != nil {
