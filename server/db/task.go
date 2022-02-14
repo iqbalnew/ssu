@@ -121,12 +121,12 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, search *pb.Search, pagination *pb.PaginationResponse, sort *pb.Sort) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, f string, q string, pagination *pb.PaginationResponse, sort *pb.Sort) (tasks []*pb.TaskORM, err error) {
 	query := p.db_main
 	if filter != nil {
 		query = query.Where(&filter)
 	}
-	query = query.Scopes(Search(search))
+	query = query.Scopes(FilterScoope(f), QueryScoop(q))
 	query = query.Scopes(Paginate(tasks, pagination, query), Sort(sort))
 	result := query.Find(&tasks)
 	if err := result.Error; err != nil {
