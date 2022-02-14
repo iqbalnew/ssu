@@ -47,6 +47,29 @@ func setPagination(v *pb.ListTaskRequest) *pb.PaginationResponse {
 	return res
 }
 
+func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq) (*pb.GetTaskByTypeIDRes, error) {
+	res := &pb.GetTaskByTypeIDRes{
+		Found: false,
+		Data:  nil,
+	}
+
+	filter := pb.TaskORM{
+		Type:      req.Type,
+		FeatureID: req.ID,
+	}
+
+	list, err := s.provider.GetListTask(ctx, &filter, "", "", nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	if len(list) > 0 {
+		res.Found = true
+		res.Data, err = list[0].ToPB(ctx)
+	}
+
+	return res, nil
+}
+
 func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
 	// logrus.Println("After %v", pb)
 
