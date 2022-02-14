@@ -348,7 +348,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if err != nil {
 				return nil, err
 			}
-			logrus.Println("res", res)
+			logrus.Println(res)
 			task.FeatureID = res.GroupID
 			_, err = s.provider.UpdateTask(ctx, task)
 			if err != nil {
