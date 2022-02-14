@@ -62,6 +62,8 @@ message Task {
 
     string comment = 9 [(gorm.field).tag = { type: "text" }];
 
+    uint64 featureID = 10;
+
     google.protobuf.Timestamp createdAt = 101;
     google.protobuf.Timestamp updatedAt = 102;
 }

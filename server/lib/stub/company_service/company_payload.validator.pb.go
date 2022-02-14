@@ -8,6 +8,8 @@ import (
 	math "math"
 	proto "github.com/golang/protobuf/proto"
 	_ "github.com/mwitkow/go-proto-validators"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -139,9 +141,22 @@ func (this *CreateCompanyGroupRequest) Validate() error {
 	return nil
 }
 func (this *CreateCompanyLimitRequest) Validate() error {
+	if this.Currency != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Currency); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Currency", err)
+		}
+	}
 	return nil
 }
 func (this *CreateGroupLimitRequest) Validate() error {
+	if this.Currency != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Currency); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Currency", err)
+		}
+	}
+	return nil
+}
+func (this *CurrencyRequest) Validate() error {
 	return nil
 }
 func (this *CreateCompanyWorkflowRequest) Validate() error {
