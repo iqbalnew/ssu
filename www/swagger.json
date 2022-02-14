@@ -110,6 +110,13 @@
             "type": "string"
           },
           {
+            "name": "task.featureID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
             "name": "task.createdAt",
             "in": "query",
             "required": false,
@@ -399,6 +406,21 @@
         }
       }
     },
+    "v1AssignaTypeIDResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "v1GraphStatus": {
       "type": "object",
       "properties": {
@@ -583,6 +605,10 @@
         },
         "comment": {
           "type": "string"
+        },
+        "featureID": {
+          "type": "string",
+          "format": "uint64"
         },
         "createdAt": {
           "type": "string",

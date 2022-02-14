@@ -3,14 +3,13 @@ package pb
 import (
 	context "context"
 	fmt "fmt"
-	strings "strings"
-	time "time"
-
 	gorm1 "github.com/infobloxopen/atlas-app-toolkit/gorm"
 	errors "github.com/infobloxopen/protoc-gen-gorm/errors"
 	gorm "github.com/jinzhu/gorm"
 	field_mask "google.golang.org/genproto/protobuf/field_mask"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	strings "strings"
+	time "time"
 )
 
 type UserORM struct {
@@ -117,6 +116,7 @@ type TaskORM struct {
 	CreatedAt        *time.Time
 	CreatedByID      uint64 `gorm:"not null"`
 	Data             string `gorm:"type:jsonb"`
+	FeatureID        uint64
 	LastApprovedByID uint64
 	LastRejectedByID uint64
 	Status           int32  `gorm:"default:1;not null"`
@@ -150,6 +150,7 @@ func (m *Task) ToORM(ctx context.Context) (TaskORM, error) {
 	to.LastRejectedByID = m.LastRejectedByID
 	to.Data = m.Data
 	to.Comment = m.Comment
+	to.FeatureID = m.FeatureID
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -183,6 +184,7 @@ func (m *TaskORM) ToPB(ctx context.Context) (Task, error) {
 	to.LastRejectedByID = m.LastRejectedByID
 	to.Data = m.Data
 	to.Comment = m.Comment
+	to.FeatureID = m.FeatureID
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -1269,6 +1271,10 @@ func DefaultApplyFieldMaskTask(ctx context.Context, patchee *Task, patcher *Task
 		}
 		if f == prefix+"Comment" {
 			patchee.Comment = patcher.Comment
+			continue
+		}
+		if f == prefix+"FeatureID" {
+			patchee.FeatureID = patcher.FeatureID
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {

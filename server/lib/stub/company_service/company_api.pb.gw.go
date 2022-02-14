@@ -49,64 +49,6 @@ func local_request_ApiService_HealthCheck_0(ctx context.Context, marshaler runti
 
 }
 
-func request_ApiService_GenerateTokenByRole_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq TempGenToken
-	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		e   int32
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["role"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "role")
-	}
-
-	e, err = runtime.Enum(val, TempGenToken_Role_value)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "role", err)
-	}
-
-	protoReq.Role = TempGenToken_Role(e)
-
-	msg, err := client.GenerateTokenByRole(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func local_request_ApiService_GenerateTokenByRole_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq TempGenToken
-	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		e   int32
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["role"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "role")
-	}
-
-	e, err = runtime.Enum(val, TempGenToken_Role_value)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "role", err)
-	}
-
-	protoReq.Role = TempGenToken_Role(e)
-
-	msg, err := server.GenerateTokenByRole(ctx, &protoReq)
-	return msg, metadata, err
-
-}
-
 func request_ApiService_ListCompany_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ListRequest
 	var metadata runtime.ServerMetadata
@@ -310,36 +252,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("GET", pattern_ApiService_GenerateTokenByRole_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/GenerateTokenByRole", runtime.WithHTTPPathPattern("/api/company/temporary/get-token/{role}"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_ApiService_GenerateTokenByRole_0(rctx, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_ApiService_GenerateTokenByRole_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
 	mux.Handle("GET", pattern_ApiService_ListCompany_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListCompany", runtime.WithHTTPPathPattern("/api/company"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListCompany", runtime.WithHTTPPathPattern("/api/company/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -362,7 +281,7 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListCompanyGroup", runtime.WithHTTPPathPattern("/api/company/group"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListCompanyGroup", runtime.WithHTTPPathPattern("/api/company/group/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -385,7 +304,7 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListCreateCompanyGroupTask", runtime.WithHTTPPathPattern("/api/company/group-task"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListCreateCompanyGroupTask", runtime.WithHTTPPathPattern("/api/company/group/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -431,7 +350,7 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyGroupTask", runtime.WithHTTPPathPattern("/api/company/group-task"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyGroupTask", runtime.WithHTTPPathPattern("/api/company/group/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -454,7 +373,7 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyGroupTask", runtime.WithHTTPPathPattern("/v2/example/a_bit_of_everything/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyGroupTask", runtime.WithHTTPPathPattern("/api/company/group/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -532,31 +451,11 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("GET", pattern_ApiService_GenerateTokenByRole_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/GenerateTokenByRole", runtime.WithHTTPPathPattern("/api/company/temporary/get-token/{role}"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_ApiService_GenerateTokenByRole_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_ApiService_GenerateTokenByRole_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
 	mux.Handle("GET", pattern_ApiService_ListCompany_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListCompany", runtime.WithHTTPPathPattern("/api/company"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListCompany", runtime.WithHTTPPathPattern("/api/company/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -576,7 +475,7 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListCompanyGroup", runtime.WithHTTPPathPattern("/api/company/group"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListCompanyGroup", runtime.WithHTTPPathPattern("/api/company/group/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -596,7 +495,7 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListCreateCompanyGroupTask", runtime.WithHTTPPathPattern("/api/company/group-task"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListCreateCompanyGroupTask", runtime.WithHTTPPathPattern("/api/company/group/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -636,7 +535,7 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyGroupTask", runtime.WithHTTPPathPattern("/api/company/group-task"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyGroupTask", runtime.WithHTTPPathPattern("/api/company/group/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -656,7 +555,7 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyGroupTask", runtime.WithHTTPPathPattern("/v2/example/a_bit_of_everything/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyGroupTask", runtime.WithHTTPPathPattern("/api/company/group/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -678,25 +577,21 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 var (
 	pattern_ApiService_HealthCheck_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "company", "health"}, ""))
 
-	pattern_ApiService_GenerateTokenByRole_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "company", "temporary", "get-token", "role"}, ""))
+	pattern_ApiService_ListCompany_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "company", "data"}, ""))
 
-	pattern_ApiService_ListCompany_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "company"}, ""))
+	pattern_ApiService_ListCompanyGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "company", "group", "data"}, ""))
 
-	pattern_ApiService_ListCompanyGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "company", "group"}, ""))
-
-	pattern_ApiService_ListCreateCompanyGroupTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "company", "group-task"}, ""))
+	pattern_ApiService_ListCreateCompanyGroupTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "company", "group", "task"}, ""))
 
 	pattern_ApiService_ListCurrency_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "company", "currency"}, ""))
 
-	pattern_ApiService_CreateCompanyGroupTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "company", "group-task"}, ""))
+	pattern_ApiService_CreateCompanyGroupTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "company", "group", "task"}, ""))
 
-	pattern_ApiService_CreateCompanyGroupTask_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v2", "example", "a_bit_of_everything", "taskID"}, ""))
+	pattern_ApiService_CreateCompanyGroupTask_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "company", "group", "task", "taskID"}, ""))
 )
 
 var (
 	forward_ApiService_HealthCheck_0 = runtime.ForwardResponseMessage
-
-	forward_ApiService_GenerateTokenByRole_0 = runtime.ForwardResponseMessage
 
 	forward_ApiService_ListCompany_0 = runtime.ForwardResponseMessage
 

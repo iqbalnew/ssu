@@ -202,6 +202,24 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	return res, nil
 }
 
+func (s *Server) AssignTypeID(ctx context.Context, req *pb.AssignaTypeIDRequest) (*pb.AssignaTypeIDResponse, error) {
+	data, err := s.provider.FindTaskById(ctx, req.TaskID)
+	if err != nil {
+		logrus.Errorln(err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	data.FeatureID = req.FeatureID
+	_, err = s.provider.UpdateTask(ctx, data)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	return &pb.AssignaTypeIDResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Created",
+	}, nil
+}
+
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
 	task, err := s.provider.FindTaskById(ctx, req.TaskID)
 	if err != nil {

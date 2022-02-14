@@ -45,6 +45,7 @@ service TaskService {
 
     rpc GetListAnnouncement(ListRequest) returns (ListTaskResponse);
     
+    rpc AssignTypeID(AssignaTypeIDRequest) returns (AssignaTypeIDResponse);
 
 }
 

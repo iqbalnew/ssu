@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "google.golang.org/protobuf/types/known/anypb"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	_ "google.golang.org/protobuf/types/known/anypb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -124,5 +124,11 @@ func (this *GraphStepResponse) Validate() error {
 			}
 		}
 	}
+	return nil
+}
+func (this *AssignaTypeIDRequest) Validate() error {
+	return nil
+}
+func (this *AssignaTypeIDResponse) Validate() error {
 	return nil
 }
