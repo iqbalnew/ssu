@@ -38,6 +38,7 @@ message SaveTaskRequest {
 
 message SaveTaskResponse {
     bool success = 1;
+    Task data = 2;
 }
 
 message SetTaskRequest {

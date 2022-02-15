@@ -64,6 +64,14 @@ message Task {
 
     uint64 featureID = 10;
 
+    repeated Task childs = 11  [(gorm.field).has_many = {
+        foreignkey: "ParentID"
+        append: true
+        preload: false
+    }];
+
+    bool isParentActive = 12 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {default: "false" }];
+
     google.protobuf.Timestamp createdAt = 101;
     google.protobuf.Timestamp updatedAt = 102;
 }
