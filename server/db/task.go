@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type GraphResult struct {
@@ -90,7 +91,10 @@ func (p *GormProvider) GetGraphStatus(ctx context.Context, service string, stat 
 }
 
 func (p *GormProvider) CreateTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {
-	if err := p.db_main.Create(&task).Error; err != nil {
+	query := p.db_main.Clauses(clause.OnConflict{
+		UpdateAll: true,
+	})
+	if err := query.Create(&task).Error; err != nil {
 		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 	}
@@ -100,7 +104,10 @@ func (p *GormProvider) CreateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 
 func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {
 	taskModel := pb.TaskORM{TaskID: task.TaskID}
-	if err := p.db_main.Model(&taskModel).Updates(&task).Error; err != nil {
+	query := p.db_main.Clauses(clause.OnConflict{
+		UpdateAll: true,
+	})
+	if err := query.Model(&taskModel).Updates(&task).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
@@ -115,7 +122,7 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 
 func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM, error) {
 	task := &pb.TaskORM{TaskID: id}
-	if err := p.db_main.Find(&task).Error; err != nil {
+	if err := p.db_main.Preload(clause.Associations).Find(&task).Error; err != nil {
 		return nil, status.Errorf(codes.NotFound, "Task Not Found")
 	}
 	return task, nil
@@ -128,7 +135,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, f st
 	}
 	query = query.Scopes(FilterScoope(f), QueryScoop(q))
 	query = query.Scopes(Paginate(tasks, pagination, query), Sort(sort))
-	result := query.Find(&tasks)
+	result := query.Preload(clause.Associations).Find(&tasks)
 	if err := result.Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)

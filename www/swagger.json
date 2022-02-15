@@ -117,6 +117,12 @@
             "format": "uint64"
           },
           {
+            "name": "task.isParentActive",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
             "name": "task.createdAt",
             "in": "query",
             "required": false,
@@ -314,43 +320,6 @@
             }
           }
         },
-        "tags": [
-          "TaskService"
-        ]
-      }
-    },
-    "/api/task/type/{ID}": {
-      "get": {
-        "operationId": "TaskService_GetTaskByTypeID",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetTaskByTypeIDRes"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "ID",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
         "tags": [
           "TaskService"
         ]
@@ -599,6 +568,9 @@
       "properties": {
         "success": {
           "type": "boolean"
+        },
+        "data": {
+          "$ref": "#/definitions/v1Task"
         }
       }
     },
@@ -657,6 +629,16 @@
         "featureID": {
           "type": "string",
           "format": "uint64"
+        },
+        "childs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Task"
+          }
+        },
+        "isParentActive": {
+          "type": "boolean",
+          "readOnly": true
         },
         "createdAt": {
           "type": "string",

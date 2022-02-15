@@ -112,13 +112,16 @@ type UserWithAfterToPB interface {
 }
 
 type TaskORM struct {
-	Comment          string `gorm:"type:text"`
+	Childs           []*TaskORM `gorm:"foreignkey:ParentID;association_foreignkey:TaskID;append:true"`
+	Comment          string     `gorm:"type:text"`
 	CreatedAt        *time.Time
 	CreatedByID      uint64 `gorm:"not null"`
 	Data             string `gorm:"type:jsonb"`
 	FeatureID        uint64
+	IsParentActive   bool `gorm:"default:false"`
 	LastApprovedByID uint64
 	LastRejectedByID uint64
+	ParentID         *uint64
 	Status           int32  `gorm:"default:1;not null"`
 	Step             int32  `gorm:"default:1;not null"`
 	TaskID           uint64 `gorm:"primary_key;not null"`
@@ -151,6 +154,18 @@ func (m *Task) ToORM(ctx context.Context) (TaskORM, error) {
 	to.Data = m.Data
 	to.Comment = m.Comment
 	to.FeatureID = m.FeatureID
+	for _, v := range m.Childs {
+		if v != nil {
+			if tempChilds, cErr := v.ToORM(ctx); cErr == nil {
+				to.Childs = append(to.Childs, &tempChilds)
+			} else {
+				return to, cErr
+			}
+		} else {
+			to.Childs = append(to.Childs, nil)
+		}
+	}
+	to.IsParentActive = m.IsParentActive
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -185,6 +200,18 @@ func (m *TaskORM) ToPB(ctx context.Context) (Task, error) {
 	to.Data = m.Data
 	to.Comment = m.Comment
 	to.FeatureID = m.FeatureID
+	for _, v := range m.Childs {
+		if v != nil {
+			if tempChilds, cErr := v.ToPB(ctx); cErr == nil {
+				to.Childs = append(to.Childs, &tempChilds)
+			} else {
+				return to, cErr
+			}
+		} else {
+			to.Childs = append(to.Childs, nil)
+		}
+	}
+	to.IsParentActive = m.IsParentActive
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -1127,6 +1154,10 @@ func DefaultStrictUpdateTask(ctx context.Context, in *Task, db *gorm.DB) (*Task,
 			return nil, err
 		}
 	}
+	if err = db.Model(&ormObj).Association("Childs").Append(ormObj.Childs).Error; err != nil {
+		return nil, err
+	}
+	ormObj.Childs = nil
 	if hook, ok := interface{}(&ormObj).(TaskORMWithBeforeStrictUpdateSave); ok {
 		if db, err = hook.BeforeStrictUpdateSave(ctx, db); err != nil {
 			return nil, err
@@ -1275,6 +1306,14 @@ func DefaultApplyFieldMaskTask(ctx context.Context, patchee *Task, patcher *Task
 		}
 		if f == prefix+"FeatureID" {
 			patchee.FeatureID = patcher.FeatureID
+			continue
+		}
+		if f == prefix+"Childs" {
+			patchee.Childs = patcher.Childs
+			continue
+		}
+		if f == prefix+"IsParentActive" {
+			patchee.IsParentActive = patcher.IsParentActive
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {

@@ -230,6 +230,9 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	res := &pb.SaveTaskResponse{
 		Success: true,
+		Data: &pb.Task{
+			TaskID: task.TaskID,
+		},
 	}
 
 	return res, nil
@@ -258,6 +261,15 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if err != nil {
 		return nil, err
 	}
+	if task.IsParentActive {
+		return nil, status.Errorf(codes.InvalidArgument, "This is child task with active parent, please refer to parent for change status")
+	}
+
+	isParent := false
+	if task.Data == "[]" {
+		isParent = true
+	}
+
 	if req.Comment != "" {
 		task.Comment = req.Comment
 	}
@@ -317,10 +329,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Status = 5
 	}
 
+	for i := range task.Childs {
+		task.Childs[i].LastApprovedByID = task.LastApprovedByID
+		task.Childs[i].LastRejectedByID = task.LastRejectedByID
+		if sendTask {
+			task.Childs[i].Status = task.Status
+			task.Childs[i].Step = task.Step
+		}
+	}
+
 	updatedTask, err := s.provider.UpdateTask(ctx, task)
 	if err != nil {
 		return nil, err
 	}
+	reUpdate := false
 
 	taskPb, _ := updatedTask.ToPB(ctx)
 
@@ -443,18 +465,40 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			companyClient := account_pb.NewApiServiceClient(accountConn)
 
-			data := account_pb.CreateAccountRequest{}
-			account := account_pb.Account{}
-			json.Unmarshal([]byte(task.Data), &account)
+			if isParent {
+				for i := range task.Childs {
+					if task.Childs[i].IsParentActive {
+						data := account_pb.CreateAccountRequest{}
+						account := account_pb.Account{}
+						json.Unmarshal([]byte(task.Childs[i].Data), &account)
 
-			data.Data = &account
-			data.TaskID = task.TaskID
+						data.Data = &account
+						data.TaskID = task.Childs[i].TaskID
 
-			res, err := companyClient.CreateAccount(ctx, &data)
-			if err != nil {
-				return nil, err
+						res, err := companyClient.CreateAccount(ctx, &data)
+						if err != nil {
+							return nil, err
+						}
+						logrus.Println(res)
+
+						task.Childs[i].IsParentActive = false
+						reUpdate = true
+					}
+				}
+			} else {
+				data := account_pb.CreateAccountRequest{}
+				account := account_pb.Account{}
+				json.Unmarshal([]byte(task.Data), &account)
+
+				data.Data = &account
+				data.TaskID = task.TaskID
+
+				res, err := companyClient.CreateAccount(ctx, &data)
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
 			}
-			logrus.Println(res)
 
 		case "Notification":
 			var opts []grpc.DialOption
@@ -500,6 +544,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, err
 			}
 			logrus.Println(res)
+
+		}
+	}
+
+	if reUpdate {
+		updatedTask, err = s.provider.UpdateTask(ctx, task)
+		if err != nil {
+			return nil, err
 		}
 	}
 
