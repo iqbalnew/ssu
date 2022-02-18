@@ -169,7 +169,7 @@ func grpcGatewayServerCmd() cli.Command {
 			closeDBConnections()
 
 			logrus.Println("Stopping RPC server")
-			s.Stop()
+			s.GracefulStop()
 			logrus.Println("RPC server stopped")
 			logrus.Println("JSON Gateway server stopped")
 
