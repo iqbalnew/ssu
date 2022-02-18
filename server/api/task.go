@@ -156,6 +156,29 @@ func (s *Server) GetTaskGraphStatus(ctx context.Context, req *pb.GraphStatusRequ
 	return res, nil
 }
 
+func (s *Server) GraphStatusColumnType(ctx context.Context, req *pb.GraphStatusColumnTypeRequest) (*pb.GraphStatusColumnTypeResponse, error) {
+	stat := req.Status.Number()
+	data, err := s.provider.GetGraphServiceType(ctx, req.Service, uint(stat), req.Column)
+	if err != nil {
+		return nil, err
+	}
+	res := &pb.GraphStatusColumnTypeResponse{}
+	res.Code = 200
+	res.Error = false
+	res.Message = "Graph Data"
+	for _, v := range data {
+		val := &pb.GraphStatusColumnType{
+			Status: v.Name,
+			Type:   v.Type,
+			Total:  v.Total,
+		}
+
+		res.Data = append(res.Data, val)
+	}
+
+	return res, nil
+}
+
 func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest) (*pb.GraphStepResponse, error) {
 	step := req.Step.Number()
 	stat := req.Status.Number()

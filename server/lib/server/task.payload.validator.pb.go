@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "google.golang.org/protobuf/types/known/anypb"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "github.com/mwitkow/go-proto-validators"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -100,6 +100,22 @@ func (this *ListTaskResponse) Validate() error {
 	return nil
 }
 func (this *GraphStatusRequest) Validate() error {
+	return nil
+}
+func (this *GraphStatusColumnTypeRequest) Validate() error {
+	return nil
+}
+func (this *GraphStatusColumnTypeResponse) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *GraphStatusColumnType) Validate() error {
 	return nil
 }
 func (this *GraphStatus) Validate() error {

@@ -115,6 +115,29 @@ message GraphStatusRequest {
         (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
           description: "Service: 'Announcement', 'Company', 'Account', 'Notification'"
         }];
+    string filter = 3;
+}
+
+message GraphStatusColumnTypeRequest {
+    statuses status = 1;
+    string service = 2 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          description: "Service: 'Announcement', 'Company', 'Account', 'Notification'"
+        }];
+    string column = 3;
+}
+
+message GraphStatusColumnTypeResponse {
+    bool error = 1;
+    uint32 code = 2;
+    string message = 3;
+    repeated GraphStatusColumnType data = 4;
+}
+
+message GraphStatusColumnType {
+    string status = 1;
+    string type = 2;
+    uint64 total = 3;
 }
 
 message GraphStatus {

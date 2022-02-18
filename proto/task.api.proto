@@ -37,6 +37,12 @@ service TaskService {
         };
     };
 
+    rpc GraphStatusColumnType(GraphStatusColumnTypeRequest) returns (GraphStatusColumnTypeResponse) {
+        option (google.api.http) = {
+            get: "/api/task/graph/column-type"
+        };
+    };
+
     rpc GetTaskGraphStep(GraphStepRequest) returns (GraphStepResponse) {
         option (google.api.http) = {
             get: "/api/task/graph/steps"

@@ -27,6 +27,7 @@ type TaskServiceClient interface {
 	SetTask(ctx context.Context, in *SetTaskRequest, opts ...grpc.CallOption) (*SetTaskResponse, error)
 	GetListTask(ctx context.Context, in *ListTaskRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
 	GetTaskGraphStatus(ctx context.Context, in *GraphStatusRequest, opts ...grpc.CallOption) (*GraphStatusResponse, error)
+	GraphStatusColumnType(ctx context.Context, in *GraphStatusColumnTypeRequest, opts ...grpc.CallOption) (*GraphStatusColumnTypeResponse, error)
 	GetTaskGraphStep(ctx context.Context, in *GraphStepRequest, opts ...grpc.CallOption) (*GraphStepResponse, error)
 	GetListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
 	AssignTypeID(ctx context.Context, in *AssignaTypeIDRequest, opts ...grpc.CallOption) (*AssignaTypeIDResponse, error)
@@ -86,6 +87,15 @@ func (c *taskServiceClient) GetTaskGraphStatus(ctx context.Context, in *GraphSta
 	return out, nil
 }
 
+func (c *taskServiceClient) GraphStatusColumnType(ctx context.Context, in *GraphStatusColumnTypeRequest, opts ...grpc.CallOption) (*GraphStatusColumnTypeResponse, error) {
+	out := new(GraphStatusColumnTypeResponse)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GraphStatusColumnType", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *taskServiceClient) GetTaskGraphStep(ctx context.Context, in *GraphStepRequest, opts ...grpc.CallOption) (*GraphStepResponse, error) {
 	out := new(GraphStepResponse)
 	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetTaskGraphStep", in, out, opts...)
@@ -131,6 +141,7 @@ type TaskServiceServer interface {
 	SetTask(context.Context, *SetTaskRequest) (*SetTaskResponse, error)
 	GetListTask(context.Context, *ListTaskRequest) (*ListTaskResponse, error)
 	GetTaskGraphStatus(context.Context, *GraphStatusRequest) (*GraphStatusResponse, error)
+	GraphStatusColumnType(context.Context, *GraphStatusColumnTypeRequest) (*GraphStatusColumnTypeResponse, error)
 	GetTaskGraphStep(context.Context, *GraphStepRequest) (*GraphStepResponse, error)
 	GetListAnnouncement(context.Context, *ListRequest) (*ListTaskResponse, error)
 	AssignTypeID(context.Context, *AssignaTypeIDRequest) (*AssignaTypeIDResponse, error)
@@ -156,6 +167,9 @@ func (UnimplementedTaskServiceServer) GetListTask(context.Context, *ListTaskRequ
 }
 func (UnimplementedTaskServiceServer) GetTaskGraphStatus(context.Context, *GraphStatusRequest) (*GraphStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskGraphStatus not implemented")
+}
+func (UnimplementedTaskServiceServer) GraphStatusColumnType(context.Context, *GraphStatusColumnTypeRequest) (*GraphStatusColumnTypeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GraphStatusColumnType not implemented")
 }
 func (UnimplementedTaskServiceServer) GetTaskGraphStep(context.Context, *GraphStepRequest) (*GraphStepResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskGraphStep not implemented")
@@ -272,6 +286,24 @@ func _TaskService_GetTaskGraphStatus_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskService_GraphStatusColumnType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GraphStatusColumnTypeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GraphStatusColumnType(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/GraphStatusColumnType",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GraphStatusColumnType(ctx, req.(*GraphStatusColumnTypeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TaskService_GetTaskGraphStep_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GraphStepRequest)
 	if err := dec(in); err != nil {
@@ -370,6 +402,10 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTaskGraphStatus",
 			Handler:    _TaskService_GetTaskGraphStatus_Handler,
+		},
+		{
+			MethodName: "GraphStatusColumnType",
+			Handler:    _TaskService_GraphStatusColumnType_Handler,
 		},
 		{
 			MethodName: "GetTaskGraphStep",

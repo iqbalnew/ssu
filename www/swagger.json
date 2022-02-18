@@ -185,6 +185,58 @@
         ]
       }
     },
+    "/api/task/graph/column-type": {
+      "get": {
+        "operationId": "TaskService_GraphStatusColumnType",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GraphStatusColumnTypeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "NullStatus",
+              "Pending",
+              "Draft",
+              "Returned",
+              "Approved",
+              "Rejected"
+            ],
+            "default": "NullStatus"
+          },
+          {
+            "name": "service",
+            "description": "Service: 'Announcement', 'Company', 'Account', 'Notification'",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "column",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TaskService"
+        ]
+      }
+    },
     "/api/task/graph/status": {
       "get": {
         "operationId": "TaskService_GetTaskGraphStatus",
@@ -221,6 +273,12 @@
           {
             "name": "service",
             "description": "Service: 'Announcement', 'Company', 'Account', 'Notification'",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filter",
             "in": "query",
             "required": false,
             "type": "string"
@@ -450,6 +508,42 @@
         "total": {
           "type": "string",
           "format": "uint64"
+        }
+      }
+    },
+    "v1GraphStatusColumnType": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "total": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "v1GraphStatusColumnTypeResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1GraphStatusColumnType"
+          }
         }
       }
     },

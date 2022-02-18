@@ -19,6 +19,12 @@ type GraphResult struct {
 	Total uint64
 }
 
+type GraphResultColumnType struct {
+	Name  string
+	Type  string
+	Total uint64
+}
+
 func (p *GormProvider) GetGraphStep(ctx context.Context, service string, step uint, stat uint, isIncludeApprove bool, isIncludeReject bool) (result []*GraphResult, err error) {
 	selectOpt := fmt.Sprintf("step as name, type, count(*) as total")
 	query := p.db_main.Model(&pb.TaskORM{}).Select(selectOpt)
@@ -63,8 +69,38 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, service string, step ui
 	return result, nil
 }
 
-func (p *GormProvider) GetGraphStatus(ctx context.Context, service string, stat uint) (result []*GraphResult, err error) {
+func (p *GormProvider) GetGraphServiceType(ctx context.Context, service string, stat uint, filter string) (result []*GraphResultColumnType, err error) {
+	if filter == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "column cant be empty")
+	}
 
+	column := columnNameBuilder(filter)
+	selectOpt := fmt.Sprintf("%s as name, type, count(*) as total", column)
+	query := p.db_main.Model(&pb.TaskORM{}).Select(selectOpt)
+	whereOpt := ""
+	if service != "" {
+		whereOpt = fmt.Sprintf("type = '%v'", service)
+	}
+	if stat > 0 {
+		if whereOpt != "" {
+			whereOpt = whereOpt + " AND "
+		}
+		whereOpt = fmt.Sprintf("%v status = %v", whereOpt, stat)
+	}
+	if whereOpt != "" {
+		query = query.Where(whereOpt)
+	}
+
+	query = query.Group(fmt.Sprintf("%s, type", column))
+
+	if err = query.Find(&result).Error; err != nil {
+		logrus.Errorln(err)
+		return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+	}
+	return result, nil
+}
+
+func (p *GormProvider) GetGraphStatus(ctx context.Context, service string, stat uint) (result []*GraphResult, err error) {
 	selectOpt := fmt.Sprintf("status as name, type, count(*) as total")
 	query := p.db_main.Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := ""
