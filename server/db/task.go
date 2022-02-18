@@ -158,8 +158,13 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 
 func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM, error) {
 	task := &pb.TaskORM{TaskID: id}
-	if err := p.db_main.Preload(clause.Associations).Find(&task).Error; err != nil {
-		return nil, status.Errorf(codes.NotFound, "Task Not Found")
+	if err := p.db_main.Preload(clause.Associations).First(&task).Error; err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+		} else {
+			return nil, status.Errorf(codes.NotFound, "Task Not Found")
+		}
 	}
 	return task, nil
 }
