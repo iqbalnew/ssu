@@ -84,9 +84,13 @@ func QueryScoop(v string) func(db *gorm.DB) *gorm.DB {
 }
 
 func queryColumnsLoop(db *gorm.DB, columns []string, expresion string, value string) *gorm.DB {
-	for _, s := range columns {
+	for i, s := range columns {
 		s = columnNameBuilder(s)
-		db = db.Or(fmt.Sprintf("%s %s ?", s, expresion), value)
+		if i == 0 {
+			db = db.Where(fmt.Sprintf("%s %s ?", s, expresion), value)
+		} else {
+			db = db.Or(fmt.Sprintf("%s %s ?", s, expresion), value)
+		}
 	}
 	return db
 }
