@@ -165,6 +165,18 @@ func columnNameBuilder(s string) string {
 				s = s + fmt.Sprintf("->'%s'", t)
 			}
 		}
+	} else if strings.Contains(s, ".") {
+		nested := strings.Split(s, ".")
+		s = ""
+		for i, t := range nested {
+			if i == 0 {
+				s = fmt.Sprintf("\"%s\"", t)
+			} else if i == len(nested)-1 {
+				s = s + fmt.Sprintf("->>'%s'", t)
+			} else {
+				s = s + fmt.Sprintf("->'%s'", t)
+			}
+		}
 	} else {
 		s = fmt.Sprintf("\"%s\"", s)
 	}
