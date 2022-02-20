@@ -9,6 +9,18 @@ import "task.payload.proto";
 package task.service.v1;
 option go_package = "./pb";
 
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        title: "Task Service";
+        version: "0.1";
+    };
+
+    schemes: HTTP;
+    schemes: HTTPS;
+    consumes: "application/json";
+    produces: "application/json";
+};
+
 service TaskService {
     rpc HealthCheck(Empty) returns (HealthCheckResponse) {
         option (google.api.http) = {
