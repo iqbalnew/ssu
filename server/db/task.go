@@ -64,7 +64,7 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, service string, step ui
 
 	if err = query.Find(&result).Error; err != nil {
 		logrus.Errorln(err)
-		return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 	return result, nil
 }
@@ -95,7 +95,7 @@ func (p *GormProvider) GetGraphServiceType(ctx context.Context, service string, 
 
 	if err = query.Find(&result).Error; err != nil {
 		logrus.Errorln(err)
-		return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 	return result, nil
 }
@@ -121,7 +121,7 @@ func (p *GormProvider) GetGraphStatus(ctx context.Context, service string, stat 
 
 	if err = query.Find(&result).Error; err != nil {
 		logrus.Errorln(err)
-		return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 	return result, nil
 }
@@ -132,7 +132,7 @@ func (p *GormProvider) CreateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 	})
 	if err := query.Create(&task).Error; err != nil {
 		logrus.Errorln(err)
-		return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 
 	return task, nil
@@ -146,7 +146,7 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 	if err := query.Model(&taskModel).Updates(&task).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
-			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 		} else {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.NotFound, "Task Not Found")
@@ -161,7 +161,7 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	if err := p.db_main.Preload(clause.Associations).First(&task).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
-			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 		} else {
 			return nil, status.Errorf(codes.NotFound, "Task Not Found")
 		}
@@ -176,11 +176,10 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, f st
 	}
 	query = query.Scopes(FilterScoope(f), QueryScoop(q))
 	query = query.Scopes(Paginate(tasks, pagination, query), Sort(sort))
-	result := query.Preload(clause.Associations).Find(&tasks)
-	if err := result.Error; err != nil {
+	if err := query.Preload(clause.Associations).Find(&tasks).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
-			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 		}
 	}
 	return tasks, nil
@@ -192,7 +191,7 @@ func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskO
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
+			return nil, status.Errorf(codes.Internal, "DB Internal Error")
 		}
 	}
 	return tasks, nil
@@ -201,7 +200,7 @@ func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskO
 func (p *GormProvider) SaveTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {
 	if err := p.db_main.Save(&task).Error; err != nil {
 		logrus.Errorln(err)
-		return nil, status.Errorf(codes.Internal, "Internal Error")
+		return nil, status.Errorf(codes.Internal, "DB Internal Error")
 	}
 	return task, nil
 }
