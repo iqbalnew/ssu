@@ -81,6 +81,9 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 }
 
 func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
+
+	return nil, status.Errorf(codes.Internal, "Internal Error: %v")
+
 	// logrus.Println("After %v", pb)
 
 	var dataorm pb.TaskORM

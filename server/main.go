@@ -213,7 +213,9 @@ func httpGatewayServer(port int, grpcEndpoint string) error {
 	}
 	defer conn.Close()
 
-	rmux := runtime.NewServeMux()
+	rmux := runtime.NewServeMux(
+		runtime.WithErrorHandler(CustomHTTPError),
+	)
 	// opts := []grpc.DialOption{grpc.WithInsecure()}
 	// err := pb.RegisterBaseServiceHandlerFromEndpoint(ctx, rmux, grpcEndpoint, opts)
 	client := pb.NewTaskServiceClient(conn)
