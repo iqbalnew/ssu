@@ -241,7 +241,7 @@
           },
           {
             "name": "column",
-            "description": "Example: status, data.statusLevel'",
+            "description": "Example: 'status' , 'data.statusLevel'",
             "in": "query",
             "required": false,
             "type": "string"
@@ -337,7 +337,7 @@
           },
           {
             "name": "status",
-            "description": "Default all status, exlude 'Approve' and 'Reject'",
+            "description": "Default all status, exclude 'Approve' and 'Reject'",
             "in": "query",
             "required": false,
             "type": "string",
