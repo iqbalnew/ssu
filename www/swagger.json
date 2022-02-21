@@ -22,6 +22,8 @@
   "paths": {
     "/api/task": {
       "get": {
+        "summary": "Get list data task",
+        "description": "This API is used for get list data task",
         "operationId": "TaskService_GetListTask",
         "responses": {
           "200": {
@@ -142,6 +144,7 @@
           },
           {
             "name": "limit",
+            "description": "limit data per page. Default value '-1' for disable limit",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -149,6 +152,7 @@
           },
           {
             "name": "page",
+            "description": "page number to get data. Default value '-1' for disable page",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -156,12 +160,14 @@
           },
           {
             "name": "sort",
+            "description": "Order data by column name",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
             "name": "dir",
+            "description": "Order direction",
             "in": "query",
             "required": false,
             "type": "string",
@@ -193,6 +199,8 @@
     },
     "/api/task/graph/column-type": {
       "get": {
+        "summary": "Get graph data by column name",
+        "description": "This API is used for get graph data base on column name",
         "operationId": "TaskService_GraphStatusColumnType",
         "responses": {
           "200": {
@@ -233,6 +241,7 @@
           },
           {
             "name": "column",
+            "description": "Example: status, data.statusLevel'",
             "in": "query",
             "required": false,
             "type": "string"
@@ -245,6 +254,8 @@
     },
     "/api/task/graph/status": {
       "get": {
+        "summary": "Get graph data by status task",
+        "description": "This API is used for get graph data base on status task",
         "operationId": "TaskService_GetTaskGraphStatus",
         "responses": {
           "200": {
@@ -282,12 +293,6 @@
             "in": "query",
             "required": false,
             "type": "string"
-          },
-          {
-            "name": "filter",
-            "in": "query",
-            "required": false,
-            "type": "string"
           }
         ],
         "tags": [
@@ -297,6 +302,8 @@
     },
     "/api/task/graph/steps": {
       "get": {
+        "summary": "Get graph data by step task",
+        "description": "This API is used for get graph data base on step task",
         "operationId": "TaskService_GetTaskGraphStep",
         "responses": {
           "200": {
@@ -315,6 +322,7 @@
         "parameters": [
           {
             "name": "step",
+            "description": "Default all steps",
             "in": "query",
             "required": false,
             "type": "string",
@@ -329,6 +337,7 @@
           },
           {
             "name": "status",
+            "description": "Default all status, exlude 'Approve' and 'Reject'",
             "in": "query",
             "required": false,
             "type": "string",
@@ -351,12 +360,14 @@
           },
           {
             "name": "isIncludeApprove",
+            "description": "For include data Approve status",
             "in": "query",
             "required": false,
             "type": "boolean"
           },
           {
             "name": "isIncludeReject",
+            "description": "For include data Reject status",
             "in": "query",
             "required": false,
             "type": "boolean"
@@ -367,30 +378,10 @@
         ]
       }
     },
-    "/api/task/health": {
-      "get": {
-        "operationId": "TaskService_HealthCheck",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1HealthCheckResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "tags": [
-          "TaskService"
-        ]
-      }
-    },
     "/api/task/{taskID}": {
       "put": {
+        "summary": "Set status task by action",
+        "description": "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject",
         "operationId": "TaskService_SetTask",
         "responses": {
           "200": {
@@ -607,14 +598,6 @@
           "items": {
             "$ref": "#/definitions/v1GraphStep"
           }
-        }
-      }
-    },
-    "v1HealthCheckResponse": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "string"
         }
       }
     },
