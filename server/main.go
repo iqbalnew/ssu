@@ -22,6 +22,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 )
@@ -206,7 +207,7 @@ func httpGatewayServer(port int, grpcEndpoint string) error {
 	defer cancel()
 
 	// Connect to the GRPC server
-	conn, err := grpc.Dial(grpcEndpoint, grpc.WithInsecure())
+	conn, err := grpc.Dial(grpcEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
 	}
