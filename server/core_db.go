@@ -43,7 +43,7 @@ func initDBMain() {
 		return
 	}
 
-	db_main_sql.SetMaxIdleConns(10)
+	db_main_sql.SetMaxIdleConns(0)
 	db_main_sql.SetMaxOpenConns(100)
 
 	err = db_main_sql.Ping()

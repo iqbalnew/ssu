@@ -22,12 +22,6 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 };
 
 service TaskService {
-    rpc HealthCheck(Empty) returns (HealthCheckResponse) {
-        option (google.api.http) = {
-            get: "/api/task/health"
-        };
-    };
-
     rpc SaveTaskWithData(SaveTaskRequest) returns (SaveTaskResponse) {};
 
     rpc SetTask(SetTaskRequest) returns (SetTaskResponse) {
@@ -35,11 +29,19 @@ service TaskService {
             put: "/api/task/{taskID}"
             body: "*"
         };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Set status task by action"
+            description: "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject"
+        };
     };
 
     rpc GetListTask(ListTaskRequest) returns (ListTaskResponse) {
         option (google.api.http) = {
             get: "/api/task"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get list data task"
+            description: "This API is used for get list data task"
         };
     };
 
@@ -47,17 +49,29 @@ service TaskService {
         option (google.api.http) = {
             get: "/api/task/graph/status"
         };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get graph data by status task"
+            description: "This API is used for get graph data base on status task"
+        };
     };
 
     rpc GraphStatusColumnType(GraphStatusColumnTypeRequest) returns (GraphStatusColumnTypeResponse) {
         option (google.api.http) = {
             get: "/api/task/graph/column-type"
         };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get graph data by column name"
+            description: "This API is used for get graph data base on column name"
+        };
     };
 
     rpc GetTaskGraphStep(GraphStepRequest) returns (GraphStepResponse) {
         option (google.api.http) = {
             get: "/api/task/graph/steps"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get graph data by step task"
+            description: "This API is used for get graph data base on step task"
         };
     };
 
