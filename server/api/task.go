@@ -9,6 +9,7 @@ import (
 	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
+	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
@@ -572,6 +573,30 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		
 		// case "Role":
 
+
+		case "Menu":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			menuConn, err := grpc.Dial(getEnv("MENU_SERVICE", ":9096"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Menu Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer menuConn.Close()
+
+			client := menu_pb.NewApiServiceClient(menuConn)
+
+			data := menu_pb.CreateMenuRequest{}
+			json.Unmarshal([]byte(task.Data), &data.Data)
+
+			data.TaskID = task.TaskID
+			res, err := client.CreateMenu(ctx, &data)
+      if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
+
 		case "Workflow":
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
@@ -598,7 +623,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 			logrus.Println(res)
 
-		
+		}
+
 	}
 
 	if reUpdate {
