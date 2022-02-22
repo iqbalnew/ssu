@@ -11,8 +11,9 @@ import (
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
-	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
+	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
+	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/sirupsen/logrus"
@@ -570,9 +571,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, err
 			}
 			logrus.Println(res)
-		
-		// case "Role":
-
 
 		case "Menu":
 			var opts []grpc.DialOption
@@ -592,7 +590,30 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			data.TaskID = task.TaskID
 			res, err := client.CreateMenu(ctx, &data)
-      if err != nil {
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
+
+		case "Role":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9098"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Role Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer roleConn.Close()
+
+			client := role_pb.NewApiServiceClient(roleConn)
+
+			data := role_pb.CreateRoleRequest{}
+			json.Unmarshal([]byte(task.Data), &data.Data)
+
+			data.TaskID = task.TaskID
+			res, err := client.CreateRole(ctx, &data)
+			if err != nil {
 				return nil, err
 			}
 			logrus.Println(res)
@@ -616,8 +637,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			data.Data = workflowTask.Workflow
 			data.TaskID = task.TaskID
-			
-			res, err := client.CreateUser(ctx, &data)
+
+			res, err := client.CreateWorkflow(ctx, &data)
 			if err != nil {
 				return nil, err
 			}
