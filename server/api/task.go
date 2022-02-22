@@ -10,6 +10,7 @@ import (
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
+	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
@@ -331,7 +332,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 		} else {
 			if currentStep >= 3 {
-				if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" {
+				if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" || task.Type == "Workflow" {
 					if currentStep == 4 {
 						sendTask = true
 						task.Status = 4
@@ -545,6 +546,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, err
 			}
 			logrus.Println(res)
+
 		case "User":
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
@@ -567,8 +569,36 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, err
 			}
 			logrus.Println(res)
+		
+		// case "Role":
 
-		}
+		case "Workflow":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Workflow Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer workflowConn.Close()
+
+			client := workflow_pb.NewApiServiceClient(workflowConn)
+
+			data := workflow_pb.CreateWorkflowRequest{}
+			workflowTask := workflow_pb.WorkflowTask{}
+			json.Unmarshal([]byte(task.Data), &workflowTask)
+
+			data.Data = workflowTask.Workflow
+			data.TaskID = task.TaskID
+			
+			res, err := client.CreateUser(ctx, &data)
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
+
+		
 	}
 
 	if reUpdate {
