@@ -5,6 +5,7 @@ import "mwitkow/go-proto-validators/validator.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 import "task.payload.proto";
+import "task.payload_ev.proto";
 
 package task.service.v1;
 option go_package = "./pb";
@@ -23,6 +24,7 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 service TaskService {
     rpc SaveTaskWithData(SaveTaskRequest) returns (SaveTaskResponse) {};
+    rpc SaveTaskWithDataEV(SaveTaskRequestEV) returns (SaveTaskResponseEV) {};
 
     rpc SetTask(SetTaskRequest) returns (SetTaskResponse) {
         option (google.api.http) = {
@@ -34,10 +36,29 @@ service TaskService {
             description: "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject"
         };
     };
+    rpc SetTaskEV(SetTaskRequestEV) returns (SetTaskResponseEV) {
+        option (google.api.http) = {
+            put: "/api/task-ev/{taskID}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Set status task by action"
+            description: "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject"
+        };
+    };
 
     rpc GetListTask(ListTaskRequest) returns (ListTaskResponse) {
         option (google.api.http) = {
             get: "/api/task"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get list data task"
+            description: "This API is used for get list data task"
+        };
+    };
+    rpc GetListTaskEV(ListTaskRequestEV) returns (ListTaskResponseEV) {
+        option (google.api.http) = {
+            get: "/api/task-ev"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get list data task"
@@ -78,6 +99,7 @@ service TaskService {
     rpc GetListAnnouncement(ListRequest) returns (ListTaskResponse);
     
     rpc AssignTypeID(AssignaTypeIDRequest) returns (AssignaTypeIDResponse);
+    rpc AssignTypeIDEV(AssignaTypeIDRequestEV) returns (AssignaTypeIDResponse);
 
     rpc GetTaskByTypeID(GetTaskByTypeIDReq) returns (GetTaskByTypeIDRes);
 

@@ -76,6 +76,32 @@ message Task {
     google.protobuf.Timestamp updatedAt = 102;
 }
 
+message TaskEV {
+    string taskID = 1;
+    string type = 2;
+    
+    statuses status = 3;
+
+    steps step = 4;
+    
+    string createdByID = 5;
+    string lastApprovedByID = 6;
+    string lastRejectedByID = 7;
+
+    string data = 8;
+
+    string comment = 9;
+
+    string featureID = 10;
+
+    repeated TaskEV childs = 11;
+
+    bool isParentActive = 12;
+
+    google.protobuf.Timestamp createdAt = 101;
+    google.protobuf.Timestamp updatedAt = 102;
+}
+
 message TaskRequest {
     uint64 TaskID = 1 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {primary_key: true not_null: true}];
     string type = 2 [(google.api.field_behavior) = REQUIRED, (gorm.field).tag = { not_null: true}];

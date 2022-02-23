@@ -23,13 +23,17 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TaskServiceClient interface {
 	SaveTaskWithData(ctx context.Context, in *SaveTaskRequest, opts ...grpc.CallOption) (*SaveTaskResponse, error)
+	SaveTaskWithDataEV(ctx context.Context, in *SaveTaskRequestEV, opts ...grpc.CallOption) (*SaveTaskResponseEV, error)
 	SetTask(ctx context.Context, in *SetTaskRequest, opts ...grpc.CallOption) (*SetTaskResponse, error)
+	SetTaskEV(ctx context.Context, in *SetTaskRequestEV, opts ...grpc.CallOption) (*SetTaskResponseEV, error)
 	GetListTask(ctx context.Context, in *ListTaskRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
+	GetListTaskEV(ctx context.Context, in *ListTaskRequestEV, opts ...grpc.CallOption) (*ListTaskResponseEV, error)
 	GetTaskGraphStatus(ctx context.Context, in *GraphStatusRequest, opts ...grpc.CallOption) (*GraphStatusResponse, error)
 	GraphStatusColumnType(ctx context.Context, in *GraphStatusColumnTypeRequest, opts ...grpc.CallOption) (*GraphStatusColumnTypeResponse, error)
 	GetTaskGraphStep(ctx context.Context, in *GraphStepRequest, opts ...grpc.CallOption) (*GraphStepResponse, error)
 	GetListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
 	AssignTypeID(ctx context.Context, in *AssignaTypeIDRequest, opts ...grpc.CallOption) (*AssignaTypeIDResponse, error)
+	AssignTypeIDEV(ctx context.Context, in *AssignaTypeIDRequestEV, opts ...grpc.CallOption) (*AssignaTypeIDResponse, error)
 	GetTaskByTypeID(ctx context.Context, in *GetTaskByTypeIDReq, opts ...grpc.CallOption) (*GetTaskByTypeIDRes, error)
 }
 
@@ -50,6 +54,15 @@ func (c *taskServiceClient) SaveTaskWithData(ctx context.Context, in *SaveTaskRe
 	return out, nil
 }
 
+func (c *taskServiceClient) SaveTaskWithDataEV(ctx context.Context, in *SaveTaskRequestEV, opts ...grpc.CallOption) (*SaveTaskResponseEV, error) {
+	out := new(SaveTaskResponseEV)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/SaveTaskWithDataEV", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *taskServiceClient) SetTask(ctx context.Context, in *SetTaskRequest, opts ...grpc.CallOption) (*SetTaskResponse, error) {
 	out := new(SetTaskResponse)
 	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/SetTask", in, out, opts...)
@@ -59,9 +72,27 @@ func (c *taskServiceClient) SetTask(ctx context.Context, in *SetTaskRequest, opt
 	return out, nil
 }
 
+func (c *taskServiceClient) SetTaskEV(ctx context.Context, in *SetTaskRequestEV, opts ...grpc.CallOption) (*SetTaskResponseEV, error) {
+	out := new(SetTaskResponseEV)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/SetTaskEV", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *taskServiceClient) GetListTask(ctx context.Context, in *ListTaskRequest, opts ...grpc.CallOption) (*ListTaskResponse, error) {
 	out := new(ListTaskResponse)
 	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetListTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceClient) GetListTaskEV(ctx context.Context, in *ListTaskRequestEV, opts ...grpc.CallOption) (*ListTaskResponseEV, error) {
+	out := new(ListTaskResponseEV)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetListTaskEV", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -113,6 +144,15 @@ func (c *taskServiceClient) AssignTypeID(ctx context.Context, in *AssignaTypeIDR
 	return out, nil
 }
 
+func (c *taskServiceClient) AssignTypeIDEV(ctx context.Context, in *AssignaTypeIDRequestEV, opts ...grpc.CallOption) (*AssignaTypeIDResponse, error) {
+	out := new(AssignaTypeIDResponse)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/AssignTypeIDEV", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *taskServiceClient) GetTaskByTypeID(ctx context.Context, in *GetTaskByTypeIDReq, opts ...grpc.CallOption) (*GetTaskByTypeIDRes, error) {
 	out := new(GetTaskByTypeIDRes)
 	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetTaskByTypeID", in, out, opts...)
@@ -127,13 +167,17 @@ func (c *taskServiceClient) GetTaskByTypeID(ctx context.Context, in *GetTaskByTy
 // for forward compatibility
 type TaskServiceServer interface {
 	SaveTaskWithData(context.Context, *SaveTaskRequest) (*SaveTaskResponse, error)
+	SaveTaskWithDataEV(context.Context, *SaveTaskRequestEV) (*SaveTaskResponseEV, error)
 	SetTask(context.Context, *SetTaskRequest) (*SetTaskResponse, error)
+	SetTaskEV(context.Context, *SetTaskRequestEV) (*SetTaskResponseEV, error)
 	GetListTask(context.Context, *ListTaskRequest) (*ListTaskResponse, error)
+	GetListTaskEV(context.Context, *ListTaskRequestEV) (*ListTaskResponseEV, error)
 	GetTaskGraphStatus(context.Context, *GraphStatusRequest) (*GraphStatusResponse, error)
 	GraphStatusColumnType(context.Context, *GraphStatusColumnTypeRequest) (*GraphStatusColumnTypeResponse, error)
 	GetTaskGraphStep(context.Context, *GraphStepRequest) (*GraphStepResponse, error)
 	GetListAnnouncement(context.Context, *ListRequest) (*ListTaskResponse, error)
 	AssignTypeID(context.Context, *AssignaTypeIDRequest) (*AssignaTypeIDResponse, error)
+	AssignTypeIDEV(context.Context, *AssignaTypeIDRequestEV) (*AssignaTypeIDResponse, error)
 	GetTaskByTypeID(context.Context, *GetTaskByTypeIDReq) (*GetTaskByTypeIDRes, error)
 	mustEmbedUnimplementedTaskServiceServer()
 }
@@ -145,11 +189,20 @@ type UnimplementedTaskServiceServer struct {
 func (UnimplementedTaskServiceServer) SaveTaskWithData(context.Context, *SaveTaskRequest) (*SaveTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveTaskWithData not implemented")
 }
+func (UnimplementedTaskServiceServer) SaveTaskWithDataEV(context.Context, *SaveTaskRequestEV) (*SaveTaskResponseEV, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveTaskWithDataEV not implemented")
+}
 func (UnimplementedTaskServiceServer) SetTask(context.Context, *SetTaskRequest) (*SetTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetTask not implemented")
 }
+func (UnimplementedTaskServiceServer) SetTaskEV(context.Context, *SetTaskRequestEV) (*SetTaskResponseEV, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetTaskEV not implemented")
+}
 func (UnimplementedTaskServiceServer) GetListTask(context.Context, *ListTaskRequest) (*ListTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListTask not implemented")
+}
+func (UnimplementedTaskServiceServer) GetListTaskEV(context.Context, *ListTaskRequestEV) (*ListTaskResponseEV, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListTaskEV not implemented")
 }
 func (UnimplementedTaskServiceServer) GetTaskGraphStatus(context.Context, *GraphStatusRequest) (*GraphStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskGraphStatus not implemented")
@@ -165,6 +218,9 @@ func (UnimplementedTaskServiceServer) GetListAnnouncement(context.Context, *List
 }
 func (UnimplementedTaskServiceServer) AssignTypeID(context.Context, *AssignaTypeIDRequest) (*AssignaTypeIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AssignTypeID not implemented")
+}
+func (UnimplementedTaskServiceServer) AssignTypeIDEV(context.Context, *AssignaTypeIDRequestEV) (*AssignaTypeIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AssignTypeIDEV not implemented")
 }
 func (UnimplementedTaskServiceServer) GetTaskByTypeID(context.Context, *GetTaskByTypeIDReq) (*GetTaskByTypeIDRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskByTypeID not implemented")
@@ -200,6 +256,24 @@ func _TaskService_SaveTaskWithData_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskService_SaveTaskWithDataEV_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveTaskRequestEV)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).SaveTaskWithDataEV(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/SaveTaskWithDataEV",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).SaveTaskWithDataEV(ctx, req.(*SaveTaskRequestEV))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TaskService_SetTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SetTaskRequest)
 	if err := dec(in); err != nil {
@@ -218,6 +292,24 @@ func _TaskService_SetTask_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskService_SetTaskEV_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetTaskRequestEV)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).SetTaskEV(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/SetTaskEV",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).SetTaskEV(ctx, req.(*SetTaskRequestEV))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TaskService_GetListTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListTaskRequest)
 	if err := dec(in); err != nil {
@@ -232,6 +324,24 @@ func _TaskService_GetListTask_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TaskServiceServer).GetListTask(ctx, req.(*ListTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskService_GetListTaskEV_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTaskRequestEV)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GetListTaskEV(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/GetListTaskEV",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GetListTaskEV(ctx, req.(*ListTaskRequestEV))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -326,6 +436,24 @@ func _TaskService_AssignTypeID_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskService_AssignTypeIDEV_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssignaTypeIDRequestEV)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).AssignTypeIDEV(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/AssignTypeIDEV",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).AssignTypeIDEV(ctx, req.(*AssignaTypeIDRequestEV))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TaskService_GetTaskByTypeID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetTaskByTypeIDReq)
 	if err := dec(in); err != nil {
@@ -356,12 +484,24 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TaskService_SaveTaskWithData_Handler,
 		},
 		{
+			MethodName: "SaveTaskWithDataEV",
+			Handler:    _TaskService_SaveTaskWithDataEV_Handler,
+		},
+		{
 			MethodName: "SetTask",
 			Handler:    _TaskService_SetTask_Handler,
 		},
 		{
+			MethodName: "SetTaskEV",
+			Handler:    _TaskService_SetTaskEV_Handler,
+		},
+		{
 			MethodName: "GetListTask",
 			Handler:    _TaskService_GetListTask_Handler,
+		},
+		{
+			MethodName: "GetListTaskEV",
+			Handler:    _TaskService_GetListTaskEV_Handler,
 		},
 		{
 			MethodName: "GetTaskGraphStatus",
@@ -382,6 +522,10 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AssignTypeID",
 			Handler:    _TaskService_AssignTypeID_Handler,
+		},
+		{
+			MethodName: "AssignTypeIDEV",
+			Handler:    _TaskService_AssignTypeIDEV_Handler,
 		},
 		{
 			MethodName: "GetTaskByTypeID",

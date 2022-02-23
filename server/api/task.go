@@ -3,7 +3,9 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
@@ -15,6 +17,7 @@ import (
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
 
+	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -78,6 +81,48 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 		}
 		res.Data = &data
+	}
+
+	return res, nil
+}
+
+func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (*pb.ListTaskResponseEV, error) {
+	key := getEnv("AES_KEY", "Odj12345*")
+	aes := customAES.NewCustomAES(key)
+
+	taskPB, err := taskEVtoPB(req.Task, aes)
+	if err != nil {
+		return nil, err
+	}
+
+	reqPB := &pb.ListTaskRequest{
+		Task:   taskPB,
+		Limit:  req.Limit,
+		Page:   req.Page,
+		Sort:   req.Sort,
+		Dir:    pb.ListTaskRequestDirection(req.Dir.Number()),
+		Filter: req.Filter,
+		Query:  req.Query,
+	}
+
+	resPB, err := s.GetListTask(ctx, reqPB)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &pb.ListTaskResponseEV{
+		Error:      resPB.Error,
+		Code:       resPB.Code,
+		Message:    resPB.Message,
+		Pagination: resPB.Pagination,
+	}
+
+	for _, v := range resPB.Data {
+		task, err := taskPBtoEV(v, aes)
+		if err != nil {
+			return nil, err
+		}
+		res.Data = append(res.Data, task)
 	}
 
 	return res, nil
@@ -233,6 +278,43 @@ func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (
 	return &result, nil
 }
 
+func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequestEV) (*pb.SaveTaskResponseEV, error) {
+	key := getEnv("AES_KEY", "Odj12345*")
+	aes := customAES.NewCustomAES(key)
+
+	taskID, err := strconv.Atoi(aes.Decrypt(req.TaskID))
+	if err != nil {
+		// handle error
+		fmt.Println(err)
+		return nil, status.Errorf(codes.Internal, "Failed to decrypt taskID")
+	}
+
+	taskPB, err := taskEVtoPB(req.Task, aes)
+	if err != nil {
+		return nil, err
+	}
+
+	request := &pb.SaveTaskRequest{
+		TaskID:  uint64(taskID),
+		Task:    taskPB,
+		IsDraft: req.IsDraft,
+	}
+
+	response, err := s.SaveTaskWithData(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+
+	taskEV, _ := taskPBtoEV(response.Data, aes)
+
+	res := &pb.SaveTaskResponseEV{
+		Success: response.Success,
+		Data:    taskEV,
+	}
+
+	return res, nil
+}
+
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
 	task, _ := req.Task.ToORM(ctx)
 	var err error
@@ -275,6 +357,26 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	return res, nil
 }
 
+func (s *Server) AssignTypeIDEV(ctx context.Context, req *pb.AssignaTypeIDRequestEV) (*pb.AssignaTypeIDResponse, error) {
+	key := getEnv("AES_KEY", "Odj12345*")
+	aes := customAES.NewCustomAES(key)
+
+	taskID, err := strconv.Atoi(aes.Decrypt(req.TaskID))
+	if err != nil {
+		// handle error
+		fmt.Println(err)
+		return nil, status.Errorf(codes.Internal, "Failed to decrypt taskID")
+	}
+
+	reqPB := &pb.AssignaTypeIDRequest{
+		TaskID:    uint64(taskID),
+		FeatureID: req.FeatureID,
+		Type:      req.Type,
+	}
+
+	return s.AssignTypeID(ctx, reqPB)
+}
+
 func (s *Server) AssignTypeID(ctx context.Context, req *pb.AssignaTypeIDRequest) (*pb.AssignaTypeIDResponse, error) {
 	data, err := s.provider.FindTaskById(ctx, req.TaskID)
 	if err != nil {
@@ -291,6 +393,40 @@ func (s *Server) AssignTypeID(ctx context.Context, req *pb.AssignaTypeIDRequest)
 		Code:    200,
 		Message: "Created",
 	}, nil
+}
+
+func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.SetTaskResponseEV, error) {
+	key := getEnv("AES_KEY", "Odj12345*")
+	aes := customAES.NewCustomAES(key)
+
+	taskID, err := strconv.Atoi(aes.Decrypt(req.TaskID))
+	if err != nil {
+		// handle error
+		fmt.Println(err)
+		return nil, status.Errorf(codes.Internal, "Failed to decrypt taskID")
+	}
+
+	reqPB := &pb.SetTaskRequest{
+		TaskID:  uint64(taskID),
+		Action:  req.Action,
+		Comment: req.Comment,
+	}
+
+	resPB, err := s.SetTask(ctx, reqPB)
+	if err != nil {
+		return nil, err
+	}
+
+	taskEV, _ := taskPBtoEV(resPB.Data, aes)
+
+	res := &pb.SetTaskResponseEV{
+		Error:   resPB.Error,
+		Code:    resPB.Code,
+		Message: resPB.Message,
+		Data:    taskEV,
+	}
+
+	return res, nil
 }
 
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {

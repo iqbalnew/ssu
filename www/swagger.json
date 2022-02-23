@@ -197,6 +197,227 @@
         ]
       }
     },
+    "/api/task-ev": {
+      "get": {
+        "summary": "Get list data task",
+        "description": "This API is used for get list data task",
+        "operationId": "TaskService_GetListTaskEV",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListTaskResponseEV"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "task.taskID",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "NullStatus",
+              "Pending",
+              "Draft",
+              "Returned",
+              "Approved",
+              "Rejected"
+            ],
+            "default": "NullStatus"
+          },
+          {
+            "name": "task.step",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "NullStep",
+              "Maker",
+              "Checker",
+              "Signer",
+              "Releaser"
+            ],
+            "default": "NullStep"
+          },
+          {
+            "name": "task.createdByID",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.lastApprovedByID",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.lastRejectedByID",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.data",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.comment",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.featureID",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.isParentActive",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "task.createdAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "task.updatedAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "limit",
+            "description": "limit data per page. Default value '-1' for disable limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "page",
+            "description": "page number to get data. Default value '-1' for disable page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "sort",
+            "description": "Order data by column name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dir",
+            "description": "Order direction",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "DESC",
+              "ASC"
+            ],
+            "default": "DESC"
+          },
+          {
+            "name": "filter",
+            "description": "Create 'AND' queries \n format: [key:value,key:value] \n example: filter=task_id:1,type:Announcement =\u003e Where task_id = 1 AND type = 'Announcement' \n Expressions: \n - 'key:value' =\u003e 'key = value' \n - 'key:%%value' =\u003e 'key LIKE %value%' \n - 'key:%!value' =\u003e 'key ILIKE %value%' \n - 'key:\u003e=value' =\u003e 'key \u003e= value' \n - 'key:\u003c=value' =\u003e 'key \u003c= value' \n - 'key1:\u003e=value1,key2:\u003c=value2' =\u003e 'key1 \u003e= value1 AND key2 \u003c= value2' BETWEEN EXAMPLE \n - 'key1.nestedKey1:value' =\u003e 'key1-\u003e\u003enestedKey1 = value'",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "description": "Create 'OR' queries \n format: [key1,key2,key3:value] \n example: query=name,type:Announcement =\u003e Where name = 'Announcement' OR type = 'Announcement' \n Expressions: \n - 'key:value' =\u003e 'key = value' \n - 'key:%%value' =\u003e 'key LIKE %value%' \n - 'key:%!value' =\u003e 'key ILIKE %value%' \n - 'key1.nestedKey1:value' =\u003e 'key1-\u003e\u003enestedKey1 = value'",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TaskService"
+        ]
+      }
+    },
+    "/api/task-ev/{taskID}": {
+      "put": {
+        "summary": "Set status task by action",
+        "description": "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject",
+        "operationId": "TaskService_SetTaskEV",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SetTaskResponseEV"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "taskID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "description": "Action: 'approve', 'rework', 'reject'"
+                },
+                "comment": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "TaskService"
+        ]
+      }
+    },
     "/api/task/graph/column-type": {
       "get": {
         "summary": "Get graph data by column name",
@@ -430,14 +651,6 @@
     }
   },
   "definitions": {
-    "ListTaskRequestdirection": {
-      "type": "string",
-      "enum": [
-        "DESC",
-        "ASC"
-      ],
-      "default": "DESC"
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -601,6 +814,22 @@
         }
       }
     },
+    "v1ListTaskRequestEVdirection": {
+      "type": "string",
+      "enum": [
+        "DESC",
+        "ASC"
+      ],
+      "default": "DESC"
+    },
+    "v1ListTaskRequestdirection": {
+      "type": "string",
+      "enum": [
+        "DESC",
+        "ASC"
+      ],
+      "default": "DESC"
+    },
     "v1ListTaskResponse": {
       "type": "object",
       "properties": {
@@ -618,6 +847,30 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/v1Task"
+          }
+        },
+        "pagination": {
+          "$ref": "#/definitions/v1PaginationResponse"
+        }
+      }
+    },
+    "v1ListTaskResponseEV": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1TaskEV"
           }
         },
         "pagination": {
@@ -657,6 +910,17 @@
         }
       }
     },
+    "v1SaveTaskResponseEV": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "#/definitions/v1TaskEV"
+        }
+      }
+    },
     "v1SetTaskResponse": {
       "type": "object",
       "properties": {
@@ -672,6 +936,24 @@
         },
         "data": {
           "$ref": "#/definitions/v1Task"
+        }
+      }
+    },
+    "v1SetTaskResponseEV": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/v1TaskEV"
         }
       }
     },
@@ -722,6 +1004,58 @@
         "isParentActive": {
           "type": "boolean",
           "readOnly": true
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1TaskEV": {
+      "type": "object",
+      "properties": {
+        "taskID": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/v1statuses"
+        },
+        "step": {
+          "$ref": "#/definitions/v1steps"
+        },
+        "createdByID": {
+          "type": "string"
+        },
+        "lastApprovedByID": {
+          "type": "string"
+        },
+        "lastRejectedByID": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "featureID": {
+          "type": "string"
+        },
+        "childs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1TaskEV"
+          }
+        },
+        "isParentActive": {
+          "type": "boolean"
         },
         "createdAt": {
           "type": "string",
