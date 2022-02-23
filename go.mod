@@ -29,8 +29,10 @@ require (
 require (
 	github.com/ThreeDotsLabs/watermill-amqp/v2 v2.0.3 // indirect
 	github.com/cenkalti/backoff/v3 v3.2.2 // indirect
+	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
+	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

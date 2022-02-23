@@ -236,15 +236,26 @@ func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
 	task, _ := req.Task.ToORM(ctx)
 	var err error
+
 	task.Step = 2
 	task.Status = 1
+
 	if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu" {
 		task.Step = 3
 	}
+
+	if req.IsDraft {
+		task.Step = 1
+		task.Status = 2
+	}
+
 	if req.TaskID > 0 {
 		task.Step = 1
 		task.TaskID = req.TaskID
 		task.Status = 1
+		if req.IsDraft {
+			task.Status = 2
+		}
 		_, err = s.provider.UpdateTask(ctx, &task)
 	} else {
 		_, err = s.provider.CreateTask(ctx, &task)
@@ -308,7 +319,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Status = 2
 		task.Step = 1
 	case "approve":
-
 		taskPb, _ := task.ToPB(ctx)
 		if currentStatus == 4 {
 			return &pb.SetTaskResponse{
@@ -319,38 +329,50 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}, nil
 		}
 
-		if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu" {
-			if currentStep == 1 {
-				task.Status = 1
-				task.Step = 4
+		if currentStatus == 2 {
+			task.Step = 2
+			task.Status = 1
+
+			if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu" {
+				task.Step = 3
 			}
-			if currentStep == 3 {
-				task.Status = 1
-				task.Step = 4
-			}
-			if currentStep == 4 {
-				sendTask = true
-				task.Status = 4
-			}
+
 		} else {
-			if currentStep >= 3 {
-				if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" || task.Type == "Workflow" {
-					if currentStep == 4 {
-						sendTask = true
-						task.Status = 4
-					} else {
-						task.Status = 1
-						task.Step++
-					}
-				} else {
+
+			if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu" {
+				if currentStep == 1 {
+					task.Status = 1
+					task.Step = 4
+				}
+				if currentStep == 3 {
+					task.Status = 1
+					task.Step = 4
+				}
+				if currentStep == 4 {
 					sendTask = true
 					task.Status = 4
 				}
 			} else {
-				task.Status = 1
-				task.Step++
+				if currentStep >= 3 {
+					if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" || task.Type == "Workflow" {
+						if currentStep == 4 {
+							sendTask = true
+							task.Status = 4
+						} else {
+							task.Status = 1
+							task.Step++
+						}
+					} else {
+						sendTask = true
+						task.Status = 4
+					}
+				} else {
+					task.Status = 1
+					task.Step++
+				}
 			}
 		}
+
 	case "reject":
 		task.Status = 5
 	}
