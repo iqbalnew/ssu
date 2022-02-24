@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"strings"
 
 	"google.golang.org/grpc"
 
@@ -236,7 +237,7 @@ func httpGatewayServer(port int, grpcEndpoint string) error {
 	// Start
 	logrus.Printf("Starting JSON Gateway server on port %d...", port)
 
-	return http.ListenAndServe(fmt.Sprintf(":%d", port), cors(mux))
+	return http.ListenAndServe(fmt.Sprintf(":%d", port), setHeaders(mux))
 }
 
 func serveSwagger(w http.ResponseWriter, r *http.Request) {
@@ -244,10 +245,7 @@ func serveSwagger(w http.ResponseWriter, r *http.Request) {
 }
 
 func allowedOrigin(origin string) bool {
-	if viper.GetString("cors") == "https://addons-web-client.vercel.app" {
-		return true
-	}
-	if viper.GetString("cors") == "*" {
+	if stringInSlice(viper.GetString("cors"), config.CorsAllowedOrigins) {
 		return true
 	}
 	if matched, _ := regexp.MatchString(viper.GetString("cors"), origin); matched {
@@ -256,12 +254,15 @@ func allowedOrigin(origin string) bool {
 	return false
 }
 
-func cors(h http.Handler) http.Handler {
+func setHeaders(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Strict-Transport-Security", "max-age=31536000")
+
 		if allowedOrigin(r.Header.Get("Origin")) {
-			w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-			w.Header().Set("Access-Control-Allow-Methods", "GET, HEAD, OPTION, POST, PUT, PATCH, DELETE")
-			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization, ResponseType")
+			w.Header().Set("Content-Security-Policy", "default-src 'self'")
+			w.Header().Set("Access-Control-Allow-Origin", strings.Join(config.CorsAllowedOrigins, ", "))
+			w.Header().Set("Access-Control-Allow-Methods", strings.Join(config.CorsAllowedMethods, ", "))
+			w.Header().Set("Access-Control-Allow-Headers", strings.Join(config.CorsAllowedHeaders, ", "))
 		}
 		if r.Method == "OPTIONS" {
 			return

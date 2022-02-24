@@ -39,9 +39,9 @@ func initConfig() {
 
 	config = &Config{
 		ListenAddress:       fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")),
-		CorsAllowedHeaders:  []string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Content-Disposition", "Origin", "X-Requested-With", "X-Forwarded-For"},
+		CorsAllowedHeaders:  []string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Content-Disposition", "Origin", "Content-Length", "Authorization", "ResponseType", "X-Requested-With", "X-Forwarded-For"},
 		CorsAllowedMethods:  []string{"GET", "POST", "PATCH", "DELETE", "PUT"},
-		CorsAllowedOrigins:  []string{},
+		CorsAllowedOrigins:  []string{"*"},
 		JWTSecret:           getEnv("JWT_SECRET", "secret"),
 		JWTDuration:         getEnv("JWT_DURATION", "48h"),
 		Dsn:                 getEnv("DB_DSN", ""),
@@ -63,4 +63,13 @@ func getEnv(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }
