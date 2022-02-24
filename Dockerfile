@@ -4,6 +4,9 @@ ARG BASE_IMAGE=bitnami/minideb:buster
 
 FROM $BUILDER_IMAGE as builder
 
+# ENV http_proxy http://proxy4.bri.co.id:1707
+# ENV https_proxy http://proxy4.bri.co.id:1707
+
 COPY . /root/go/src/app/
 
 ARG BUILD_VERSION
@@ -17,6 +20,7 @@ ENV BUILD_VERSION=$BUILD_VERSION
 ENV GOPROXY=$GOPROXY
 ENV GOSUMDB=$GOSUMDB
 
+RUN go mod tidy
 # RUN go mod vendor
 
 # Build the binary
@@ -24,12 +28,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -v -ldflags "-X main.version=$(BUILD_VE
 
 FROM $BASE_IMAGE
 
-ENV http_proxy 'http://172.18.104.20:1707'
-ENV https_proxy 'http://172.18.104.20:1707'
-
 # RUN install_packages ca-certificates
-
-RUN install_packages curl
 
 ENV http_proxy=
 ENV https_proxy=
