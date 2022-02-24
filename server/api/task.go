@@ -410,6 +410,7 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 		TaskID:  uint64(taskID),
 		Action:  req.Action,
 		Comment: req.Comment,
+		Reasons: req.Reasons,
 	}
 
 	resPB, err := s.SetTask(ctx, reqPB)
@@ -445,6 +446,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	if req.Comment != "" {
 		task.Comment = req.Comment
+	}
+
+	if req.Reasons != "" {
+		task.Reasons = req.Reasons
 	}
 
 	sendTask := false
