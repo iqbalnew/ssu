@@ -27,6 +27,16 @@ service TaskService {
     rpc SaveTaskWithDataEV(SaveTaskRequestEV) returns (SaveTaskResponseEV) {};
 
     rpc SetTask(SetTaskRequest) returns (SetTaskResponse) {
+        // option (google.api.http) = {
+        //     put: "/api/task/{taskID}"
+        //     body: "*"
+        // };
+        // option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        //     summary: "Set status task by action"
+        //     description: "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject"
+        // };
+    };
+    rpc SetTaskEV(SetTaskRequestEV) returns (SetTaskResponseEV) {
         option (google.api.http) = {
             put: "/api/task/{taskID}"
             body: "*"
@@ -36,25 +46,15 @@ service TaskService {
             description: "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject"
         };
     };
-    rpc SetTaskEV(SetTaskRequestEV) returns (SetTaskResponseEV) {
-        option (google.api.http) = {
-            put: "/api/task-ev/{taskID}"
-            body: "*"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Set status task by action"
-            description: "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject"
-        };
-    };
 
     rpc GetListTask(ListTaskRequest) returns (ListTaskResponse) {
-        option (google.api.http) = {
-            get: "/api/task"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Get list data task"
-            description: "This API is used for get list data task"
-        };
+        // option (google.api.http) = {
+        //     get: "/api/task"
+        // };
+        // option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        //     summary: "Get list data task"
+        //     description: "This API is used for get list data task"
+        // };
     };
     rpc GetListTaskEV(ListTaskRequestEV) returns (ListTaskResponseEV) {
         option (google.api.http) = {

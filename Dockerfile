@@ -4,8 +4,8 @@ ARG BASE_IMAGE=bitnami/minideb:buster
 
 FROM $BUILDER_IMAGE as builder
 
-# ENV http_proxy http://proxy4.bri.co.id:1707
-# ENV https_proxy http://proxy4.bri.co.id:1707
+ENV http_proxy http://proxy4.bri.co.id:1707
+ENV https_proxy http://proxy4.bri.co.id:1707
 
 COPY . /root/go/src/app/
 
