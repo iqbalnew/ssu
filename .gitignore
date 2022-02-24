@@ -12,8 +12,8 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
-# !vendor/modules.txt
+vendor/
+!vendor/modules.txt
 
 # Remove the following pattern if you wish to check in your lock file
 pubspec.lock

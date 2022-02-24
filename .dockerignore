@@ -4,3 +4,5 @@ generate.sh
 start-server.sh
 README.md
 build/
+vendor/
+!vendor/modules.txt
