@@ -32,6 +32,8 @@ enum statuses{
     Returned = 3;
     Approved = 4;
     Rejected = 5;
+    DeleteRequest = 6;
+    Deleted = 7;
 }
 
 enum steps{
@@ -72,8 +74,11 @@ message Task {
 
     bool isParentActive = 12 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {default: "false" }];
 
+    string reasons = 13 [(gorm.field).tag = { type: "varchar(255)" }];
+
     google.protobuf.Timestamp createdAt = 101;
     google.protobuf.Timestamp updatedAt = 102;
+    google.protobuf.Timestamp deletedAt = 103;
 }
 
 message TaskEV {
@@ -98,8 +103,12 @@ message TaskEV {
 
     bool isParentActive = 12;
 
+    string reasons = 13;
+
     google.protobuf.Timestamp createdAt = 101;
     google.protobuf.Timestamp updatedAt = 102;
+    google.protobuf.Timestamp deletedAt = 103;
+
 }
 
 message TaskRequest {

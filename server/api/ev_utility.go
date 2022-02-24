@@ -75,11 +75,13 @@ func taskEVtoPB(val *pb.TaskEV, aes *customAES.CustomAES) (*pb.Task, error) {
 	data.LastApprovedByID = uint64(lastApprovedByID)
 	data.LastRejectedByID = uint64(lastRejectedByID)
 	data.Data = val.Data
+	data.Reasons = val.Reasons
 	data.Comment = val.Comment
 	data.FeatureID = uint64(featureID)
 	data.IsParentActive = val.IsParentActive
 	data.CreatedAt = val.CreatedAt
 	data.UpdatedAt = val.UpdatedAt
+	data.DeletedAt = val.DeletedAt
 
 	for _, v := range val.Childs {
 		vr, err := taskEVtoPB(v, aes)
@@ -107,11 +109,13 @@ func taskPBtoEV(val *pb.Task, aes *customAES.CustomAES) (*pb.TaskEV, error) {
 	data.LastApprovedByID = aes.Encrypt(fmt.Sprint(val.LastApprovedByID))
 	data.LastRejectedByID = aes.Encrypt(fmt.Sprint(val.LastRejectedByID))
 	data.Data = val.Data
+	data.Reasons = val.Reasons
 	data.Comment = val.Comment
 	data.FeatureID = aes.Encrypt(fmt.Sprint(val.FeatureID))
 	data.IsParentActive = val.IsParentActive
 	data.CreatedAt = val.CreatedAt
 	data.UpdatedAt = val.UpdatedAt
+	data.DeletedAt = val.DeletedAt
 
 	for _, v := range val.Childs {
 		vr, err := taskPBtoEV(v, aes)

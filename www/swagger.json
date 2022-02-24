@@ -64,7 +64,9 @@
               "Draft",
               "Returned",
               "Approved",
-              "Rejected"
+              "Rejected",
+              "DeleteRequest",
+              "Deleted"
             ],
             "default": "NullStatus"
           },
@@ -129,6 +131,12 @@
             "type": "boolean"
           },
           {
+            "name": "task.reasons",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "task.createdAt",
             "in": "query",
             "required": false,
@@ -137,6 +145,13 @@
           },
           {
             "name": "task.updatedAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "task.deletedAt",
             "in": "query",
             "required": false,
             "type": "string",
@@ -240,7 +255,9 @@
               "Draft",
               "Returned",
               "Approved",
-              "Rejected"
+              "Rejected",
+              "DeleteRequest",
+              "Deleted"
             ],
             "default": "NullStatus"
           },
@@ -301,6 +318,12 @@
             "type": "boolean"
           },
           {
+            "name": "task.reasons",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "task.createdAt",
             "in": "query",
             "required": false,
@@ -309,6 +332,13 @@
           },
           {
             "name": "task.updatedAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "task.deletedAt",
             "in": "query",
             "required": false,
             "type": "string",
@@ -449,7 +479,9 @@
               "Draft",
               "Returned",
               "Approved",
-              "Rejected"
+              "Rejected",
+              "DeleteRequest",
+              "Deleted"
             ],
             "default": "NullStatus"
           },
@@ -504,7 +536,9 @@
               "Draft",
               "Returned",
               "Approved",
-              "Rejected"
+              "Rejected",
+              "DeleteRequest",
+              "Deleted"
             ],
             "default": "NullStatus"
           },
@@ -568,7 +602,9 @@
               "Draft",
               "Returned",
               "Approved",
-              "Rejected"
+              "Rejected",
+              "DeleteRequest",
+              "Deleted"
             ],
             "default": "NullStatus"
           },
@@ -1005,11 +1041,18 @@
           "type": "boolean",
           "readOnly": true
         },
+        "reasons": {
+          "type": "string"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
         },
         "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
           "type": "string",
           "format": "date-time"
         }
@@ -1057,11 +1100,18 @@
         "isParentActive": {
           "type": "boolean"
         },
+        "reasons": {
+          "type": "string"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
         },
         "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
           "type": "string",
           "format": "date-time"
         }
@@ -1075,7 +1125,9 @@
         "Draft",
         "Returned",
         "Approved",
-        "Rejected"
+        "Rejected",
+        "DeleteRequest",
+        "Deleted"
       ],
       "default": "NullStatus"
     },
