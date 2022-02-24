@@ -259,7 +259,7 @@ func setHeaders(h http.Handler) http.Handler {
 		w.Header().Set("Strict-Transport-Security", "max-age=31536000")
 
 		if allowedOrigin(r.Header.Get("Origin")) {
-			w.Header().Set("Content-Security-Policy", "default-src 'self'")
+			// w.Header().Set("Content-Security-Policy", "default-src 'self'")
 			w.Header().Set("Access-Control-Allow-Origin", strings.Join(config.CorsAllowedOrigins, ", "))
 			w.Header().Set("Access-Control-Allow-Methods", strings.Join(config.CorsAllowedMethods, ", "))
 			w.Header().Set("Access-Control-Allow-Headers", strings.Join(config.CorsAllowedHeaders, ", "))
