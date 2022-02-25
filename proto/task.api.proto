@@ -48,13 +48,13 @@ service TaskService {
     };
 
     rpc GetListTask(ListTaskRequest) returns (ListTaskResponse) {
-        // option (google.api.http) = {
-        //     get: "/api/task"
-        // };
-        // option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-        //     summary: "Get list data task"
-        //     description: "This API is used for get list data task"
-        // };
+        option (google.api.http) = {
+            get: "/api/task-normal"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get list data task"
+            description: "This API is used for get list data task"
+        };
     };
     rpc GetListTaskEV(ListTaskRequestEV) returns (ListTaskResponseEV) {
         option (google.api.http) = {
