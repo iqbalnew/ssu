@@ -399,37 +399,35 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 	key := getEnv("AES_KEY", "Odj12345*")
 	aes := customAES.NewCustomAES(key)
 
-	id := aes.Decrypt(req.TaskID)
-	taskID, _ := strconv.Atoi(id)
-	logrus.Println("%d", taskID)
-	// if err != nil {
-	// 	// handle error
-	// 	fmt.Println(err)
-	// 	return nil, status.Errorf(codes.Internal, "Failed to decrypt taskID")
-	// }
+	taskID, err := strconv.Atoi(aes.Decrypt(req.TaskID))
+	if err != nil {
+		// handle error
+		fmt.Println(err)
+		return nil, status.Errorf(codes.Internal, "Failed to decrypt taskID")
+	}
 
-	// reqPB := &pb.SetTaskRequest{
-	// 	TaskID:  uint64(taskID),
-	// 	Action:  req.Action,
-	// 	Comment: req.Comment,
-	// 	Reasons: req.Reasons,
-	// }
+	reqPB := &pb.SetTaskRequest{
+		TaskID:  uint64(taskID),
+		Action:  req.Action,
+		Comment: req.Comment,
+		Reasons: req.Reasons,
+	}
 
-	// resPB, err := s.SetTask(ctx, reqPB)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	resPB, err := s.SetTask(ctx, reqPB)
+	if err != nil {
+		return nil, err
+	}
 
-	// taskEV, _ := taskPBtoEV(resPB.Data, aes)
+	taskEV, _ := taskPBtoEV(resPB.Data, aes)
 
-	// res := &pb.SetTaskResponseEV{
-	// 	Error:   resPB.Error,
-	// 	Code:    resPB.Code,
-	// 	Message: resPB.Message,
-	// 	Data:    taskEV,
-	// }
+	res := &pb.SetTaskResponseEV{
+		Error:   resPB.Error,
+		Code:    resPB.Code,
+		Message: resPB.Message,
+		Data:    taskEV,
+	}
 
-	return nil, nil
+	return res, nil
 }
 
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
