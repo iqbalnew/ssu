@@ -31,29 +31,54 @@ func deriveKey(passphrase string, salt []byte) ([]byte, []byte) {
 	return pbkdf2.Key([]byte(passphrase), salt, 1000, 32, sha256.New), salt
 }
 
-func (t *CustomAES) Encrypt(plaintext string) string {
+func (t *CustomAES) Encrypt(plaintext string) (text string, err error) {
 	key, salt := deriveKey(t.passphrase, nil)
 	iv := make([]byte, 12)
 	// http://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf
 	// Section 8.2
 	rand.Read(iv)
-	b, _ := aes.NewCipher(key)
-	aesgcm, _ := cipher.NewGCM(b)
+	b, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err)
+	}
+	aesgcm, err := cipher.NewGCM(b)
+	if err != nil {
+		panic(err)
+	}
 	data := aesgcm.Seal(nil, iv, []byte(plaintext), nil)
-	return hex.EncodeToString(salt) + "-" + hex.EncodeToString(iv) + "-" + hex.EncodeToString(data)
+	return hex.EncodeToString(salt) + "-" + hex.EncodeToString(iv) + "-" + hex.EncodeToString(data), nil
 }
 
-func (t *CustomAES) Decrypt(ciphertext string) string {
+func (t *CustomAES) Decrypt(ciphertext string) (text string, err error) {
 	if ciphertext == "" {
-		return ciphertext
+		return ciphertext, nil
 	}
 	arr := strings.Split(ciphertext, "-")
-	salt, _ := hex.DecodeString(arr[0])
-	iv, _ := hex.DecodeString(arr[1])
-	data, _ := hex.DecodeString(arr[2])
+	salt, err := hex.DecodeString(arr[0])
+	if err != nil {
+		panic(err)
+	}
+	iv, err := hex.DecodeString(arr[1])
+	if err != nil {
+		panic(err)
+	}
+	data, err := hex.DecodeString(arr[2])
+	if err != nil {
+		panic(err)
+	}
 	key, _ := deriveKey(t.passphrase, salt)
-	b, _ := aes.NewCipher(key)
-	aesgcm, _ := cipher.NewGCM(b)
-	data, _ = aesgcm.Open(nil, iv, data, nil)
-	return string(data)
+
+	b, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err)
+	}
+	aesgcm, err := cipher.NewGCM(b)
+	if err != nil {
+		panic(err)
+	}
+	data, err = aesgcm.Open(nil, iv, data, nil)
+	if err != nil {
+		panic(err)
+	}
+	return string(data), nil
 }

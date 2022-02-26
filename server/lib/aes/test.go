@@ -16,9 +16,9 @@ func TestAES(t *testing.T) {
 
 		for _, plainText := range plainTexts {
 
-			encrypted := aes.Encrypt(plainText)
+			encrypted, _ := aes.Encrypt(plainText)
 
-			decrypted := aes.Decrypt(encrypted)
+			decrypted, _ := aes.Decrypt(encrypted)
 
 			assert.Equal(t, plainText, decrypted)
 		}

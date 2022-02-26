@@ -17,32 +17,45 @@ func taskEVtoPB(val *pb.TaskEV, aes *customAES.CustomAES) (*pb.Task, error) {
 	}
 
 	data := &pb.Task{}
-	var err error
 
 	taskID := 0
 	if val.TaskID != "" {
-		taskID, err = strconv.Atoi(aes.Decrypt(val.TaskID))
+		text, err := aes.Decrypt(val.TaskID)
+		if err != nil {
+			logrus.Errorf("val: %v | %v", val.TaskID, err)
+			return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
+		}
+		taskID, err = strconv.Atoi(text)
 		if err != nil {
 			// handle error
 			logrus.Errorln(err)
-			return nil, status.Errorf(codes.Internal, "Failed to decrypt taskID")
+			return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
 		}
 	}
 
 	createdByID := 0
-	if len(val.CreatedByID) > 0 {
-
-		createdByID, err = strconv.Atoi(aes.Decrypt(val.CreatedByID))
+	if val.CreatedByID != "" {
+		text, err := aes.Decrypt(val.CreatedByID)
+		if err != nil {
+			logrus.Errorf("val: %v | %v", val.CreatedByID, err)
+			return nil, status.Errorf(codes.Internal, "Failed to decrypt CreatedByID")
+		}
+		createdByID, err = strconv.Atoi(text)
 		if err != nil {
 			// handle error
 			logrus.Errorln(err)
-			return nil, status.Errorf(codes.Internal, "Failed to decrypt taskID")
+			return nil, status.Errorf(codes.Internal, "Failed to decrypt CreatedByID")
 		}
 	}
 
 	lastApprovedByID := 0
 	if len(val.LastApprovedByID) > 0 {
-		lastApprovedByID, err = strconv.Atoi(aes.Decrypt(val.LastApprovedByID))
+		text, err := aes.Decrypt(val.LastApprovedByID)
+		if err != nil {
+			logrus.Errorf("val: %v | %v", val.LastApprovedByID, err)
+			return nil, status.Errorf(codes.Internal, "Failed to decrypt LastApprovedByID")
+		}
+		lastApprovedByID, err = strconv.Atoi(text)
 		if err != nil {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "Failed to decrypt LastApprovedByID")
@@ -51,7 +64,12 @@ func taskEVtoPB(val *pb.TaskEV, aes *customAES.CustomAES) (*pb.Task, error) {
 
 	lastRejectedByID := 0
 	if len(val.LastRejectedByID) > 0 {
-		lastRejectedByID, err = strconv.Atoi(aes.Decrypt(val.LastRejectedByID))
+		text, err := aes.Decrypt(val.LastRejectedByID)
+		if err != nil {
+			logrus.Errorf("val: %v | %v", val.LastRejectedByID, err)
+			return nil, status.Errorf(codes.Internal, "Failed to decrypt LastRejectedByID")
+		}
+		lastRejectedByID, err = strconv.Atoi(text)
 		if err != nil {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "Failed to decrypt LastRejectedByID")
@@ -60,7 +78,12 @@ func taskEVtoPB(val *pb.TaskEV, aes *customAES.CustomAES) (*pb.Task, error) {
 
 	featureID := 0
 	if len(val.FeatureID) > 0 {
-		featureID, err = strconv.Atoi(aes.Decrypt(val.FeatureID))
+		text, err := aes.Decrypt(val.FeatureID)
+		if err != nil {
+			logrus.Errorf("val: %v | %v", val.FeatureID, err)
+			return nil, status.Errorf(codes.Internal, "Failed to decrypt FeatureID")
+		}
+		featureID, err = strconv.Atoi(text)
 		if err != nil {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "Failed to decrypt FeatureID")
@@ -100,18 +123,39 @@ func taskPBtoEV(val *pb.Task, aes *customAES.CustomAES) (*pb.TaskEV, error) {
 	}
 
 	data := &pb.TaskEV{}
+	var err error
 
-	data.TaskID = aes.Encrypt(fmt.Sprint(val.TaskID))
+	data.TaskID, err = aes.Encrypt(fmt.Sprint(val.TaskID))
+	if err != nil {
+		logrus.Errorf("val: %v | %v", val.TaskID, err)
+		return nil, status.Errorf(codes.Internal, "Failed to encrypt TaskID")
+	}
 	data.Type = val.Type
 	data.Status = val.Status
 	data.Step = val.Step
-	data.CreatedByID = aes.Encrypt(fmt.Sprint(val.CreatedByID))
-	data.LastApprovedByID = aes.Encrypt(fmt.Sprint(val.LastApprovedByID))
-	data.LastRejectedByID = aes.Encrypt(fmt.Sprint(val.LastRejectedByID))
+	data.CreatedByID, err = aes.Encrypt(fmt.Sprint(val.CreatedByID))
+	if err != nil {
+		logrus.Errorf("val: %v | %v", val.CreatedByID, err)
+		return nil, status.Errorf(codes.Internal, "Failed to encrypt CreatedByID")
+	}
+	data.LastApprovedByID, err = aes.Encrypt(fmt.Sprint(val.LastApprovedByID))
+	if err != nil {
+		logrus.Errorf("val: %v | %v", val.LastApprovedByID, err)
+		return nil, status.Errorf(codes.Internal, "Failed to encrypt LastApprovedByID")
+	}
+	data.LastRejectedByID, err = aes.Encrypt(fmt.Sprint(val.LastRejectedByID))
+	if err != nil {
+		logrus.Errorf("val: %v | %v", val.LastRejectedByID, err)
+		return nil, status.Errorf(codes.Internal, "Failed to encrypt LastRejectedByID")
+	}
 	data.Data = val.Data
 	data.Reasons = val.Reasons
 	data.Comment = val.Comment
-	data.FeatureID = aes.Encrypt(fmt.Sprint(val.FeatureID))
+	data.FeatureID, err = aes.Encrypt(fmt.Sprint(val.FeatureID))
+	if err != nil {
+		logrus.Errorf("val: %v | %v", val.FeatureID, err)
+		return nil, status.Errorf(codes.Internal, "Failed to encrypt FeatureID")
+	}
 	data.IsParentActive = val.IsParentActive
 	data.CreatedAt = val.CreatedAt
 	data.UpdatedAt = val.UpdatedAt

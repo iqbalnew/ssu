@@ -398,6 +398,59 @@
       "put": {
         "summary": "Set status task by action",
         "description": "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject",
+        "operationId": "TaskService_SetTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SetTaskResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "taskID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "description": "Action: 'approve', 'rework', 'reject'"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "reasons": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "TaskService"
+        ]
+      }
+    },
+    "/api/task/{taskID}/ev": {
+      "put": {
+        "summary": "Set status task by action",
+        "description": "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject",
         "operationId": "TaskService_SetTaskEV",
         "responses": {
           "200": {

@@ -282,7 +282,12 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 	key := getEnv("AES_KEY", "Odj12345*")
 	aes := customAES.NewCustomAES(key)
 
-	taskID, err := strconv.Atoi(aes.Decrypt(req.TaskID))
+	text, err := aes.Decrypt(req.TaskID)
+	if err != nil {
+		logrus.Errorf("val: %v | %v", req.TaskID, err)
+		return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
+	}
+	taskID, err := strconv.Atoi(text)
 	if err != nil {
 		// handle error
 		fmt.Println(err)
@@ -361,7 +366,12 @@ func (s *Server) AssignTypeIDEV(ctx context.Context, req *pb.AssignaTypeIDReques
 	key := getEnv("AES_KEY", "Odj12345*")
 	aes := customAES.NewCustomAES(key)
 
-	taskID, err := strconv.Atoi(aes.Decrypt(req.TaskID))
+	text, err := aes.Decrypt(req.TaskID)
+	if err != nil {
+		logrus.Errorf("val: %v | %v", req.TaskID, err)
+		return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
+	}
+	taskID, err := strconv.Atoi(text)
 	if err != nil {
 		// handle error
 		fmt.Println(err)
@@ -399,7 +409,12 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 	key := getEnv("AES_KEY", "Odj12345*")
 	aes := customAES.NewCustomAES(key)
 
-	taskID, err := strconv.Atoi(aes.Decrypt(req.TaskID))
+	text, err := aes.Decrypt(req.TaskID)
+	if err != nil {
+		logrus.Errorf("val: %v | %v", req.TaskID, err)
+		return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
+	}
+	taskID, err := strconv.Atoi(text)
 	if err != nil {
 		// handle error
 		fmt.Println(err)

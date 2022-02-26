@@ -27,18 +27,18 @@ service TaskService {
     rpc SaveTaskWithDataEV(SaveTaskRequestEV) returns (SaveTaskResponseEV) {};
 
     rpc SetTask(SetTaskRequest) returns (SetTaskResponse) {
-        // option (google.api.http) = {
-        //     put: "/api/task/{taskID}"
-        //     body: "*"
-        // };
-        // option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-        //     summary: "Set status task by action"
-        //     description: "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject"
-        // };
+        option (google.api.http) = {
+            put: "/api/task/{taskID}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Set status task by action"
+            description: "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject"
+        };
     };
     rpc SetTaskEV(SetTaskRequestEV) returns (SetTaskResponseEV) {
         option (google.api.http) = {
-            put: "/api/task/{taskID}"
+            put: "/api/task/{taskID}/ev"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
