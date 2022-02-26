@@ -248,6 +248,9 @@ func allowedOrigin(origin string) bool {
 	if stringInSlice(viper.GetString("cors"), config.CorsAllowedOrigins) {
 		return true
 	}
+	if viper.GetString("cors") == "*" {
+		return true
+	}
 	if matched, _ := regexp.MatchString(viper.GetString("cors"), origin); matched {
 		return true
 	}
