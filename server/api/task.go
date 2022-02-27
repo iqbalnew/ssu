@@ -472,7 +472,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	currentStatus := task.Status
 	switch strings.ToLower(req.Action) {
 	case "rework":
-		task.Status = 2
+		task.Status = 3
 		task.Step = 1
 	case "approve":
 		taskPb, _ := task.ToPB(ctx)
