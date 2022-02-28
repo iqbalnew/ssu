@@ -382,7 +382,7 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/SetTaskEV", runtime.WithHTTPPathPattern("/api/task-ev/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/SetTaskEV", runtime.WithHTTPPathPattern("/api/task/{taskID}/ev"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -405,7 +405,7 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTask", runtime.WithHTTPPathPattern("/api/task"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTask", runtime.WithHTTPPathPattern("/api/task/normal"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -428,7 +428,7 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTaskEV", runtime.WithHTTPPathPattern("/api/task-ev"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTaskEV", runtime.WithHTTPPathPattern("/api/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -579,7 +579,7 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/SetTaskEV", runtime.WithHTTPPathPattern("/api/task-ev/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/SetTaskEV", runtime.WithHTTPPathPattern("/api/task/{taskID}/ev"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -599,7 +599,7 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTask", runtime.WithHTTPPathPattern("/api/task"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTask", runtime.WithHTTPPathPattern("/api/task/normal"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -619,7 +619,7 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTaskEV", runtime.WithHTTPPathPattern("/api/task-ev"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTaskEV", runtime.WithHTTPPathPattern("/api/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -701,11 +701,11 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 var (
 	pattern_TaskService_SetTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "task", "taskID"}, ""))
 
-	pattern_TaskService_SetTaskEV_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "task-ev", "taskID"}, ""))
+	pattern_TaskService_SetTaskEV_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "task", "taskID", "ev"}, ""))
 
-	pattern_TaskService_GetListTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "task"}, ""))
+	pattern_TaskService_GetListTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "task", "normal"}, ""))
 
-	pattern_TaskService_GetListTaskEV_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "task-ev"}, ""))
+	pattern_TaskService_GetListTaskEV_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "task"}, ""))
 
 	pattern_TaskService_GetTaskGraphStatus_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "task", "graph", "status"}, ""))
 

@@ -38,7 +38,7 @@ service TaskService {
     };
     rpc SetTaskEV(SetTaskRequestEV) returns (SetTaskResponseEV) {
         option (google.api.http) = {
-            put: "/api/task-ev/{taskID}"
+            put: "/api/task/{taskID}/ev"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -49,7 +49,7 @@ service TaskService {
 
     rpc GetListTask(ListTaskRequest) returns (ListTaskResponse) {
         option (google.api.http) = {
-            get: "/api/task"
+            get: "/api/task/normal"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get list data task"
@@ -58,7 +58,7 @@ service TaskService {
     };
     rpc GetListTaskEV(ListTaskRequestEV) returns (ListTaskResponseEV) {
         option (google.api.http) = {
-            get: "/api/task-ev"
+            get: "/api/task"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get list data task"

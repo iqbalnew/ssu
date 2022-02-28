@@ -282,7 +282,12 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 	key := getEnv("AES_KEY", "Odj12345*")
 	aes := customAES.NewCustomAES(key)
 
-	taskID, err := strconv.Atoi(aes.Decrypt(req.TaskID))
+	text, err := aes.Decrypt(req.TaskID)
+	if err != nil {
+		logrus.Errorf("val: %v | %v", req.TaskID, err)
+		return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
+	}
+	taskID, err := strconv.Atoi(text)
 	if err != nil {
 		// handle error
 		fmt.Println(err)
@@ -361,7 +366,12 @@ func (s *Server) AssignTypeIDEV(ctx context.Context, req *pb.AssignaTypeIDReques
 	key := getEnv("AES_KEY", "Odj12345*")
 	aes := customAES.NewCustomAES(key)
 
-	taskID, err := strconv.Atoi(aes.Decrypt(req.TaskID))
+	text, err := aes.Decrypt(req.TaskID)
+	if err != nil {
+		logrus.Errorf("val: %v | %v", req.TaskID, err)
+		return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
+	}
+	taskID, err := strconv.Atoi(text)
 	if err != nil {
 		// handle error
 		fmt.Println(err)
@@ -399,7 +409,12 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 	key := getEnv("AES_KEY", "Odj12345*")
 	aes := customAES.NewCustomAES(key)
 
-	taskID, err := strconv.Atoi(aes.Decrypt(req.TaskID))
+	text, err := aes.Decrypt(req.TaskID)
+	if err != nil {
+		logrus.Errorf("val: %v | %v", req.TaskID, err)
+		return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
+	}
+	taskID, err := strconv.Atoi(text)
 	if err != nil {
 		// handle error
 		fmt.Println(err)
@@ -410,6 +425,7 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 		TaskID:  uint64(taskID),
 		Action:  req.Action,
 		Comment: req.Comment,
+		Reasons: req.Reasons,
 	}
 
 	resPB, err := s.SetTask(ctx, reqPB)
@@ -447,12 +463,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Comment = req.Comment
 	}
 
+	if req.Reasons != "" {
+		task.Reasons = req.Reasons
+	}
+
 	sendTask := false
 	currentStep := task.Step
 	currentStatus := task.Status
 	switch strings.ToLower(req.Action) {
 	case "rework":
-		task.Status = 2
+		task.Status = 3
 		task.Step = 1
 	case "approve":
 		taskPb, _ := task.ToPB(ctx)
@@ -478,11 +498,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu" {
 				if currentStep == 1 {
 					task.Status = 1
-					task.Step = 4
+					task.Step = 3
 				}
 				if currentStep == 3 {
 					task.Status = 1
 					task.Step = 4
+					if task.Type == "Announcement" {
+						task.Status = 4
+						task.Step = 3
+						sendTask = true
+					}
 				}
 				if currentStep == 4 {
 					sendTask = true

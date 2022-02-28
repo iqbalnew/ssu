@@ -117,11 +117,13 @@ type TaskORM struct {
 	CreatedAt        *time.Time
 	CreatedByID      uint64 `gorm:"not null"`
 	Data             string `gorm:"type:jsonb"`
+	DeletedAt        *time.Time
 	FeatureID        uint64
 	IsParentActive   bool `gorm:"default:false"`
 	LastApprovedByID uint64
 	LastRejectedByID uint64
 	ParentID         *uint64
+	Reasons          string `gorm:"type:varchar(255)"`
 	Status           int32  `gorm:"default:1;not null"`
 	Step             int32  `gorm:"default:1;not null"`
 	TaskID           uint64 `gorm:"primary_key;not null"`
@@ -166,6 +168,7 @@ func (m *Task) ToORM(ctx context.Context) (TaskORM, error) {
 		}
 	}
 	to.IsParentActive = m.IsParentActive
+	to.Reasons = m.Reasons
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -173,6 +176,10 @@ func (m *Task) ToORM(ctx context.Context) (TaskORM, error) {
 	if m.UpdatedAt != nil {
 		t := m.UpdatedAt.AsTime()
 		to.UpdatedAt = &t
+	}
+	if m.DeletedAt != nil {
+		t := m.DeletedAt.AsTime()
+		to.DeletedAt = &t
 	}
 	if posthook, ok := interface{}(m).(TaskWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
@@ -212,11 +219,15 @@ func (m *TaskORM) ToPB(ctx context.Context) (Task, error) {
 		}
 	}
 	to.IsParentActive = m.IsParentActive
+	to.Reasons = m.Reasons
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
 	if m.UpdatedAt != nil {
 		to.UpdatedAt = timestamppb.New(*m.UpdatedAt)
+	}
+	if m.DeletedAt != nil {
+		to.DeletedAt = timestamppb.New(*m.DeletedAt)
 	}
 	if posthook, ok := interface{}(m).(TaskWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
@@ -1267,6 +1278,7 @@ func DefaultApplyFieldMaskTask(ctx context.Context, patchee *Task, patcher *Task
 	var err error
 	var updatedCreatedAt bool
 	var updatedUpdatedAt bool
+	var updatedDeletedAt bool
 	for i, f := range updateMask.Paths {
 		if f == prefix+"TaskID" {
 			patchee.TaskID = patcher.TaskID
@@ -1316,6 +1328,10 @@ func DefaultApplyFieldMaskTask(ctx context.Context, patchee *Task, patcher *Task
 			patchee.IsParentActive = patcher.IsParentActive
 			continue
 		}
+		if f == prefix+"Reasons" {
+			patchee.Reasons = patcher.Reasons
+			continue
+		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {
 			if patcher.CreatedAt == nil {
 				patchee.CreatedAt = nil
@@ -1360,6 +1376,29 @@ func DefaultApplyFieldMaskTask(ctx context.Context, patchee *Task, patcher *Task
 		if f == prefix+"UpdatedAt" {
 			updatedUpdatedAt = true
 			patchee.UpdatedAt = patcher.UpdatedAt
+			continue
+		}
+		if !updatedDeletedAt && strings.HasPrefix(f, prefix+"DeletedAt.") {
+			if patcher.DeletedAt == nil {
+				patchee.DeletedAt = nil
+				continue
+			}
+			if patchee.DeletedAt == nil {
+				patchee.DeletedAt = &timestamppb.Timestamp{}
+			}
+			childMask := &field_mask.FieldMask{}
+			for j := i; j < len(updateMask.Paths); j++ {
+				if trimPath := strings.TrimPrefix(updateMask.Paths[j], prefix+"DeletedAt."); trimPath != updateMask.Paths[j] {
+					childMask.Paths = append(childMask.Paths, trimPath)
+				}
+			}
+			if err := gorm1.MergeWithMask(patcher.DeletedAt, patchee.DeletedAt, childMask); err != nil {
+				return nil, nil
+			}
+		}
+		if f == prefix+"DeletedAt" {
+			updatedDeletedAt = true
+			patchee.DeletedAt = patcher.DeletedAt
 			continue
 		}
 	}
