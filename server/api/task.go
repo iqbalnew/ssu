@@ -337,12 +337,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	}
 
 	if req.TaskID > 0 {
-		task.Step = 1
 		task.TaskID = req.TaskID
-		task.Status = 1
-		if req.IsDraft {
-			task.Status = 2
-		}
 		_, err = s.provider.UpdateTask(ctx, &task)
 	} else {
 		_, err = s.provider.CreateTask(ctx, &task)
