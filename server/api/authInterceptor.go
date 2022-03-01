@@ -2,9 +2,11 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/jwt"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -25,8 +27,19 @@ func accessibleRoles() map[string][]string {
 
 	// restricted api
 	return map[string][]string{
-		TaskServicePath + "CreateUser": {"admin"},
-		TaskServicePath + "GetMe":      {"user", "admin"},
+		// TaskServicePath + "SaveTaskWithData":   {},
+		TaskServicePath + "SaveTaskWithDataEV": {},
+		// TaskServicePath + "SetTask":               {},
+		TaskServicePath + "SetTaskEV": {},
+		// TaskServicePath + "GetListTask":           {},
+		TaskServicePath + "GetListTaskEV":         {},
+		TaskServicePath + "GetTaskGraphStatus":    {},
+		TaskServicePath + "GraphStatusColumnType": {},
+		TaskServicePath + "GetTaskGraphStep":      {},
+		TaskServicePath + "GetListAnnouncement":   {},
+		// TaskServicePath + "AssignTypeID":          {},
+		TaskServicePath + "AssignTypeIDEV": {},
+		// TaskServicePath + "GetTaskByTypeID":       {},
 	}
 }
 
@@ -47,7 +60,12 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 			return nil, err
 		}
 
-		err = interceptor.authorize(claims, info.FullMethod)
+		// ctx, err = interceptor.getUserData(ctx)
+		// if err != nil {
+		// 	return nil, err
+		// }
+
+		err = interceptor.authorize(ctx, claims, info.FullMethod)
 		if err != nil {
 			return nil, err
 		}
@@ -73,7 +91,7 @@ func (interceptor *AuthInterceptor) Stream() grpc.StreamServerInterceptor {
 			return err
 		}
 
-		err = interceptor.authorize(claims, info.FullMethod)
+		err = interceptor.authorize(stream.Context(), claims, info.FullMethod)
 		if err != nil {
 			return err
 		}
@@ -87,18 +105,39 @@ func (interceptor *AuthInterceptor) isRestricted(method string) bool {
 	return restricted
 }
 
-func (interceptor *AuthInterceptor) authorize(claims *manager.UserClaims, method string) error {
+func (interceptor *AuthInterceptor) authorize(ctx context.Context, claims *manager.UserClaims, method string) error {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return status.Errorf(codes.Unauthenticated, "metadata is not provided")
+	}
+
+	rolesMd := md["auth-role-announcement"]
+	if len(rolesMd) > 0 {
+		logrus.Println("Roles: ", rolesMd[0])
+	}
+
 	accessibleRoles, ok := interceptor.accessibleRoles[method]
 	if !ok {
 		// everyone can access
 		return nil
 	}
 
-	for _, role := range accessibleRoles {
-		if role == claims.Role {
-			return nil
-		}
+	if len(accessibleRoles) < 1 {
+		return nil
 	}
+
+	// if len(rolesMd) == 0 {
+	// 	return status.Errorf(codes.Unauthenticated, "authorization token is not provided")
+	// }
+
+	// roles := strings.Split(rolesMd[0], "|")
+	// for _, role := range accessibleRoles {
+	// 	for _, exist := range roles {
+	// 		if role == exist {
+	// 			return nil
+	// 		}
+	// 	}
+	// }
 
 	return status.Error(codes.PermissionDenied, "no permission to access this RPC")
 }
@@ -123,5 +162,61 @@ func (interceptor *AuthInterceptor) claimsToken(ctx context.Context) (*manager.U
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
 	}
+
+	getUser, err := interceptor.jwtManager.GetMeFromAuthService(ctx, accessToken)
+	if err != nil {
+		return nil, err
+	}
+	if getUser.IsExpired && !getUser.IsValid {
+		return nil, status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
+	}
+
 	return claims, nil
+}
+
+func (interceptor *AuthInterceptor) getUserData(ctx context.Context) (context.Context, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(codes.Unauthenticated, "metadata is not provided")
+	}
+
+	values := md["authorization"]
+	if len(values) == 0 {
+		return nil, status.Errorf(codes.Unauthenticated, "authorization token is not provided")
+	}
+
+	split := strings.Split(values[0], " ")
+	accessToken := split[0]
+	if len(split) > 1 {
+		accessToken = split[1]
+	}
+
+	userType := md["auth-usertype"]
+	username := md["auth-username"]
+	userid := md["auth-userid"]
+
+	if len(userType) == 0 || len(username) == 0 || len(userid) == 0 {
+		getUser, err := interceptor.jwtManager.GetMeFromAuthService(ctx, accessToken)
+		if err != nil {
+			return nil, err
+		}
+		if getUser.IsExpired && !getUser.IsValid {
+			return nil, status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
+		}
+
+		for _, v := range getUser.ProductRoles {
+			grpc.SendHeader(ctx, metadata.Pairs("auth-role-"+v.ProductName, strings.Join(v.Authorities, "|")))
+		}
+
+		grpc.SendHeader(ctx, metadata.Pairs("auth-usertype", getUser.UserType))
+		grpc.SendHeader(ctx, metadata.Pairs("auth-username", getUser.Username))
+		grpc.SendHeader(ctx, metadata.Pairs("auth-userid", fmt.Sprintf("%v", getUser.UserID)))
+
+		fmt.Println("")
+		fmt.Println("=====>")
+		fmt.Println(getUser.Username)
+
+	}
+
+	return ctx, nil
 }
