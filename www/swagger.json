@@ -737,6 +737,17 @@
         }
       }
     },
+    "v1GetTaskByIDRes": {
+      "type": "object",
+      "properties": {
+        "found": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "#/definitions/v1Task"
+        }
+      }
+    },
     "v1GetTaskByTypeIDRes": {
       "type": "object",
       "properties": {
