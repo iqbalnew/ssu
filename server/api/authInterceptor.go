@@ -38,7 +38,7 @@ func accessibleRoles() map[string][]string {
 		TaskServicePath + "GetTaskGraphStep":      {},
 		TaskServicePath + "GetListAnnouncement":   {},
 		// TaskServicePath + "AssignTypeID":          {},
-		TaskServicePath + "AssignTypeIDEV": {},
+		// TaskServicePath + "AssignTypeIDEV": {},
 		// TaskServicePath + "GetTaskByTypeID":       {},
 	}
 }
