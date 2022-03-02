@@ -51,6 +51,13 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 
+		// md, ok := metadata.FromIncomingContext(ctx)
+		// if !ok {
+		// 	return nil, status.Errorf(codes.Unauthenticated, "metadata is not provided")
+		// }
+
+		// fmt.Println(md)
+
 		if !interceptor.isRestricted(info.FullMethod) {
 			return handler(ctx, req)
 		}
@@ -110,6 +117,8 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, claims *manag
 	if !ok {
 		return status.Errorf(codes.Unauthenticated, "metadata is not provided")
 	}
+
+	// fmt.Println(md)
 
 	rolesMd := md["auth-role-announcement"]
 	if len(rolesMd) > 0 {
