@@ -531,6 +531,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	case "reject":
 		task.Status = 5
+		task.Step = 1
 	}
 
 	for i := range task.Childs {
