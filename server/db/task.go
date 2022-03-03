@@ -139,6 +139,26 @@ func (p *GormProvider) CreateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 }
 
 func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {
+
+	if task.Status == 5 {
+		updateData := map[string]interface{}{
+			"step": task.Step,
+		}
+
+		listIDs := []uint64{task.TaskID}
+		for _, v := range task.Childs {
+			if task.IsParentActive {
+				listIDs = append(listIDs, v.TaskID)
+			}
+		}
+
+		if err := p.db_main.Model(&pb.TaskORM{}).Where("task_id IN ?", listIDs).Updates(&updateData).Error; err != nil {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+		}
+
+	}
+
 	taskModel := pb.TaskORM{TaskID: task.TaskID}
 	query := p.db_main.Clauses(clause.OnConflict{
 		UpdateAll: true,
