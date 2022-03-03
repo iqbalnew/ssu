@@ -543,10 +543,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 	}
 
+	logrus.Printf("bef action: %v, status: %v, step: %v", req.Action, task.Status, task.Step)
+
 	updatedTask, err := s.provider.UpdateTask(ctx, task)
 	if err != nil {
 		return nil, err
 	}
+	logrus.Printf("aft action: %v, status: %v, step: %v", req.Action, task.Status, task.Step)
 	reUpdate := false
 
 	taskPb, _ := updatedTask.ToPB(ctx)
