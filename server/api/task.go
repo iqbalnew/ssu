@@ -547,7 +547,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if err != nil {
 		return nil, err
 	}
-	
+
 	reUpdate := false
 
 	taskPb, _ := updatedTask.ToPB(ctx)
@@ -843,4 +843,18 @@ func getEnv(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+func (s *Server) RejectBySystem(ctx context.Context, req *pb.RejectBySystemReq) (res *pb.RejectBySystemRes, err error) {
+	res = &pb.RejectBySystemRes{
+		Success: true,
+		Code:    "200",
+	}
+	_, err = s.provider.FindAndSetStatus(ctx, req.TaskID, req.Status.Descriptor().Index())
+	if err != nil {
+		res.Success = false
+		res.Code = "000"
+	}
+
+	return res, nil
 }

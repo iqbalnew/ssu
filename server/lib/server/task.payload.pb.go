@@ -1927,6 +1927,116 @@ func (x *GetTaskByTypeIDRes) GetData() *Task {
 	return nil
 }
 
+type RejectBySystemReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TaskID uint64   `protobuf:"varint,1,opt,name=taskID,proto3" json:"taskID,omitempty"`
+	Status Statuses `protobuf:"varint,2,opt,name=status,proto3,enum=task.service.v1.Statuses" json:"status,omitempty"`
+}
+
+func (x *RejectBySystemReq) Reset() {
+	*x = RejectBySystemReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_task_payload_proto_msgTypes[30]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RejectBySystemReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RejectBySystemReq) ProtoMessage() {}
+
+func (x *RejectBySystemReq) ProtoReflect() protoreflect.Message {
+	mi := &file_task_payload_proto_msgTypes[30]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RejectBySystemReq.ProtoReflect.Descriptor instead.
+func (*RejectBySystemReq) Descriptor() ([]byte, []int) {
+	return file_task_payload_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *RejectBySystemReq) GetTaskID() uint64 {
+	if x != nil {
+		return x.TaskID
+	}
+	return 0
+}
+
+func (x *RejectBySystemReq) GetStatus() Statuses {
+	if x != nil {
+		return x.Status
+	}
+	return Statuses_NullStatus
+}
+
+type RejectBySystemRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Success bool   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Code    string `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+}
+
+func (x *RejectBySystemRes) Reset() {
+	*x = RejectBySystemRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_task_payload_proto_msgTypes[31]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RejectBySystemRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RejectBySystemRes) ProtoMessage() {}
+
+func (x *RejectBySystemRes) ProtoReflect() protoreflect.Message {
+	mi := &file_task_payload_proto_msgTypes[31]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RejectBySystemRes.ProtoReflect.Descriptor instead.
+func (*RejectBySystemRes) Descriptor() ([]byte, []int) {
+	return file_task_payload_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *RejectBySystemRes) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *RejectBySystemRes) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
 var File_task_payload_proto protoreflect.FileDescriptor
 
 var file_task_payload_proto_rawDesc = []byte{
@@ -2236,8 +2346,18 @@ var file_task_payload_proto_rawDesc = []byte{
 	0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x66, 0x6f, 0x75, 0x6e, 0x64, 0x12, 0x29, 0x0a, 0x04, 0x64,
 	0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x74, 0x61, 0x73, 0x6b,
 	0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x61, 0x73, 0x6b,
-	0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x5e, 0x0a, 0x11, 0x52, 0x65, 0x6a, 0x65, 0x63, 0x74,
+	0x42, 0x79, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x52, 0x65, 0x71, 0x12, 0x16, 0x0a, 0x06, 0x74,
+	0x61, 0x73, 0x6b, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x74, 0x61, 0x73,
+	0x6b, 0x49, 0x44, 0x12, 0x31, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x19, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x65, 0x73, 0x52, 0x06,
+	0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x22, 0x41, 0x0a, 0x11, 0x52, 0x65, 0x6a, 0x65, 0x63, 0x74,
+	0x42, 0x79, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x52, 0x65, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x73,
+	0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75,
+	0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70,
+	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2253,7 +2373,7 @@ func file_task_payload_proto_rawDescGZIP() []byte {
 }
 
 var file_task_payload_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_task_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
+var file_task_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
 var file_task_payload_proto_goTypes = []interface{}{
 	(ListTaskRequestDirection)(0),         // 0: task.service.v1.ListTaskRequest.direction
 	(*LoginRequest)(nil),                  // 1: task.service.v1.LoginRequest
@@ -2286,35 +2406,38 @@ var file_task_payload_proto_goTypes = []interface{}{
 	(*AssignaTypeIDResponse)(nil),         // 28: task.service.v1.AssignaTypeIDResponse
 	(*GetTaskByTypeIDReq)(nil),            // 29: task.service.v1.GetTaskByTypeIDReq
 	(*GetTaskByTypeIDRes)(nil),            // 30: task.service.v1.GetTaskByTypeIDRes
-	(*Task)(nil),                          // 31: task.service.v1.Task
-	(structpb.NullValue)(0),               // 32: google.protobuf.NullValue
-	(Statuses)(0),                         // 33: task.service.v1.statuses
-	(Steps)(0),                            // 34: task.service.v1.steps
+	(*RejectBySystemReq)(nil),             // 31: task.service.v1.RejectBySystemReq
+	(*RejectBySystemRes)(nil),             // 32: task.service.v1.RejectBySystemRes
+	(*Task)(nil),                          // 33: task.service.v1.Task
+	(structpb.NullValue)(0),               // 34: google.protobuf.NullValue
+	(Statuses)(0),                         // 35: task.service.v1.statuses
+	(Steps)(0),                            // 36: task.service.v1.steps
 }
 var file_task_payload_proto_depIdxs = []int32{
-	31, // 0: task.service.v1.SaveTaskRequest.task:type_name -> task.service.v1.Task
-	31, // 1: task.service.v1.SaveTaskResponse.data:type_name -> task.service.v1.Task
-	32, // 2: task.service.v1.errorBodyResponse.data:type_name -> google.protobuf.NullValue
-	31, // 3: task.service.v1.SetTaskResponse.data:type_name -> task.service.v1.Task
-	31, // 4: task.service.v1.ListTaskRequest.task:type_name -> task.service.v1.Task
+	33, // 0: task.service.v1.SaveTaskRequest.task:type_name -> task.service.v1.Task
+	33, // 1: task.service.v1.SaveTaskResponse.data:type_name -> task.service.v1.Task
+	34, // 2: task.service.v1.errorBodyResponse.data:type_name -> google.protobuf.NullValue
+	33, // 3: task.service.v1.SetTaskResponse.data:type_name -> task.service.v1.Task
+	33, // 4: task.service.v1.ListTaskRequest.task:type_name -> task.service.v1.Task
 	0,  // 5: task.service.v1.ListTaskRequest.dir:type_name -> task.service.v1.ListTaskRequest.direction
-	31, // 6: task.service.v1.ListTaskResponse.data:type_name -> task.service.v1.Task
+	33, // 6: task.service.v1.ListTaskResponse.data:type_name -> task.service.v1.Task
 	14, // 7: task.service.v1.ListTaskResponse.pagination:type_name -> task.service.v1.PaginationResponse
-	33, // 8: task.service.v1.GraphStatusRequest.status:type_name -> task.service.v1.statuses
-	33, // 9: task.service.v1.GraphStatusColumnTypeRequest.status:type_name -> task.service.v1.statuses
+	35, // 8: task.service.v1.GraphStatusRequest.status:type_name -> task.service.v1.statuses
+	35, // 9: task.service.v1.GraphStatusColumnTypeRequest.status:type_name -> task.service.v1.statuses
 	21, // 10: task.service.v1.GraphStatusColumnTypeResponse.data:type_name -> task.service.v1.GraphStatusColumnType
-	33, // 11: task.service.v1.GraphStatus.status:type_name -> task.service.v1.statuses
+	35, // 11: task.service.v1.GraphStatus.status:type_name -> task.service.v1.statuses
 	22, // 12: task.service.v1.GraphStatusResponse.data:type_name -> task.service.v1.GraphStatus
-	34, // 13: task.service.v1.GraphStepRequest.step:type_name -> task.service.v1.steps
-	33, // 14: task.service.v1.GraphStepRequest.status:type_name -> task.service.v1.statuses
-	34, // 15: task.service.v1.GraphStep.step:type_name -> task.service.v1.steps
+	36, // 13: task.service.v1.GraphStepRequest.step:type_name -> task.service.v1.steps
+	35, // 14: task.service.v1.GraphStepRequest.status:type_name -> task.service.v1.statuses
+	36, // 15: task.service.v1.GraphStep.step:type_name -> task.service.v1.steps
 	25, // 16: task.service.v1.GraphStepResponse.data:type_name -> task.service.v1.GraphStep
-	31, // 17: task.service.v1.GetTaskByTypeIDRes.data:type_name -> task.service.v1.Task
-	18, // [18:18] is the sub-list for method output_type
-	18, // [18:18] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	33, // 17: task.service.v1.GetTaskByTypeIDRes.data:type_name -> task.service.v1.Task
+	35, // 18: task.service.v1.RejectBySystemReq.status:type_name -> task.service.v1.statuses
+	19, // [19:19] is the sub-list for method output_type
+	19, // [19:19] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_task_payload_proto_init() }
@@ -2684,6 +2807,30 @@ func file_task_payload_proto_init() {
 				return nil
 			}
 		}
+		file_task_payload_proto_msgTypes[30].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RejectBySystemReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_task_payload_proto_msgTypes[31].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RejectBySystemRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -2691,7 +2838,7 @@ func file_task_payload_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_task_payload_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   30,
+			NumMessages:   32,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

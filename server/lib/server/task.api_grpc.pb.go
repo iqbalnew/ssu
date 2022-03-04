@@ -35,6 +35,7 @@ type TaskServiceClient interface {
 	AssignTypeID(ctx context.Context, in *AssignaTypeIDRequest, opts ...grpc.CallOption) (*AssignaTypeIDResponse, error)
 	AssignTypeIDEV(ctx context.Context, in *AssignaTypeIDRequestEV, opts ...grpc.CallOption) (*AssignaTypeIDResponse, error)
 	GetTaskByTypeID(ctx context.Context, in *GetTaskByTypeIDReq, opts ...grpc.CallOption) (*GetTaskByTypeIDRes, error)
+	RejectBySystem(ctx context.Context, in *RejectBySystemReq, opts ...grpc.CallOption) (*RejectBySystemRes, error)
 }
 
 type taskServiceClient struct {
@@ -162,6 +163,15 @@ func (c *taskServiceClient) GetTaskByTypeID(ctx context.Context, in *GetTaskByTy
 	return out, nil
 }
 
+func (c *taskServiceClient) RejectBySystem(ctx context.Context, in *RejectBySystemReq, opts ...grpc.CallOption) (*RejectBySystemRes, error) {
+	out := new(RejectBySystemRes)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/RejectBySystem", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TaskServiceServer is the server API for TaskService service.
 // All implementations must embed UnimplementedTaskServiceServer
 // for forward compatibility
@@ -179,6 +189,7 @@ type TaskServiceServer interface {
 	AssignTypeID(context.Context, *AssignaTypeIDRequest) (*AssignaTypeIDResponse, error)
 	AssignTypeIDEV(context.Context, *AssignaTypeIDRequestEV) (*AssignaTypeIDResponse, error)
 	GetTaskByTypeID(context.Context, *GetTaskByTypeIDReq) (*GetTaskByTypeIDRes, error)
+	RejectBySystem(context.Context, *RejectBySystemReq) (*RejectBySystemRes, error)
 	mustEmbedUnimplementedTaskServiceServer()
 }
 
@@ -224,6 +235,9 @@ func (UnimplementedTaskServiceServer) AssignTypeIDEV(context.Context, *AssignaTy
 }
 func (UnimplementedTaskServiceServer) GetTaskByTypeID(context.Context, *GetTaskByTypeIDReq) (*GetTaskByTypeIDRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskByTypeID not implemented")
+}
+func (UnimplementedTaskServiceServer) RejectBySystem(context.Context, *RejectBySystemReq) (*RejectBySystemRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RejectBySystem not implemented")
 }
 func (UnimplementedTaskServiceServer) mustEmbedUnimplementedTaskServiceServer() {}
 
@@ -472,6 +486,24 @@ func _TaskService_GetTaskByTypeID_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskService_RejectBySystem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RejectBySystemReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).RejectBySystem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/RejectBySystem",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).RejectBySystem(ctx, req.(*RejectBySystemReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TaskService_ServiceDesc is the grpc.ServiceDesc for TaskService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -530,6 +562,10 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTaskByTypeID",
 			Handler:    _TaskService_GetTaskByTypeID_Handler,
+		},
+		{
+			MethodName: "RejectBySystem",
+			Handler:    _TaskService_RejectBySystem_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

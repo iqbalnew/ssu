@@ -228,3 +228,14 @@ message GetTaskByTypeIDReq {
      bool found = 1;
      Task data = 2;
  }
+
+ 
+message RejectBySystemReq {
+    uint64 taskID = 1;
+    statuses status = 2;
+}
+
+message RejectBySystemRes {
+    bool success = 1;
+    string code = 2;
+}
