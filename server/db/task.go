@@ -159,6 +159,8 @@ func (p *GormProvider) FindAndSetStatus(ctx context.Context, taskID uint64, stat
 		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
+
+	return task, nil
 }
 
 func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {
