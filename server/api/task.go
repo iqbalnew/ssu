@@ -22,6 +22,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -441,6 +442,12 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 }
 
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	}
+	var header, trailer metadata.MD
+
 	task, err := s.provider.FindTaskById(ctx, req.TaskID)
 	if err != nil {
 		return nil, err
@@ -604,7 +611,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				TaskID: task.TaskID,
 				Data:   &data,
 			}
-			res, err := announcementClient.CreateAnnouncement(ctx, send)
+			res, err := announcementClient.CreateAnnouncement(ctx, send, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
@@ -627,7 +634,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data)
 			data.TaskID = task.TaskID
 
-			res, err := companyClient.CreateCompanyGroup(ctx, &data)
+			res, err := companyClient.CreateCompanyGroup(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
@@ -681,7 +688,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						data.Data = &account
 						data.TaskID = task.Childs[i].TaskID
 
-						res, err := companyClient.CreateAccount(ctx, &data)
+						res, err := companyClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
 							return nil, err
 						}
@@ -699,7 +706,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				data.Data = &account
 				data.TaskID = task.TaskID
 
-				res, err := companyClient.CreateAccount(ctx, &data)
+				res, err := companyClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
 				}
@@ -723,7 +730,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data)
 
 			data.TaskID = task.TaskID
-			res, err := companyClient.CreateNotification(ctx, &data)
+			res, err := companyClient.CreateNotification(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
@@ -746,7 +753,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 
 			data.TaskID = task.TaskID
-			res, err := client.CreateUser(ctx, &data)
+			res, err := client.CreateUser(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
@@ -792,7 +799,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 
 			data.TaskID = task.TaskID
-			res, err := client.CreateRole(ctx, &data)
+			res, err := client.CreateRole(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
@@ -818,7 +825,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data.Data = workflowTask.Workflow
 			data.TaskID = task.TaskID
 
-			res, err := client.CreateWorkflow(ctx, &data)
+			res, err := client.CreateWorkflow(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
