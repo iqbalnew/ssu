@@ -36,13 +36,13 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, service string, step ui
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
 		}
-		whereOpt = whereOpt + "status != 3"
+		whereOpt = whereOpt + "status != 4"
 	}
 	if !isIncludeReject {
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
 		}
-		whereOpt = whereOpt + "status != 4"
+		whereOpt = whereOpt + "status != 5"
 	}
 	if stat > 0 {
 		if whereOpt != "" {
