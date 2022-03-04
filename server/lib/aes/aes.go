@@ -28,7 +28,7 @@ func deriveKey(passphrase string, salt []byte) ([]byte, []byte) {
 		// Salt.
 		rand.Read(salt)
 	}
-	return pbkdf2.Key([]byte(passphrase), salt, 1000, 32, sha256.New), salt
+	return pbkdf2.Key([]byte(passphrase), salt, 100000, 32, sha256.New), salt
 }
 
 func (t *CustomAES) Encrypt(plaintext string) (text string, err error) {
