@@ -27,7 +27,10 @@ require (
 	gorm.io/driver/postgres v1.2.3
 )
 
-require github.com/spf13/viper v1.10.1
+require (
+	github.com/speps/go-hashids v2.0.0+incompatible
+	github.com/spf13/viper v1.10.1
+)
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
