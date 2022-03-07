@@ -144,9 +144,11 @@ func (p *GormProvider) FindAndSetStatus(ctx context.Context, taskID uint64, stat
 		return nil, err
 	}
 
-	updateData := map[string]interface{}{
-		"status": stat,
-	}
+	// updateData := map[string]interface{}{
+	// 	"status": stat,
+	// }
+
+	updateData := &pb.TaskORM{Status: int32(stat)}
 
 	listIDs := []uint64{task.TaskID}
 	for _, v := range task.Childs {
