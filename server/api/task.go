@@ -8,17 +8,17 @@ import (
 	"strconv"
 	"strings"
 
+	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
+	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
-
-	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
-	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -510,7 +510,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 			} else {
 				if currentStep >= 3 {
-					if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" || task.Type == "Workflow" {
+					if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" || task.Type == "Workflow" || task.Type == "Liquidity" {
 						if currentStep == 4 {
 							sendTask = true
 							task.Status = 4
@@ -822,6 +822,31 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 			logrus.Println(res)
 
+		case "Liquidity":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			liquidityConn, err := grpc.Dial(getEnv("LIQUIDITY_SERVICE", ":9010"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Workflow Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer liquidityConn.Close()
+
+			client := liquidity_pb.NewApiServiceClient(liquidityConn)
+
+			data := liquidity_pb.CreateLiquidityRequest{}
+			liquidityTask := liquidity_pb.CreateTaskLiquidityRequest{}
+			json.Unmarshal([]byte(task.Data), &liquidityTask)
+
+			data.Data = &liquidityTask
+			data.TaskID = task.TaskID
+
+			res, err := client.CreateLiquidity(ctx, &data)
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
 		}
 
 	}
@@ -841,4 +866,36 @@ func getEnv(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.GetTaskByIDRes, error) {
+	res := &pb.GetTaskByIDRes{
+		Found: false,
+		Data:  nil,
+	}
+
+	if req.ID < 1 {
+		return res, nil
+	}
+
+	filter := pb.TaskORM{
+		Type:   req.Type,
+		TaskID: req.ID,
+	}
+
+	list, err := s.provider.GetListTask(ctx, &filter, "", "", &pb.PaginationResponse{}, &pb.Sort{})
+	if err != nil {
+		return nil, err
+	}
+	if len(list) > 0 {
+		res.Found = true
+		data, err := list[0].ToPB(ctx)
+		if err != nil {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+		}
+		res.Data = &data
+	}
+
+	return res, nil
 }

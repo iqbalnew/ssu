@@ -186,7 +186,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, f st
 }
 
 func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskORM, pagination *pb.PaginationResponse, sort *pb.Sort) (tasks []*pb.TaskORM, err error) {
-	res := p.db_main.Debug().Where(&task).Scopes(Paginate(tasks, pagination, p.db_main), Sort(sort))
+	res := p.db_main.Where(&task).Scopes(Paginate(tasks, pagination, p.db_main), Sort(sort))
 	err = res.Find(&tasks).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {

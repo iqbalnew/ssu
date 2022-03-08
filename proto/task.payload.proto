@@ -228,3 +228,14 @@ message GetTaskByTypeIDReq {
      bool found = 1;
      Task data = 2;
  }
+
+
+ message GetTaskByIDReq {
+    string type = 1;
+    uint64 ID = 2;
+ }
+ 
+ message GetTaskByIDRes {
+     bool found = 1;
+     Task data = 2;
+ }
