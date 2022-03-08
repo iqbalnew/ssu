@@ -503,6 +503,25 @@
             "type": "string"
           },
           {
+            "name": "task.updatedByID",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "uint64"
+          },
+          {
+            "name": "task.updatedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.createdByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "task.data",
             "in": "query",
             "required": false,
@@ -1065,6 +1084,16 @@
           "type": "string"
         },
         "lastRejectedByName": {
+          "type": "string"
+        },
+        "updatedByID": {
+          "type": "integer",
+          "format": "uint64"
+        },
+        "updatedByName": {
+          "type": "string"
+        },
+        "createdByName": {
           "type": "string"
         },
         "data": {

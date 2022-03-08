@@ -62,6 +62,10 @@ message Task {
 
     string lastApprovedByName = 14 [(google.api.field_behavior) = OPTIONAL];
     string lastRejectedByName = 15 [(google.api.field_behavior) = OPTIONAL];
+    
+    uint64 updatedByID = 16 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {type: INTEGER}];
+    string updatedByName = 17 [(google.api.field_behavior) = OPTIONAL];
+    string createdByName = 18 [(google.api.field_behavior) = OPTIONAL];
 
     string data = 8 [(gorm.field).tag = { type: "jsonb" }];
 
