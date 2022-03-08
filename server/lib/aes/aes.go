@@ -39,11 +39,11 @@ func (t *CustomAES) Encrypt(plaintext string) (text string, err error) {
 	rand.Read(iv)
 	b, err := aes.NewCipher(key)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	aesgcm, err := cipher.NewGCM(b)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	data := aesgcm.Seal(nil, iv, []byte(plaintext), nil)
 	return hex.EncodeToString(salt) + "-" + hex.EncodeToString(iv) + "-" + hex.EncodeToString(data), nil
@@ -56,29 +56,29 @@ func (t *CustomAES) Decrypt(ciphertext string) (text string, err error) {
 	arr := strings.Split(ciphertext, "-")
 	salt, err := hex.DecodeString(arr[0])
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	iv, err := hex.DecodeString(arr[1])
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	data, err := hex.DecodeString(arr[2])
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	key, _ := deriveKey(t.passphrase, salt)
 
 	b, err := aes.NewCipher(key)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	aesgcm, err := cipher.NewGCM(b)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	data, err = aesgcm.Open(nil, iv, data, nil)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	return string(data), nil
 }
