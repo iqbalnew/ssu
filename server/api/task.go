@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
@@ -16,9 +18,6 @@ import (
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
-
-	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
-	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -540,7 +539,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	for i := range task.Childs {
 		task.Childs[i].LastApprovedByID = task.LastApprovedByID
+		task.Childs[i].LastApprovedByName = task.LastApprovedByName
 		task.Childs[i].LastRejectedByID = task.LastRejectedByID
+		task.Childs[i].LastRejectedByName = task.LastRejectedByName
 		if sendTask {
 			task.Childs[i].Status = task.Status
 			task.Childs[i].Step = task.Step

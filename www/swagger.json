@@ -102,6 +102,18 @@
             "type": "string"
           },
           {
+            "name": "task.lastApprovedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.lastRejectedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "task.data",
             "in": "query",
             "required": false,
@@ -478,6 +490,18 @@
             "required": false,
             "type": "integer",
             "format": "uint64"
+          },
+          {
+            "name": "task.lastApprovedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.lastRejectedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
           },
           {
             "name": "task.data",
@@ -1027,6 +1051,12 @@
           "type": "integer",
           "format": "uint64"
         },
+        "lastApprovedByName": {
+          "type": "string"
+        },
+        "lastRejectedByName": {
+          "type": "string"
+        },
         "data": {
           "type": "string"
         },
@@ -1086,6 +1116,12 @@
           "type": "string"
         },
         "lastRejectedByID": {
+          "type": "string"
+        },
+        "lastApprovedByName": {
+          "type": "string"
+        },
+        "lastRejectedByName": {
           "type": "string"
         },
         "data": {
