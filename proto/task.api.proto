@@ -118,6 +118,7 @@ service TaskService {
     rpc AssignTypeID(AssignaTypeIDRequest) returns (AssignaTypeIDResponse);
     rpc AssignTypeIDEV(AssignaTypeIDRequestEV) returns (AssignaTypeIDResponse);
 
+    rpc GetTaskByID(GetTaskByIDReq) returns (GetTaskByIDRes);
     rpc GetTaskByTypeID(GetTaskByTypeIDReq) returns (GetTaskByTypeIDRes);
 
     rpc RejectBySystem(RejectBySystemReq) returns (RejectBySystemRes);

@@ -34,6 +34,7 @@ type TaskServiceClient interface {
 	GetListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
 	AssignTypeID(ctx context.Context, in *AssignaTypeIDRequest, opts ...grpc.CallOption) (*AssignaTypeIDResponse, error)
 	AssignTypeIDEV(ctx context.Context, in *AssignaTypeIDRequestEV, opts ...grpc.CallOption) (*AssignaTypeIDResponse, error)
+	GetTaskByID(ctx context.Context, in *GetTaskByIDReq, opts ...grpc.CallOption) (*GetTaskByIDRes, error)
 	GetTaskByTypeID(ctx context.Context, in *GetTaskByTypeIDReq, opts ...grpc.CallOption) (*GetTaskByTypeIDRes, error)
 	RejectBySystem(ctx context.Context, in *RejectBySystemReq, opts ...grpc.CallOption) (*RejectBySystemRes, error)
 }
@@ -154,6 +155,15 @@ func (c *taskServiceClient) AssignTypeIDEV(ctx context.Context, in *AssignaTypeI
 	return out, nil
 }
 
+func (c *taskServiceClient) GetTaskByID(ctx context.Context, in *GetTaskByIDReq, opts ...grpc.CallOption) (*GetTaskByIDRes, error) {
+	out := new(GetTaskByIDRes)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetTaskByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *taskServiceClient) GetTaskByTypeID(ctx context.Context, in *GetTaskByTypeIDReq, opts ...grpc.CallOption) (*GetTaskByTypeIDRes, error) {
 	out := new(GetTaskByTypeIDRes)
 	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetTaskByTypeID", in, out, opts...)
@@ -188,6 +198,7 @@ type TaskServiceServer interface {
 	GetListAnnouncement(context.Context, *ListRequest) (*ListTaskResponse, error)
 	AssignTypeID(context.Context, *AssignaTypeIDRequest) (*AssignaTypeIDResponse, error)
 	AssignTypeIDEV(context.Context, *AssignaTypeIDRequestEV) (*AssignaTypeIDResponse, error)
+	GetTaskByID(context.Context, *GetTaskByIDReq) (*GetTaskByIDRes, error)
 	GetTaskByTypeID(context.Context, *GetTaskByTypeIDReq) (*GetTaskByTypeIDRes, error)
 	RejectBySystem(context.Context, *RejectBySystemReq) (*RejectBySystemRes, error)
 	mustEmbedUnimplementedTaskServiceServer()
@@ -232,6 +243,9 @@ func (UnimplementedTaskServiceServer) AssignTypeID(context.Context, *AssignaType
 }
 func (UnimplementedTaskServiceServer) AssignTypeIDEV(context.Context, *AssignaTypeIDRequestEV) (*AssignaTypeIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AssignTypeIDEV not implemented")
+}
+func (UnimplementedTaskServiceServer) GetTaskByID(context.Context, *GetTaskByIDReq) (*GetTaskByIDRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTaskByID not implemented")
 }
 func (UnimplementedTaskServiceServer) GetTaskByTypeID(context.Context, *GetTaskByTypeIDReq) (*GetTaskByTypeIDRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskByTypeID not implemented")
@@ -468,6 +482,24 @@ func _TaskService_AssignTypeIDEV_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskService_GetTaskByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTaskByIDReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GetTaskByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/GetTaskByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GetTaskByID(ctx, req.(*GetTaskByIDReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TaskService_GetTaskByTypeID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetTaskByTypeIDReq)
 	if err := dec(in); err != nil {
@@ -558,6 +590,10 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AssignTypeIDEV",
 			Handler:    _TaskService_AssignTypeIDEV_Handler,
+		},
+		{
+			MethodName: "GetTaskByID",
+			Handler:    _TaskService_GetTaskByID_Handler,
 		},
 		{
 			MethodName: "GetTaskByTypeID",

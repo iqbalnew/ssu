@@ -101,6 +101,18 @@
             "type": "string"
           },
           {
+            "name": "task.lastApprovedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.lastRejectedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "task.data",
             "in": "query",
             "required": false,
@@ -479,6 +491,37 @@
             "format": "uint64"
           },
           {
+            "name": "task.lastApprovedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.lastRejectedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.updatedByID",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "uint64"
+          },
+          {
+            "name": "task.updatedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.createdByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "task.data",
             "in": "query",
             "required": false,
@@ -733,6 +776,17 @@
         },
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "v1GetTaskByIDRes": {
+      "type": "object",
+      "properties": {
+        "found": {
+          "type": "boolean"
+        },
+        "data": {
+          "$ref": "#/definitions/v1Task"
         }
       }
     },
@@ -1037,6 +1091,22 @@
           "type": "integer",
           "format": "uint64"
         },
+        "lastApprovedByName": {
+          "type": "string"
+        },
+        "lastRejectedByName": {
+          "type": "string"
+        },
+        "updatedByID": {
+          "type": "integer",
+          "format": "uint64"
+        },
+        "updatedByName": {
+          "type": "string"
+        },
+        "createdByName": {
+          "type": "string"
+        },
         "data": {
           "type": "string"
         },
@@ -1096,6 +1166,12 @@
           "type": "string"
         },
         "lastRejectedByID": {
+          "type": "string"
+        },
+        "lastApprovedByName": {
+          "type": "string"
+        },
+        "lastRejectedByName": {
           "type": "string"
         },
         "data": {
