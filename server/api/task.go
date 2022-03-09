@@ -535,7 +535,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	for i := range task.Childs {
 		task.Childs[i].LastApprovedByID = task.LastApprovedByID
+		task.Childs[i].LastApprovedByName = task.LastApprovedByName
 		task.Childs[i].LastRejectedByID = task.LastRejectedByID
+		task.Childs[i].LastRejectedByName = task.LastRejectedByName
 		if sendTask {
 			task.Childs[i].Status = task.Status
 			task.Childs[i].Step = task.Step

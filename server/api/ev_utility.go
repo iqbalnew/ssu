@@ -96,7 +96,9 @@ func taskEVtoPB(val *pb.TaskEV, aes *customAES.CustomAES) (*pb.Task, error) {
 	data.Step = val.Step
 	data.CreatedByID = uint64(createdByID)
 	data.LastApprovedByID = uint64(lastApprovedByID)
+	data.LastApprovedByName = val.LastApprovedByName
 	data.LastRejectedByID = uint64(lastRejectedByID)
+	data.LastRejectedByName = val.LastRejectedByName
 	data.Data = val.Data
 	data.Reasons = val.Reasons
 	data.Comment = val.Comment
@@ -133,6 +135,8 @@ func taskPBtoEV(val *pb.Task, aes *customAES.CustomAES) (*pb.TaskEV, error) {
 	data.Type = val.Type
 	data.Status = val.Status
 	data.Step = val.Step
+	data.LastApprovedByName = val.LastApprovedByName
+	data.LastRejectedByName = val.LastRejectedByName
 	data.CreatedByID, err = aes.Encrypt(fmt.Sprint(val.CreatedByID))
 	if err != nil {
 		logrus.Errorf("val: %v | %v", val.CreatedByID, err)
