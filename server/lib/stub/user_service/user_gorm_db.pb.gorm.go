@@ -13,12 +13,14 @@ import (
 )
 
 type UserORM struct {
+	CompanyID    uint64     `gorm:"column:CompanyID"`
+	CompanyName  string     `gorm:"column:CompanyName"`
 	CreatedAt    *time.Time `gorm:"not null"`
 	CreatedByID  uint64     `gorm:"column:CreatedByID;not null"`
 	DeletedAt    *time.Time
 	DeletedByID  uint64     `gorm:"column:DeletedByID"`
 	IdNumber     string     `gorm:"column:IdNumber;not null"`
-	IdType       string     `gorm:"column:IdType;not null"`
+	IdType       int32      `gorm:"column:IdType;not null"`
 	IsBlocked    bool       `gorm:"column:IsBlocked"`
 	UpdatedAt    *time.Time `gorm:"not null"`
 	UpdatedByID  uint64     `gorm:"column:UpdatedByID;not null"`
@@ -45,10 +47,12 @@ func (m *User) ToORM(ctx context.Context) (UserORM, error) {
 	}
 	to.UserID = m.UserID
 	to.Username = m.Username
-	to.IdType = m.IdType
+	to.IdType = int32(m.IdType)
 	to.IdNumber = m.IdNumber
 	to.UserTypeID = m.UserTypeID
 	to.UserTypeName = m.UserTypeName
+	to.CompanyID = m.CompanyID
+	to.CompanyName = m.CompanyName
 	to.IsBlocked = m.IsBlocked
 	to.CreatedByID = m.CreatedByID
 	to.UpdatedByID = m.UpdatedByID
@@ -83,10 +87,12 @@ func (m *UserORM) ToPB(ctx context.Context) (User, error) {
 	}
 	to.UserID = m.UserID
 	to.Username = m.Username
-	to.IdType = m.IdType
+	to.IdType = User_IDType(m.IdType)
 	to.IdNumber = m.IdNumber
 	to.UserTypeID = m.UserTypeID
 	to.UserTypeName = m.UserTypeName
+	to.CompanyID = m.CompanyID
+	to.CompanyName = m.CompanyName
 	to.IsBlocked = m.IsBlocked
 	to.CreatedByID = m.CreatedByID
 	to.UpdatedByID = m.UpdatedByID
@@ -429,6 +435,14 @@ func DefaultApplyFieldMaskUser(ctx context.Context, patchee *User, patcher *User
 		}
 		if f == prefix+"UserTypeName" {
 			patchee.UserTypeName = patcher.UserTypeName
+			continue
+		}
+		if f == prefix+"CompanyID" {
+			patchee.CompanyID = patcher.CompanyID
+			continue
+		}
+		if f == prefix+"CompanyName" {
+			patchee.CompanyName = patcher.CompanyName
 			continue
 		}
 		if f == prefix+"IsBlocked" {

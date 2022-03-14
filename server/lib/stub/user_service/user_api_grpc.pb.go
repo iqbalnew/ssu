@@ -27,9 +27,11 @@ type ApiServiceClient interface {
 	GetUsers(ctx context.Context, in *CommonRequest, opts ...grpc.CallOption) (*ListUserResponse, error)
 	DownloadUsers(ctx context.Context, in *CommonRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	GetUserTasks(ctx context.Context, in *ListUserWithTaskRequest, opts ...grpc.CallOption) (*ListUserWithTaskResponse, error)
+	GetUserTaskByID(ctx context.Context, in *GetTaskByIDReq, opts ...grpc.CallOption) (*GetUserWithTaskRes, error)
 	DownloadUserTasks(ctx context.Context, in *ListUserWithTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	CreateUserTask(ctx context.Context, in *CreateUserTaskRequest, opts ...grpc.CallOption) (*CommonResponse, error)
+	ListUserGroup(ctx context.Context, in *ListUserReq, opts ...grpc.CallOption) (*ListUserRes, error)
 	BRICaMSgetCustomer(ctx context.Context, in *BricamsGetCustomerReq, opts ...grpc.CallOption) (*BricamsGetCustomerRes, error)
 	BRICamsGetAllUser(ctx context.Context, in *BricamsGetAddonsUserReq, opts ...grpc.CallOption) (*BricamsGetAddonsUserRes, error)
 	BRICamsGetUserByUsername(ctx context.Context, in *BricamsGetAddonsUserByUsernameReq, opts ...grpc.CallOption) (*BricamsGetAddonsUserByUsernameRes, error)
@@ -81,6 +83,15 @@ func (c *apiServiceClient) GetUserTasks(ctx context.Context, in *ListUserWithTas
 	return out, nil
 }
 
+func (c *apiServiceClient) GetUserTaskByID(ctx context.Context, in *GetTaskByIDReq, opts ...grpc.CallOption) (*GetUserWithTaskRes, error) {
+	out := new(GetUserWithTaskRes)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/GetUserTaskByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) DownloadUserTasks(ctx context.Context, in *ListUserWithTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
 	out := new(httpbody.HttpBody)
 	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/DownloadUserTasks", in, out, opts...)
@@ -102,6 +113,15 @@ func (c *apiServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest
 func (c *apiServiceClient) CreateUserTask(ctx context.Context, in *CreateUserTaskRequest, opts ...grpc.CallOption) (*CommonResponse, error) {
 	out := new(CommonResponse)
 	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/CreateUserTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ListUserGroup(ctx context.Context, in *ListUserReq, opts ...grpc.CallOption) (*ListUserRes, error) {
+	out := new(ListUserRes)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/ListUserGroup", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -161,9 +181,11 @@ type ApiServiceServer interface {
 	GetUsers(context.Context, *CommonRequest) (*ListUserResponse, error)
 	DownloadUsers(context.Context, *CommonRequest) (*httpbody.HttpBody, error)
 	GetUserTasks(context.Context, *ListUserWithTaskRequest) (*ListUserWithTaskResponse, error)
+	GetUserTaskByID(context.Context, *GetTaskByIDReq) (*GetUserWithTaskRes, error)
 	DownloadUserTasks(context.Context, *ListUserWithTaskRequest) (*httpbody.HttpBody, error)
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	CreateUserTask(context.Context, *CreateUserTaskRequest) (*CommonResponse, error)
+	ListUserGroup(context.Context, *ListUserReq) (*ListUserRes, error)
 	BRICaMSgetCustomer(context.Context, *BricamsGetCustomerReq) (*BricamsGetCustomerRes, error)
 	BRICamsGetAllUser(context.Context, *BricamsGetAddonsUserReq) (*BricamsGetAddonsUserRes, error)
 	BRICamsGetUserByUsername(context.Context, *BricamsGetAddonsUserByUsernameReq) (*BricamsGetAddonsUserByUsernameRes, error)
@@ -188,6 +210,9 @@ func (UnimplementedApiServiceServer) DownloadUsers(context.Context, *CommonReque
 func (UnimplementedApiServiceServer) GetUserTasks(context.Context, *ListUserWithTaskRequest) (*ListUserWithTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserTasks not implemented")
 }
+func (UnimplementedApiServiceServer) GetUserTaskByID(context.Context, *GetTaskByIDReq) (*GetUserWithTaskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserTaskByID not implemented")
+}
 func (UnimplementedApiServiceServer) DownloadUserTasks(context.Context, *ListUserWithTaskRequest) (*httpbody.HttpBody, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DownloadUserTasks not implemented")
 }
@@ -196,6 +221,9 @@ func (UnimplementedApiServiceServer) CreateUser(context.Context, *CreateUserRequ
 }
 func (UnimplementedApiServiceServer) CreateUserTask(context.Context, *CreateUserTaskRequest) (*CommonResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUserTask not implemented")
+}
+func (UnimplementedApiServiceServer) ListUserGroup(context.Context, *ListUserReq) (*ListUserRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUserGroup not implemented")
 }
 func (UnimplementedApiServiceServer) BRICaMSgetCustomer(context.Context, *BricamsGetCustomerReq) (*BricamsGetCustomerRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BRICaMSgetCustomer not implemented")
@@ -297,6 +325,24 @@ func _ApiService_GetUserTasks_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_GetUserTaskByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTaskByIDReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetUserTaskByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.ApiService/GetUserTaskByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetUserTaskByID(ctx, req.(*GetTaskByIDReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_DownloadUserTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListUserWithTaskRequest)
 	if err := dec(in); err != nil {
@@ -347,6 +393,24 @@ func _ApiService_CreateUserTask_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).CreateUserTask(ctx, req.(*CreateUserTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ListUserGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListUserGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.ApiService/ListUserGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListUserGroup(ctx, req.(*ListUserReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -465,6 +529,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_GetUserTasks_Handler,
 		},
 		{
+			MethodName: "GetUserTaskByID",
+			Handler:    _ApiService_GetUserTaskByID_Handler,
+		},
+		{
 			MethodName: "DownloadUserTasks",
 			Handler:    _ApiService_DownloadUserTasks_Handler,
 		},
@@ -475,6 +543,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateUserTask",
 			Handler:    _ApiService_CreateUserTask_Handler,
+		},
+		{
+			MethodName: "ListUserGroup",
+			Handler:    _ApiService_ListUserGroup_Handler,
 		},
 		{
 			MethodName: "BRICaMSgetCustomer",

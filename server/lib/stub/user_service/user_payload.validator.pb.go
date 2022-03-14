@@ -171,7 +171,18 @@ func (this *ListUserWithTaskResponse) Validate() error {
 	}
 	return nil
 }
+func (this *GetUserWithTaskRes) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
 func (this *PaginationResponse) Validate() error {
+	return nil
+}
+func (this *GetTaskByIDReq) Validate() error {
 	return nil
 }
 func (this *ListUserWithTaskRequest) Validate() error {
