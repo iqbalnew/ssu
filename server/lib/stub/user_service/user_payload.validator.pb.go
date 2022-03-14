@@ -7,9 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	_ "github.com/mwitkow/go-proto-validators"
+	_ "github.com/golang/protobuf/ptypes/struct"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -25,6 +27,9 @@ func (this *LoginResponse) Validate() error {
 	return nil
 }
 func (this *HealthCheckResponse) Validate() error {
+	return nil
+}
+func (this *ErrorBodyResponse) Validate() error {
 	return nil
 }
 func (this *Empty) Validate() error {
@@ -60,13 +65,25 @@ func (this *ListUserResponse) Validate() error {
 	}
 	return nil
 }
-func (this *UserRequest) Validate() error {
+func (this *ListUserReq) Validate() error {
+	if this.User != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.User); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("User", err)
+		}
+	}
 	return nil
 }
-func (this *UserResponse) Validate() error {
-	if this.Data != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+func (this *ListUserRes) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
 		}
 	}
 	return nil
@@ -91,6 +108,24 @@ func (this *CreateUserTaskRequest) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *UserRoles) Validate() error {
+	return nil
+}
+func (this *UserTaskData) Validate() error {
+	if this.User != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.User); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("User", err)
+		}
+	}
+	for _, item := range this.Roles {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Roles", err)
+			}
 		}
 	}
 	return nil
@@ -129,6 +164,14 @@ func (this *ListUserWithTaskResponse) Validate() error {
 			}
 		}
 	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
+func (this *PaginationResponse) Validate() error {
 	return nil
 }
 func (this *ListUserWithTaskRequest) Validate() error {
@@ -152,5 +195,64 @@ func (this *ListUserRoleResponse) Validate() error {
 			}
 		}
 	}
+	return nil
+}
+func (this *Sort) Validate() error {
+	return nil
+}
+func (this *BricamsGetAddonsUserReq) Validate() error {
+	return nil
+}
+func (this *BricamsGetAddonsUserByUsernameReq) Validate() error {
+	return nil
+}
+func (this *BricamsGetAddonsUserRes) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *BricamsGetAddonsUserByUsernameRes) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *BRICaMSSvcUserRes) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *BRICaMSSvcUserListRes) Validate() error {
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *BRICaMSSvcUserData) Validate() error {
+	return nil
+}
+func (this *BRICaMSSvcPagination) Validate() error {
+	return nil
+}
+func (this *BricamsGetAddonsUserData) Validate() error {
 	return nil
 }
