@@ -15,17 +15,16 @@ import (
 type RoleORM struct {
 	CompanyID       uint64     `gorm:"column:CompanyID"`
 	CreatedAt       *time.Time `gorm:"not null"`
-	CreatedByID     uint64     `gorm:"column:CreatedByID;not null"`
+	CreatedByID     uint64     `gorm:"column:CreatedByID"`
 	DeletedAt       *time.Time
-	DeletedByID     uint64              `gorm:"column:UpdatedByID"`
+	DeletedByID     uint64              `gorm:"column:DeletedByID"`
 	Description     string              `gorm:"column:Description;type:text;not null"`
 	Name            string              `gorm:"column:Name;type:varchar(255);not null"`
-	RoleAuthorities []*RoleAuthorityORM `gorm:"foreignkey:RoleID;association_foreignkey:RoleID"`
+	RoleAuthorities []*RoleAuthorityORM `gorm:"foreignkey:RoleID;association_foreignkey:RoleID;preload:true"`
 	RoleID          uint64              `gorm:"column:RoleID;primary_key;not null;auto_increment"`
 	UpdatedAt       *time.Time          `gorm:"not null"`
-	UpdatedByID     uint64              `gorm:"column:UpdatedByID;not null"`
-	UserRoles       []*UserRoleORM      `gorm:"foreignkey:RoleID;association_foreignkey:RoleID"`
-	UserType        *UserTypeORM        `gorm:"foreignkey:UserTypeID;association_foreignkey:UserTypeID"`
+	UpdatedByID     uint64              `gorm:"column:UpdatedByID"`
+	UserType        *UserTypeORM        `gorm:"foreignkey:UserTypeID;association_foreignkey:UserTypeID;preload:true"`
 	UserTypeID      uint64              `gorm:"column:UserTypeID;not null"`
 }
 
@@ -71,17 +70,7 @@ func (m *Role) ToORM(ctx context.Context) (RoleORM, error) {
 		t := m.DeletedAt.AsTime()
 		to.DeletedAt = &t
 	}
-	for _, v := range m.UserRoles {
-		if v != nil {
-			if tempUserRoles, cErr := v.ToORM(ctx); cErr == nil {
-				to.UserRoles = append(to.UserRoles, &tempUserRoles)
-			} else {
-				return to, cErr
-			}
-		} else {
-			to.UserRoles = append(to.UserRoles, nil)
-		}
-	}
+	// Repeated type AccountID is not an ORMable message type
 	for _, v := range m.RoleAuthorities {
 		if v != nil {
 			if tempRoleAuthorities, cErr := v.ToORM(ctx); cErr == nil {
@@ -133,17 +122,7 @@ func (m *RoleORM) ToPB(ctx context.Context) (Role, error) {
 	if m.DeletedAt != nil {
 		to.DeletedAt = timestamppb.New(*m.DeletedAt)
 	}
-	for _, v := range m.UserRoles {
-		if v != nil {
-			if tempUserRoles, cErr := v.ToPB(ctx); cErr == nil {
-				to.UserRoles = append(to.UserRoles, &tempUserRoles)
-			} else {
-				return to, cErr
-			}
-		} else {
-			to.UserRoles = append(to.UserRoles, nil)
-		}
-	}
+	// Repeated type AccountID is not an ORMable message type
 	for _, v := range m.RoleAuthorities {
 		if v != nil {
 			if tempRoleAuthorities, cErr := v.ToPB(ctx); cErr == nil {
@@ -369,7 +348,7 @@ type UserTypeWithAfterToPB interface {
 }
 
 type RoleAuthorityORM struct {
-	AuthorityLevel   *AuthorityLevelORM `gorm:"foreignkey:AuthorityLevelID;association_foreignkey:AuthorityLevelID"`
+	AuthorityLevel   *AuthorityLevelORM `gorm:"foreignkey:AuthorityLevelID;association_foreignkey:AuthorityLevelID;preload:true"`
 	AuthorityLevelID uint64             `gorm:"column:AuthorityLevelID;not null"`
 	CreatedAt        *time.Time         `gorm:"not null"`
 	CreatedByID      uint64             `gorm:"column:CreatedByID"`
@@ -484,8 +463,8 @@ type AuthorityLevelORM struct {
 	AuthorityLevelID uint64     `gorm:"column:AuthorityLevelID;primary_key;not null"`
 	CreatedAt        *time.Time `gorm:"not null"`
 	DeletedAt        *time.Time
-	Name             string     `gorm:"column:Name;type:varchar(255);not null"`
-	Step             string     `gorm:"column:Name;type:varchar(255)"`
+	Name             string     `gorm:"column:Name;type:varchar(255);unique;not null"`
+	Step             string     `gorm:"column:Step;type:varchar(255)"`
 	UpdatedAt        *time.Time `gorm:"not null"`
 }
 
@@ -751,14 +730,6 @@ func DefaultStrictUpdateRole(ctx context.Context, in *Role, db *gorm.DB) (*Role,
 	if err = db.Where(filterRoleAuthorities).Delete(RoleAuthorityORM{}).Error; err != nil {
 		return nil, err
 	}
-	filterUserRoles := UserRoleORM{}
-	if ormObj.RoleID == 0 {
-		return nil, errors.EmptyIdError
-	}
-	filterUserRoles.RoleID = ormObj.RoleID
-	if err = db.Where(filterUserRoles).Delete(UserRoleORM{}).Error; err != nil {
-		return nil, err
-	}
 	if hook, ok := interface{}(&ormObj).(RoleORMWithBeforeStrictUpdateSave); ok {
 		if db, err = hook.BeforeStrictUpdateSave(ctx, db); err != nil {
 			return nil, err
@@ -993,8 +964,8 @@ func DefaultApplyFieldMaskRole(ctx context.Context, patchee *Role, patcher *Role
 			patchee.DeletedAt = patcher.DeletedAt
 			continue
 		}
-		if f == prefix+"UserRoles" {
-			patchee.UserRoles = patcher.UserRoles
+		if f == prefix+"AccountID" {
+			patchee.AccountID = patcher.AccountID
 			continue
 		}
 		if f == prefix+"RoleAuthorities" {

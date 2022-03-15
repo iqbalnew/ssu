@@ -24,5 +24,5 @@ type GormProvider struct {
 }
 
 func NewProvider(db *gorm.DB) *GormProvider {
-	return &GormProvider{db_main: db}
+	return &GormProvider{db_main: db.Debug()}
 }
