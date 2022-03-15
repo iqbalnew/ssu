@@ -229,6 +229,16 @@ message GetTaskByTypeIDReq {
      Task data = 2;
  }
 
+ 
+message RejectBySystemReq {
+    uint64 taskID = 1;
+    statuses status = 2;
+}
+
+message RejectBySystemRes {
+    bool success = 1;
+    string code = 2;
+}
 
  message GetTaskByIDReq {
     string type = 1;

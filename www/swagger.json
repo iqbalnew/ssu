@@ -994,6 +994,17 @@
         }
       }
     },
+    "v1RejectBySystemRes": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    },
     "v1SaveTaskResponse": {
       "type": "object",
       "properties": {

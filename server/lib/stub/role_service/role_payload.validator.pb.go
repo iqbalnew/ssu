@@ -9,9 +9,13 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+<<<<<<< HEAD
 	_ "google.golang.org/protobuf/types/known/structpb"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
+=======
+	_ "github.com/golang/protobuf/ptypes/struct"
+>>>>>>> 1a567f9d7b444fd038cb826294e92d5efa0eb45b
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 

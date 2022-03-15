@@ -36,13 +36,13 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, service string, step ui
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
 		}
-		whereOpt = whereOpt + "status != 3"
+		whereOpt = whereOpt + "status != 4"
 	}
 	if !isIncludeReject {
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
 		}
-		whereOpt = whereOpt + "status != 4"
+		whereOpt = whereOpt + "status != 5"
 	}
 	if stat > 0 {
 		if whereOpt != "" {
@@ -138,7 +138,54 @@ func (p *GormProvider) CreateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 	return task, nil
 }
 
+func (p *GormProvider) FindAndSetStatus(ctx context.Context, taskID uint64, stat int) (*pb.TaskORM, error) {
+	task, err := p.FindTaskById(ctx, taskID)
+	if err != nil {
+		return nil, err
+	}
+
+	// updateData := map[string]interface{}{
+	// 	"status": stat,
+	// }
+
+	updateData := &pb.TaskORM{Status: int32(stat)}
+
+	listIDs := []uint64{task.TaskID}
+	for _, v := range task.Childs {
+		if task.IsParentActive {
+			listIDs = append(listIDs, v.TaskID)
+		}
+	}
+
+	if err := p.db_main.Model(&pb.TaskORM{}).Where("task_id IN ?", listIDs).Updates(&updateData).Error; err != nil {
+		logrus.Errorln(err)
+		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+	}
+
+	return task, nil
+}
+
 func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {
+
+	if task.Status == 5 {
+		updateData := map[string]interface{}{
+			"step": task.Step,
+		}
+
+		listIDs := []uint64{task.TaskID}
+		for _, v := range task.Childs {
+			if task.IsParentActive {
+				listIDs = append(listIDs, v.TaskID)
+			}
+		}
+
+		if err := p.db_main.Model(&pb.TaskORM{}).Where("task_id IN ?", listIDs).Updates(&updateData).Error; err != nil {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+		}
+
+	}
+
 	taskModel := pb.TaskORM{TaskID: task.TaskID}
 	query := p.db_main.Clauses(clause.OnConflict{
 		UpdateAll: true,

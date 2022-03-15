@@ -140,7 +140,18 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 						value := string(keyword[1:len(filter[1])])
 						db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
 					}
-
+				} else if keyword == "true" || keyword == "false" {
+					value := keyword
+					if value == "true" {
+						db = db.Where(fmt.Sprintf("%s = ?", column), value)
+					} else {
+						if strings.Contains(column, "->") {
+							db = db.Where(fmt.Sprintf("%s IS NULL", column))
+							db = db.Or(fmt.Sprintf("%s = ?", column), value)
+						} else {
+							db = db.Where(fmt.Sprintf("%s = ?", column), value)
+						}
+					}
 				} else {
 					value := keyword
 					db = db.Where(fmt.Sprintf("%s = ?", column), value)

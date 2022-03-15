@@ -22,6 +22,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -87,7 +88,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 }
 
 func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (*pb.ListTaskResponseEV, error) {
-	key := getEnv("AES_KEY", "Odj12345*")
+	key := getEnv("AES_KEY", "Odj12345*12345678901234567890123")
 	aes := customAES.NewCustomAES(key)
 
 	taskPB, err := taskEVtoPB(req.Task, aes)
@@ -279,7 +280,7 @@ func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (
 }
 
 func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequestEV) (*pb.SaveTaskResponseEV, error) {
-	key := getEnv("AES_KEY", "Odj12345*")
+	key := getEnv("AES_KEY", "Odj12345*12345678901234567890123")
 	aes := customAES.NewCustomAES(key)
 
 	text, err := aes.Decrypt(req.TaskID)
@@ -327,7 +328,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task.Step = 2
 	task.Status = 1
 
-	if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu" {
+	if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu:Appearance" || req.Task.Type == "Menu:License" {
 		task.Step = 3
 	}
 
@@ -358,7 +359,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 }
 
 func (s *Server) AssignTypeIDEV(ctx context.Context, req *pb.AssignaTypeIDRequestEV) (*pb.AssignaTypeIDResponse, error) {
-	key := getEnv("AES_KEY", "Odj12345*")
+	key := getEnv("AES_KEY", "Odj12345*12345678901234567890123")
 	aes := customAES.NewCustomAES(key)
 
 	text, err := aes.Decrypt(req.TaskID)
@@ -401,7 +402,7 @@ func (s *Server) AssignTypeID(ctx context.Context, req *pb.AssignaTypeIDRequest)
 }
 
 func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.SetTaskResponseEV, error) {
-	key := getEnv("AES_KEY", "Odj12345*")
+	key := getEnv("AES_KEY", "Odj12345*12345678901234567890123")
 	aes := customAES.NewCustomAES(key)
 
 	text, err := aes.Decrypt(req.TaskID)
@@ -441,6 +442,12 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 }
 
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	}
+	var header, trailer metadata.MD
+
 	task, err := s.provider.FindTaskById(ctx, req.TaskID)
 	if err != nil {
 		return nil, err
@@ -484,13 +491,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 2
 			task.Status = 1
 
-			if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu" {
+			if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
 				task.Step = 3
 			}
 
 		} else {
 
-			if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu" {
+			if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
 				if currentStep == 1 {
 					task.Status = 1
 					task.Step = 3
@@ -531,6 +538,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	case "reject":
 		task.Status = 5
+		task.Step = 0
 	}
 
 	for i := range task.Childs {
@@ -548,6 +556,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if err != nil {
 		return nil, err
 	}
+
 	reUpdate := false
 
 	taskPb, _ := updatedTask.ToPB(ctx)
@@ -604,7 +613,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				TaskID: task.TaskID,
 				Data:   &data,
 			}
-			res, err := announcementClient.CreateAnnouncement(ctx, send)
+			res, err := announcementClient.CreateAnnouncement(ctx, send, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
@@ -627,7 +636,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data)
 			data.TaskID = task.TaskID
 
-			res, err := companyClient.CreateCompanyGroup(ctx, &data)
+			res, err := companyClient.CreateCompanyGroup(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
@@ -681,7 +690,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						data.Data = &account
 						data.TaskID = task.Childs[i].TaskID
 
-						res, err := companyClient.CreateAccount(ctx, &data)
+						res, err := companyClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
 							return nil, err
 						}
@@ -699,7 +708,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				data.Data = &account
 				data.TaskID = task.TaskID
 
-				res, err := companyClient.CreateAccount(ctx, &data)
+				res, err := companyClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
 				}
@@ -723,7 +732,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data)
 
 			data.TaskID = task.TaskID
-			res, err := companyClient.CreateNotification(ctx, &data)
+			res, err := companyClient.CreateNotification(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
@@ -746,34 +755,82 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 
 			data.TaskID = task.TaskID
-			res, err := client.CreateUser(ctx, &data)
+			res, err := client.CreateUser(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
 			logrus.Println(res)
 
-		case "Menu":
+		case "Menu:Appearance":
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
-			menuConn, err := grpc.Dial(getEnv("MENU_SERVICE", ":9096"), opts...)
+			menuConn, err := grpc.Dial(getEnv("MENU_SERVICE", ":9093"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Menu Service: %v", err)
+				logrus.Errorln("Failed connect to Company Service: %v", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer menuConn.Close()
 
-			client := menu_pb.NewApiServiceClient(menuConn)
+			menuClient := menu_pb.NewApiServiceClient(menuConn)
 
-			data := menu_pb.CreateMenuRequest{}
-			json.Unmarshal([]byte(task.Data), &data.Data)
+			if isParent {
+				for i := range task.Childs {
+					if task.Childs[i].IsParentActive {
+						data := menu_pb.SaveMenuAppearanceReq{}
+						menu := menu_pb.MenuAppearance{}
+						json.Unmarshal([]byte(task.Childs[i].Data), &menu)
 
-			data.TaskID = task.TaskID
-			res, err := client.CreateMenu(ctx, &data)
-			if err != nil {
-				return nil, err
+						data.Data = &menu
+						data.TaskID = task.Childs[i].TaskID
+
+						res, err := menuClient.SaveMenuAppearance(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+						if err != nil {
+							return nil, err
+						}
+						logrus.Println(res)
+
+						task.Childs[i].IsParentActive = false
+						reUpdate = true
+					}
+				}
+			} else {
+				data := menu_pb.SaveMenuAppearanceReq{}
+				menu := menu_pb.MenuAppearance{}
+				json.Unmarshal([]byte(task.Data), &menu)
+
+				data.Data = &menu
+				data.TaskID = task.TaskID
+
+				res, err := menuClient.SaveMenuAppearance(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
 			}
-			logrus.Println(res)
+
+		case "Menu:License":
+			// var opts []grpc.DialOption
+			// opts = append(opts, grpc.WithInsecure())
+
+			// menuConn, err := grpc.Dial(getEnv("MENU_SERVICE", ":9096"), opts...)
+			// if err != nil {
+			// 	logrus.Errorln("Failed connect to Menu Service: %v", err)
+			// 	return nil, status.Errorf(codes.Internal, "Internal Error")
+			// }
+			// defer menuConn.Close()
+
+			// client := menu_pb.NewApiServiceClient(menuConn)
+
+			// data := menu_pb.CreateMenuRequest{}
+			// json.Unmarshal([]byte(task.Data), &data.Data)
+
+			// data.TaskID = task.TaskID
+			// res, err := client.CreateMenu(ctx, &data)
+			// if err != nil {
+			// 	return nil, err
+			// }
+			// logrus.Println(res)
 
 		case "Role":
 			var opts []grpc.DialOption
@@ -792,7 +849,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 
 			data.TaskID = task.TaskID
-			res, err := client.CreateRole(ctx, &data)
+			res, err := client.CreateRole(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
@@ -818,7 +875,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data.Data = workflowTask.Workflow
 			data.TaskID = task.TaskID
 
-			res, err := client.CreateWorkflow(ctx, &data)
+			res, err := client.CreateWorkflow(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
@@ -868,6 +925,20 @@ func getEnv(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+func (s *Server) RejectBySystem(ctx context.Context, req *pb.RejectBySystemReq) (res *pb.RejectBySystemRes, err error) {
+	res = &pb.RejectBySystemRes{
+		Success: true,
+		Code:    "200",
+	}
+	_, err = s.provider.FindAndSetStatus(ctx, req.TaskID, req.Status.Descriptor().Index())
+	if err != nil {
+		res.Success = false
+		res.Code = "000"
+	}
+
+	return res, nil
 }
 
 func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.GetTaskByIDRes, error) {

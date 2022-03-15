@@ -121,4 +121,6 @@ service TaskService {
     rpc GetTaskByID(GetTaskByIDReq) returns (GetTaskByIDRes);
     rpc GetTaskByTypeID(GetTaskByTypeIDReq) returns (GetTaskByTypeIDRes);
 
+    rpc RejectBySystem(RejectBySystemReq) returns (RejectBySystemRes);
+
 }

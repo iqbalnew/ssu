@@ -168,6 +168,12 @@ func (this *GetTaskByTypeIDRes) Validate() error {
 	}
 	return nil
 }
+func (this *RejectBySystemReq) Validate() error {
+	return nil
+}
+func (this *RejectBySystemRes) Validate() error {
+	return nil
+}
 func (this *GetTaskByIDReq) Validate() error {
 	return nil
 }

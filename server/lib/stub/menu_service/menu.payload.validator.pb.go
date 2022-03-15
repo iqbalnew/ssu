@@ -7,9 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "github.com/golang/protobuf/ptypes/struct"
 	_ "github.com/mwitkow/go-proto-validators"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -34,6 +36,9 @@ func (this *InvalidKeyError) Validate() error {
 	return nil
 }
 func (this *JWTTokenResponse) Validate() error {
+	return nil
+}
+func (this *ErrorBodyResponse) Validate() error {
 	return nil
 }
 func (this *CommonRequest) Validate() error {
@@ -184,6 +189,128 @@ func (this *ListMenuLicenseResponse) Validate() error {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
 				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 			}
+		}
+	}
+	return nil
+}
+func (this *MenuAppearance) Validate() error {
+	for _, item := range this.DisableList {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("DisableList", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *Task) Validate() error {
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	return nil
+}
+func (this *TaskDataMenuAppearance) Validate() error {
+	for _, item := range this.Menus {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Menus", err)
+			}
+		}
+	}
+	if this.Task != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
+		}
+	}
+	return nil
+}
+func (this *GetListTaskMenuAppearanceReq) Validate() error {
+	return nil
+}
+func (this *GetListTaskMenuAppearanceRes) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
+func (this *GetTaskMenuAppearanceReq) Validate() error {
+	return nil
+}
+func (this *GetTaskMenuAppearanceRes) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *SetTaskMenuAppearanceReq) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *SetTaskMenuAppearanceResData) Validate() error {
+	return nil
+}
+func (this *SetTaskMenuAppearanceRes) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *SaveMenuAppearanceReq) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *SaveMenuAppearanceRes) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *GetMenuAppearanceReq) Validate() error {
+	return nil
+}
+func (this *GetMenuAppearanceRes) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
 		}
 	}
 	return nil

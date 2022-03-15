@@ -8,7 +8,9 @@ import (
 	math "math"
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "google.golang.org/genproto/googleapis/api/httpbody"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -17,5 +19,21 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 func (this *TempGenToken) Validate() error {
+	return nil
+}
+func (this *BricamsGetCustomerReq) Validate() error {
+	return nil
+}
+func (this *BricamsGetCustomerRes) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *BricamsGetCustomerData) Validate() error {
 	return nil
 }

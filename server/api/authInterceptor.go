@@ -28,9 +28,9 @@ func accessibleRoles() map[string][]string {
 	// restricted api
 	return map[string][]string{
 		// TaskServicePath + "SaveTaskWithData":   {},
-		TaskServicePath + "SaveTaskWithDataEV": {},
+		// TaskServicePath + "SaveTaskWithDataEV": {},
 		// TaskServicePath + "SetTask":               {},
-		TaskServicePath + "SetTaskEV": {},
+		// TaskServicePath + "SetTaskEV": {},
 		// TaskServicePath + "GetListTask":           {},
 		TaskServicePath + "GetListTaskEV":         {},
 		TaskServicePath + "GetTaskGraphStatus":    {},
@@ -38,7 +38,7 @@ func accessibleRoles() map[string][]string {
 		TaskServicePath + "GetTaskGraphStep":      {},
 		TaskServicePath + "GetListAnnouncement":   {},
 		// TaskServicePath + "AssignTypeID":          {},
-		TaskServicePath + "AssignTypeIDEV": {},
+		// TaskServicePath + "AssignTypeIDEV": {},
 		// TaskServicePath + "GetTaskByTypeID":       {},
 	}
 }
