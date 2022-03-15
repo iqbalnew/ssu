@@ -3,14 +3,13 @@ package pb
 import (
 	context "context"
 	fmt "fmt"
-	strings "strings"
-	time "time"
-
 	gorm1 "github.com/infobloxopen/atlas-app-toolkit/gorm"
 	errors "github.com/infobloxopen/protoc-gen-gorm/errors"
 	gorm "github.com/jinzhu/gorm"
 	field_mask "google.golang.org/genproto/protobuf/field_mask"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	strings "strings"
+	time "time"
 )
 
 type RoleORM struct {
@@ -24,14 +23,8 @@ type RoleORM struct {
 	RoleAuthorities []*RoleAuthorityORM `gorm:"foreignkey:RoleID;association_foreignkey:RoleID;preload:true"`
 	RoleID          uint64              `gorm:"column:RoleID;primary_key;not null;auto_increment"`
 	UpdatedAt       *time.Time          `gorm:"not null"`
-<<<<<<< HEAD
 	UpdatedByID     uint64              `gorm:"column:UpdatedByID"`
 	UserType        *UserTypeORM        `gorm:"foreignkey:UserTypeID;association_foreignkey:UserTypeID;preload:true"`
-=======
-	UpdatedByID     uint64              `gorm:"column:UpdatedByID;not null"`
-	UserRoles       []*UserRoleORM      `gorm:"foreignkey:RoleID;association_foreignkey:RoleID"`
-	UserType        *UserTypeORM        `gorm:"preload:true"`
->>>>>>> 1a567f9d7b444fd038cb826294e92d5efa0eb45b
 	UserTypeID      uint64              `gorm:"column:UserTypeID;not null"`
 }
 
@@ -52,6 +45,13 @@ func (m *Role) ToORM(ctx context.Context) (RoleORM, error) {
 	}
 	to.RoleID = m.RoleID
 	to.UserTypeID = m.UserTypeID
+	if m.UserType != nil {
+		tempUserType, err := m.UserType.ToORM(ctx)
+		if err != nil {
+			return to, err
+		}
+		to.UserType = &tempUserType
+	}
 	to.Name = m.Name
 	to.Description = m.Description
 	to.CompanyID = m.CompanyID
@@ -82,13 +82,6 @@ func (m *Role) ToORM(ctx context.Context) (RoleORM, error) {
 			to.RoleAuthorities = append(to.RoleAuthorities, nil)
 		}
 	}
-	if m.UserType != nil {
-		tempUserType, err := m.UserType.ToORM(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.UserType = &tempUserType
-	}
 	if posthook, ok := interface{}(m).(RoleWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -107,6 +100,13 @@ func (m *RoleORM) ToPB(ctx context.Context) (Role, error) {
 	}
 	to.RoleID = m.RoleID
 	to.UserTypeID = m.UserTypeID
+	if m.UserType != nil {
+		tempUserType, err := m.UserType.ToPB(ctx)
+		if err != nil {
+			return to, err
+		}
+		to.UserType = &tempUserType
+	}
 	to.Name = m.Name
 	to.Description = m.Description
 	to.CompanyID = m.CompanyID
@@ -133,13 +133,6 @@ func (m *RoleORM) ToPB(ctx context.Context) (Role, error) {
 		} else {
 			to.RoleAuthorities = append(to.RoleAuthorities, nil)
 		}
-	}
-	if m.UserType != nil {
-		tempUserType, err := m.UserType.ToPB(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.UserType = &tempUserType
 	}
 	if posthook, ok := interface{}(m).(RoleWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
@@ -355,11 +348,7 @@ type UserTypeWithAfterToPB interface {
 }
 
 type RoleAuthorityORM struct {
-<<<<<<< HEAD
 	AuthorityLevel   *AuthorityLevelORM `gorm:"foreignkey:AuthorityLevelID;association_foreignkey:AuthorityLevelID;preload:true"`
-=======
-	AuthorityLevel   *AuthorityLevelORM `gorm:"preload:true"`
->>>>>>> 1a567f9d7b444fd038cb826294e92d5efa0eb45b
 	AuthorityLevelID uint64             `gorm:"column:AuthorityLevelID;not null"`
 	CreatedAt        *time.Time         `gorm:"not null"`
 	CreatedByID      uint64             `gorm:"column:CreatedByID"`
@@ -848,10 +837,10 @@ func DefaultApplyFieldMaskRole(ctx context.Context, patchee *Role, patcher *Role
 		return nil, errors.NilArgumentError
 	}
 	var err error
+	var updatedUserType bool
 	var updatedCreatedAt bool
 	var updatedUpdatedAt bool
 	var updatedDeletedAt bool
-	var updatedUserType bool
 	for i, f := range updateMask.Paths {
 		if f == prefix+"RoleID" {
 			patchee.RoleID = patcher.RoleID
@@ -859,6 +848,27 @@ func DefaultApplyFieldMaskRole(ctx context.Context, patchee *Role, patcher *Role
 		}
 		if f == prefix+"UserTypeID" {
 			patchee.UserTypeID = patcher.UserTypeID
+			continue
+		}
+		if !updatedUserType && strings.HasPrefix(f, prefix+"UserType.") {
+			updatedUserType = true
+			if patcher.UserType == nil {
+				patchee.UserType = nil
+				continue
+			}
+			if patchee.UserType == nil {
+				patchee.UserType = &UserType{}
+			}
+			if o, err := DefaultApplyFieldMaskUserType(ctx, patchee.UserType, patcher.UserType, &field_mask.FieldMask{Paths: updateMask.Paths[i:]}, prefix+"UserType.", db); err != nil {
+				return nil, err
+			} else {
+				patchee.UserType = o
+			}
+			continue
+		}
+		if f == prefix+"UserType" {
+			updatedUserType = true
+			patchee.UserType = patcher.UserType
 			continue
 		}
 		if f == prefix+"Name" {
@@ -962,27 +972,6 @@ func DefaultApplyFieldMaskRole(ctx context.Context, patchee *Role, patcher *Role
 			patchee.RoleAuthorities = patcher.RoleAuthorities
 			continue
 		}
-		if !updatedUserType && strings.HasPrefix(f, prefix+"UserType.") {
-			updatedUserType = true
-			if patcher.UserType == nil {
-				patchee.UserType = nil
-				continue
-			}
-			if patchee.UserType == nil {
-				patchee.UserType = &UserType{}
-			}
-			if o, err := DefaultApplyFieldMaskUserType(ctx, patchee.UserType, patcher.UserType, &field_mask.FieldMask{Paths: updateMask.Paths[i:]}, prefix+"UserType.", db); err != nil {
-				return nil, err
-			} else {
-				patchee.UserType = o
-			}
-			continue
-		}
-		if f == prefix+"UserType" {
-			updatedUserType = true
-			patchee.UserType = patcher.UserType
-			continue
-		}
 	}
 	if err != nil {
 		return nil, err
@@ -1084,7 +1073,7 @@ func DefaultReadUserRole(ctx context.Context, in *UserRole, db *gorm.DB) (*UserR
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.RoleID == 0 {
+	if ormObj.UserID == 0 {
 		return nil, errors.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(UserRoleORMWithBeforeReadApplyQuery); ok {
@@ -1131,7 +1120,7 @@ func DefaultDeleteUserRole(ctx context.Context, in *UserRole, db *gorm.DB) error
 	if err != nil {
 		return err
 	}
-	if ormObj.RoleID == 0 {
+	if ormObj.UserID == 0 {
 		return errors.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(UserRoleORMWithBeforeDelete_); ok {

@@ -7,18 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-<<<<<<< HEAD
-	_ "github.com/infobloxopen/protoc-gen-gorm/options"
-=======
->>>>>>> 1a567f9d7b444fd038cb826294e92d5efa0eb45b
-	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
-	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-<<<<<<< HEAD
-=======
 	_ "github.com/infobloxopen/protoc-gen-gorm/options"
->>>>>>> 1a567f9d7b444fd038cb826294e92d5efa0eb45b
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "github.com/mwitkow/go-proto-validators"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
