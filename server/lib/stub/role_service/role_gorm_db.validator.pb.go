@@ -7,11 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
-	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/infobloxopen/protoc-gen-gorm/options"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "github.com/mwitkow/go-proto-validators"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -59,10 +59,10 @@ func (this *Role) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
 		}
 	}
-	for _, item := range this.UserRoles {
+	for _, item := range this.AccountID {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("UserRoles", err)
+				return github_com_mwitkow_go_proto_validators.FieldError("AccountID", err)
 			}
 		}
 	}
@@ -73,6 +73,9 @@ func (this *Role) Validate() error {
 			}
 		}
 	}
+	return nil
+}
+func (this *AccountID) Validate() error {
 	return nil
 }
 func (this *UserRole) Validate() error {
@@ -112,6 +115,11 @@ func (this *RoleAuthority) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("AuthorityLevel", err)
 		}
 	}
+	if this.Product != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Product); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Product", err)
+		}
+	}
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
@@ -140,5 +148,8 @@ func (this *AuthorityLevel) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
 		}
 	}
+	return nil
+}
+func (this *Product) Validate() error {
 	return nil
 }
