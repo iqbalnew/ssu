@@ -7,11 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/infobloxopen/protoc-gen-gorm/options"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -73,6 +73,11 @@ func (this *Company) Validate() error {
 	return nil
 }
 func (this *CompanyGroupLimit) Validate() error {
+	if this.Currency != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Currency); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Currency", err)
+		}
+	}
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
@@ -86,6 +91,11 @@ func (this *CompanyGroupLimit) Validate() error {
 	return nil
 }
 func (this *CompanyLimit) Validate() error {
+	if this.Currency != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Currency); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Currency", err)
+		}
+	}
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
