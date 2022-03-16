@@ -31,7 +31,7 @@ type ApiServiceClient interface {
 	ListCompanyData(ctx context.Context, in *ListCompanyDataReq, opts ...grpc.CallOption) (*ListCompanyDataRes, error)
 	ListGroupLimit(ctx context.Context, in *ListGroupLimitReq, opts ...grpc.CallOption) (*ListGroupLimitRes, error)
 	ListLimit(ctx context.Context, in *ListLimitReq, opts ...grpc.CallOption) (*ListLimitRes, error)
-	LisstCurrency(ctx context.Context, in *ListCurrencyReq, opts ...grpc.CallOption) (*ListCurrencyRes, error)
+	ListCurrency(ctx context.Context, in *ListCurrencyReq, opts ...grpc.CallOption) (*ListCurrencyRes, error)
 	BRICaMSgetCustomer(ctx context.Context, in *BricamsGetCustomerReq, opts ...grpc.CallOption) (*BricamsResponseDatas, error)
 	BRICaMSgetCustomerByID(ctx context.Context, in *BricamsGetCustomerByIdReq, opts ...grpc.CallOption) (*BricamsResponseData, error)
 	BRICaMSgetCustomerByUser(ctx context.Context, in *BricamsGetCustomerByUserReq, opts ...grpc.CallOption) (*BricamsResponseData, error)
@@ -122,9 +122,9 @@ func (c *apiServiceClient) ListLimit(ctx context.Context, in *ListLimitReq, opts
 	return out, nil
 }
 
-func (c *apiServiceClient) LisstCurrency(ctx context.Context, in *ListCurrencyReq, opts ...grpc.CallOption) (*ListCurrencyRes, error) {
+func (c *apiServiceClient) ListCurrency(ctx context.Context, in *ListCurrencyReq, opts ...grpc.CallOption) (*ListCurrencyRes, error) {
 	out := new(ListCurrencyRes)
-	err := c.cc.Invoke(ctx, "/company.service.v1.ApiService/LisstCurrency", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/company.service.v1.ApiService/ListCurrency", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -215,7 +215,7 @@ type ApiServiceServer interface {
 	ListCompanyData(context.Context, *ListCompanyDataReq) (*ListCompanyDataRes, error)
 	ListGroupLimit(context.Context, *ListGroupLimitReq) (*ListGroupLimitRes, error)
 	ListLimit(context.Context, *ListLimitReq) (*ListLimitRes, error)
-	LisstCurrency(context.Context, *ListCurrencyReq) (*ListCurrencyRes, error)
+	ListCurrency(context.Context, *ListCurrencyReq) (*ListCurrencyRes, error)
 	BRICaMSgetCustomer(context.Context, *BricamsGetCustomerReq) (*BricamsResponseDatas, error)
 	BRICaMSgetCustomerByID(context.Context, *BricamsGetCustomerByIdReq) (*BricamsResponseData, error)
 	BRICaMSgetCustomerByUser(context.Context, *BricamsGetCustomerByUserReq) (*BricamsResponseData, error)
@@ -255,8 +255,8 @@ func (UnimplementedApiServiceServer) ListGroupLimit(context.Context, *ListGroupL
 func (UnimplementedApiServiceServer) ListLimit(context.Context, *ListLimitReq) (*ListLimitRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListLimit not implemented")
 }
-func (UnimplementedApiServiceServer) LisstCurrency(context.Context, *ListCurrencyReq) (*ListCurrencyRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method LisstCurrency not implemented")
+func (UnimplementedApiServiceServer) ListCurrency(context.Context, *ListCurrencyReq) (*ListCurrencyRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListCurrency not implemented")
 }
 func (UnimplementedApiServiceServer) BRICaMSgetCustomer(context.Context, *BricamsGetCustomerReq) (*BricamsResponseDatas, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BRICaMSgetCustomer not implemented")
@@ -439,20 +439,20 @@ func _ApiService_ListLimit_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_LisstCurrency_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ApiService_ListCurrency_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListCurrencyReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).LisstCurrency(ctx, in)
+		return srv.(ApiServiceServer).ListCurrency(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/company.service.v1.ApiService/LisstCurrency",
+		FullMethod: "/company.service.v1.ApiService/ListCurrency",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).LisstCurrency(ctx, req.(*ListCurrencyReq))
+		return srv.(ApiServiceServer).ListCurrency(ctx, req.(*ListCurrencyReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -641,8 +641,8 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_ListLimit_Handler,
 		},
 		{
-			MethodName: "LisstCurrency",
-			Handler:    _ApiService_LisstCurrency_Handler,
+			MethodName: "ListCurrency",
+			Handler:    _ApiService_ListCurrency_Handler,
 		},
 		{
 			MethodName: "BRICaMSgetCustomer",

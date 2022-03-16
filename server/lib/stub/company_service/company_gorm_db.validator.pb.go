@@ -7,11 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "github.com/infobloxopen/protoc-gen-gorm/options"
+	_ "github.com/mwitkow/go-proto-validators"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	_ "github.com/infobloxopen/protoc-gen-gorm/options"
-	_ "github.com/mwitkow/go-proto-validators"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -47,11 +47,6 @@ func (this *Company) Validate() error {
 	if this.UpdatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	if this.HoldingCompany != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.HoldingCompany); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("HoldingCompany", err)
 		}
 	}
 	for _, item := range this.CompanyLimits {

@@ -343,14 +343,14 @@ func (this *WorkflowStep) Validate() error {
 	return nil
 }
 func (this *Workflow) Validate() error {
-	if this.StpStep != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.StpStep); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("StpStep", err)
+	if this.TansactionalStpStep != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.TansactionalStpStep); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("TansactionalStpStep", err)
 		}
 	}
-	if this.NonStpStep != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.NonStpStep); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("NonStpStep", err)
+	if this.NonTansactionalStpStep != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.NonTansactionalStpStep); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("NonTansactionalStpStep", err)
 		}
 	}
 	return nil

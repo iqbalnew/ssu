@@ -120,8 +120,8 @@ type CompanyORM struct {
 	CreatedAt           *time.Time              `gorm:"not null"`
 	CreatedByID         uint64                  `gorm:"column:CreatedByID;not null"`
 	GroupName           string                  `gorm:"column:GroupName;type:varchar(255)"`
-	HoldingCompany      *CompanyORM             `gorm:"foreignkey:HoldingID;association_foreignkey:CompanyID"`
-	HoldingID           uint64                  `gorm:"column:HoldingID"`
+	HoldingCompanyName  string                  `gorm:"column:HoldingCompany;not null"`
+	HoldingID           uint64                  `gorm:"column:HoldingID;not null"`
 	SubsidiaryCompanies []*CompanyORM           `gorm:"foreignkey:HoldingID;association_foreignkey:CompanyID"`
 	UpdatedAt           *time.Time              `gorm:"not null"`
 	UpdatedByID         uint64                  `gorm:"column:UpdatedByID;not null"`
@@ -146,6 +146,7 @@ func (m *Company) ToORM(ctx context.Context) (CompanyORM, error) {
 	to.HoldingID = m.HoldingID
 	to.GroupName = m.GroupName
 	to.CompanyName = m.CompanyName
+	to.HoldingCompanyName = m.HoldingCompanyName
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -156,13 +157,6 @@ func (m *Company) ToORM(ctx context.Context) (CompanyORM, error) {
 		to.UpdatedAt = &t
 	}
 	to.UpdatedByID = m.UpdatedByID
-	if m.HoldingCompany != nil {
-		tempHoldingCompany, err := m.HoldingCompany.ToORM(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.HoldingCompany = &tempHoldingCompany
-	}
 	for _, v := range m.CompanyLimits {
 		if v != nil {
 			if tempCompanyLimits, cErr := v.ToORM(ctx); cErr == nil {
@@ -216,6 +210,7 @@ func (m *CompanyORM) ToPB(ctx context.Context) (Company, error) {
 	to.HoldingID = m.HoldingID
 	to.GroupName = m.GroupName
 	to.CompanyName = m.CompanyName
+	to.HoldingCompanyName = m.HoldingCompanyName
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -224,13 +219,6 @@ func (m *CompanyORM) ToPB(ctx context.Context) (Company, error) {
 		to.UpdatedAt = timestamppb.New(*m.UpdatedAt)
 	}
 	to.UpdatedByID = m.UpdatedByID
-	if m.HoldingCompany != nil {
-		tempHoldingCompany, err := m.HoldingCompany.ToPB(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.HoldingCompany = &tempHoldingCompany
-	}
 	for _, v := range m.CompanyLimits {
 		if v != nil {
 			if tempCompanyLimits, cErr := v.ToPB(ctx); cErr == nil {
@@ -1303,7 +1291,6 @@ func DefaultApplyFieldMaskCompany(ctx context.Context, patchee *Company, patcher
 	var err error
 	var updatedCreatedAt bool
 	var updatedUpdatedAt bool
-	var updatedHoldingCompany bool
 	for i, f := range updateMask.Paths {
 		if f == prefix+"CompanyID" {
 			patchee.CompanyID = patcher.CompanyID
@@ -1319,6 +1306,10 @@ func DefaultApplyFieldMaskCompany(ctx context.Context, patchee *Company, patcher
 		}
 		if f == prefix+"CompanyName" {
 			patchee.CompanyName = patcher.CompanyName
+			continue
+		}
+		if f == prefix+"HoldingCompanyName" {
+			patchee.HoldingCompanyName = patcher.HoldingCompanyName
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {
@@ -1373,27 +1364,6 @@ func DefaultApplyFieldMaskCompany(ctx context.Context, patchee *Company, patcher
 		}
 		if f == prefix+"UpdatedByID" {
 			patchee.UpdatedByID = patcher.UpdatedByID
-			continue
-		}
-		if !updatedHoldingCompany && strings.HasPrefix(f, prefix+"HoldingCompany.") {
-			updatedHoldingCompany = true
-			if patcher.HoldingCompany == nil {
-				patchee.HoldingCompany = nil
-				continue
-			}
-			if patchee.HoldingCompany == nil {
-				patchee.HoldingCompany = &Company{}
-			}
-			if o, err := DefaultApplyFieldMaskCompany(ctx, patchee.HoldingCompany, patcher.HoldingCompany, &field_mask.FieldMask{Paths: updateMask.Paths[i:]}, prefix+"HoldingCompany.", db); err != nil {
-				return nil, err
-			} else {
-				patchee.HoldingCompany = o
-			}
-			continue
-		}
-		if f == prefix+"HoldingCompany" {
-			updatedHoldingCompany = true
-			patchee.HoldingCompany = patcher.HoldingCompany
 			continue
 		}
 		if f == prefix+"CompanyLimits" {
@@ -1556,7 +1526,7 @@ func DefaultDeleteCompanyGroupLimit(ctx context.Context, in *CompanyGroupLimit, 
 	if err != nil {
 		return err
 	}
-	if ormObj.HoldingCompanyID == 0 {
+	if ormObj.CurrencyID == 0 {
 		return errors.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(CompanyGroupLimitORMWithBeforeDelete_); ok {
