@@ -388,11 +388,6 @@ func (this *GetCompanyTaskByIDRes) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 		}
 	}
-	if this.Pagination != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
-		}
-	}
 	return nil
 }
 func (this *ListCompanyTaskReq) Validate() error {
