@@ -7,10 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/infobloxopen/protoc-gen-gorm/options"
 	_ "github.com/mwitkow/go-proto-validators"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -37,7 +38,7 @@ func (this *User) Validate() error {
 	}
 	return nil
 }
-func (this *CompanyGroup) Validate() error {
+func (this *Company) Validate() error {
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
@@ -48,16 +49,9 @@ func (this *CompanyGroup) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
 		}
 	}
-	if this.DeletedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
-		}
-	}
-	for _, item := range this.GroupLimits {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("GroupLimits", err)
-			}
+	if this.HoldingCompany != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.HoldingCompany); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("HoldingCompany", err)
 		}
 	}
 	for _, item := range this.CompanyLimits {
@@ -67,21 +61,23 @@ func (this *CompanyGroup) Validate() error {
 			}
 		}
 	}
-	for _, item := range this.GroupSubsidiaries {
+	for _, item := range this.CompanyGroupLimits {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("GroupSubsidiaries", err)
+				return github_com_mwitkow_go_proto_validators.FieldError("CompanyGroupLimits", err)
+			}
+		}
+	}
+	for _, item := range this.SubsidiaryCompanies {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("SubsidiaryCompanies", err)
 			}
 		}
 	}
 	return nil
 }
-func (this *GroupLimit) Validate() error {
-	if this.Currency != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Currency); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Currency", err)
-		}
-	}
+func (this *CompanyGroupLimit) Validate() error {
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
@@ -90,21 +86,11 @@ func (this *GroupLimit) Validate() error {
 	if this.UpdatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	if this.DeletedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
 		}
 	}
 	return nil
 }
 func (this *CompanyLimit) Validate() error {
-	if this.Currency != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Currency); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Currency", err)
-		}
-	}
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
@@ -113,47 +99,6 @@ func (this *CompanyLimit) Validate() error {
 	if this.UpdatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	if this.DeletedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
-		}
-	}
-	return nil
-}
-func (this *GroupSubsidiary) Validate() error {
-	if this.CreatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
-		}
-	}
-	if this.UpdatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	if this.DeletedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
-		}
-	}
-	return nil
-}
-func (this *CompanyWorkflow) Validate() error {
-	if this.CreatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
-		}
-	}
-	if this.UpdatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	if this.DeletedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
 		}
 	}
 	return nil
@@ -167,14 +112,6 @@ func (this *Currency) Validate() error {
 	if this.UpdatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	return nil
-}
-func (this *CompanyTask) Validate() error {
-	if this.CompanyGroup != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CompanyGroup); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CompanyGroup", err)
 		}
 	}
 	return nil

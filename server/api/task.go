@@ -632,11 +632,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			companyClient := company_pb.NewApiServiceClient(companyConn)
 
-			data := company_pb.CreateCompanyGroupRequest{}
-			json.Unmarshal([]byte(task.Data), &data)
+			data := company_pb.CreateCompanyReq{}
+			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
 
-			res, err := companyClient.CreateCompanyGroup(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			res, err := companyClient.CreateCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
