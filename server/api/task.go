@@ -326,15 +326,15 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task, _ := req.Task.ToORM(ctx)
 	var err error
 
-	currentUser := &manager.VerifyTokenRes{
-		UserID:   1,
-		Username: "",
-	}
-
-	currentUser, err = s.getCurrentUser(ctx)
+	currentUser, err := s.getCurrentUser(ctx)
 	if err != nil {
 		if getEnv("ENV", "DEV") == "PROD" {
 			return nil, status.Errorf(codes.Unauthenticated, "%v", err)
+		} else {
+			currentUser = &manager.VerifyTokenRes{
+				UserID:   1,
+				Username: "",
+			}
 		}
 	}
 
@@ -463,7 +463,14 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
 	currentUser, err := s.getCurrentUser(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "%v", err)
+		if getEnv("ENV", "DEV") == "PROD" {
+			return nil, status.Errorf(codes.Unauthenticated, "%v", err)
+		} else {
+			currentUser = &manager.VerifyTokenRes{
+				UserID:   1,
+				Username: "",
+			}
+		}
 	}
 
 	md, ok := metadata.FromIncomingContext(ctx)
