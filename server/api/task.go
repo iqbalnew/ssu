@@ -785,13 +785,19 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			data.TaskID = task.TaskID
 			if task.Status == 7 {
-				// set delete user
+				deleteReq := &users_pb.DeleteUserReq{UserID: data.Data.User.UserID}
+				res, err := client.DeleteUser(ctx, deleteReq, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Printf("[Delete User] data : %v", res)
+			} else {
+				res, err := client.CreateUser(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
 			}
-			res, err := client.CreateUser(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
-			}
-			logrus.Println(res)
 
 		case "Menu:Appearance":
 			var opts []grpc.DialOption

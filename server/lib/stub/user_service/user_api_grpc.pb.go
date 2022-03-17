@@ -31,6 +31,8 @@ type ApiServiceClient interface {
 	DownloadUserTasks(ctx context.Context, in *ListUserWithTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	CreateUserTask(ctx context.Context, in *CreateUserTaskRequest, opts ...grpc.CallOption) (*CommonResponse, error)
+	DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*DeleteUserRes, error)
+	SendForDeleteUserTask(ctx context.Context, in *GetTaskByIDReq, opts ...grpc.CallOption) (*GetUserWithTaskRes, error)
 	ListUserGroup(ctx context.Context, in *ListUserReq, opts ...grpc.CallOption) (*ListUserRes, error)
 	BRICaMSgetCustomer(ctx context.Context, in *BricamsGetCustomerReq, opts ...grpc.CallOption) (*BricamsGetCustomerRes, error)
 	BRICamsGetAllUser(ctx context.Context, in *BricamsGetAddonsUserReq, opts ...grpc.CallOption) (*BricamsGetAddonsUserRes, error)
@@ -120,6 +122,24 @@ func (c *apiServiceClient) CreateUserTask(ctx context.Context, in *CreateUserTas
 	return out, nil
 }
 
+func (c *apiServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*DeleteUserRes, error) {
+	out := new(DeleteUserRes)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/DeleteUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) SendForDeleteUserTask(ctx context.Context, in *GetTaskByIDReq, opts ...grpc.CallOption) (*GetUserWithTaskRes, error) {
+	out := new(GetUserWithTaskRes)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/SendForDeleteUserTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) ListUserGroup(ctx context.Context, in *ListUserReq, opts ...grpc.CallOption) (*ListUserRes, error) {
 	out := new(ListUserRes)
 	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/ListUserGroup", in, out, opts...)
@@ -195,6 +215,8 @@ type ApiServiceServer interface {
 	DownloadUserTasks(context.Context, *ListUserWithTaskRequest) (*httpbody.HttpBody, error)
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	CreateUserTask(context.Context, *CreateUserTaskRequest) (*CommonResponse, error)
+	DeleteUser(context.Context, *DeleteUserReq) (*DeleteUserRes, error)
+	SendForDeleteUserTask(context.Context, *GetTaskByIDReq) (*GetUserWithTaskRes, error)
 	ListUserGroup(context.Context, *ListUserReq) (*ListUserRes, error)
 	BRICaMSgetCustomer(context.Context, *BricamsGetCustomerReq) (*BricamsGetCustomerRes, error)
 	BRICamsGetAllUser(context.Context, *BricamsGetAddonsUserReq) (*BricamsGetAddonsUserRes, error)
@@ -232,6 +254,12 @@ func (UnimplementedApiServiceServer) CreateUser(context.Context, *CreateUserRequ
 }
 func (UnimplementedApiServiceServer) CreateUserTask(context.Context, *CreateUserTaskRequest) (*CommonResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUserTask not implemented")
+}
+func (UnimplementedApiServiceServer) DeleteUser(context.Context, *DeleteUserReq) (*DeleteUserRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+}
+func (UnimplementedApiServiceServer) SendForDeleteUserTask(context.Context, *GetTaskByIDReq) (*GetUserWithTaskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendForDeleteUserTask not implemented")
 }
 func (UnimplementedApiServiceServer) ListUserGroup(context.Context, *ListUserReq) (*ListUserRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUserGroup not implemented")
@@ -411,6 +439,42 @@ func _ApiService_CreateUserTask_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DeleteUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.ApiService/DeleteUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DeleteUser(ctx, req.(*DeleteUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_SendForDeleteUserTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTaskByIDReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).SendForDeleteUserTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.ApiService/SendForDeleteUserTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).SendForDeleteUserTask(ctx, req.(*GetTaskByIDReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_ListUserGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListUserReq)
 	if err := dec(in); err != nil {
@@ -575,6 +639,14 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateUserTask",
 			Handler:    _ApiService_CreateUserTask_Handler,
+		},
+		{
+			MethodName: "DeleteUser",
+			Handler:    _ApiService_DeleteUser_Handler,
+		},
+		{
+			MethodName: "SendForDeleteUserTask",
+			Handler:    _ApiService_SendForDeleteUserTask_Handler,
 		},
 		{
 			MethodName: "ListUserGroup",
