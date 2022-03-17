@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
+	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/jwt"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
@@ -325,6 +326,18 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task, _ := req.Task.ToORM(ctx)
 	var err error
 
+	currentUser := &manager.VerifyTokenRes{
+		UserID:   1,
+		Username: "",
+	}
+
+	currentUser, err = s.getCurrentUser(ctx)
+	if err != nil {
+		if getEnv("ENV", "DEV") == "PROD" {
+			return nil, status.Errorf(codes.Unauthenticated, "%v", err)
+		}
+	}
+
 	task.Step = 2
 	task.Status = 1
 
@@ -339,8 +352,14 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	if req.TaskID > 0 {
 		task.TaskID = req.TaskID
+		task.UpdatedByID = currentUser.UserID
+		task.UpdatedByName = currentUser.Username
 		_, err = s.provider.UpdateTask(ctx, &task)
 	} else {
+		task.CreatedByID = currentUser.UserID
+		task.CreatedByName = currentUser.Username
+		task.UpdatedByID = currentUser.UserID
+		task.UpdatedByName = currentUser.Username
 		_, err = s.provider.CreateTask(ctx, &task)
 	}
 
@@ -442,6 +461,11 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 }
 
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
+	currentUser, err := s.getCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "%v", err)
+	}
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
@@ -474,6 +498,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	currentStatus := task.Status
 	switch strings.ToLower(req.Action) {
 	case "rework":
+		task.LastRejectedByID = currentUser.UserID
+		task.LastRejectedByName = currentUser.Username
+
 		task.Status = 3
 		task.Step = 1
 	case "approve":
@@ -486,6 +513,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Data:    &taskPb,
 			}, nil
 		}
+
+		task.LastApprovedByID = currentUser.UserID
+		task.LastApprovedByName = currentUser.Username
 
 		if currentStatus == 2 {
 			task.Step = 2
@@ -561,10 +591,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 	case "reject":
+		task.LastRejectedByID = currentUser.UserID
+		task.LastRejectedByName = currentUser.Username
+
 		task.Status = 5
 		task.Step = 0
 
 	case "delete":
+		task.LastApprovedByID = currentUser.UserID
+		task.LastApprovedByName = currentUser.Username
+
 		task.Status = 6
 		task.Step = 2
 
@@ -575,6 +611,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Childs[i].LastApprovedByName = task.LastApprovedByName
 		task.Childs[i].LastRejectedByID = task.LastRejectedByID
 		task.Childs[i].LastRejectedByName = task.LastRejectedByName
+		task.Childs[i].CreatedByID = task.CreatedByID
+		task.Childs[i].CreatedByName = task.CreatedByName
+		task.Childs[i].UpdatedByID = task.UpdatedByID
+		task.Childs[i].UpdatedByName = task.UpdatedByName
 		if sendTask {
 			task.Childs[i].Status = task.Status
 			task.Childs[i].Step = task.Step
