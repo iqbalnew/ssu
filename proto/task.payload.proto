@@ -47,9 +47,10 @@ message SetTaskRequest {
 
     uint64 taskID = 1;
     string action = 2 [
-               (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-                 description: "Action: 'approve', 'rework', 'reject'"
-               }];
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+            description: "Action: 'approve', 'rework', 'reject'"
+        }
+    ];
     string comment = 3;
     string reasons = 4;
 }

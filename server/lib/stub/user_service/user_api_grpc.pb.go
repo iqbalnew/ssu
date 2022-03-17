@@ -37,6 +37,7 @@ type ApiServiceClient interface {
 	BRICamsGetUserByUsername(ctx context.Context, in *BricamsGetAddonsUserByUsernameReq, opts ...grpc.CallOption) (*BricamsGetAddonsUserByUsernameRes, error)
 	BRICaMSsvcGetUserList(ctx context.Context, in *BricamsGetAddonsUserReq, opts ...grpc.CallOption) (*BRICaMSSvcUserListRes, error)
 	BRICaMSsvcGetUserByUsername(ctx context.Context, in *BricamsGetAddonsUserByUsernameReq, opts ...grpc.CallOption) (*BRICaMSSvcUserRes, error)
+	CekUsernameAvaibility(ctx context.Context, in *CekUsernameAvaibilityReq, opts ...grpc.CallOption) (*CekUsernameAvaibilityRes, error)
 }
 
 type apiServiceClient struct {
@@ -173,6 +174,15 @@ func (c *apiServiceClient) BRICaMSsvcGetUserByUsername(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *apiServiceClient) CekUsernameAvaibility(ctx context.Context, in *CekUsernameAvaibilityReq, opts ...grpc.CallOption) (*CekUsernameAvaibilityRes, error) {
+	out := new(CekUsernameAvaibilityRes)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/CekUsernameAvaibility", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
@@ -191,6 +201,7 @@ type ApiServiceServer interface {
 	BRICamsGetUserByUsername(context.Context, *BricamsGetAddonsUserByUsernameReq) (*BricamsGetAddonsUserByUsernameRes, error)
 	BRICaMSsvcGetUserList(context.Context, *BricamsGetAddonsUserReq) (*BRICaMSSvcUserListRes, error)
 	BRICaMSsvcGetUserByUsername(context.Context, *BricamsGetAddonsUserByUsernameReq) (*BRICaMSSvcUserRes, error)
+	CekUsernameAvaibility(context.Context, *CekUsernameAvaibilityReq) (*CekUsernameAvaibilityRes, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -239,6 +250,9 @@ func (UnimplementedApiServiceServer) BRICaMSsvcGetUserList(context.Context, *Bri
 }
 func (UnimplementedApiServiceServer) BRICaMSsvcGetUserByUsername(context.Context, *BricamsGetAddonsUserByUsernameReq) (*BRICaMSSvcUserRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BRICaMSsvcGetUserByUsername not implemented")
+}
+func (UnimplementedApiServiceServer) CekUsernameAvaibility(context.Context, *CekUsernameAvaibilityReq) (*CekUsernameAvaibilityRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CekUsernameAvaibility not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -505,6 +519,24 @@ func _ApiService_BRICaMSsvcGetUserByUsername_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_CekUsernameAvaibility_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CekUsernameAvaibilityReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CekUsernameAvaibility(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.ApiService/CekUsernameAvaibility",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CekUsernameAvaibility(ctx, req.(*CekUsernameAvaibilityReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -567,6 +599,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BRICaMSsvcGetUserByUsername",
 			Handler:    _ApiService_BRICaMSsvcGetUserByUsername_Handler,
+		},
+		{
+			MethodName: "CekUsernameAvaibility",
+			Handler:    _ApiService_CekUsernameAvaibility_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

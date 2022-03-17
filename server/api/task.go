@@ -501,6 +501,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				if currentStep == 1 {
 					task.Status = 1
 					task.Step = 3
+					if currentStatus == 6 {
+						task.Status = currentStatus
+					}
 				}
 				if currentStep == 3 {
 					task.Status = 1
@@ -509,11 +512,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						task.Status = 4
 						task.Step = 3
 						sendTask = true
+						if currentStatus == 6 {
+							task.Status = 7
+						}
+					}
+					if currentStatus == 6 {
+						task.Status = currentStatus
 					}
 				}
 				if currentStep == 4 {
 					sendTask = true
 					task.Status = 4
+					if currentStatus == 6 {
+						task.Status = 7
+					}
 				}
 			} else {
 				if currentStep >= 3 {
@@ -521,17 +533,29 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						if currentStep == 4 {
 							sendTask = true
 							task.Status = 4
+							if currentStatus == 6 {
+								task.Status = 7
+							}
 						} else {
 							task.Status = 1
 							task.Step++
+							if currentStatus == 6 {
+								task.Status = currentStatus
+							}
 						}
 					} else {
 						sendTask = true
 						task.Status = 4
+						if currentStatus == 6 {
+							task.Status = 7
+						}
 					}
 				} else {
 					task.Status = 1
 					task.Step++
+					if currentStatus == 6 {
+						task.Status = currentStatus
+					}
 				}
 			}
 		}
@@ -539,6 +563,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	case "reject":
 		task.Status = 5
 		task.Step = 0
+
+	case "delete":
+		task.Status = 6
+		task.Step = 2
+
 	}
 
 	for i := range task.Childs {
@@ -755,6 +784,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 
 			data.TaskID = task.TaskID
+			if task.Status == 7 {
+				// set delete user
+			}
 			res, err := client.CreateUser(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
