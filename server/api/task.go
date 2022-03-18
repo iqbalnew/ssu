@@ -338,12 +338,12 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 
-	task.Step = 2
+	task.Step = 3
 	task.Status = 1
 
-	if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu:Appearance" || req.Task.Type == "Menu:License" {
-		task.Step = 3
-	}
+	// if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu:Appearance" || req.Task.Type == "Menu:License" {
+	// 	task.Step = 3
+	// }
 
 	if req.IsDraft {
 		task.Step = 1
@@ -525,76 +525,76 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastApprovedByName = currentUser.Username
 
 		if currentStatus == 2 {
-			task.Step = 2
+			task.Step = 3
 			task.Status = 1
 
-			if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
-				task.Step = 3
-			}
+			// if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
+			// 	task.Step = 3
+			// }
 
 		} else {
 
-			if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
-				if currentStep == 1 {
-					task.Status = 1
-					task.Step = 3
-					if currentStatus == 6 {
-						task.Status = currentStatus
-					}
+			// if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
+			if currentStep == 1 {
+				task.Status = 1
+				task.Step = 3
+				if currentStatus == 6 {
+					task.Status = currentStatus
 				}
-				if currentStep == 3 {
-					task.Status = 1
-					task.Step = 4
-					if task.Type == "Announcement" {
-						task.Status = 4
-						task.Step = 3
-						sendTask = true
-						if currentStatus == 6 {
-							task.Status = 7
-						}
-					}
-					if currentStatus == 6 {
-						task.Status = currentStatus
-					}
-				}
-				if currentStep == 4 {
-					sendTask = true
+			}
+			if currentStep == 3 {
+				task.Status = 1
+				task.Step = 4
+				if task.Type == "Announcement" {
 					task.Status = 4
+					task.Step = 3
+					sendTask = true
 					if currentStatus == 6 {
 						task.Status = 7
 					}
 				}
-			} else {
-				if currentStep >= 3 {
-					if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" || task.Type == "Workflow" || task.Type == "Liquidity" {
-						if currentStep == 4 {
-							sendTask = true
-							task.Status = 4
-							if currentStatus == 6 {
-								task.Status = 7
-							}
-						} else {
-							task.Status = 1
-							task.Step++
-							if currentStatus == 6 {
-								task.Status = currentStatus
-							}
-						}
-					} else {
-						sendTask = true
-						task.Status = 4
-						if currentStatus == 6 {
-							task.Status = 7
-						}
-					}
-				} else {
-					task.Status = 1
-					task.Step++
-					if currentStatus == 6 {
-						task.Status = currentStatus
-					}
+				if currentStatus == 6 {
+					task.Status = currentStatus
 				}
 			}
+			if currentStep == 4 {
+				sendTask = true
+				task.Status = 4
+				if currentStatus == 6 {
+					task.Status = 7
+				}
+			}
+			// } else {
+			// 	if currentStep >= 3 {
+			// 		if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" || task.Type == "Workflow" || task.Type == "Liquidity" {
+			// 			if currentStep == 4 {
+			// 				sendTask = true
+			// 				task.Status = 4
+			// 				if currentStatus == 6 {
+			// 					task.Status = 7
+			// 				}
+			// 			} else {
+			// 				task.Status = 1
+			// 				task.Step++
+			// 				if currentStatus == 6 {
+			// 					task.Status = currentStatus
+			// 				}
+			// 			}
+			// 		} else {
+			// 			sendTask = true
+			// 			task.Status = 4
+			// 			if currentStatus == 6 {
+			// 				task.Status = 7
+			// 			}
+			// 		}
+			// 	} else {
+			// 		task.Status = 1
+			// 		task.Step++
+			// 		if currentStatus == 6 {
+			// 			task.Status = currentStatus
+			// 		}
+			// 	}
+			// }
 		}
 
 	case "reject":
