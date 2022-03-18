@@ -25,9 +25,11 @@ const _ = grpc.SupportPackageIsVersion7
 type ApiServiceClient interface {
 	DownloadListCompanyTasks(ctx context.Context, in *FileListCompanyTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	CreateCompanyTask(ctx context.Context, in *CreateCompanyTaskReq, opts ...grpc.CallOption) (*CreateCompanyTaskRes, error)
+	DeleteCompany(ctx context.Context, in *CreateCompanyTaskReq, opts ...grpc.CallOption) (*DeleteCompanyRes, error)
+	DeleteCompanyTask(ctx context.Context, in *GetCompanyTaskByIDReq, opts ...grpc.CallOption) (*GetCompanyTaskByIDRes, error)
 	CreateCompany(ctx context.Context, in *CreateCompanyReq, opts ...grpc.CallOption) (*CreateCompanyRes, error)
 	ListCompanyTask(ctx context.Context, in *ListCompanyTaskReq, opts ...grpc.CallOption) (*ListCompanyTaskRes, error)
-	GetRoleTaskByID(ctx context.Context, in *GetCompanyTaskByIDReq, opts ...grpc.CallOption) (*GetCompanyTaskByIDRes, error)
+	GetCompanyTaskByID(ctx context.Context, in *GetCompanyTaskByIDReq, opts ...grpc.CallOption) (*GetCompanyTaskByIDRes, error)
 	ListCompanyData(ctx context.Context, in *ListCompanyDataReq, opts ...grpc.CallOption) (*ListCompanyDataRes, error)
 	ListGroupLimit(ctx context.Context, in *ListGroupLimitReq, opts ...grpc.CallOption) (*ListGroupLimitRes, error)
 	ListLimit(ctx context.Context, in *ListLimitReq, opts ...grpc.CallOption) (*ListLimitRes, error)
@@ -68,6 +70,24 @@ func (c *apiServiceClient) CreateCompanyTask(ctx context.Context, in *CreateComp
 	return out, nil
 }
 
+func (c *apiServiceClient) DeleteCompany(ctx context.Context, in *CreateCompanyTaskReq, opts ...grpc.CallOption) (*DeleteCompanyRes, error) {
+	out := new(DeleteCompanyRes)
+	err := c.cc.Invoke(ctx, "/company.service.v1.ApiService/DeleteCompany", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) DeleteCompanyTask(ctx context.Context, in *GetCompanyTaskByIDReq, opts ...grpc.CallOption) (*GetCompanyTaskByIDRes, error) {
+	out := new(GetCompanyTaskByIDRes)
+	err := c.cc.Invoke(ctx, "/company.service.v1.ApiService/DeleteCompanyTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) CreateCompany(ctx context.Context, in *CreateCompanyReq, opts ...grpc.CallOption) (*CreateCompanyRes, error) {
 	out := new(CreateCompanyRes)
 	err := c.cc.Invoke(ctx, "/company.service.v1.ApiService/CreateCompany", in, out, opts...)
@@ -86,9 +106,9 @@ func (c *apiServiceClient) ListCompanyTask(ctx context.Context, in *ListCompanyT
 	return out, nil
 }
 
-func (c *apiServiceClient) GetRoleTaskByID(ctx context.Context, in *GetCompanyTaskByIDReq, opts ...grpc.CallOption) (*GetCompanyTaskByIDRes, error) {
+func (c *apiServiceClient) GetCompanyTaskByID(ctx context.Context, in *GetCompanyTaskByIDReq, opts ...grpc.CallOption) (*GetCompanyTaskByIDRes, error) {
 	out := new(GetCompanyTaskByIDRes)
-	err := c.cc.Invoke(ctx, "/company.service.v1.ApiService/GetRoleTaskByID", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/company.service.v1.ApiService/GetCompanyTaskByID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -209,9 +229,11 @@ func (c *apiServiceClient) BRICaMSgetCustomerV2WithCompanyGroup(ctx context.Cont
 type ApiServiceServer interface {
 	DownloadListCompanyTasks(context.Context, *FileListCompanyTaskRequest) (*httpbody.HttpBody, error)
 	CreateCompanyTask(context.Context, *CreateCompanyTaskReq) (*CreateCompanyTaskRes, error)
+	DeleteCompany(context.Context, *CreateCompanyTaskReq) (*DeleteCompanyRes, error)
+	DeleteCompanyTask(context.Context, *GetCompanyTaskByIDReq) (*GetCompanyTaskByIDRes, error)
 	CreateCompany(context.Context, *CreateCompanyReq) (*CreateCompanyRes, error)
 	ListCompanyTask(context.Context, *ListCompanyTaskReq) (*ListCompanyTaskRes, error)
-	GetRoleTaskByID(context.Context, *GetCompanyTaskByIDReq) (*GetCompanyTaskByIDRes, error)
+	GetCompanyTaskByID(context.Context, *GetCompanyTaskByIDReq) (*GetCompanyTaskByIDRes, error)
 	ListCompanyData(context.Context, *ListCompanyDataReq) (*ListCompanyDataRes, error)
 	ListGroupLimit(context.Context, *ListGroupLimitReq) (*ListGroupLimitRes, error)
 	ListLimit(context.Context, *ListLimitReq) (*ListLimitRes, error)
@@ -237,14 +259,20 @@ func (UnimplementedApiServiceServer) DownloadListCompanyTasks(context.Context, *
 func (UnimplementedApiServiceServer) CreateCompanyTask(context.Context, *CreateCompanyTaskReq) (*CreateCompanyTaskRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCompanyTask not implemented")
 }
+func (UnimplementedApiServiceServer) DeleteCompany(context.Context, *CreateCompanyTaskReq) (*DeleteCompanyRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCompany not implemented")
+}
+func (UnimplementedApiServiceServer) DeleteCompanyTask(context.Context, *GetCompanyTaskByIDReq) (*GetCompanyTaskByIDRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCompanyTask not implemented")
+}
 func (UnimplementedApiServiceServer) CreateCompany(context.Context, *CreateCompanyReq) (*CreateCompanyRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCompany not implemented")
 }
 func (UnimplementedApiServiceServer) ListCompanyTask(context.Context, *ListCompanyTaskReq) (*ListCompanyTaskRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCompanyTask not implemented")
 }
-func (UnimplementedApiServiceServer) GetRoleTaskByID(context.Context, *GetCompanyTaskByIDReq) (*GetCompanyTaskByIDRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRoleTaskByID not implemented")
+func (UnimplementedApiServiceServer) GetCompanyTaskByID(context.Context, *GetCompanyTaskByIDReq) (*GetCompanyTaskByIDRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCompanyTaskByID not implemented")
 }
 func (UnimplementedApiServiceServer) ListCompanyData(context.Context, *ListCompanyDataReq) (*ListCompanyDataRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCompanyData not implemented")
@@ -331,6 +359,42 @@ func _ApiService_CreateCompanyTask_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_DeleteCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCompanyTaskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DeleteCompany(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/company.service.v1.ApiService/DeleteCompany",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DeleteCompany(ctx, req.(*CreateCompanyTaskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_DeleteCompanyTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCompanyTaskByIDReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DeleteCompanyTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/company.service.v1.ApiService/DeleteCompanyTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DeleteCompanyTask(ctx, req.(*GetCompanyTaskByIDReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_CreateCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateCompanyReq)
 	if err := dec(in); err != nil {
@@ -367,20 +431,20 @@ func _ApiService_ListCompanyTask_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_GetRoleTaskByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ApiService_GetCompanyTaskByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetCompanyTaskByIDReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).GetRoleTaskByID(ctx, in)
+		return srv.(ApiServiceServer).GetCompanyTaskByID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/company.service.v1.ApiService/GetRoleTaskByID",
+		FullMethod: "/company.service.v1.ApiService/GetCompanyTaskByID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GetRoleTaskByID(ctx, req.(*GetCompanyTaskByIDReq))
+		return srv.(ApiServiceServer).GetCompanyTaskByID(ctx, req.(*GetCompanyTaskByIDReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -617,6 +681,14 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_CreateCompanyTask_Handler,
 		},
 		{
+			MethodName: "DeleteCompany",
+			Handler:    _ApiService_DeleteCompany_Handler,
+		},
+		{
+			MethodName: "DeleteCompanyTask",
+			Handler:    _ApiService_DeleteCompanyTask_Handler,
+		},
+		{
 			MethodName: "CreateCompany",
 			Handler:    _ApiService_CreateCompany_Handler,
 		},
@@ -625,8 +697,8 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_ListCompanyTask_Handler,
 		},
 		{
-			MethodName: "GetRoleTaskByID",
-			Handler:    _ApiService_GetRoleTaskByID_Handler,
+			MethodName: "GetCompanyTaskByID",
+			Handler:    _ApiService_GetCompanyTaskByID_Handler,
 		},
 		{
 			MethodName: "ListCompanyData",

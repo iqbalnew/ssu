@@ -712,11 +712,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
 
-			res, err := companyClient.CreateCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
+			if task.Status == 7 {
+				// deleteReq := data.
+				res, err := companyClient.DeleteCompany(ctx, data.Data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Printf("[Delete Company] data : %v", res)
+			} else {
+				res, err := companyClient.CreateCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
 			}
-			logrus.Println(res)
 
 		case "Account":
 			// data := &dataPublish{

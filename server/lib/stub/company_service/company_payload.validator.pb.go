@@ -379,6 +379,17 @@ func (this *CreateCompanyTaskRes) Validate() error {
 	}
 	return nil
 }
+func (this *DeleteCompanyTaskReq) Validate() error {
+	return nil
+}
+func (this *DeleteCompanyTaskRes) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
 func (this *GetCompanyTaskByIDReq) Validate() error {
 	return nil
 }

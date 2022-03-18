@@ -17,6 +17,9 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+func (this *DeleteCompanyRes) Validate() error {
+	return nil
+}
 func (this *CekCompanyIDAvaibilityReq) Validate() error {
 	return nil
 }
