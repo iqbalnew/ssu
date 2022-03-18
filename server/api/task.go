@@ -545,14 +545,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if currentStep == 3 {
 				task.Status = 1
 				task.Step = 4
-				if task.Type == "Announcement" {
-					task.Status = 4
-					task.Step = 3
-					sendTask = true
-					if currentStatus == 6 {
-						task.Status = 7
-					}
+				// if task.Type == "Announcement" {
+				task.Status = 4
+				task.Step = 3
+				sendTask = true
+				if currentStatus == 6 {
+					task.Status = 7
 				}
+				// }
 				if currentStatus == 6 {
 					task.Status = currentStatus
 				}
