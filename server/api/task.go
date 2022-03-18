@@ -553,9 +553,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					task.Status = 7
 				}
 				// }
-				if currentStatus == 6 {
-					task.Status = currentStatus
-				}
+				// if currentStatus == 6 {
+				// 	task.Status = currentStatus
+				// }
 			}
 			if currentStep == 4 {
 				sendTask = true
@@ -609,7 +609,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastApprovedByName = currentUser.Username
 
 		task.Status = 6
-		task.Step = 2
+		task.Step = 3
 
 	}
 
