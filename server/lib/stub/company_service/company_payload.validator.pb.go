@@ -470,6 +470,11 @@ func (this *CreateCompanyRes) Validate() error {
 	return nil
 }
 func (this *BRICaMSSvcCompanyV2) Validate() error {
+	if this.CompanyGroup != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CompanyGroup); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CompanyGroup", err)
+		}
+	}
 	return nil
 }
 func (this *BRICaMSSvcCompanyV2CG) Validate() error {

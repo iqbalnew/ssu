@@ -23,6 +23,15 @@ func (this *DeleteCompanyRes) Validate() error {
 func (this *CekCompanyIDAvaibilityReq) Validate() error {
 	return nil
 }
+func (this *CompanySubsidiaryValidationReq) Validate() error {
+	return nil
+}
+func (this *CompanySubsidiaryValidationRes) Validate() error {
+	return nil
+}
+func (this *CheckCompanyIDTaskAndData) Validate() error {
+	return nil
+}
 func (this *CekCompanyIDAvaibilityRes) Validate() error {
 	return nil
 }

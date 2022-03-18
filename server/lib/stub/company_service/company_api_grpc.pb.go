@@ -41,7 +41,8 @@ type ApiServiceClient interface {
 	BRICaMSgetCustomerByIDV2(ctx context.Context, in *BricamsGetCustomerByIdReq, opts ...grpc.CallOption) (*BRICaMSSvcSingleResV2, error)
 	BRICaMSgetCustomerByUserV2(ctx context.Context, in *BricamsGetCustomerByUserReq, opts ...grpc.CallOption) (*BRICaMSSvcSingleResV2, error)
 	CekCompanyIDAvaibility(ctx context.Context, in *CekCompanyIDAvaibilityReq, opts ...grpc.CallOption) (*CekCompanyIDAvaibilityRes, error)
-	BRICaMSgetCustomerV2WithCompanyGroup(ctx context.Context, in *BricamsGetCustomerReq, opts ...grpc.CallOption) (*BRICaMSSvcMultipleResV2CG, error)
+	BRICaMSCustomerMapping(ctx context.Context, in *BricamsGetCustomerReq, opts ...grpc.CallOption) (*BRICaMSSvcMultipleResV2, error)
+	CompanySubsidiaryValidation(ctx context.Context, in *CompanySubsidiaryValidationReq, opts ...grpc.CallOption) (*CompanySubsidiaryValidationRes, error)
 }
 
 type apiServiceClient struct {
@@ -214,9 +215,18 @@ func (c *apiServiceClient) CekCompanyIDAvaibility(ctx context.Context, in *CekCo
 	return out, nil
 }
 
-func (c *apiServiceClient) BRICaMSgetCustomerV2WithCompanyGroup(ctx context.Context, in *BricamsGetCustomerReq, opts ...grpc.CallOption) (*BRICaMSSvcMultipleResV2CG, error) {
-	out := new(BRICaMSSvcMultipleResV2CG)
-	err := c.cc.Invoke(ctx, "/company.service.v1.ApiService/BRICaMSgetCustomerV2withCompanyGroup", in, out, opts...)
+func (c *apiServiceClient) BRICaMSCustomerMapping(ctx context.Context, in *BricamsGetCustomerReq, opts ...grpc.CallOption) (*BRICaMSSvcMultipleResV2, error) {
+	out := new(BRICaMSSvcMultipleResV2)
+	err := c.cc.Invoke(ctx, "/company.service.v1.ApiService/BRICaMSCustomerMapping", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) CompanySubsidiaryValidation(ctx context.Context, in *CompanySubsidiaryValidationReq, opts ...grpc.CallOption) (*CompanySubsidiaryValidationRes, error) {
+	out := new(CompanySubsidiaryValidationRes)
+	err := c.cc.Invoke(ctx, "/company.service.v1.ApiService/CompanySubsidiaryValidation", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -245,7 +255,8 @@ type ApiServiceServer interface {
 	BRICaMSgetCustomerByIDV2(context.Context, *BricamsGetCustomerByIdReq) (*BRICaMSSvcSingleResV2, error)
 	BRICaMSgetCustomerByUserV2(context.Context, *BricamsGetCustomerByUserReq) (*BRICaMSSvcSingleResV2, error)
 	CekCompanyIDAvaibility(context.Context, *CekCompanyIDAvaibilityReq) (*CekCompanyIDAvaibilityRes, error)
-	BRICaMSgetCustomerV2WithCompanyGroup(context.Context, *BricamsGetCustomerReq) (*BRICaMSSvcMultipleResV2CG, error)
+	BRICaMSCustomerMapping(context.Context, *BricamsGetCustomerReq) (*BRICaMSSvcMultipleResV2, error)
+	CompanySubsidiaryValidation(context.Context, *CompanySubsidiaryValidationReq) (*CompanySubsidiaryValidationRes, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -307,8 +318,11 @@ func (UnimplementedApiServiceServer) BRICaMSgetCustomerByUserV2(context.Context,
 func (UnimplementedApiServiceServer) CekCompanyIDAvaibility(context.Context, *CekCompanyIDAvaibilityReq) (*CekCompanyIDAvaibilityRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CekCompanyIDAvaibility not implemented")
 }
-func (UnimplementedApiServiceServer) BRICaMSgetCustomerV2WithCompanyGroup(context.Context, *BricamsGetCustomerReq) (*BRICaMSSvcMultipleResV2CG, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BRICaMSgetCustomerV2WithCompanyGroup not implemented")
+func (UnimplementedApiServiceServer) BRICaMSCustomerMapping(context.Context, *BricamsGetCustomerReq) (*BRICaMSSvcMultipleResV2, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BRICaMSCustomerMapping not implemented")
+}
+func (UnimplementedApiServiceServer) CompanySubsidiaryValidation(context.Context, *CompanySubsidiaryValidationReq) (*CompanySubsidiaryValidationRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CompanySubsidiaryValidation not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -647,20 +661,38 @@ func _ApiService_CekCompanyIDAvaibility_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_BRICaMSgetCustomerV2WithCompanyGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ApiService_BRICaMSCustomerMapping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BricamsGetCustomerReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).BRICaMSgetCustomerV2WithCompanyGroup(ctx, in)
+		return srv.(ApiServiceServer).BRICaMSCustomerMapping(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/company.service.v1.ApiService/BRICaMSgetCustomerV2withCompanyGroup",
+		FullMethod: "/company.service.v1.ApiService/BRICaMSCustomerMapping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).BRICaMSgetCustomerV2WithCompanyGroup(ctx, req.(*BricamsGetCustomerReq))
+		return srv.(ApiServiceServer).BRICaMSCustomerMapping(ctx, req.(*BricamsGetCustomerReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_CompanySubsidiaryValidation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CompanySubsidiaryValidationReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CompanySubsidiaryValidation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/company.service.v1.ApiService/CompanySubsidiaryValidation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CompanySubsidiaryValidation(ctx, req.(*CompanySubsidiaryValidationReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -745,8 +777,12 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_CekCompanyIDAvaibility_Handler,
 		},
 		{
-			MethodName: "BRICaMSgetCustomerV2withCompanyGroup",
-			Handler:    _ApiService_BRICaMSgetCustomerV2WithCompanyGroup_Handler,
+			MethodName: "BRICaMSCustomerMapping",
+			Handler:    _ApiService_BRICaMSCustomerMapping_Handler,
+		},
+		{
+			MethodName: "CompanySubsidiaryValidation",
+			Handler:    _ApiService_CompanySubsidiaryValidation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
