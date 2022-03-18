@@ -524,6 +524,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastApprovedByID = currentUser.UserID
 		task.LastApprovedByName = currentUser.Username
 
+		// Fix Workflow Step 2
+		if currentStep == 2 {
+			currentStep = 3
+		}
+
 		if currentStatus == 2 {
 			task.Step = 3
 			task.Status = 1
