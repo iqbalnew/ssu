@@ -131,8 +131,7 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 						expression = string(filter[1][0:2])
 						value := string(keyword[2:len(filter[1])])
 						db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
-					}
-					if filter[1][1:2] == "=" {
+					} else if filter[1][1:2] == "=" {
 						expression = string(filter[1][0:2])
 						value := string(keyword[2:len(filter[1])])
 						db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
