@@ -7,11 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/golang/protobuf/ptypes/struct"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "github.com/mwitkow/go-proto-validators"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -192,6 +192,9 @@ func (this *DeleteUserRes) Validate() error {
 	return nil
 }
 func (this *ListUserWithTaskRequest) Validate() error {
+	return nil
+}
+func (this *DownloadListUserWithTaskRequest) Validate() error {
 	return nil
 }
 func (this *Sort) Validate() error {

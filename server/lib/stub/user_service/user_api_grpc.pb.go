@@ -27,6 +27,7 @@ type ApiServiceClient interface {
 	GetUsers(ctx context.Context, in *CommonRequest, opts ...grpc.CallOption) (*ListUserResponse, error)
 	DownloadUsers(ctx context.Context, in *CommonRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	GetUserTasks(ctx context.Context, in *ListUserWithTaskRequest, opts ...grpc.CallOption) (*ListUserWithTaskResponse, error)
+	DownloadListUserTasks(ctx context.Context, in *DownloadListUserWithTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	GetUserTaskByID(ctx context.Context, in *GetTaskByIDReq, opts ...grpc.CallOption) (*GetUserWithTaskRes, error)
 	DownloadUserTasks(ctx context.Context, in *ListUserWithTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
@@ -80,6 +81,15 @@ func (c *apiServiceClient) DownloadUsers(ctx context.Context, in *CommonRequest,
 func (c *apiServiceClient) GetUserTasks(ctx context.Context, in *ListUserWithTaskRequest, opts ...grpc.CallOption) (*ListUserWithTaskResponse, error) {
 	out := new(ListUserWithTaskResponse)
 	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/GetUserTasks", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) DownloadListUserTasks(ctx context.Context, in *DownloadListUserWithTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+	out := new(httpbody.HttpBody)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/DownloadListUserTasks", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -211,6 +221,7 @@ type ApiServiceServer interface {
 	GetUsers(context.Context, *CommonRequest) (*ListUserResponse, error)
 	DownloadUsers(context.Context, *CommonRequest) (*httpbody.HttpBody, error)
 	GetUserTasks(context.Context, *ListUserWithTaskRequest) (*ListUserWithTaskResponse, error)
+	DownloadListUserTasks(context.Context, *DownloadListUserWithTaskRequest) (*httpbody.HttpBody, error)
 	GetUserTaskByID(context.Context, *GetTaskByIDReq) (*GetUserWithTaskRes, error)
 	DownloadUserTasks(context.Context, *ListUserWithTaskRequest) (*httpbody.HttpBody, error)
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
@@ -242,6 +253,9 @@ func (UnimplementedApiServiceServer) DownloadUsers(context.Context, *CommonReque
 }
 func (UnimplementedApiServiceServer) GetUserTasks(context.Context, *ListUserWithTaskRequest) (*ListUserWithTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserTasks not implemented")
+}
+func (UnimplementedApiServiceServer) DownloadListUserTasks(context.Context, *DownloadListUserWithTaskRequest) (*httpbody.HttpBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DownloadListUserTasks not implemented")
 }
 func (UnimplementedApiServiceServer) GetUserTaskByID(context.Context, *GetTaskByIDReq) (*GetUserWithTaskRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserTaskByID not implemented")
@@ -363,6 +377,24 @@ func _ApiService_GetUserTasks_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).GetUserTasks(ctx, req.(*ListUserWithTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_DownloadListUserTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DownloadListUserWithTaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DownloadListUserTasks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.ApiService/DownloadListUserTasks",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DownloadListUserTasks(ctx, req.(*DownloadListUserWithTaskRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -623,6 +655,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserTasks",
 			Handler:    _ApiService_GetUserTasks_Handler,
+		},
+		{
+			MethodName: "DownloadListUserTasks",
+			Handler:    _ApiService_DownloadListUserTasks_Handler,
 		},
 		{
 			MethodName: "GetUserTaskByID",
