@@ -3,14 +3,13 @@ package pb
 import (
 	context "context"
 	fmt "fmt"
-	strings "strings"
-	time "time"
-
 	gorm1 "github.com/infobloxopen/atlas-app-toolkit/gorm"
 	errors "github.com/infobloxopen/protoc-gen-gorm/errors"
 	gorm "github.com/jinzhu/gorm"
 	field_mask "google.golang.org/genproto/protobuf/field_mask"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	strings "strings"
+	time "time"
 )
 
 type UserORM struct {
@@ -198,12 +197,12 @@ type MenuORM struct {
 	DeletedAt   *time.Time
 	DeletedByID uint64
 	Disables    []*MenuDisableORM `gorm:"foreignkey:MenuID;association_foreignkey:MenuID;preload:true"`
-	IconURI     string            `gorm:"column:text"`
+	IconURI     string            `gorm:"type:text"`
 	IsModule    bool
 	Label       string     `gorm:"type:varchar(255)"`
 	MenuID      uint64     `gorm:"column:MenuID;primary_key;not null"`
 	Menus       []*MenuORM `gorm:"foreignkey:ParentID;association_foreignkey:MenuID;preload:true"`
-	OrderNumber string     `gorm:"column:varchar(100);not null"`
+	OrderNumber string     `gorm:"column:OrderNumber;not null"`
 	ParentID    uint64     `gorm:"column:ParentID"`
 	ProductID   uint64
 	ProductName string
@@ -371,9 +370,10 @@ type MenuDisableORM struct {
 	DeletedAt     *time.Time
 	DeletedByID   uint64
 	EndDateTime   *time.Time
-	Menu          *MenuORM
-	MenuDisableID uint64 `gorm:"primary_key;column:MenuDisableID;not null"`
-	MenuID        uint64 `gorm:"column:MenuID;not null"`
+	Menu          *MenuORM `gorm:"foreignkey:MenuId;association_foreignkey:MenuID"`
+	MenuDisableID uint64   `gorm:"column:MenuDisableID;primary_key;not null"`
+	MenuID        uint64   `gorm:"column:MenuID;not null"`
+	MenuId        uint64   `gorm:"column:menu_id;not null"`
 	StartDateTime *time.Time
 	UpdatedAt     *time.Time
 	UpdatedByID   uint64
@@ -511,6 +511,8 @@ type MenuLicenseORM struct {
 	MenuLicenseID    uint64     `gorm:"primary_key;not null"`
 	Module           *ModuleORM `gorm:"foreignkey:ModuleId;association_foreignkey:ModuleID"`
 	ModuleId         *uint64
+	ProductID        uint64
+	ProductName      string
 	TransactionLimit uint64
 	UpdatedAt        *time.Time
 	UpdatedByID      uint64
@@ -544,6 +546,8 @@ func (m *MenuLicense) ToORM(ctx context.Context) (MenuLicenseORM, error) {
 	to.Fee = m.Fee
 	to.FeeType = m.FeeType
 	to.TransactionLimit = m.TransactionLimit
+	to.ProductID = m.ProductID
+	to.ProductName = m.ProductName
 	if m.ChargeDate != nil {
 		t := m.ChargeDate.AsTime()
 		to.ChargeDate = &t
@@ -587,6 +591,8 @@ func (m *MenuLicenseORM) ToPB(ctx context.Context) (MenuLicense, error) {
 	to.Fee = m.Fee
 	to.FeeType = m.FeeType
 	to.TransactionLimit = m.TransactionLimit
+	to.ProductID = m.ProductID
+	to.ProductName = m.ProductName
 	if m.ChargeDate != nil {
 		to.ChargeDate = timestamppb.New(*m.ChargeDate)
 	}
@@ -2241,7 +2247,7 @@ func DefaultStrictUpdateMenuDisable(ctx context.Context, in *MenuDisable, db *go
 		return nil, err
 	}
 	lockedRow := &MenuDisableORM{}
-	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("menu_disable_id=?", ormObj.MenuDisableID).First(lockedRow)
+	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("MenuDisableID=?", ormObj.MenuDisableID).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(MenuDisableORMWithBeforeStrictUpdateCleanup); ok {
 		if db, err = hook.BeforeStrictUpdateCleanup(ctx, db); err != nil {
 			return nil, err
@@ -2550,7 +2556,7 @@ func DefaultListMenuDisable(ctx context.Context, db *gorm.DB) ([]*MenuDisable, e
 		}
 	}
 	db = db.Where(&ormObj)
-	db = db.Order("menu_disable_id")
+	db = db.Order("MenuDisableID")
 	ormResponse := []MenuDisableORM{}
 	if err := db.Find(&ormResponse).Error; err != nil {
 		return nil, err
@@ -2856,6 +2862,7 @@ func DefaultApplyFieldMaskMenuLicense(ctx context.Context, patchee *MenuLicense,
 	}
 	var err error
 	var updatedModule bool
+	var updatedCompany bool
 	var updatedChargeDate bool
 	var updatedCreatedAt bool
 	var updatedUpdatedAt bool
@@ -2903,6 +2910,37 @@ func DefaultApplyFieldMaskMenuLicense(ctx context.Context, patchee *MenuLicense,
 		}
 		if f == prefix+"TransactionLimit" {
 			patchee.TransactionLimit = patcher.TransactionLimit
+			continue
+		}
+		if f == prefix+"ProductID" {
+			patchee.ProductID = patcher.ProductID
+			continue
+		}
+		if f == prefix+"ProductName" {
+			patchee.ProductName = patcher.ProductName
+			continue
+		}
+		if !updatedCompany && strings.HasPrefix(f, prefix+"Company.") {
+			if patcher.Company == nil {
+				patchee.Company = nil
+				continue
+			}
+			if patchee.Company == nil {
+				patchee.Company = &TempCompany{}
+			}
+			childMask := &field_mask.FieldMask{}
+			for j := i; j < len(updateMask.Paths); j++ {
+				if trimPath := strings.TrimPrefix(updateMask.Paths[j], prefix+"Company."); trimPath != updateMask.Paths[j] {
+					childMask.Paths = append(childMask.Paths, trimPath)
+				}
+			}
+			if err := gorm1.MergeWithMask(patcher.Company, patchee.Company, childMask); err != nil {
+				return nil, nil
+			}
+		}
+		if f == prefix+"Company" {
+			updatedCompany = true
+			patchee.Company = patcher.Company
 			continue
 		}
 		if !updatedChargeDate && strings.HasPrefix(f, prefix+"ChargeDate.") {

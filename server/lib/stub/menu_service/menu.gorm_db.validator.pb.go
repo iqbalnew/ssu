@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/infobloxopen/protoc-gen-gorm/options"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -116,6 +116,11 @@ func (this *MenuLicense) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Module", err)
 		}
 	}
+	if this.Company != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Company); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Company", err)
+		}
+	}
 	if this.ChargeDate != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ChargeDate); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("ChargeDate", err)
@@ -152,5 +157,8 @@ func (this *Company) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
 		}
 	}
+	return nil
+}
+func (this *TempCompany) Validate() error {
 	return nil
 }
