@@ -56,6 +56,14 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, service string, step ui
 		}
 		whereOpt = fmt.Sprintf("%v step = %v", whereOpt, step)
 	}
+
+	// elemintate deleted task
+	if whereOpt != "" {
+		whereOpt = whereOpt + " AND status != 7"
+	} else {
+		whereOpt = "status != 7"
+	}
+
 	if whereOpt != "" {
 		query = query.Where(whereOpt)
 	}
@@ -87,6 +95,14 @@ func (p *GormProvider) GetGraphServiceType(ctx context.Context, service string, 
 		}
 		whereOpt = fmt.Sprintf("%v status = %v", whereOpt, stat)
 	}
+
+	// elemintate deleted task
+	if whereOpt != "" {
+		whereOpt = whereOpt + " AND status != 7"
+	} else {
+		whereOpt = "status != 7"
+	}
+
 	if whereOpt != "" {
 		query = query.Where(whereOpt)
 	}
@@ -113,6 +129,14 @@ func (p *GormProvider) GetGraphStatus(ctx context.Context, service string, stat 
 		}
 		whereOpt = fmt.Sprintf("%v status = %v", whereOpt, stat)
 	}
+
+	// elemintate deleted task
+	if whereOpt != "" {
+		whereOpt = whereOpt + " AND status != 7"
+	} else {
+		whereOpt = "status != 7"
+	}
+
 	if whereOpt != "" {
 		query = query.Where(whereOpt)
 	}
@@ -217,7 +241,7 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 }
 
 func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, f string, q string, pagination *pb.PaginationResponse, sort *pb.Sort) (tasks []*pb.TaskORM, err error) {
-	query := p.db_main
+	query := p.db_main.Where("status != 7")
 	if filter != nil {
 		query = query.Where(&filter)
 	}
