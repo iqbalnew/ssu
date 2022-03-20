@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
+	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/jwt"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
@@ -325,12 +326,24 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task, _ := req.Task.ToORM(ctx)
 	var err error
 
-	task.Step = 2
+	currentUser, err := s.getCurrentUser(ctx)
+	if err != nil {
+		if getEnv("ENV", "DEV") == "PROD" {
+			return nil, status.Errorf(codes.Unauthenticated, "%v", err)
+		} else {
+			currentUser = &manager.VerifyTokenRes{
+				UserID:   1,
+				Username: "",
+			}
+		}
+	}
+
+	task.Step = 3
 	task.Status = 1
 
-	if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu:Appearance" || req.Task.Type == "Menu:License" {
-		task.Step = 3
-	}
+	// if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu:Appearance" || req.Task.Type == "Menu:License" {
+	// 	task.Step = 3
+	// }
 
 	if req.IsDraft {
 		task.Step = 1
@@ -339,8 +352,14 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	if req.TaskID > 0 {
 		task.TaskID = req.TaskID
+		task.UpdatedByID = currentUser.UserID
+		task.UpdatedByName = currentUser.Username
 		_, err = s.provider.UpdateTask(ctx, &task)
 	} else {
+		task.CreatedByID = currentUser.UserID
+		task.CreatedByName = currentUser.Username
+		task.UpdatedByID = currentUser.UserID
+		task.UpdatedByName = currentUser.Username
 		_, err = s.provider.CreateTask(ctx, &task)
 	}
 
@@ -442,6 +461,18 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 }
 
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
+	currentUser, err := s.getCurrentUser(ctx)
+	if err != nil {
+		if getEnv("ENV", "DEV") == "PROD" {
+			return nil, status.Errorf(codes.Unauthenticated, "%v", err)
+		} else {
+			currentUser = &manager.VerifyTokenRes{
+				UserID:   1,
+				Username: "",
+			}
+		}
+	}
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
@@ -474,6 +505,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	currentStatus := task.Status
 	switch strings.ToLower(req.Action) {
 	case "rework":
+		task.LastRejectedByID = currentUser.UserID
+		task.LastRejectedByName = currentUser.Username
+
 		task.Status = 3
 		task.Step = 1
 	case "approve":
@@ -487,86 +521,100 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}, nil
 		}
 
+		task.LastApprovedByID = currentUser.UserID
+		task.LastApprovedByName = currentUser.Username
+
+		// Fix Workflow Step 2
+		if currentStep == 2 {
+			currentStep = 3
+		}
+
 		if currentStatus == 2 {
-			task.Step = 2
+			task.Step = 3
 			task.Status = 1
 
-			if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
-				task.Step = 3
-			}
+			// if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
+			// 	task.Step = 3
+			// }
 
 		} else {
 
-			if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
-				if currentStep == 1 {
-					task.Status = 1
-					task.Step = 3
-					if currentStatus == 6 {
-						task.Status = currentStatus
-					}
-				}
-				if currentStep == 3 {
-					task.Status = 1
-					task.Step = 4
-					if task.Type == "Announcement" {
-						task.Status = 4
-						task.Step = 3
-						sendTask = true
-						if currentStatus == 6 {
-							task.Status = 7
-						}
-					}
-					if currentStatus == 6 {
-						task.Status = currentStatus
-					}
-				}
-				if currentStep == 4 {
-					sendTask = true
-					task.Status = 4
-					if currentStatus == 6 {
-						task.Status = 7
-					}
-				}
-			} else {
-				if currentStep >= 3 {
-					if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" || task.Type == "Workflow" || task.Type == "Liquidity" {
-						if currentStep == 4 {
-							sendTask = true
-							task.Status = 4
-							if currentStatus == 6 {
-								task.Status = 7
-							}
-						} else {
-							task.Status = 1
-							task.Step++
-							if currentStatus == 6 {
-								task.Status = currentStatus
-							}
-						}
-					} else {
-						sendTask = true
-						task.Status = 4
-						if currentStatus == 6 {
-							task.Status = 7
-						}
-					}
-				} else {
-					task.Status = 1
-					task.Step++
-					if currentStatus == 6 {
-						task.Status = currentStatus
-					}
+			// if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
+			if currentStep == 1 {
+				task.Status = 1
+				task.Step = 3
+				if currentStatus == 6 {
+					task.Status = currentStatus
 				}
 			}
+			if currentStep == 3 {
+				task.Status = 1
+				// task.Step = 4
+				// if task.Type == "Announcement" {
+				task.Status = 4
+				task.Step = 3
+				sendTask = true
+				if currentStatus == 6 {
+					task.Status = 7
+				}
+				// }
+				// if currentStatus == 6 {
+				// 	task.Status = currentStatus
+				// }
+			}
+			if currentStep == 4 {
+				sendTask = true
+				task.Status = 4
+				if currentStatus == 6 {
+					task.Status = 7
+				}
+			}
+			// } else {
+			// 	if currentStep >= 3 {
+			// 		if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" || task.Type == "Workflow" || task.Type == "Liquidity" {
+			// 			if currentStep == 4 {
+			// 				sendTask = true
+			// 				task.Status = 4
+			// 				if currentStatus == 6 {
+			// 					task.Status = 7
+			// 				}
+			// 			} else {
+			// 				task.Status = 1
+			// 				task.Step++
+			// 				if currentStatus == 6 {
+			// 					task.Status = currentStatus
+			// 				}
+			// 			}
+			// 		} else {
+			// 			sendTask = true
+			// 			task.Status = 4
+			// 			if currentStatus == 6 {
+			// 				task.Status = 7
+			// 			}
+			// 		}
+			// 	} else {
+			// 		task.Status = 1
+			// 		task.Step++
+			// 		if currentStatus == 6 {
+			// 			task.Status = currentStatus
+			// 		}
+			// 	}
+			// }
 		}
 
 	case "reject":
+		task.LastRejectedByID = currentUser.UserID
+		task.LastRejectedByName = currentUser.Username
+
 		task.Status = 5
 		task.Step = 0
 
 	case "delete":
+		task.LastApprovedByID = currentUser.UserID
+		task.LastApprovedByName = currentUser.Username
+
 		task.Status = 6
-		task.Step = 2
+		task.Step = 3
 
 	}
 
@@ -575,6 +623,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Childs[i].LastApprovedByName = task.LastApprovedByName
 		task.Childs[i].LastRejectedByID = task.LastRejectedByID
 		task.Childs[i].LastRejectedByName = task.LastRejectedByName
+		task.Childs[i].CreatedByID = task.CreatedByID
+		task.Childs[i].CreatedByName = task.CreatedByName
+		task.Childs[i].UpdatedByID = task.UpdatedByID
+		task.Childs[i].UpdatedByName = task.UpdatedByName
 		if sendTask {
 			task.Childs[i].Status = task.Status
 			task.Childs[i].Step = task.Step
@@ -665,11 +717,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
 
-			res, err := companyClient.CreateCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
+			if task.Status == 7 {
+				// deleteReq := data.
+				res, err := companyClient.DeleteCompany(ctx, data.Data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Printf("[Delete Company] data : %v", res)
+			} else {
+				res, err := companyClient.CreateCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
 			}
-			logrus.Println(res)
 
 		case "Account":
 			// data := &dataPublish{
@@ -785,13 +846,19 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			data.TaskID = task.TaskID
 			if task.Status == 7 {
-				// set delete user
+				deleteReq := &users_pb.DeleteUserReq{UserID: data.Data.User.UserID}
+				res, err := client.DeleteUser(ctx, deleteReq, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Printf("[Delete User] data : %v", res)
+			} else {
+				res, err := client.CreateUser(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
 			}
-			res, err := client.CreateUser(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
-			}
-			logrus.Println(res)
 
 		case "Menu:Appearance":
 			var opts []grpc.DialOption

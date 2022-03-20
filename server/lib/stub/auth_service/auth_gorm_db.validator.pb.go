@@ -23,6 +23,14 @@ var _ = math.Inf
 func (this *Authentication) Validate() error {
 	return nil
 }
+func (this *UserLoginTime) Validate() error {
+	if this.LastLoginTime != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.LastLoginTime); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("LastLoginTime", err)
+		}
+	}
+	return nil
+}
 func (this *Jail) Validate() error {
 	if this.ExpiredAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ExpiredAt); err != nil {

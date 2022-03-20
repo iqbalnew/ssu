@@ -185,7 +185,16 @@ func (this *PaginationResponse) Validate() error {
 func (this *GetTaskByIDReq) Validate() error {
 	return nil
 }
+func (this *DeleteUserReq) Validate() error {
+	return nil
+}
+func (this *DeleteUserRes) Validate() error {
+	return nil
+}
 func (this *ListUserWithTaskRequest) Validate() error {
+	return nil
+}
+func (this *DownloadListUserWithTaskRequest) Validate() error {
 	return nil
 }
 func (this *Sort) Validate() error {

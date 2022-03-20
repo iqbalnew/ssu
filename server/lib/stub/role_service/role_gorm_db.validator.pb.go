@@ -66,6 +66,13 @@ func (this *Role) Validate() error {
 			}
 		}
 	}
+	for _, item := range this.UserRoles {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("UserRoles", err)
+			}
+		}
+	}
 	for _, item := range this.RoleAuthorities {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
