@@ -217,6 +217,12 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "filterOr",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -630,6 +636,12 @@
           },
           {
             "name": "in",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filterOr",
             "in": "query",
             "required": false,
             "type": "string"

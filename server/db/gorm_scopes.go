@@ -182,6 +182,105 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
+func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if v == "" {
+			return db
+		}
+
+		filters := strings.Split(v, "|")
+		if len(filters) < 1 {
+			return db
+		}
+
+		for i, s := range filters {
+			filter := strings.Split(s, ":")
+			if len(filter) == 2 {
+				keyword := filter[1]
+				expression := ""
+				if len(filter[1]) > 2 {
+					if string(filter[1][0:1]) == "%" {
+						expression = string(filter[1][0:2])
+					} else if string(filter[1][0:1]) == ">" || string(filter[1][0:1]) == "<" {
+						expression = string(filter[1][0:1])
+					}
+				}
+
+				column := columnNameBuilder(filter[0])
+				if expression == "%%" {
+					value := "%" + string(keyword[2:len(filter[1])]) + "%"
+					if i == 0 {
+						db = db.Where(fmt.Sprintf("%s LIKE ?", column), value)
+					} else {
+						db = db.Or(fmt.Sprintf("%s LIKE ?", column), value)
+					}
+				} else if expression == "%!" {
+					value := "%" + string(keyword[2:len(filter[1])]) + "%"
+					if i == 0 {
+						db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
+					} else {
+						db = db.Or(fmt.Sprintf("%s ILIKE ?", column), value)
+					}
+				} else if expression == ">" || expression == "<" {
+					if expression == "<" && filter[1][1:2] == ">" {
+						expression = string(filter[1][0:2])
+						value := string(keyword[2:len(filter[1])])
+						if i == 0 {
+							db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
+						} else {
+							db = db.Or(fmt.Sprintf("%s %s ?", column, expression), value)
+						}
+					} else if filter[1][1:2] == "=" {
+						expression = string(filter[1][0:2])
+						value := string(keyword[2:len(filter[1])])
+						if i == 0 {
+							db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
+						} else {
+							db = db.Or(fmt.Sprintf("%s %s ?", column, expression), value)
+						}
+					} else {
+						value := string(keyword[1:len(filter[1])])
+						if i == 0 {
+							db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
+						} else {
+							db = db.Or(fmt.Sprintf("%s %s ?", column, expression), value)
+						}
+					}
+				} else if keyword == "true" || keyword == "false" {
+					value := keyword
+					if value == "true" {
+						if i == 0 {
+							db = db.Where(fmt.Sprintf("%s = ?", column), value)
+						} else {
+							db = db.Or(fmt.Sprintf("%s = ?", column), value)
+						}
+					} else {
+						if strings.Contains(column, "->") {
+							db = db.Where(fmt.Sprintf("%s IS NULL", column))
+							db = db.Or(fmt.Sprintf("%s = ?", column), value)
+						} else {
+							if i == 0 {
+								db = db.Where(fmt.Sprintf("%s = ?", column), value)
+							} else {
+								db = db.Or(fmt.Sprintf("%s = ?", column), value)
+							}
+						}
+					}
+				} else {
+					value := keyword
+					if i == 0 {
+						db = db.Where(fmt.Sprintf("%s = ?", column), value)
+					} else {
+						db = db.Or(fmt.Sprintf("%s = ?", column), value)
+					}
+				}
+			}
+		}
+
+		return db
+	}
+}
+
 func columnNameBuilder(s string) string {
 	if strings.Contains(s, "->") {
 		nested := strings.Split(s, "->")

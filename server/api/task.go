@@ -72,7 +72,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		FeatureID: req.ID,
 	}
 
-	list, err := s.provider.GetListTask(ctx, &filter, "", "", &pb.PaginationResponse{}, &pb.Sort{}, "")
+	list, err := s.provider.GetListTask(ctx, &filter, "", "", &pb.PaginationResponse{}, &pb.Sort{}, "", "")
 	if err != nil {
 		return nil, err
 	}
@@ -99,14 +99,15 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 	}
 
 	reqPB := &pb.ListTaskRequest{
-		Task:   taskPB,
-		Limit:  req.Limit,
-		Page:   req.Page,
-		Sort:   req.Sort,
-		Dir:    pb.ListTaskRequestDirection(req.Dir.Number()),
-		Filter: req.Filter,
-		Query:  req.Query,
-		In:     req.In,
+		Task:     taskPB,
+		Limit:    req.Limit,
+		Page:     req.Page,
+		Sort:     req.Sort,
+		Dir:      pb.ListTaskRequestDirection(req.Dir.Number()),
+		Filter:   req.Filter,
+		Query:    req.Query,
+		In:       req.In,
+		FilterOr: req.FilterOr,
 	}
 
 	resPB, err := s.GetListTask(ctx, reqPB)
@@ -152,7 +153,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		Column:    req.GetSort(),
 		Direction: req.GetDir().Enum().String(),
 	}
-	list, err := s.provider.GetListTask(ctx, &dataorm, req.Filter, req.Query, result.Pagination, sort, req.In)
+	list, err := s.provider.GetListTask(ctx, &dataorm, req.Filter, req.Query, result.Pagination, sort, req.In, req.FilterOr)
 	if err != nil {
 		return nil, err
 	}
@@ -1180,7 +1181,7 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 		TaskID: req.ID,
 	}
 
-	list, err := s.provider.GetListTask(ctx, &filter, "", "", &pb.PaginationResponse{}, &pb.Sort{}, "")
+	list, err := s.provider.GetListTask(ctx, &filter, "", "", &pb.PaginationResponse{}, &pb.Sort{}, "", "")
 	if err != nil {
 		return nil, err
 	}

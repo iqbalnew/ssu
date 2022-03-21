@@ -240,12 +240,12 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, f string, q string, pagination *pb.PaginationResponse, sort *pb.Sort, in string) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, f string, q string, pagination *pb.PaginationResponse, sort *pb.Sort, in string, fOr string) (tasks []*pb.TaskORM, err error) {
 	query := p.db_main.Where("status != 7")
 	if filter != nil {
 		query = query.Where(&filter)
 	}
-	query = query.Scopes(FilterScoope(f), QueryScoop(q), WhereInScoop(in))
+	query = query.Scopes(FilterScoope(f), FilterOrScoope(fOr), QueryScoop(q), WhereInScoop(in))
 	query = query.Scopes(Paginate(tasks, pagination, query), Sort(sort))
 	if err := query.Preload(clause.Associations).Find(&tasks).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
