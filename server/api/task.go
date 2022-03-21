@@ -329,6 +329,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	currentUser, err := s.getCurrentUser(ctx)
 	if err != nil {
+		logrus.Errorln(err)
 		if getEnv("ENV", "DEV") == "PROD" {
 			return nil, status.Errorf(codes.Unauthenticated, "%v", err)
 		} else {
