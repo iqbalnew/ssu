@@ -18,6 +18,7 @@ import (
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
+	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
 	"github.com/sirupsen/logrus"
@@ -517,6 +518,15 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Error:   false,
 				Code:    200,
 				Message: "Task Status Already Approved",
+				Data:    &taskPb,
+			}, nil
+		}
+
+		if currentStatus == 7 {
+			return &pb.SetTaskResponse{
+				Error:   false,
+				Code:    200,
+				Message: "Task Already Deleted",
 				Data:    &taskPb,
 			}, nil
 		}
@@ -1030,6 +1040,81 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, err
 			}
 			logrus.Println(res)
+
+		case "SSO:User":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			ssoConn, err := grpc.Dial(getEnv("SSO_SERVICE", ":9106"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to SSO Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer ssoConn.Close()
+
+			ssoClient := sso_pb.NewApiServiceClient(ssoConn)
+
+			data := sso_pb.WriteSyncUserTask{}
+			json.Unmarshal([]byte(task.Data), &data)
+			send := &sso_pb.CreateSyncUserTaskReq{
+				Data:   &data,
+				TaskID: task.TaskID,
+			}
+			if task.Status == 7 {
+				send.Data.User.UserSyncID = task.FeatureID
+				res, err := ssoClient.DeleteSyncUser(ctx, send.Data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
+			} else {
+				if task.FeatureID > 0 {
+					send.Data.User.UserSyncID = task.FeatureID
+				}
+				res, err := ssoClient.SaveSyncUser(ctx, send.Data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
+			}
+
+		case "SSO:Company":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			ssoConn, err := grpc.Dial(getEnv("SSO_SERVICE", ":9106"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to SSO Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer ssoConn.Close()
+
+			ssoClient := sso_pb.NewApiServiceClient(ssoConn)
+
+			data := sso_pb.WriteSyncCompanyTask{}
+			json.Unmarshal([]byte(task.Data), &data)
+			send := &sso_pb.CreateSyncCompanyTaskReq{
+				Data:   &data,
+				TaskID: task.TaskID,
+			}
+			if task.Status == 7 {
+				send.Data.Company.CompanySyncID = task.FeatureID
+				res, err := ssoClient.DeleteSyncCompany(ctx, send.Data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
+			} else {
+				if task.FeatureID > 0 {
+					send.Data.Company.CompanySyncID = task.FeatureID
+				}
+				res, err := ssoClient.SaveSyncCompany(ctx, send.Data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
+			}
+
 		}
 
 	}
