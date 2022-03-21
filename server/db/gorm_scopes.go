@@ -83,6 +83,26 @@ func QueryScoop(v string) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
+func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if v == "" {
+			return db
+		}
+
+		query := strings.Split(v, ":")
+		if len(query) < 2 {
+			return db
+		}
+
+		column := columnNameBuilder(query[0])
+		values := strings.Split(query[1], ",")
+
+		db = db.Where(fmt.Sprintf("%s IN (?)", column), values)
+
+		return db
+	}
+}
+
 func queryColumnsLoop(db *gorm.DB, columns []string, expresion string, value string) *gorm.DB {
 	for i, s := range columns {
 		s = columnNameBuilder(s)

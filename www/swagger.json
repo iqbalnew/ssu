@@ -211,6 +211,12 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "in",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -618,6 +624,12 @@
           {
             "name": "query",
             "description": "Create 'OR' queries \n format: [key1,key2,key3:value] \n example: query=name,type:Announcement =\u003e Where name = 'Announcement' OR type = 'Announcement' \n Expressions: \n - 'key:value' =\u003e 'key = value' \n - 'key:%%value' =\u003e 'key LIKE %value%' \n - 'key:%!value' =\u003e 'key ILIKE %value%' \n - 'key1.nestedKey1:value' =\u003e 'key1-\u003e\u003enestedKey1 = value'",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "in",
             "in": "query",
             "required": false,
             "type": "string"
