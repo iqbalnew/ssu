@@ -37,7 +37,7 @@ func Sort(v *pb.Sort) func(db *gorm.DB) *gorm.DB {
 		if v == nil || v.Column == "" {
 			return db
 		}
-		v.Column = columnNameBuilder(v.Column)
+		v.Column = columnNameBuilder(v.Column, false)
 		if v != nil {
 			return db.Order(v.Column + " " + v.Direction)
 		}
@@ -94,7 +94,7 @@ func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 			return db
 		}
 
-		column := columnNameBuilder(query[0])
+		column := columnNameBuilder(query[0], false)
 		values := strings.Split(query[1], ",")
 
 		db = db.Where(fmt.Sprintf("%s IN (?)", column), values)
@@ -105,7 +105,7 @@ func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 
 func queryColumnsLoop(db *gorm.DB, columns []string, expresion string, value string) *gorm.DB {
 	for i, s := range columns {
-		s = columnNameBuilder(s)
+		s = columnNameBuilder(s, false)
 		if i == 0 {
 			db = db.Where(fmt.Sprintf("%s %s ?", s, expresion), value)
 		} else {
@@ -148,7 +148,7 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 					}
 				}
 
-				column := columnNameBuilder(filter[0])
+				column := columnNameBuilder(filter[0], false)
 				if expression == "%%" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
 					db = db.Where(fmt.Sprintf("%s LIKE ?", column), value)
@@ -157,9 +157,11 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 					db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
 				} else if expression == "@>" {
 					value := keyword
+					column := columnNameBuilder(filter[0], true)
 					db = db.Where(fmt.Sprintf("%s @> ?", column), value)
 				} else if expression == "<@" {
 					value := keyword
+					column := columnNameBuilder(filter[0], true)
 					db = db.Where(fmt.Sprintf("%s <@ ?", column), value)
 				} else if expression == ">" || expression == "<" {
 					if expression == "<" && filter[1][1:2] == ">" {
@@ -230,7 +232,7 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 					}
 				}
 
-				column := columnNameBuilder(filter[0])
+				column := columnNameBuilder(filter[0], false)
 				if expression == "%%" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
 					if i == 0 {
@@ -247,6 +249,7 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 					}
 				} else if expression == "@>" {
 					value := keyword
+					column := columnNameBuilder(filter[0], true)
 					if i == 0 {
 						db = db.Where(fmt.Sprintf("%s @> ?", column), value)
 					} else {
@@ -254,6 +257,7 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 					}
 				} else if expression == "<@" {
 					value := keyword
+					column := columnNameBuilder(filter[0], true)
 					if i == 0 {
 						db = db.Where(fmt.Sprintf("%s <@ ?", column), value)
 					} else {
@@ -319,14 +323,14 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-func columnNameBuilder(s string) string {
+func columnNameBuilder(s string, isObject bool) string {
 	if strings.Contains(s, "->") {
 		nested := strings.Split(s, "->")
 		s = ""
 		for i, t := range nested {
 			if i == 0 {
 				s = fmt.Sprintf("\"%s\"", t)
-			} else if i == len(nested)-1 {
+			} else if i == len(nested)-1 && !isObject {
 				s = s + fmt.Sprintf("->>'%s'", t)
 			} else {
 				s = s + fmt.Sprintf("->'%s'", t)
@@ -338,7 +342,7 @@ func columnNameBuilder(s string) string {
 		for i, t := range nested {
 			if i == 0 {
 				s = fmt.Sprintf("\"%s\"", t)
-			} else if i == len(nested)-1 {
+			} else if i == len(nested)-1 && !isObject {
 				s = s + fmt.Sprintf("->>'%s'", t)
 			} else {
 				s = s + fmt.Sprintf("->'%s'", t)

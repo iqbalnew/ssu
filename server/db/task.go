@@ -82,7 +82,7 @@ func (p *GormProvider) GetGraphServiceType(ctx context.Context, service string, 
 		return nil, status.Errorf(codes.InvalidArgument, "column cant be empty")
 	}
 
-	column := columnNameBuilder(filter)
+	column := columnNameBuilder(filter, false)
 	selectOpt := fmt.Sprintf("%s as name, type, count(*) as total", column)
 	query := p.db_main.Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := ""
