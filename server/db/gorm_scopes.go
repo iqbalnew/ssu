@@ -145,6 +145,8 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 						if filter[1][1:2] == "@" {
 							expression = string(filter[1][0:2])
 						}
+					} else if string(filter[1][0:1]) == "@" {
+						expression = string(filter[1][0:2])
 					}
 				}
 
@@ -229,6 +231,8 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 						if filter[1][1:2] == "@" {
 							expression = string(filter[1][0:2])
 						}
+					} else if string(filter[1][0:1]) == "@" {
+						expression = string(filter[1][0:2])
 					}
 				}
 
