@@ -130,12 +130,21 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 			filter := strings.Split(s, ":")
 			if len(filter) == 2 {
 				keyword := filter[1]
+				if len(filter) > 2 {
+					keyword = strings.Join(filter[1:], ":")
+				}
+
 				expression := ""
 				if len(filter[1]) > 2 {
 					if string(filter[1][0:1]) == "%" {
 						expression = string(filter[1][0:2])
-					} else if string(filter[1][0:1]) == ">" || string(filter[1][0:1]) == "<" {
+					} else if string(filter[1][0:1]) == ">" {
 						expression = string(filter[1][0:1])
+					} else if string(filter[1][0:1]) == "<" {
+						expression = string(filter[1][0:1])
+						if filter[1][1:2] == "@" {
+							expression = string(filter[1][0:2])
+						}
 					}
 				}
 
@@ -146,6 +155,12 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 				} else if expression == "%!" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
 					db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
+				} else if expression == "@>" {
+					value := keyword
+					db = db.Where(fmt.Sprintf("%s @> ?", column), value)
+				} else if expression == "<@" {
+					value := keyword
+					db = db.Where(fmt.Sprintf("%s <@ ?", column), value)
 				} else if expression == ">" || expression == "<" {
 					if expression == "<" && filter[1][1:2] == ">" {
 						expression = string(filter[1][0:2])
@@ -197,12 +212,21 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 			filter := strings.Split(s, ":")
 			if len(filter) == 2 {
 				keyword := filter[1]
+				if len(filter) > 2 {
+					keyword = strings.Join(filter[1:], ":")
+				}
+
 				expression := ""
 				if len(filter[1]) > 2 {
 					if string(filter[1][0:1]) == "%" {
 						expression = string(filter[1][0:2])
-					} else if string(filter[1][0:1]) == ">" || string(filter[1][0:1]) == "<" {
+					} else if string(filter[1][0:1]) == ">" {
 						expression = string(filter[1][0:1])
+					} else if string(filter[1][0:1]) == "<" {
+						expression = string(filter[1][0:1])
+						if filter[1][1:2] == "@" {
+							expression = string(filter[1][0:2])
+						}
 					}
 				}
 
@@ -220,6 +244,20 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 						db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
 					} else {
 						db = db.Or(fmt.Sprintf("%s ILIKE ?", column), value)
+					}
+				} else if expression == "@>" {
+					value := keyword
+					if i == 0 {
+						db = db.Where(fmt.Sprintf("%s @> ?", column), value)
+					} else {
+						db = db.Or(fmt.Sprintf("%s @> ?", column), value)
+					}
+				} else if expression == "<@" {
+					value := keyword
+					if i == 0 {
+						db = db.Where(fmt.Sprintf("%s <@ ?", column), value)
+					} else {
+						db = db.Or(fmt.Sprintf("%s <@ ?", column), value)
 					}
 				} else if expression == ">" || expression == "<" {
 					if expression == "<" && filter[1][1:2] == ">" {
