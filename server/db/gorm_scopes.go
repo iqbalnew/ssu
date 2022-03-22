@@ -158,11 +158,11 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
 					db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
 				} else if expression == "@>" {
-					value := keyword
+					value := string(keyword[2:])
 					column := columnNameBuilder(filter[0], true)
 					db = db.Where(fmt.Sprintf("%s @> ?", column), value)
 				} else if expression == "<@" {
-					value := keyword
+					value := string(keyword[2:])
 					column := columnNameBuilder(filter[0], true)
 					db = db.Where(fmt.Sprintf("%s <@ ?", column), value)
 				} else if expression == ">" || expression == "<" {
