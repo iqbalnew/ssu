@@ -128,7 +128,7 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 
 		for _, s := range filters {
 			filter := strings.Split(s, ":")
-			if len(filter) == 2 {
+			if len(filter) >= 2 {
 				keyword := filter[1]
 				if len(filter) > 2 {
 					keyword = strings.Join(filter[1:], ":")
@@ -212,7 +212,7 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 
 		for i, s := range filters {
 			filter := strings.Split(s, ":")
-			if len(filter) == 2 {
+			if len(filter) >= 2 {
 				keyword := filter[1]
 				if len(filter) > 2 {
 					keyword = strings.Join(filter[1:], ":")
