@@ -304,8 +304,9 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 						// }
 					} else {
 						if strings.Contains(column, "->") {
-							dbQuery = dbQuery.Where(fmt.Sprintf("%s IS NULL", column))
-							dbQuery = dbQuery.Or(fmt.Sprintf("%s = ?", column), value)
+							dbQuery = dbQuery.Or(
+								dbQuery.Where(fmt.Sprintf("%s IS NULL", column)).Or(fmt.Sprintf("%s = ?", column), value),
+							)
 						} else {
 							// if i == 0 {
 							// 	db = db.Where(fmt.Sprintf("%s = ?", column), value)
