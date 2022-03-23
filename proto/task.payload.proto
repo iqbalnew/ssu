@@ -101,6 +101,7 @@ message ListTaskRequest {
 	}];
     string in = 8;
     string filterOr = 9;
+    string customOrder = 10;
 }
 
 message Pagination {

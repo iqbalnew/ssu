@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/db"
 	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
 	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/jwt"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
@@ -72,7 +73,15 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		FeatureID: req.ID,
 	}
 
-	list, err := s.provider.GetListTask(ctx, &filter, "", "", &pb.PaginationResponse{}, &pb.Sort{}, "", "")
+	sqlBuilder := &db.QueryBuilder{
+		Filter:        "",
+		FilterOr:      "",
+		CollectiveAnd: "",
+		In:            "",
+		CustomOrder:   "",
+		Sort:          &pb.Sort{},
+	}
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder)
 	if err != nil {
 		return nil, err
 	}
@@ -153,7 +162,15 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		Column:    req.GetSort(),
 		Direction: req.GetDir().Enum().String(),
 	}
-	list, err := s.provider.GetListTask(ctx, &dataorm, req.Filter, req.Query, result.Pagination, sort, req.In, req.FilterOr)
+	sqlBuilder := &db.QueryBuilder{
+		Filter:        req.GetFilter(),
+		FilterOr:      req.GetFilterOr(),
+		CollectiveAnd: req.GetQuery(),
+		In:            req.GetIn(),
+		CustomOrder:   req.GetCustomOrder(),
+		Sort:          sort,
+	}
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder)
 	if err != nil {
 		return nil, err
 	}
@@ -1181,7 +1198,15 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 		TaskID: req.ID,
 	}
 
-	list, err := s.provider.GetListTask(ctx, &filter, "", "", &pb.PaginationResponse{}, &pb.Sort{}, "", "")
+	sqlBuilder := &db.QueryBuilder{
+		Filter:        "",
+		FilterOr:      "",
+		CollectiveAnd: "",
+		In:            "",
+		CustomOrder:   "",
+		Sort:          &pb.Sort{},
+	}
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder)
 	if err != nil {
 		return nil, err
 	}

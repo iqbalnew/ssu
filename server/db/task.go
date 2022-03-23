@@ -117,7 +117,7 @@ func (p *GormProvider) GetGraphServiceType(ctx context.Context, service string, 
 }
 
 func (p *GormProvider) GetGraphStatus(ctx context.Context, service string, stat uint) (result []*GraphResult, err error) {
-	selectOpt := fmt.Sprintf("status as name, type, count(*) as total")
+	selectOpt := "status as name, type, count(*) as total"
 	query := p.db_main.Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := ""
 	if service != "" {
@@ -240,13 +240,22 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, f string, q string, pagination *pb.PaginationResponse, sort *pb.Sort, in string, fOr string) (tasks []*pb.TaskORM, err error) {
+type QueryBuilder struct {
+	Filter        string
+	FilterOr      string
+	CollectiveAnd string
+	In            string
+	CustomOrder   string
+	Sort          *pb.Sort
+}
+
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder) (tasks []*pb.TaskORM, err error) {
 	query := p.db_main.Where("status != 7")
 	if filter != nil {
 		query = query.Where(&filter)
 	}
-	query = query.Scopes(FilterScoope(f), FilterOrScoope(fOr), QueryScoop(q), WhereInScoop(in))
-	query = query.Scopes(Paginate(tasks, pagination, query), Sort(sort))
+	query = query.Scopes(FilterScoope(sql.Filter), FilterOrScoope(sql.FilterOr), QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In))
+	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort))
 	if err := query.Preload(clause.Associations).Find(&tasks).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)

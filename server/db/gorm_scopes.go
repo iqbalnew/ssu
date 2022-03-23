@@ -46,6 +46,7 @@ func Sort(v *pb.Sort) func(db *gorm.DB) *gorm.DB {
 }
 
 func QueryScoop(v string) func(db *gorm.DB) *gorm.DB {
+	// Example of v: "key1,key2,key3:val"
 	return func(db *gorm.DB) *gorm.DB {
 		if v == "" {
 			return db
@@ -84,6 +85,7 @@ func QueryScoop(v string) func(db *gorm.DB) *gorm.DB {
 }
 
 func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
+	// Example of v: "key:val1,val2,val3"
 	return func(db *gorm.DB) *gorm.DB {
 		if v == "" {
 			return db
@@ -116,6 +118,7 @@ func queryColumnsLoop(db *gorm.DB, columns []string, expresion string, value str
 }
 
 func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
+	// Example of v: "key1:val1,key2:val2"
 	return func(db *gorm.DB) *gorm.DB {
 		if v == "" {
 			return db
@@ -201,7 +204,43 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
+func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
+	// Example of v: "key|>|1,2,3,4,5" "key|<|1,2,3,4,5"
+	return func(db *gorm.DB) *gorm.DB {
+		if v == "" {
+			return db
+		}
+
+		in := strings.Split(v, "|")
+		if len(in) < 3 {
+			return db
+		}
+
+		key := columnNameBuilder(in[0], false)
+		direction := in[1]
+		valJoin := strings.Join(in[2:], "|")
+		valArray := strings.Split(valJoin, ",")
+		if len(valArray) < 1 {
+			return db
+		}
+		if direction == "<" {
+			valArray = reverseArrayString(valArray)
+		}
+
+		orderByQuery := "idx(array["
+		for _, v := range valArray {
+			orderByQuery += fmt.Sprintf("'%s',", v)
+		}
+		orderByQuery = fmt.Sprintf("%s], %s)", orderByQuery, key)
+
+		db = db.Order(orderByQuery)
+
+		return db
+	}
+}
+
 func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
+	// Example of v: "key1:val1|key2:val2"
 	return func(db *gorm.DB) *gorm.DB {
 		if v == "" {
 			return db
@@ -330,6 +369,20 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 		return db
 	}
 }
+
+func reverseArrayString(arr []string) []string {
+	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
+		arr[i], arr[j] = arr[j], arr[i]
+	}
+	return arr
+}
+
+// func reverseArray(arr []int) []int {
+// 	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
+// 		arr[i], arr[j] = arr[j], arr[i]
+// 	}
+// 	return arr
+// }
 
 func columnNameBuilder(s string, isObject bool) string {
 	if strings.Contains(s, "->") {
