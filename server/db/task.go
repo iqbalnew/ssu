@@ -269,7 +269,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 func (p *GormProvider) GetListTaskPluck(ctx context.Context, key string, filter *pb.TaskORM, sql *QueryBuilder) ([]string, error) {
 	var data []string
-	query := p.db_main
+	task := &pb.TaskORM{}
+	query := p.db_main.Model(&task)
 	if filter != nil {
 		query = query.Where(&filter)
 	}
