@@ -235,7 +235,7 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 			if i == 0 {
 				orderByQuery += fmt.Sprintf("'%s'", v)
 			} else {
-				orderByQuery += fmt.Sprintf("'%s',", v)
+				orderByQuery += fmt.Sprintf(",'%s'", v)
 			}
 		}
 		orderByQuery = fmt.Sprintf("%s], %s)", orderByQuery, key)
