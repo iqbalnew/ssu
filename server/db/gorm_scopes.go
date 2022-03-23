@@ -238,7 +238,7 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 				orderByQuery += fmt.Sprintf(",'%s'", v)
 			}
 		}
-		orderByQuery = fmt.Sprintf("%s], %s)", orderByQuery, key)
+		orderByQuery = fmt.Sprintf("%s]", orderByQuery) + ", " + key + ")"
 
 		logrus.Printf("orderByQuery: %v", orderByQuery)
 
