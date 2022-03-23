@@ -212,8 +212,7 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 			return db
 		}
 
-		dbQuery := db
-		db = db.Where(dbQuery)
+		dbQuery := db.Session(&gorm.Session{NewDB: true})
 
 		for _, s := range filters {
 			filter := strings.Split(s, ":")
@@ -327,6 +326,7 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 			}
 		}
 
+		db = db.Where(dbQuery)
 		return db
 	}
 }
