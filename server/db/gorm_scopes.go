@@ -212,7 +212,7 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 			return db
 		}
 
-		var dbQuery *gorm.DB
+		dbQuery := db
 
 		for _, s := range filters {
 			filter := strings.Split(s, ":")
