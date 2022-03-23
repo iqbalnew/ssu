@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -211,6 +212,8 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 			return db
 		}
 
+		logrus.Println(v)
+
 		in := strings.Split(v, "|")
 		if len(in) < 3 {
 			return db
@@ -228,10 +231,16 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 		}
 
 		orderByQuery := "idx(array["
-		for _, v := range valArray {
-			orderByQuery += fmt.Sprintf("'%s',", v)
+		for i, v := range valArray {
+			if i == 0 {
+				orderByQuery += fmt.Sprintf("'%s'", v)
+			} else {
+				orderByQuery += fmt.Sprintf("'%s',", v)
+			}
 		}
 		orderByQuery = fmt.Sprintf("%s], %s)", orderByQuery, key)
+
+		logrus.Printf("orderByQuery: %v", orderByQuery)
 
 		db = db.Order(orderByQuery)
 
