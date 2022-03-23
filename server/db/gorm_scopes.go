@@ -98,18 +98,21 @@ func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 		}
 
 		column := columnNameBuilder(query[0], false)
-		values := strings.Split(query[1], ",")
+		values := query[1]
 
 		not := false
 		if string(query[1][0:1]) == "!" {
 			not = true
-			query[1] = string(query[1][1:len(query[1])])
+			values = query[1][1:len(query[1])]
+			logrus.Printf(values)
 		}
 
+		inVals := strings.Split(values, ",")
+
 		if not {
-			db = db.Where(column+" NOT IN (?)", values)
+			db = db.Where(column+" NOT IN (?)", inVals)
 		} else {
-			db = db.Where(fmt.Sprintf("%s IN (?)", column), values)
+			db = db.Where(column+" IN (?)", inVals)
 		}
 
 		return db
