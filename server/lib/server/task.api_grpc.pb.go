@@ -27,6 +27,7 @@ type TaskServiceClient interface {
 	SetTask(ctx context.Context, in *SetTaskRequest, opts ...grpc.CallOption) (*SetTaskResponse, error)
 	SetTaskEV(ctx context.Context, in *SetTaskRequestEV, opts ...grpc.CallOption) (*SetTaskResponseEV, error)
 	GetListTask(ctx context.Context, in *ListTaskRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
+	GetListTaskPluck(ctx context.Context, in *ListTaskPluckRequest, opts ...grpc.CallOption) (*ListTaskPluckResponse, error)
 	GetListTaskEV(ctx context.Context, in *ListTaskRequestEV, opts ...grpc.CallOption) (*ListTaskResponseEV, error)
 	GetTaskGraphStatus(ctx context.Context, in *GraphStatusRequest, opts ...grpc.CallOption) (*GraphStatusResponse, error)
 	GraphStatusColumnType(ctx context.Context, in *GraphStatusColumnTypeRequest, opts ...grpc.CallOption) (*GraphStatusColumnTypeResponse, error)
@@ -86,6 +87,15 @@ func (c *taskServiceClient) SetTaskEV(ctx context.Context, in *SetTaskRequestEV,
 func (c *taskServiceClient) GetListTask(ctx context.Context, in *ListTaskRequest, opts ...grpc.CallOption) (*ListTaskResponse, error) {
 	out := new(ListTaskResponse)
 	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetListTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceClient) GetListTaskPluck(ctx context.Context, in *ListTaskPluckRequest, opts ...grpc.CallOption) (*ListTaskPluckResponse, error) {
+	out := new(ListTaskPluckResponse)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetListTaskPluck", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -191,6 +201,7 @@ type TaskServiceServer interface {
 	SetTask(context.Context, *SetTaskRequest) (*SetTaskResponse, error)
 	SetTaskEV(context.Context, *SetTaskRequestEV) (*SetTaskResponseEV, error)
 	GetListTask(context.Context, *ListTaskRequest) (*ListTaskResponse, error)
+	GetListTaskPluck(context.Context, *ListTaskPluckRequest) (*ListTaskPluckResponse, error)
 	GetListTaskEV(context.Context, *ListTaskRequestEV) (*ListTaskResponseEV, error)
 	GetTaskGraphStatus(context.Context, *GraphStatusRequest) (*GraphStatusResponse, error)
 	GraphStatusColumnType(context.Context, *GraphStatusColumnTypeRequest) (*GraphStatusColumnTypeResponse, error)
@@ -222,6 +233,9 @@ func (UnimplementedTaskServiceServer) SetTaskEV(context.Context, *SetTaskRequest
 }
 func (UnimplementedTaskServiceServer) GetListTask(context.Context, *ListTaskRequest) (*ListTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListTask not implemented")
+}
+func (UnimplementedTaskServiceServer) GetListTaskPluck(context.Context, *ListTaskPluckRequest) (*ListTaskPluckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListTaskPluck not implemented")
 }
 func (UnimplementedTaskServiceServer) GetListTaskEV(context.Context, *ListTaskRequestEV) (*ListTaskResponseEV, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListTaskEV not implemented")
@@ -352,6 +366,24 @@ func _TaskService_GetListTask_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TaskServiceServer).GetListTask(ctx, req.(*ListTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskService_GetListTaskPluck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTaskPluckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GetListTaskPluck(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/GetListTaskPluck",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GetListTaskPluck(ctx, req.(*ListTaskPluckRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -562,6 +594,10 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetListTask",
 			Handler:    _TaskService_GetListTask_Handler,
+		},
+		{
+			MethodName: "GetListTaskPluck",
+			Handler:    _TaskService_GetListTaskPluck_Handler,
 		},
 		{
 			MethodName: "GetListTaskEV",

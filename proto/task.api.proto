@@ -73,6 +73,9 @@ service TaskService {
             description: "This API is used for get list data task"
         };
     };
+
+    rpc GetListTaskPluck(ListTaskPluckRequest) returns (ListTaskPluckResponse);
+
     rpc GetListTaskEV(ListTaskRequestEV) returns (ListTaskResponseEV) {
         option (google.api.http) = {
             get: "/api/task"

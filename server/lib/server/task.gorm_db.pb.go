@@ -29,12 +29,12 @@ type Statuses int32
 
 const (
 	Statuses_NullStatus    Statuses = 0
-	Statuses_Pending       Statuses = 1
+	Statuses_Pending       Statuses = 1 //
 	Statuses_Draft         Statuses = 2
 	Statuses_Returned      Statuses = 3
-	Statuses_Approved      Statuses = 4
-	Statuses_Rejected      Statuses = 5
-	Statuses_DeleteRequest Statuses = 6
+	Statuses_Approved      Statuses = 4 //
+	Statuses_Rejected      Statuses = 5 //
+	Statuses_DeleteRequest Statuses = 6 //
 	Statuses_Deleted       Statuses = 7
 )
 

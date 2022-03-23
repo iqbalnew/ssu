@@ -76,6 +76,17 @@ func (this *ListTaskRequest) Validate() error {
 	}
 	return nil
 }
+func (this *ListTaskPluckRequest) Validate() error {
+	if this.Task != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
+		}
+	}
+	return nil
+}
+func (this *ListTaskPluckResponse) Validate() error {
+	return nil
+}
 func (this *Pagination) Validate() error {
 	return nil
 }

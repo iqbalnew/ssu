@@ -245,6 +245,7 @@ type QueryBuilder struct {
 	FilterOr      string
 	CollectiveAnd string
 	In            string
+	Distinct      string
 	CustomOrder   string
 	Sort          *pb.Sort
 }
@@ -255,6 +256,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		query = query.Where(&filter)
 	}
 	query = query.Scopes(FilterScoope(sql.Filter), FilterOrScoope(sql.FilterOr), QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In))
+	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort))
 	if err := query.Preload(clause.Associations).Find(&tasks).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -263,6 +265,23 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		}
 	}
 	return tasks, nil
+}
+
+func (p *GormProvider) GetListTaskPluck(ctx context.Context, key string, filter *pb.TaskORM, sql *QueryBuilder) ([]string, error) {
+	var data []string
+	query := p.db_main
+	if filter != nil {
+		query = query.Where(&filter)
+	}
+	query = query.Scopes(FilterScoope(sql.Filter), FilterOrScoope(sql.FilterOr), QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In))
+	query = query.Scopes(DistinctScoope(sql.Distinct))
+	if err := query.Pluck(columnNameBuilder(key, false), &data).Error; err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+		}
+	}
+	return data, nil
 }
 
 func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskORM, pagination *pb.PaginationResponse, sort *pb.Sort) (tasks []*pb.TaskORM, err error) {

@@ -204,6 +204,38 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 }
 
+func (s *Server) GetListTaskPluck(ctx context.Context, req *pb.ListTaskPluckRequest) (*pb.ListTaskPluckResponse, error) {
+	result := &pb.ListTaskPluckResponse{
+		Data: []string{},
+	}
+
+	if req.PluckKey == "" {
+		return result, nil
+	}
+
+	var dataorm pb.TaskORM
+	if req.Task != nil {
+		dataorm, _ = req.Task.ToORM(ctx)
+	}
+
+	sqlBuilder := &db.QueryBuilder{
+		Filter:        req.GetFilter(),
+		FilterOr:      req.GetFilterOr(),
+		CollectiveAnd: req.GetQuery(),
+		In:            req.GetIn(),
+		Distinct:      req.GetDistinctKey(),
+	}
+
+	list, err := s.provider.GetListTaskPluck(ctx, req.GetPluckKey(), &dataorm, sqlBuilder)
+	if err != nil {
+		return nil, err
+	}
+
+	result.Data = list
+
+	return result, nil
+}
+
 func (s *Server) GetTaskGraphStatus(ctx context.Context, req *pb.GraphStatusRequest) (*pb.GraphStatusResponse, error) {
 	stat := req.Status.Number()
 	data, err := s.provider.GetGraphStatus(ctx, req.Service, uint(stat))

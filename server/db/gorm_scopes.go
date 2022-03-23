@@ -376,6 +376,22 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
+func DistinctScoope(v string) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if v == "" {
+			return db
+		}
+
+		keys := strings.Split(v, ",")
+
+		for i, v := range keys {
+			keys[i] = columnNameBuilder(v, false)
+		}
+
+		return db.Distinct(keys)
+	}
+}
+
 func reverseArrayString(arr []string) []string {
 	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
 		arr[i], arr[j] = arr[j], arr[i]
