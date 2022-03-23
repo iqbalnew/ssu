@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/jwt"
-	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -113,16 +112,13 @@ func (interceptor *AuthInterceptor) isRestricted(method string) bool {
 }
 
 func (interceptor *AuthInterceptor) authorize(ctx context.Context, claims *manager.UserClaims, method string) error {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return status.Errorf(codes.Unauthenticated, "metadata is not provided")
-	}
-
 	// fmt.Println(md)
-
-	rolesMd := md["auth-role-announcement"]
-	if len(rolesMd) > 0 {
-		logrus.Println("Roles: ", rolesMd[0])
+	featureRoles := []string{}
+	for _, v := range claims.ProductRoles {
+		if v.ProductName == "Task" {
+			featureRoles = v.Authorities
+			break
+		}
 	}
 
 	accessibleRoles, ok := interceptor.accessibleRoles[method]
@@ -135,18 +131,13 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, claims *manag
 		return nil
 	}
 
-	// if len(rolesMd) == 0 {
-	// 	return status.Errorf(codes.Unauthenticated, "authorization token is not provided")
-	// }
-
-	// roles := strings.Split(rolesMd[0], "|")
-	// for _, role := range accessibleRoles {
-	// 	for _, exist := range roles {
-	// 		if role == exist {
-	// 			return nil
-	// 		}
-	// 	}
-	// }
+	for _, role := range accessibleRoles {
+		for _, exist := range featureRoles {
+			if role == exist {
+				return nil
+			}
+		}
+	}
 
 	return status.Error(codes.PermissionDenied, "no permission to access this RPC")
 }

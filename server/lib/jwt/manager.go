@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	authPb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/auth_service"
@@ -13,6 +14,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -23,10 +25,13 @@ type JWTManager struct {
 
 type UserClaims struct {
 	jwt.StandardClaims
-	Username  string `json:"username"`
-	UserID    uint64 `json:"user_id"`
-	SessionID string `json:"session_id"`
-	DateTime  string `json:"date_time"`
+	Username     string              `json:"username"`
+	UserID       uint64              `json:"user_id"`
+	SessionID    string              `json:"session_id"`
+	DateTime     string              `json:"date_time"`
+	UserType     string              `json:"user_type"`
+	ProductRoles []*ProductAuthority `json:"product_roles"`
+	Authorities  []string            `json:"authorities"`
 }
 
 type VerifyTokenRes struct {
@@ -89,6 +94,42 @@ func (manager *JWTManager) Verify(accessToken string) (*UserClaims, error) {
 	}
 
 	return claims, nil
+}
+
+func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string) (*UserClaims, error) {
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		values := md["authorization"]
+		if len(values) > 0 {
+			split := strings.Split(values[0], " ")
+			accessToken = split[0]
+			if len(split) > 1 {
+				accessToken = split[1]
+			}
+		}
+
+	}
+
+	if accessToken == "" {
+		logrus.Errorf("access token is empty")
+		return nil, status.Error(codes.Unauthenticated, "session is empty")
+	}
+
+	userClaims, err := manager.Verify(accessToken)
+	if err != nil {
+		logrus.Errorf("[api.task][func:GetMeFromJWT][01] failed to verify token '%s', error: %v", accessToken, err)
+		return nil, status.Errorf(codes.Unauthenticated, "Session expired")
+	}
+
+	now := time.Now()
+
+	fmt.Printf("token verify expired: %v|%v|%v", !(now.Unix() <= userClaims.ExpiresAt), now.String(), time.Unix(userClaims.ExpiresAt, 0).String())
+	if !(now.Unix() <= userClaims.ExpiresAt) {
+		return nil, status.Errorf(codes.Unauthenticated, "Session expired")
+	}
+
+	return userClaims, nil
 }
 
 func (manager *JWTManager) GetMeFromAuthService(ctx context.Context, accessToken string) (*VerifyTokenRes, error) {
