@@ -212,7 +212,7 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 			return db
 		}
 
-		for i, s := range filters {
+		for _, s := range filters {
 			filter := strings.Split(s, ":")
 			if len(filter) >= 2 {
 				keyword := filter[1]
@@ -239,91 +239,93 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 				column := columnNameBuilder(filter[0], false)
 				if expression == "%%" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
-					if i == 0 {
-						db = db.Where(fmt.Sprintf("%s LIKE ?", column), value)
-					} else {
-						db = db.Or(fmt.Sprintf("%s LIKE ?", column), value)
-					}
+					// if i == 0 {
+					// 	db = db.Where(fmt.Sprintf("%s LIKE ?", column), value)
+					// } else {
+					db = db.Or(fmt.Sprintf("%s LIKE ?", column), value)
+					// }
 				} else if expression == "%!" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
-					if i == 0 {
-						db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
-					} else {
-						db = db.Or(fmt.Sprintf("%s ILIKE ?", column), value)
-					}
+					// if i == 0 {
+					// 	db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
+					// } else {
+					db = db.Or(fmt.Sprintf("%s ILIKE ?", column), value)
+					// }
 				} else if expression == "@>" {
 					value := string(keyword[2:])
 					column := columnNameBuilder(filter[0], true)
-					if i == 0 {
-						db = db.Where(fmt.Sprintf("%s @> ?", column), value)
-					} else {
-						db = db.Or(fmt.Sprintf("%s @> ?", column), value)
-					}
+					// if i == 0 {
+					// 	db = db.Where(fmt.Sprintf("%s @> ?", column), value)
+					// } else {
+					db = db.Or(fmt.Sprintf("%s @> ?", column), value)
+					// }
 				} else if expression == "<@" {
 					value := string(keyword[2:])
 					column := columnNameBuilder(filter[0], true)
-					if i == 0 {
-						db = db.Where(fmt.Sprintf("%s <@ ?", column), value)
-					} else {
-						db = db.Or(fmt.Sprintf("%s <@ ?", column), value)
-					}
+					// if i == 0 {
+					// 	db = db.Where(fmt.Sprintf("%s <@ ?", column), value)
+					// } else {
+					db = db.Or(fmt.Sprintf("%s <@ ?", column), value)
+					// }
 				} else if expression == ">" || expression == "<" {
 					if expression == "<" && filter[1][1:2] == ">" {
 						expression = string(filter[1][0:2])
 						value := string(keyword[2:len(filter[1])])
-						if i == 0 {
-							db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
-						} else {
-							db = db.Or(fmt.Sprintf("%s %s ?", column, expression), value)
-						}
+						// if i == 0 {
+						// 	db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
+						// } else {
+						db = db.Or(fmt.Sprintf("%s %s ?", column, expression), value)
+						// }
 					} else if filter[1][1:2] == "=" {
 						expression = string(filter[1][0:2])
 						value := string(keyword[2:len(filter[1])])
-						if i == 0 {
-							db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
-						} else {
-							db = db.Or(fmt.Sprintf("%s %s ?", column, expression), value)
-						}
+						// if i == 0 {
+						// 	db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
+						// } else {
+						db = db.Or(fmt.Sprintf("%s %s ?", column, expression), value)
+						// }
 					} else {
 						value := string(keyword[1:len(filter[1])])
-						if i == 0 {
-							db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
-						} else {
-							db = db.Or(fmt.Sprintf("%s %s ?", column, expression), value)
-						}
+						// if i == 0 {
+						// 	db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
+						// } else {
+						db = db.Or(fmt.Sprintf("%s %s ?", column, expression), value)
+						// }
 					}
 				} else if keyword == "true" || keyword == "false" {
 					value := keyword
 					if value == "true" {
-						if i == 0 {
-							db = db.Where(fmt.Sprintf("%s = ?", column), value)
-						} else {
-							db = db.Or(fmt.Sprintf("%s = ?", column), value)
-						}
+						// if i == 0 {
+						// 	db = db.Where(fmt.Sprintf("%s = ?", column), value)
+						// } else {
+						db = db.Or(fmt.Sprintf("%s = ?", column), value)
+						// }
 					} else {
 						if strings.Contains(column, "->") {
 							db = db.Where(fmt.Sprintf("%s IS NULL", column))
 							db = db.Or(fmt.Sprintf("%s = ?", column), value)
 						} else {
-							if i == 0 {
-								db = db.Where(fmt.Sprintf("%s = ?", column), value)
-							} else {
-								db = db.Or(fmt.Sprintf("%s = ?", column), value)
-							}
+							// if i == 0 {
+							// 	db = db.Where(fmt.Sprintf("%s = ?", column), value)
+							// } else {
+							db = db.Or(fmt.Sprintf("%s = ?", column), value)
+							// }
 						}
 					}
 				} else {
 					value := keyword
-					if i == 0 {
-						db = db.Where(fmt.Sprintf("%s = ?", column), value)
-					} else {
-						db = db.Or(fmt.Sprintf("%s = ?", column), value)
-					}
+					// if i == 0 {
+					// 	db = db.Where(fmt.Sprintf("%s = ?", column), value)
+					// } else {
+					db = db.Or(fmt.Sprintf("%s = ?", column), value)
+					// }
 				}
 			}
 		}
 
-		return db
+		var dbGroup *gorm.DB
+		dbGroup = dbGroup.Where(db)
+		return dbGroup
 	}
 }
 
