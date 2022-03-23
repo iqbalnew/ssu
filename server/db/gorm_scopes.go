@@ -212,6 +212,8 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 			return db
 		}
 
+		var dbQuery *gorm.DB
+
 		for _, s := range filters {
 			filter := strings.Split(s, ":")
 			if len(filter) >= 2 {
@@ -242,14 +244,14 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 					// if i == 0 {
 					// 	db = db.Where(fmt.Sprintf("%s LIKE ?", column), value)
 					// } else {
-					db = db.Or(fmt.Sprintf("%s LIKE ?", column), value)
+					dbQuery = dbQuery.Or(fmt.Sprintf("%s LIKE ?", column), value)
 					// }
 				} else if expression == "%!" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
 					// if i == 0 {
 					// 	db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
 					// } else {
-					db = db.Or(fmt.Sprintf("%s ILIKE ?", column), value)
+					dbQuery = dbQuery.Or(fmt.Sprintf("%s ILIKE ?", column), value)
 					// }
 				} else if expression == "@>" {
 					value := string(keyword[2:])
@@ -257,7 +259,7 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 					// if i == 0 {
 					// 	db = db.Where(fmt.Sprintf("%s @> ?", column), value)
 					// } else {
-					db = db.Or(fmt.Sprintf("%s @> ?", column), value)
+					dbQuery = dbQuery.Or(fmt.Sprintf("%s @> ?", column), value)
 					// }
 				} else if expression == "<@" {
 					value := string(keyword[2:])
@@ -265,7 +267,7 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 					// if i == 0 {
 					// 	db = db.Where(fmt.Sprintf("%s <@ ?", column), value)
 					// } else {
-					db = db.Or(fmt.Sprintf("%s <@ ?", column), value)
+					dbQuery = dbQuery.Or(fmt.Sprintf("%s <@ ?", column), value)
 					// }
 				} else if expression == ">" || expression == "<" {
 					if expression == "<" && filter[1][1:2] == ">" {
@@ -274,7 +276,7 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 						// if i == 0 {
 						// 	db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
 						// } else {
-						db = db.Or(fmt.Sprintf("%s %s ?", column, expression), value)
+						dbQuery = dbQuery.Or(fmt.Sprintf("%s %s ?", column, expression), value)
 						// }
 					} else if filter[1][1:2] == "=" {
 						expression = string(filter[1][0:2])
@@ -282,14 +284,14 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 						// if i == 0 {
 						// 	db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
 						// } else {
-						db = db.Or(fmt.Sprintf("%s %s ?", column, expression), value)
+						dbQuery = dbQuery.Or(fmt.Sprintf("%s %s ?", column, expression), value)
 						// }
 					} else {
 						value := string(keyword[1:len(filter[1])])
 						// if i == 0 {
 						// 	db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
 						// } else {
-						db = db.Or(fmt.Sprintf("%s %s ?", column, expression), value)
+						dbQuery = dbQuery.Or(fmt.Sprintf("%s %s ?", column, expression), value)
 						// }
 					}
 				} else if keyword == "true" || keyword == "false" {
@@ -298,17 +300,17 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 						// if i == 0 {
 						// 	db = db.Where(fmt.Sprintf("%s = ?", column), value)
 						// } else {
-						db = db.Or(fmt.Sprintf("%s = ?", column), value)
+						dbQuery = dbQuery.Or(fmt.Sprintf("%s = ?", column), value)
 						// }
 					} else {
 						if strings.Contains(column, "->") {
-							db = db.Where(fmt.Sprintf("%s IS NULL", column))
-							db = db.Or(fmt.Sprintf("%s = ?", column), value)
+							dbQuery = dbQuery.Where(fmt.Sprintf("%s IS NULL", column))
+							dbQuery = dbQuery.Or(fmt.Sprintf("%s = ?", column), value)
 						} else {
 							// if i == 0 {
 							// 	db = db.Where(fmt.Sprintf("%s = ?", column), value)
 							// } else {
-							db = db.Or(fmt.Sprintf("%s = ?", column), value)
+							dbQuery = dbQuery.Or(fmt.Sprintf("%s = ?", column), value)
 							// }
 						}
 					}
@@ -317,15 +319,14 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 					// if i == 0 {
 					// 	db = db.Where(fmt.Sprintf("%s = ?", column), value)
 					// } else {
-					db = db.Or(fmt.Sprintf("%s = ?", column), value)
+					dbQuery = dbQuery.Or(fmt.Sprintf("%s = ?", column), value)
 					// }
 				}
 			}
 		}
 
-		var dbGroup *gorm.DB
-		dbGroup = dbGroup.Where(db)
-		return dbGroup
+		db = db.Where(dbQuery)
+		return db
 	}
 }
 
