@@ -158,6 +158,7 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 		}
 
 		for _, s := range filters {
+			logrus.Println(s)
 			filter := strings.Split(s, ":")
 			if len(filter) >= 2 {
 				keyword := filter[1]
