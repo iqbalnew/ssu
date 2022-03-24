@@ -38,9 +38,23 @@ func Sort(v *pb.Sort) func(db *gorm.DB) *gorm.DB {
 		if v == nil || v.Column == "" {
 			return db
 		}
-		v.Column = columnNameBuilder(v.Column, false)
-		if v != nil {
-			return db.Order(v.Column + " " + v.Direction)
+		colums := strings.Split(v.Column, ",")
+		if len(colums) > 1 {
+			for _, col := range colums {
+				column := columnNameBuilder(col, false)
+				if v.Direction != "" {
+					db = db.Order(column + " " + v.Direction)
+				} else {
+					db = db.Order(column)
+				}
+			}
+		} else {
+			v.Column = columnNameBuilder(v.Column, false)
+			if v.Direction != "" {
+				return db.Order(v.Column + " " + v.Direction)
+			} else {
+				return db.Order(v.Column)
+			}
 		}
 		return db
 	}
