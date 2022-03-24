@@ -158,7 +158,6 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 		}
 
 		for _, s := range filters {
-			logrus.Println(s)
 			filter := strings.Split(s, ":")
 			if len(filter) >= 2 {
 				keyword := filter[1]
@@ -200,14 +199,14 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 				} else if expression == ">" || expression == "<" {
 					if expression == "<" && filter[1][1:2] == ">" {
 						expression = string(filter[1][0:2])
-						value := string(keyword[2:])
+						value := string(keyword[2:len(filter[1])])
 						db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
 					} else if filter[1][1:2] == "=" {
 						expression = string(filter[1][0:2])
-						value := string(keyword[2:])
+						value := string(keyword[2:len(filter[1])])
 						db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
 					} else {
-						value := string(keyword[1:])
+						value := string(keyword[1:len(filter[1])])
 						db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
 					}
 				} else if keyword == "true" || keyword == "false" {
@@ -290,6 +289,8 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 		dbQuery := db.Session(&gorm.Session{NewDB: true})
 
 		for _, s := range filters {
+			logrus.Println("===========> filter")
+			logrus.Println(s)
 			filter := strings.Split(s, ":")
 			if len(filter) >= 2 {
 				keyword := filter[1]
