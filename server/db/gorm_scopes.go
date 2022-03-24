@@ -157,7 +157,13 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 			return db
 		}
 
+		logrus.Println("===========> filters")
+		logrus.Println(filters)
+		logrus.Println("===========!!")
+
 		for _, s := range filters {
+			logrus.Println("===========> filter")
+			logrus.Println(s)
 			filter := strings.Split(s, ":")
 			if len(filter) >= 2 {
 				keyword := filter[1]
@@ -285,6 +291,10 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 		if len(filters) < 1 {
 			return db
 		}
+
+		logrus.Println("===========> filters")
+		logrus.Println(filters)
+		logrus.Println("===========!!")
 
 		dbQuery := db.Session(&gorm.Session{NewDB: true})
 
