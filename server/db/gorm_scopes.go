@@ -215,8 +215,10 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 						db = db.Where(fmt.Sprintf("%s = ?", column), value)
 					} else {
 						if strings.Contains(column, "->") {
-							db = db.Where(fmt.Sprintf("%s IS NULL", column))
-							db = db.Or(fmt.Sprintf("%s = ?", column), value)
+							groupQ := db.Session(&gorm.Session{NewDB: true})
+							groupQ = groupQ.Where(fmt.Sprintf("%s IS NULL", column))
+							groupQ = groupQ.Or(fmt.Sprintf("%s = ?", column), value)
+							db = db.Where(groupQ)
 						} else {
 							db = db.Where(fmt.Sprintf("%s = ?", column), value)
 						}
@@ -313,87 +315,49 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 				column := columnNameBuilder(filter[0], false)
 				if expression == "%%" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
-					// if i == 0 {
-					// 	db = db.Where(fmt.Sprintf("%s LIKE ?", column), value)
-					// } else {
 					dbQuery = dbQuery.Or(fmt.Sprintf("%s LIKE ?", column), value)
-					// }
 				} else if expression == "%!" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
-					// if i == 0 {
-					// 	db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
-					// } else {
 					dbQuery = dbQuery.Or(fmt.Sprintf("%s ILIKE ?", column), value)
-					// }
 				} else if expression == "@>" {
 					value := string(keyword[2:])
 					column := columnNameBuilder(filter[0], true)
-					// if i == 0 {
-					// 	db = db.Where(fmt.Sprintf("%s @> ?", column), value)
-					// } else {
 					dbQuery = dbQuery.Or(fmt.Sprintf("%s @> ?", column), value)
-					// }
 				} else if expression == "<@" {
 					value := string(keyword[2:])
 					column := columnNameBuilder(filter[0], true)
-					// if i == 0 {
-					// 	db = db.Where(fmt.Sprintf("%s <@ ?", column), value)
-					// } else {
 					dbQuery = dbQuery.Or(fmt.Sprintf("%s <@ ?", column), value)
-					// }
 				} else if expression == ">" || expression == "<" {
 					if expression == "<" && filter[1][1:2] == ">" {
 						expression = string(filter[1][0:2])
 						value := string(keyword[2:len(filter[1])])
-						// if i == 0 {
-						// 	db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
-						// } else {
 						dbQuery = dbQuery.Or(fmt.Sprintf("%s %s ?", column, expression), value)
-						// }
 					} else if filter[1][1:2] == "=" {
 						expression = string(filter[1][0:2])
 						value := string(keyword[2:len(filter[1])])
-						// if i == 0 {
-						// 	db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
-						// } else {
 						dbQuery = dbQuery.Or(fmt.Sprintf("%s %s ?", column, expression), value)
-						// }
 					} else {
 						value := string(keyword[1:len(filter[1])])
-						// if i == 0 {
-						// 	db = db.Where(fmt.Sprintf("%s %s ?", column, expression), value)
-						// } else {
 						dbQuery = dbQuery.Or(fmt.Sprintf("%s %s ?", column, expression), value)
-						// }
 					}
 				} else if keyword == "true" || keyword == "false" {
 					value := keyword
 					if value == "true" {
-						// if i == 0 {
-						// 	db = db.Where(fmt.Sprintf("%s = ?", column), value)
-						// } else {
 						dbQuery = dbQuery.Or(fmt.Sprintf("%s = ?", column), value)
-						// }
 					} else {
 						if strings.Contains(column, "->") {
-							dbQuery = dbQuery.Or(
-								dbQuery.Where(fmt.Sprintf("%s IS NULL", column)).Or(fmt.Sprintf("%s = ?", column), value),
-							)
+							groupQ := db.Session(&gorm.Session{NewDB: true})
+							groupQ = groupQ.Where(fmt.Sprintf("%s IS NULL", column))
+							groupQ = groupQ.Or(fmt.Sprintf("%s = ?", column), value)
+							dbQuery = dbQuery.Or(groupQ)
 						} else {
-							// if i == 0 {
-							// 	db = db.Where(fmt.Sprintf("%s = ?", column), value)
-							// } else {
 							dbQuery = dbQuery.Or(fmt.Sprintf("%s = ?", column), value)
-							// }
 						}
 					}
 				} else {
 					value := keyword
-					// if i == 0 {
-					// 	db = db.Where(fmt.Sprintf("%s = ?", column), value)
-					// } else {
 					dbQuery = dbQuery.Or(fmt.Sprintf("%s = ?", column), value)
-					// }
+
 				}
 			}
 		}

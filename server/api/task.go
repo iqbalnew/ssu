@@ -1132,15 +1132,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, err
 				}
 				logrus.Println(res)
-			} else {
-				if task.FeatureID > 0 {
-					send.Data.User.UserSyncID = task.FeatureID
-				}
-				res, err := ssoClient.SaveSyncUser(ctx, send.Data, grpc.Header(&header), grpc.Trailer(&trailer))
-				if err != nil {
-					return nil, err
-				}
-				logrus.Println(res)
 			}
 
 		case "SSO:Company":
