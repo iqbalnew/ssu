@@ -1169,15 +1169,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, err
 				}
 				logrus.Println(res)
-			} else {
-				if task.FeatureID > 0 {
-					send.Data.Company.CompanySyncID = task.FeatureID
-				}
-				res, err := ssoClient.SaveSyncCompany(ctx, send.Data, grpc.Header(&header), grpc.Trailer(&trailer))
-				if err != nil {
-					return nil, err
-				}
-				logrus.Println(res)
 			}
 
 		}
