@@ -76,6 +76,8 @@ func QueryScoop(v string) func(db *gorm.DB) *gorm.DB {
 		expression := ""
 		value := query[1]
 
+		dbQuery := db.Session(&gorm.Session{NewDB: true})
+
 		if len(query[1]) > 2 {
 			if string(query[1][0:1]) == "%" {
 				expression = string(query[1][0:2])
@@ -85,17 +87,17 @@ func QueryScoop(v string) func(db *gorm.DB) *gorm.DB {
 		switch expression {
 		case "%%":
 			value := "%" + string(query[1][2:len(query[1])]) + "%"
-			db = queryColumnsLoop(db, columns, "LIKE", value)
+			dbQuery = queryColumnsLoop(dbQuery, columns, "LIKE", value)
 
 		case "%!":
 			value := "%" + string(query[1][2:len(query[1])]) + "%"
-			db = queryColumnsLoop(db, columns, "ILIKE", value)
+			dbQuery = queryColumnsLoop(dbQuery, columns, "ILIKE", value)
 
 		case "":
-			db = queryColumnsLoop(db, columns, "=", value)
+			dbQuery = queryColumnsLoop(dbQuery, columns, "=", value)
 		}
 
-		return db
+		return db.Where(dbQuery)
 	}
 }
 
