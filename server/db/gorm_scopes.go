@@ -197,6 +197,8 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 				}
 
 				column := columnNameBuilder(filter[0], false)
+				logrus.Println(column)
+				logrus.Println(column)
 				if expression == "%%" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
 					if column != "reviewed_by" {
