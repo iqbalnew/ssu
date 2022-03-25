@@ -145,6 +145,20 @@ func queryColumnsLoop(db *gorm.DB, columns []string, expresion string, value str
 	return db
 }
 
+func reviewedByHandler(val string, expresion string, db *gorm.DB) *gorm.DB {
+	approved := db.Session(&gorm.Session{NewDB: true})
+	rejected := db.Session(&gorm.Session{NewDB: true})
+
+	approvedQuery := fmt.Sprintf("\"last_approved_by_name\" %s '%s' AND \"status\" != '5' AND \"status\" != '3'", expresion, val)
+	approved = approved.Where(approvedQuery)
+
+	rejectedQuery := fmt.Sprintf("\"last_rejected_by_name\" %s '%s' AND \"status\" = '5' AND \"status\" = '3'", expresion, val)
+	rejected = rejected.Where(rejectedQuery)
+
+	db = db.Where(approved).Or(rejected)
+	return db
+}
+
 func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 	// Example of v: "key1:val1,key2:val2"
 	return func(db *gorm.DB) *gorm.DB {
@@ -157,12 +171,7 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 			return db
 		}
 
-		logrus.Println("===========> filters")
-		logrus.Println(filters)
-		logrus.Println("===========!!")
-
 		for _, s := range filters {
-			logrus.Println("===========> filter")
 			logrus.Println(s)
 			filter := strings.Split(s, ":")
 			if len(filter) >= 2 {
@@ -190,10 +199,18 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 				column := columnNameBuilder(filter[0], false)
 				if expression == "%%" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
-					db = db.Where(fmt.Sprintf("%s LIKE ?", column), value)
+					if column != "reviewed_by" {
+						db = db.Where(fmt.Sprintf("%s LIKE ?", column), value)
+					} else {
+						db = reviewedByHandler(value, "LIKE", db)
+					}
 				} else if expression == "%!" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
-					db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
+					if column != "reviewed_by" {
+						db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
+					} else {
+						db = reviewedByHandler(value, "ILIKE", db)
+					}
 				} else if expression == "@>" {
 					value := string(keyword[2:])
 					column := columnNameBuilder(filter[0], true)
@@ -292,14 +309,9 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 			return db
 		}
 
-		logrus.Println("===========> filters")
-		logrus.Println(filters)
-		logrus.Println("===========!!")
-
 		dbQuery := db.Session(&gorm.Session{NewDB: true})
 
 		for _, s := range filters {
-			logrus.Println("===========> filter")
 			logrus.Println(s)
 			filter := strings.Split(s, ":")
 			if len(filter) >= 2 {
