@@ -149,6 +149,7 @@ func reviewedByHandler(val string, expresion string, db *gorm.DB) *gorm.DB {
 	logrus.Println("Reviewed By Handler triggered")
 	approved := db.Session(&gorm.Session{NewDB: true})
 	rejected := db.Session(&gorm.Session{NewDB: true})
+	query := db.Session(&gorm.Session{NewDB: true})
 
 	approvedQuery := fmt.Sprintf("\"last_approved_by_name\" %s '%s' AND \"status\" != '5' AND \"status\" != '3'", expresion, val)
 	approved = approved.Where(approvedQuery)
@@ -156,7 +157,7 @@ func reviewedByHandler(val string, expresion string, db *gorm.DB) *gorm.DB {
 	rejectedQuery := fmt.Sprintf("\"last_rejected_by_name\" %s '%s' AND \"status\" = '5' AND \"status\" = '3'", expresion, val)
 	rejected = rejected.Where(rejectedQuery)
 
-	db = db.Where(approved).Or(rejected)
+	db = db.Where(query.Where(approved).Or(rejected))
 	return db
 }
 
