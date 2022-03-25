@@ -146,6 +146,7 @@ func queryColumnsLoop(db *gorm.DB, columns []string, expresion string, value str
 }
 
 func reviewedByHandler(val string, expresion string, db *gorm.DB) *gorm.DB {
+	logrus.Println("Reviewed By Handler triggered")
 	approved := db.Session(&gorm.Session{NewDB: true})
 	rejected := db.Session(&gorm.Session{NewDB: true})
 
@@ -201,14 +202,14 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 				logrus.Println(column)
 				if expression == "%%" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
-					if column != "reviewed_by" {
+					if column != "\"reviewed_by\"" {
 						db = db.Where(fmt.Sprintf("%s LIKE ?", column), value)
 					} else {
 						db = reviewedByHandler(value, "LIKE", db)
 					}
 				} else if expression == "%!" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
-					if column != "reviewed_by" {
+					if column != "\"reviewed_by\"" {
 						db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
 					} else {
 						db = reviewedByHandler(value, "ILIKE", db)
