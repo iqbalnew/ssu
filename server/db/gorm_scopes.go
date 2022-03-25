@@ -251,7 +251,11 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 					}
 				} else {
 					value := keyword
-					db = db.Where(fmt.Sprintf("%s = ?", column), value)
+					if column != "\"reviewed_by\"" {
+						db = db.Where(fmt.Sprintf("%s = ?", column), value)
+					} else {
+						db = reviewedByHandler(value, "=", db)
+					}
 				}
 			}
 		}
