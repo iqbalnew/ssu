@@ -226,6 +226,10 @@ func (s *Server) GetListTaskPluck(ctx context.Context, req *pb.ListTaskPluckRequ
 		Distinct:      req.GetDistinctKey(),
 	}
 
+	logrus.Println("")
+	logrus.Println("Pluck Data ===>")
+	logrus.Println("")
+
 	list, err := s.provider.GetListTaskPluck(ctx, req.GetPluckKey(), &dataorm, sqlBuilder)
 	if err != nil {
 		return nil, err
@@ -390,9 +394,6 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 			}
 		}
 	}
-	fmt.Println(">>")
-	fmt.Printf("Data Current User =>>>>>>>>>>>>>>>>>>>>> %v", currentUser)
-	fmt.Println(">>")
 
 	task.Step = 3
 	task.Status = 1
@@ -415,20 +416,12 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		task.UpdatedByID = currentUser.UserID
 		task.UpdatedByName = currentUser.Username
 
-		fmt.Println(">>")
-		fmt.Printf("Data Task Update => %d|%s", task.UpdatedByID, task.UpdatedByName)
-		fmt.Println(">>")
-
 		_, err = s.provider.UpdateTask(ctx, &task)
 	} else {
 		task.CreatedByID = currentUser.UserID
 		task.CreatedByName = currentUser.Username
 		task.UpdatedByID = currentUser.UserID
 		task.UpdatedByName = currentUser.Username
-
-		fmt.Println(">>")
-		fmt.Printf("Data Task Create => %d|%s|%d|%s", task.CreatedByID, task.CreatedByName, task.UpdatedByID, task.UpdatedByName)
-		fmt.Println(">>")
 
 		_, err = s.provider.CreateTask(ctx, &task)
 	}
