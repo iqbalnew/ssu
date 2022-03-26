@@ -8,6 +8,7 @@ package pb
 
 import (
 	context "context"
+	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -28,14 +29,18 @@ type ApiServiceClient interface {
 	ListRoleAuthority(ctx context.Context, in *ListRoleAuthorityRequest, opts ...grpc.CallOption) (*ListRoleAuthorityResponse, error)
 	ListUserType(ctx context.Context, in *ListUserTypeRequest, opts ...grpc.CallOption) (*ListUserTypeResponse, error)
 	ListUserRole(ctx context.Context, in *ListUserRoleRequest, opts ...grpc.CallOption) (*ListUserRoleResponse, error)
+	DeleteRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*CreateRoleResponse, error)
 	CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*CreateRoleResponse, error)
+	RequestDeleteRoleTask(ctx context.Context, in *RoleTaskDetailRequest, opts ...grpc.CallOption) (*RoleTaskDetailResponse, error)
 	CreateRoleTask(ctx context.Context, in *CreateRoleTaskRequest, opts ...grpc.CallOption) (*CreateRoleTaskResponse, error)
+	DownloadListRoleTasks(ctx context.Context, in *DownloadListRoleTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	ListRoleTask(ctx context.Context, in *ListRoleTaskRequest, opts ...grpc.CallOption) (*ListRoleTaskResponse, error)
 	GetRoleUserByUserID(ctx context.Context, in *GetRoleUserByUserIDReq, opts ...grpc.CallOption) (*GetRoleUserByUserIDRes, error)
 	AssignUserRoles(ctx context.Context, in *AssignUserRolesRequest, opts ...grpc.CallOption) (*ErrorBodyResponse, error)
 	RoleTaskDetail(ctx context.Context, in *RoleTaskDetailRequest, opts ...grpc.CallOption) (*RoleTaskDetailResponse, error)
 	UserRoleCount(ctx context.Context, in *UserRoleCountReq, opts ...grpc.CallOption) (*UserRoleCountRes, error)
 	RoleAuthorityLevels(ctx context.Context, in *RoleAuthorityLevelsReq, opts ...grpc.CallOption) (*RoleAuthorityLevelsRes, error)
+	GetMyTasks(ctx context.Context, in *ListRoleTaskRequest, opts ...grpc.CallOption) (*ListRoleTaskResponse, error)
 }
 
 type apiServiceClient struct {
@@ -100,6 +105,15 @@ func (c *apiServiceClient) ListUserRole(ctx context.Context, in *ListUserRoleReq
 	return out, nil
 }
 
+func (c *apiServiceClient) DeleteRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*CreateRoleResponse, error) {
+	out := new(CreateRoleResponse)
+	err := c.cc.Invoke(ctx, "/role.service.v1.ApiService/DeleteRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*CreateRoleResponse, error) {
 	out := new(CreateRoleResponse)
 	err := c.cc.Invoke(ctx, "/role.service.v1.ApiService/CreateRole", in, out, opts...)
@@ -109,9 +123,27 @@ func (c *apiServiceClient) CreateRole(ctx context.Context, in *CreateRoleRequest
 	return out, nil
 }
 
+func (c *apiServiceClient) RequestDeleteRoleTask(ctx context.Context, in *RoleTaskDetailRequest, opts ...grpc.CallOption) (*RoleTaskDetailResponse, error) {
+	out := new(RoleTaskDetailResponse)
+	err := c.cc.Invoke(ctx, "/role.service.v1.ApiService/RequestDeleteRoleTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) CreateRoleTask(ctx context.Context, in *CreateRoleTaskRequest, opts ...grpc.CallOption) (*CreateRoleTaskResponse, error) {
 	out := new(CreateRoleTaskResponse)
 	err := c.cc.Invoke(ctx, "/role.service.v1.ApiService/CreateRoleTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) DownloadListRoleTasks(ctx context.Context, in *DownloadListRoleTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+	out := new(httpbody.HttpBody)
+	err := c.cc.Invoke(ctx, "/role.service.v1.ApiService/DownloadListRoleTasks", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -172,6 +204,15 @@ func (c *apiServiceClient) RoleAuthorityLevels(ctx context.Context, in *RoleAuth
 	return out, nil
 }
 
+func (c *apiServiceClient) GetMyTasks(ctx context.Context, in *ListRoleTaskRequest, opts ...grpc.CallOption) (*ListRoleTaskResponse, error) {
+	out := new(ListRoleTaskResponse)
+	err := c.cc.Invoke(ctx, "/role.service.v1.ApiService/GetMyTasks", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
@@ -182,14 +223,18 @@ type ApiServiceServer interface {
 	ListRoleAuthority(context.Context, *ListRoleAuthorityRequest) (*ListRoleAuthorityResponse, error)
 	ListUserType(context.Context, *ListUserTypeRequest) (*ListUserTypeResponse, error)
 	ListUserRole(context.Context, *ListUserRoleRequest) (*ListUserRoleResponse, error)
+	DeleteRole(context.Context, *CreateRoleRequest) (*CreateRoleResponse, error)
 	CreateRole(context.Context, *CreateRoleRequest) (*CreateRoleResponse, error)
+	RequestDeleteRoleTask(context.Context, *RoleTaskDetailRequest) (*RoleTaskDetailResponse, error)
 	CreateRoleTask(context.Context, *CreateRoleTaskRequest) (*CreateRoleTaskResponse, error)
+	DownloadListRoleTasks(context.Context, *DownloadListRoleTaskRequest) (*httpbody.HttpBody, error)
 	ListRoleTask(context.Context, *ListRoleTaskRequest) (*ListRoleTaskResponse, error)
 	GetRoleUserByUserID(context.Context, *GetRoleUserByUserIDReq) (*GetRoleUserByUserIDRes, error)
 	AssignUserRoles(context.Context, *AssignUserRolesRequest) (*ErrorBodyResponse, error)
 	RoleTaskDetail(context.Context, *RoleTaskDetailRequest) (*RoleTaskDetailResponse, error)
 	UserRoleCount(context.Context, *UserRoleCountReq) (*UserRoleCountRes, error)
 	RoleAuthorityLevels(context.Context, *RoleAuthorityLevelsReq) (*RoleAuthorityLevelsRes, error)
+	GetMyTasks(context.Context, *ListRoleTaskRequest) (*ListRoleTaskResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -215,11 +260,20 @@ func (UnimplementedApiServiceServer) ListUserType(context.Context, *ListUserType
 func (UnimplementedApiServiceServer) ListUserRole(context.Context, *ListUserRoleRequest) (*ListUserRoleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUserRole not implemented")
 }
+func (UnimplementedApiServiceServer) DeleteRole(context.Context, *CreateRoleRequest) (*CreateRoleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRole not implemented")
+}
 func (UnimplementedApiServiceServer) CreateRole(context.Context, *CreateRoleRequest) (*CreateRoleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRole not implemented")
 }
+func (UnimplementedApiServiceServer) RequestDeleteRoleTask(context.Context, *RoleTaskDetailRequest) (*RoleTaskDetailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RequestDeleteRoleTask not implemented")
+}
 func (UnimplementedApiServiceServer) CreateRoleTask(context.Context, *CreateRoleTaskRequest) (*CreateRoleTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRoleTask not implemented")
+}
+func (UnimplementedApiServiceServer) DownloadListRoleTasks(context.Context, *DownloadListRoleTaskRequest) (*httpbody.HttpBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DownloadListRoleTasks not implemented")
 }
 func (UnimplementedApiServiceServer) ListRoleTask(context.Context, *ListRoleTaskRequest) (*ListRoleTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRoleTask not implemented")
@@ -238,6 +292,9 @@ func (UnimplementedApiServiceServer) UserRoleCount(context.Context, *UserRoleCou
 }
 func (UnimplementedApiServiceServer) RoleAuthorityLevels(context.Context, *RoleAuthorityLevelsReq) (*RoleAuthorityLevelsRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RoleAuthorityLevels not implemented")
+}
+func (UnimplementedApiServiceServer) GetMyTasks(context.Context, *ListRoleTaskRequest) (*ListRoleTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMyTasks not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -360,6 +417,24 @@ func _ApiService_ListUserRole_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_DeleteRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DeleteRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/role.service.v1.ApiService/DeleteRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DeleteRole(ctx, req.(*CreateRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_CreateRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateRoleRequest)
 	if err := dec(in); err != nil {
@@ -378,6 +453,24 @@ func _ApiService_CreateRole_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_RequestDeleteRoleTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RoleTaskDetailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).RequestDeleteRoleTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/role.service.v1.ApiService/RequestDeleteRoleTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).RequestDeleteRoleTask(ctx, req.(*RoleTaskDetailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_CreateRoleTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateRoleTaskRequest)
 	if err := dec(in); err != nil {
@@ -392,6 +485,24 @@ func _ApiService_CreateRoleTask_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).CreateRoleTask(ctx, req.(*CreateRoleTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_DownloadListRoleTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DownloadListRoleTaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DownloadListRoleTasks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/role.service.v1.ApiService/DownloadListRoleTasks",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DownloadListRoleTasks(ctx, req.(*DownloadListRoleTaskRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -504,6 +615,24 @@ func _ApiService_RoleAuthorityLevels_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_GetMyTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRoleTaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetMyTasks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/role.service.v1.ApiService/GetMyTasks",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetMyTasks(ctx, req.(*ListRoleTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -536,12 +665,24 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_ListUserRole_Handler,
 		},
 		{
+			MethodName: "DeleteRole",
+			Handler:    _ApiService_DeleteRole_Handler,
+		},
+		{
 			MethodName: "CreateRole",
 			Handler:    _ApiService_CreateRole_Handler,
 		},
 		{
+			MethodName: "RequestDeleteRoleTask",
+			Handler:    _ApiService_RequestDeleteRoleTask_Handler,
+		},
+		{
 			MethodName: "CreateRoleTask",
 			Handler:    _ApiService_CreateRoleTask_Handler,
+		},
+		{
+			MethodName: "DownloadListRoleTasks",
+			Handler:    _ApiService_DownloadListRoleTasks_Handler,
 		},
 		{
 			MethodName: "ListRoleTask",
@@ -566,6 +707,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RoleAuthorityLevels",
 			Handler:    _ApiService_RoleAuthorityLevels_Handler,
+		},
+		{
+			MethodName: "GetMyTasks",
+			Handler:    _ApiService_GetMyTasks_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
