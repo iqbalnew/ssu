@@ -396,6 +396,10 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	task.Step = 3
 	task.Status = 1
+	task.LastApprovedByID = 0
+	task.LastApprovedByName = ""
+	task.LastRejectedByID = 0
+	task.LastRejectedByName = ""
 
 	// if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu:Appearance" || req.Task.Type == "Menu:License" {
 	// 	task.Step = 3
@@ -571,6 +575,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	currentStatus := task.Status
 	switch strings.ToLower(req.Action) {
 	case "rework":
+		task.LastApprovedByID = 0
+		task.LastApprovedByName = ""
 		task.LastRejectedByID = currentUser.UserID
 		task.LastRejectedByName = currentUser.Username
 
@@ -598,6 +604,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		task.LastApprovedByID = currentUser.UserID
 		task.LastApprovedByName = currentUser.Username
+		task.LastRejectedByID = 0
+		task.LastRejectedByName = ""
 
 		// Fix Workflow Step 2
 		if currentStep == 2 {
@@ -678,6 +686,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 	case "reject":
+		task.LastApprovedByID = 0
+		task.LastApprovedByName = ""
 		task.LastRejectedByID = currentUser.UserID
 		task.LastRejectedByName = currentUser.Username
 
@@ -685,8 +695,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Step = 0
 
 	case "delete":
-		task.LastApprovedByID = currentUser.UserID
-		task.LastApprovedByName = currentUser.Username
+		task.LastApprovedByID = 0
+		task.LastApprovedByName = ""
+		task.LastRejectedByID = 0
+		task.LastRejectedByName = ""
 
 		task.Status = 6
 		task.Step = 3
