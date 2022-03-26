@@ -153,7 +153,7 @@ func reviewedByHandler(val string, expresion string, db *gorm.DB) *gorm.DB {
 	rejected := db.Session(&gorm.Session{NewDB: true})
 	query := db.Session(&gorm.Session{NewDB: true})
 
-	approvedQuery := fmt.Sprintf("\"last_approved_by_name\" %s '%s' AND \"status\" != '5' AND \"status\" != '3'", expresion, val)
+	approvedQuery := fmt.Sprintf("\"last_approved_by_name\" %s '%s' AND \"status\" != '5' AND \"status\" != '3' AND \"last_rejected_by_name\" != ''", expresion, val)
 	approved = approved.Where(approvedQuery)
 
 	rejectedQuery := fmt.Sprintf("\"last_rejected_by_name\" %s '%s' AND \"status\" = '5' AND \"status\" = '3' AND \"status\" != '1'", expresion, val)
