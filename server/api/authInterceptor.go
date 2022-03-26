@@ -212,10 +212,6 @@ func (interceptor *AuthInterceptor) getUserData(ctx context.Context) (context.Co
 		grpc.SendHeader(ctx, metadata.Pairs("auth-username", getUser.Username))
 		grpc.SendHeader(ctx, metadata.Pairs("auth-userid", fmt.Sprintf("%v", getUser.UserID)))
 
-		fmt.Println("")
-		fmt.Println("=====>")
-		fmt.Println(getUser.Username)
-
 	}
 
 	return ctx, nil
