@@ -64,7 +64,6 @@ func Sort(v *pb.Sort) func(db *gorm.DB) *gorm.DB {
 					db = db.Order(column + " NULLS FIRST")
 				}
 			}
-			if v.Direction == "DESC"
 		} else {
 			v.Column = columnNameBuilder(v.Column, isObject)
 			if isArray {
