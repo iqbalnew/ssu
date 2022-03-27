@@ -28,6 +28,10 @@ func closeDBConnections() {
 
 func initDBMain() {
 	logrus.Printf("Main Db - Connecting")
+
+	// if config.Env == "LOCAL" {
+	// 	_ = startSSHTunnel()
+	// }
 	var err error
 	db_main, err = gorm.Open(postgres.Open(config.Dsn), &gorm.Config{})
 	if err != nil {

@@ -38,10 +38,21 @@ func Sort(v *pb.Sort) func(db *gorm.DB) *gorm.DB {
 		if v == nil || v.Column == "" {
 			return db
 		}
+
+		isArray := false
+		isObject := false
+		if len(v.Column) > 2 {
+			if string(v.Column[0:2]) == "[]" {
+				isArray = true
+				isObject = true
+				v.Column = v.Column[2:]
+			}
+		}
+
 		colums := strings.Split(v.Column, ",")
 		if len(colums) > 1 {
 			for _, col := range colums {
-				column := columnNameBuilder(col, false)
+				column := columnNameBuilder(col, isObject)
 				if v.Direction != "" {
 					db = db.Order(column + " " + v.Direction)
 				} else {
@@ -49,11 +60,21 @@ func Sort(v *pb.Sort) func(db *gorm.DB) *gorm.DB {
 				}
 			}
 		} else {
-			v.Column = columnNameBuilder(v.Column, false)
-			if v.Direction != "" {
-				return db.Order(v.Column + " " + v.Direction)
+			v.Column = columnNameBuilder(v.Column, isObject)
+			if isArray {
+				v.Column = fmt.Sprintf("jsonb_array_length(%s)", v.Column)
+				if v.Direction == "DESC" {
+					return db.Order(v.Column + " " + v.Direction + "NULLS LAST")
+				} else {
+					return db.Order(v.Column + "NULLS FIRST")
+				}
 			} else {
-				return db.Order(v.Column)
+
+				if v.Direction != "" {
+					return db.Order(v.Column + " " + v.Direction)
+				} else {
+					return db.Order(v.Column)
+				}
 			}
 		}
 		return db
@@ -434,14 +455,6 @@ func reverseArrayString(arr []string) []string {
 // }
 
 func columnNameBuilder(s string, isObject bool) string {
-	isArray := false
-	if len(s) > 2 {
-		if string(s[0:2]) == "[]" {
-			isArray = true
-			isObject = true
-			s = s[2:]
-		}
-	}
 	if strings.Contains(s, "->") {
 		nested := strings.Split(s, "->")
 		s = ""
@@ -469,10 +482,5 @@ func columnNameBuilder(s string, isObject bool) string {
 	} else {
 		s = fmt.Sprintf("\"%s\"", s)
 	}
-
-	if isArray {
-		s = fmt.Sprintf("jsonb_array_length(%s)", s)
-	}
-
 	return s
 }
