@@ -64,9 +64,9 @@ func Sort(v *pb.Sort) func(db *gorm.DB) *gorm.DB {
 			if isArray {
 				v.Column = fmt.Sprintf("jsonb_array_length(%s)", v.Column)
 				if v.Direction == "DESC" {
-					return db.Order(v.Column + " " + v.Direction + "NULLS LAST")
+					return db.Order(v.Column + " " + v.Direction + " NULLS LAST")
 				} else {
-					return db.Order(v.Column + "NULLS FIRST")
+					return db.Order(v.Column + " NULLS FIRST")
 				}
 			} else {
 
