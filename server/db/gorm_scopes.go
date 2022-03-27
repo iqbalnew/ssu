@@ -434,6 +434,13 @@ func reverseArrayString(arr []string) []string {
 // }
 
 func columnNameBuilder(s string, isObject bool) string {
+	isArray := false
+	if len(s) > 2 {
+		if string(s[0:2]) == "[]" {
+			isArray = true
+			s = s[2:]
+		}
+	}
 	if strings.Contains(s, "->") {
 		nested := strings.Split(s, "->")
 		s = ""
@@ -460,6 +467,10 @@ func columnNameBuilder(s string, isObject bool) string {
 		}
 	} else {
 		s = fmt.Sprintf("\"%s\"", s)
+	}
+
+	if isArray {
+		s = fmt.Sprintf("jsonb_array_length(%s)", s)
 	}
 
 	return s
