@@ -40,6 +40,7 @@ func Sort(v *pb.Sort) func(db *gorm.DB) *gorm.DB {
 		}
 
 		isArray := false
+
 		isObject := false
 		if len(v.Column) > 2 {
 			if string(v.Column[0:2]) == "[]" {
@@ -69,11 +70,10 @@ func Sort(v *pb.Sort) func(db *gorm.DB) *gorm.DB {
 					return db.Order(v.Column + " NULLS FIRST")
 				}
 			} else {
-
-				if v.Direction != "" {
-					return db.Order(v.Column + " " + v.Direction)
+				if v.Direction == "DESC" {
+					return db.Order(v.Column + " " + v.Direction + " NULLS LAST")
 				} else {
-					return db.Order(v.Column)
+					return db.Order(v.Column + " NULLS FIRST")
 				}
 			}
 		}
