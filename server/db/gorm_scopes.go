@@ -438,6 +438,7 @@ func columnNameBuilder(s string, isObject bool) string {
 	if len(s) > 2 {
 		if string(s[0:2]) == "[]" {
 			isArray = true
+			isObject = true
 			s = s[2:]
 		}
 	}
