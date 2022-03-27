@@ -55,11 +55,16 @@ func Sort(v *pb.Sort) func(db *gorm.DB) *gorm.DB {
 			for _, col := range colums {
 				column := columnNameBuilder(col, isObject)
 				if v.Direction != "" {
-					db = db.Order(column + " " + v.Direction)
+					if v.Direction == "DESC" {
+						db = db.Order(column + " " + v.Direction + " NULLS LAST")
+					} else {
+						db = db.Order(column + " NULLS FIRST")
+					}
 				} else {
-					db = db.Order(column)
+					db = db.Order(column + " NULLS FIRST")
 				}
 			}
+			if v.Direction == "DESC"
 		} else {
 			v.Column = columnNameBuilder(v.Column, isObject)
 			if isArray {
