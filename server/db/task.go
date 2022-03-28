@@ -214,13 +214,15 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 	query := p.db_main.Clauses(clause.OnConflict{
 		UpdateAll: true,
 	})
-	if err := query.Model(&taskModel).Updates(&task).Error; err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			logrus.Errorln(err)
-			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
-		} else {
-			logrus.Errorln(err)
-			return nil, status.Errorf(codes.NotFound, "Task Not Found")
+	if task != nil {
+		if err := query.Model(&taskModel).Updates(&task).Error; err != nil {
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
+				logrus.Errorln(err)
+				return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+			} else {
+				logrus.Errorln(err)
+				return nil, status.Errorf(codes.NotFound, "Task Not Found")
+			}
 		}
 	}
 
