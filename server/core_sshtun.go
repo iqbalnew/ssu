@@ -25,7 +25,7 @@ func startSSHTunnel() int {
 		// The destination host and port of the actual server.
 		getEnv("SSH1_DEST1", ""),
 
-		"5432",
+		"5000",
 	)
 
 	tunnel.Log = log.New(os.Stdout, "Tunnel 1: ", log.Ldate|log.Lmicroseconds)

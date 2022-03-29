@@ -214,7 +214,7 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 	query := p.db_main.Clauses(clause.OnConflict{
 		UpdateAll: true,
 	})
-	if task != nil {
+	if task != nil || task.Type != "" {
 		if err := query.Model(&taskModel).Updates(&task).Error; err != nil {
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				logrus.Errorln(err)
@@ -253,7 +253,7 @@ type QueryBuilder struct {
 }
 
 func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder) (tasks []*pb.TaskORM, err error) {
-	query := p.db_main.Where("status != 7")
+	query := p.db_main.Select("*","CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
 	if filter != nil {
 		query = query.Where(&filter)
 	}
