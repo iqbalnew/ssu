@@ -503,6 +503,37 @@
             "format": "uint64"
           },
           {
+            "name": "task.data",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.comment",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.featureID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "task.isParentActive",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "task.reasons",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "task.lastApprovedByName",
             "in": "query",
             "required": false,
@@ -534,32 +565,7 @@
             "type": "string"
           },
           {
-            "name": "task.data",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "task.comment",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "task.featureID",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "task.isParentActive",
-            "in": "query",
-            "required": false,
-            "type": "boolean"
-          },
-          {
-            "name": "task.reasons",
+            "name": "task.dataBak",
             "in": "query",
             "required": false,
             "type": "string"
@@ -1138,22 +1144,6 @@
           "type": "integer",
           "format": "uint64"
         },
-        "lastApprovedByName": {
-          "type": "string"
-        },
-        "lastRejectedByName": {
-          "type": "string"
-        },
-        "updatedByID": {
-          "type": "integer",
-          "format": "uint64"
-        },
-        "updatedByName": {
-          "type": "string"
-        },
-        "createdByName": {
-          "type": "string"
-        },
         "data": {
           "type": "string"
         },
@@ -1176,6 +1166,26 @@
         },
         "reasons": {
           "type": "string"
+        },
+        "lastApprovedByName": {
+          "type": "string"
+        },
+        "lastRejectedByName": {
+          "type": "string"
+        },
+        "updatedByID": {
+          "type": "integer",
+          "format": "uint64"
+        },
+        "updatedByName": {
+          "type": "string"
+        },
+        "createdByName": {
+          "type": "string"
+        },
+        "dataBak": {
+          "type": "string",
+          "readOnly": true
         },
         "createdAt": {
           "type": "string",

@@ -688,9 +688,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByID = currentUser.UserID
 		task.LastRejectedByName = currentUser.Username
 
-		if currentStatus == 6 && task.FeatureID > 0 {
+		if currentStatus == 6 && task.DataBak != "" {
 			task.Status = 4
 			task.Step = 3
+			task.Data = task.DataBak
 		} else {
 			task.Status = 5
 			task.Step = 0
@@ -720,6 +721,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Childs[i].Status = task.Status
 			task.Childs[i].Step = task.Step
 		}
+	}
+
+	if sendTask {
+		task.DataBak = task.Data
 	}
 
 	updatedTask, err := s.provider.UpdateTask(ctx, task)
