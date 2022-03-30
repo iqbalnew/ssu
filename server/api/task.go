@@ -401,6 +401,17 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task.LastApprovedByName = ""
 	task.LastRejectedByID = 0
 	task.LastRejectedByName = ""
+	task.DataBak = ""
+
+	if req.TaskID > 0 {
+		findTask, err := s.provider.FindTaskById(ctx, req.TaskID)
+		if err != nil {
+			return nil, err
+		}
+		if findTask.DataBak != "" {
+			task.DataBak = findTask.DataBak
+		}
+	}
 
 	// if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu:Appearance" || req.Task.Type == "Menu:License" {
 	// 	task.Step = 3
