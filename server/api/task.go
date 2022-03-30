@@ -1058,11 +1058,19 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 
 			data.TaskID = task.TaskID
-			res, err := client.CreateRole(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
+			if task.Status == 7 {
+				res, err := client.DeleteRole(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Printf("[Delete User] data : %v", res)
+			} else {
+				res, err := client.CreateRole(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
 			}
-			logrus.Println(res)
 
 		case "Workflow":
 			var opts []grpc.DialOption
