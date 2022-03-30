@@ -557,14 +557,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	if req.Comment != "" {
 		task.Comment = req.Comment
-	} else {
-		task.Comment = "-"
 	}
 
 	if req.Reasons != "" {
 		task.Reasons = req.Reasons
-	} else {
-		task.Reasons = "-"
 	}
 
 	sendTask := false
@@ -576,6 +572,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastApprovedByName = ""
 		task.LastRejectedByID = currentUser.UserID
 		task.LastRejectedByName = currentUser.Username
+
+		if req.Comment != "" {
+			task.Comment = req.Comment
+		} else {
+			task.Comment = "-"
+		}
+
+		if req.Reasons != "" {
+			task.Reasons = req.Reasons
+		} else {
+			task.Reasons = "-"
+		}
 
 		task.Status = 3
 		task.Step = 1
@@ -687,6 +695,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastApprovedByName = ""
 		task.LastRejectedByID = currentUser.UserID
 		task.LastRejectedByName = currentUser.Username
+
+		if req.Comment != "" {
+			task.Comment = req.Comment
+		} else {
+			task.Comment = "-"
+		}
+
+		if req.Reasons != "" {
+			task.Reasons = req.Reasons
+		} else {
+			task.Reasons = "-"
+		}
 
 		if currentStatus == 6 && task.DataBak != "" {
 			task.Status = 4
