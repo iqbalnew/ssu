@@ -684,8 +684,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByID = currentUser.UserID
 		task.LastRejectedByName = currentUser.Username
 
-		task.Status = 5
-		task.Step = 0
+		if currentStatus == 6 && task.FeatureID > 0 {
+			task.Status = 4
+			task.Step = 3
+		} else {
+			task.Status = 5
+			task.Step = 0
+		}
 
 	case "delete":
 		task.LastApprovedByID = 0
