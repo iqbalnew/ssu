@@ -711,7 +711,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		if currentStatus == 6 && task.DataBak != "" {
 			task.Status = 4
 			task.Step = 3
-			task.Data = task.DataBak
+			task.Data = string([]byte(task.DataBak))
 		} else {
 			task.Status = 5
 			task.Step = 0
@@ -744,7 +744,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if sendTask {
-		task.DataBak = task.Data
+		task.DataBak = string([]byte(task.Data))
 	}
 
 	updatedTask, err := s.provider.UpdateTask(ctx, task)
