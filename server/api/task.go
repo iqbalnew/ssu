@@ -745,6 +745,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	if sendTask {
 		if task.Data != "" {
+			logrus.Println("Save Backup")
 			task.DataBak = task.Data
 		}
 	}
