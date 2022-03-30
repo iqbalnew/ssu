@@ -719,10 +719,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Reasons = "-"
 		}
 
-		if currentStatus == 6 || task.DataBak != "" {
+		if currentStatus == 6 || (task.DataBak != "" && task.DataBak != "{}") {
 			task.Status = 4
 			task.Step = 3
-			if task.DataBak != "" {
+			if task.DataBak != "" && task.DataBak != "{}" {
 				task.Data = task.DataBak
 			}
 		} else {
@@ -757,9 +757,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if sendTask {
-		if task.Data != "" {
+		if task.Data != "" && task.Data != "{}" {
 			logrus.Println("Save Backup")
 			task.DataBak = task.Data
+		}
+		if task.DataBak == "" {
+			task.DataBak = "{}"
 		}
 	}
 
