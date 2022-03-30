@@ -558,13 +558,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if req.Comment != "" {
 		task.Comment = req.Comment
 	} else {
-		task.Comment = ""
+		task.Comment = "-"
 	}
 
 	if req.Reasons != "" {
 		task.Reasons = req.Reasons
 	} else {
-		task.Reasons = ""
+		task.Reasons = "-"
 	}
 
 	sendTask := false
