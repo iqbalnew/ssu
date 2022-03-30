@@ -711,17 +711,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		if currentStatus == 6 && task.DataBak != "" {
 			task.Status = 4
 			task.Step = 3
-
-			result := json.RawMessage{}
-			err := json.Unmarshal([]byte(task.DataBak), &result)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Server error: %v", err)
-			}
-			marshal, err := json.Marshal(result)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Server error: %v", err)
-			}
-			task.Data = string(marshal)
+			task.Data = task.DataBak
 		} else {
 			task.Status = 5
 			task.Step = 0
@@ -754,16 +744,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if sendTask {
-		result := json.RawMessage{}
-		err := json.Unmarshal([]byte(task.Data), &result)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "Server error: %v", err)
+		if task.Data != "" {
+			task.DataBak = task.Data
 		}
-		marshal, err := json.Marshal(result)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "Server error: %v", err)
-		}
-		task.DataBak = string(marshal)
 	}
 
 	updatedTask, err := s.provider.UpdateTask(ctx, task)
