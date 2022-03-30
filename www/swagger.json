@@ -101,18 +101,6 @@
             "type": "string"
           },
           {
-            "name": "task.lastApprovedByName",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "task.lastRejectedByName",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
             "name": "task.data",
             "in": "query",
             "required": false,
@@ -138,6 +126,43 @@
           },
           {
             "name": "task.reasons",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.lastApprovedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.lastRejectedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.updatedByID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "task.updatedByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.createdByName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "task.dataBak",
             "in": "query",
             "required": false,
             "type": "string"
@@ -1225,12 +1250,6 @@
         "lastRejectedByID": {
           "type": "string"
         },
-        "lastApprovedByName": {
-          "type": "string"
-        },
-        "lastRejectedByName": {
-          "type": "string"
-        },
         "data": {
           "type": "string"
         },
@@ -1250,6 +1269,25 @@
           "type": "boolean"
         },
         "reasons": {
+          "type": "string"
+        },
+        "lastApprovedByName": {
+          "type": "string"
+        },
+        "lastRejectedByName": {
+          "type": "string"
+        },
+        "updatedByID": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "updatedByName": {
+          "type": "string"
+        },
+        "createdByName": {
+          "type": "string"
+        },
+        "dataBak": {
           "type": "string"
         },
         "createdAt": {

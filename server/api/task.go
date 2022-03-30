@@ -401,14 +401,14 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task.LastApprovedByName = ""
 	task.LastRejectedByID = 0
 	task.LastRejectedByName = ""
-	task.DataBak = ""
+	task.DataBak = "{}"
 
 	if req.TaskID > 0 {
 		findTask, err := s.provider.FindTaskById(ctx, req.TaskID)
 		if err != nil {
 			return nil, err
 		}
-		if findTask.DataBak != "" {
+		if findTask.DataBak != "{}" || findTask.Data != "" {
 			task.DataBak = findTask.DataBak
 		}
 	}

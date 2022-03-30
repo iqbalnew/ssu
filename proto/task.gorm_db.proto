@@ -101,20 +101,27 @@ message TaskEV {
     string createdByID = 5;
     string lastApprovedByID = 6;
     string lastRejectedByID = 7;
+    
+    string data = 8;
+    
+    string comment = 9;
+    
+    string featureID = 10;
+    
+    repeated TaskEV childs = 11;
+    
+    bool isParentActive = 12;
+    
+    string reasons = 13;
+    
     string lastApprovedByName = 14;
     string lastRejectedByName = 15;
 
-    string data = 8;
+    uint64 updatedByID = 16;
+    string updatedByName = 17;
+    string createdByName = 18;
 
-    string comment = 9;
-
-    string featureID = 10;
-
-    repeated TaskEV childs = 11;
-
-    bool isParentActive = 12;
-
-    string reasons = 13;
+    string dataBak = 19;
 
     google.protobuf.Timestamp createdAt = 101;
     google.protobuf.Timestamp updatedAt = 102;
