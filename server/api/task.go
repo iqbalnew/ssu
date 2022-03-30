@@ -1063,6 +1063,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			data.TaskID = task.TaskID
 			if task.Status == 7 {
+				data.Data.RoleID = task.FeatureID
 				res, err := client.DeleteRole(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
