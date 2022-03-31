@@ -8,7 +8,6 @@ import (
 	"time"
 
 	authPb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/auth_service"
-
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -32,6 +31,14 @@ type UserClaims struct {
 	UserType     string              `json:"user_type"`
 	ProductRoles []*ProductAuthority `json:"product_roles"`
 	Authorities  []string            `json:"authorities"`
+	CompanyIDs   []uint64            `json:"company_ids"`
+}
+
+type CurrentUser struct {
+	UserClaims
+	FilterMe    string   `json:"filter_me"`
+	StatusOrder []string `json:"status_order"`
+	TaskFilter  string   `json:"task_filter"`
 }
 
 type VerifyTokenRes struct {
@@ -96,7 +103,7 @@ func (manager *JWTManager) Verify(accessToken string) (*UserClaims, error) {
 	return claims, nil
 }
 
-func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string) (*UserClaims, error) {
+func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string) (*CurrentUser, error) {
 
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
@@ -129,7 +136,55 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 		return nil, status.Errorf(codes.Unauthenticated, "Session expired")
 	}
 
-	return userClaims, nil
+	logrus.Println(userClaims.ProductRoles)
+	for _, v := range userClaims.ProductRoles {
+		if v.ProductName == "User" {
+			for _, j := range v.Authorities {
+				data := strings.Split(j, ":")
+				if data[1] != "-" {
+					userClaims.Authorities = append(userClaims.Authorities, data[1])
+					break
+				}
+			}
+		}
+	}
+	logrus.Println(userClaims.Authorities)
+
+	currentUser := &CurrentUser{
+		UserClaims: *userClaims,
+	}
+	// - Maker: 1. Draft, 2. Returned, 3. Pending, 4. Request for Delete, 5. Approved, 6. Rejected
+	// - Signer: 1. Pending, 2. Request for Delete, 3. Approved, 4. Rejected
+	if len(userClaims.Authorities) > 0 {
+		switch strings.ToLower(userClaims.Authorities[0]) {
+		case "maker":
+			currentUser.StatusOrder = []string{"2", "3", "1", "6", "4", "5"}
+			currentUser.FilterMe = "status:<>0,status:<>7"
+
+		case "signer":
+			currentUser.StatusOrder = []string{"1", "6", "4", "5"}
+			currentUser.FilterMe = "status:<>0,status:<>2,status:<>3,status:<>7"
+
+		default:
+			return nil, status.Errorf(codes.PermissionDenied, "Authority Denied")
+		}
+	} else {
+		return nil, status.Errorf(codes.PermissionDenied, "Authority Denied")
+	}
+
+	currentUser.TaskFilter = ""
+	if currentUser.UserType == "ca" || currentUser.UserType == "cu" {
+		currentUser.TaskFilter = "data.user.companyID:"
+		for i, v := range currentUser.CompanyIDs {
+			if i == 0 {
+				currentUser.TaskFilter = currentUser.TaskFilter + fmt.Sprintf("%d", v)
+			} else {
+				currentUser.TaskFilter = currentUser.TaskFilter + fmt.Sprintf(",%d", v)
+			}
+		}
+	}
+
+	return currentUser, nil
 }
 
 func (manager *JWTManager) GetMeFromAuthService(ctx context.Context, accessToken string) (*VerifyTokenRes, error) {

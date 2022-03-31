@@ -534,6 +534,29 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 	return res, nil
 }
 
+func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string) bool {
+	allowed = false
+	authorities = []string{}
+	for _, v := user.ProductRoles {
+		if v.ProductName == taskType {
+			authorities = v.Authorities
+			break
+		}
+	}
+
+	if len(authorities) > 0 {
+		for _, v := range authorities {
+			if v == "approve:signer" {
+				allowed = true
+				break
+			}
+		}
+	}
+
+	return allowed
+
+}
+
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
 	currentUser, err := s.getCurrentUser(ctx)
 	if err != nil {
@@ -557,6 +580,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if err != nil {
 		return nil, err
 	}
+	
+	allowed = checkAllowedApproval(currentUser, task.Type)
+	if !allowed {
+		return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+	}
+
 	if task.IsParentActive {
 		return nil, status.Errorf(codes.InvalidArgument, "This is child task with active parent, please refer to parent for change status")
 	}
