@@ -748,7 +748,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Reasons = "-"
 		}
 
-		if currentStatus == 6 || (task.DataBak != "" && task.DataBak != "{}") {
+		if currentStatus == 6 && (task.DataBak != "" && task.DataBak != "{}") {
 			task.Status = 4
 			task.Step = 3
 			if task.DataBak != "" && task.DataBak != "{}" {
