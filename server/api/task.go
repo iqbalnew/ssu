@@ -535,9 +535,15 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 }
 
 func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string) bool {
-	allowed = false
-	authorities = []string{}
-	for _, v := user.ProductRoles {
+	allowed := false
+	authorities := []string{}
+
+	typeSplit := strings.Split(taskType, ":")
+	if len(typeSplit) > 1 {
+		taskType = typeSplit[0]
+	}
+
+	for _, v := range user.ProductRoles {
 		if v.ProductName == taskType {
 			authorities = v.Authorities
 			break
@@ -546,6 +552,7 @@ func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string) bool {
 
 	if len(authorities) > 0 {
 		for _, v := range authorities {
+
 			if v == "approve:signer" {
 				allowed = true
 				break
@@ -580,11 +587,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if err != nil {
 		return nil, err
 	}
-	
-	allowed = checkAllowedApproval(currentUser, task.Type)
-	if !allowed {
-		return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
-	}
+
+	// allowed := checkAllowedApproval(currentUser, task.Type)
+	// if !allowed {
+	// 	return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+	// }
 
 	if task.IsParentActive {
 		return nil, status.Errorf(codes.InvalidArgument, "This is child task with active parent, please refer to parent for change status")
@@ -769,6 +776,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Step = 3
 
 	}
+
+	logrus.Println("Input Comment" + req.Comment)
+	logrus.Println("Input Reasons" + req.Reasons)
+	logrus.Println("End Val Comment" + task.Comment)
+	logrus.Println("End Val Reasons" + task.Reasons)
 
 	for i := range task.Childs {
 		task.Childs[i].LastApprovedByID = task.LastApprovedByID
