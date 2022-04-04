@@ -31,7 +31,7 @@ type UserClaims struct {
 	UserType     string              `json:"user_type"`
 	ProductRoles []*ProductAuthority `json:"product_roles"`
 	Authorities  []string            `json:"authorities"`
-	CompanyIDs   []uint64            `json:"company_ids"`
+	CompanyIDs   string              `json:"company_ids"`
 }
 
 type CurrentUser struct {
@@ -175,6 +175,7 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 	currentUser.TaskFilter = ""
 	if currentUser.UserType == "ca" || currentUser.UserType == "cu" {
 		currentUser.TaskFilter = "data.user.companyID:"
+		
 		for i, v := range currentUser.CompanyIDs {
 			if i == 0 {
 				currentUser.TaskFilter = currentUser.TaskFilter + fmt.Sprintf("%d", v)
