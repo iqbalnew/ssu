@@ -2,12 +2,15 @@ package manager
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 	"time"
 
+	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
 	authPb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/auth_service"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -175,12 +178,30 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 	currentUser.TaskFilter = ""
 	if currentUser.UserType == "ca" || currentUser.UserType == "cu" {
 		currentUser.TaskFilter = "data.user.companyID:"
-		
-		for i, v := range currentUser.CompanyIDs {
-			if i == 0 {
-				currentUser.TaskFilter = currentUser.TaskFilter + fmt.Sprintf("%d", v)
-			} else {
-				currentUser.TaskFilter = currentUser.TaskFilter + fmt.Sprintf(",%d", v)
+
+		key := getEnv("JWT_AES_KEY", "Odj12345*12345678901234567890123")
+		aes := customAES.NewCustomAES(key)
+
+		decrypted, err := aes.Decrypt(userClaims.CompanyIDs)
+		if err != nil {
+			logrus.Errorf("[api.auth][func:VerifyToken][05] Failed to decrypt companyIDs: %v", err)
+			return nil, status.Errorf(codes.Internal, "Server error")
+		}
+
+		if decrypted != "" {
+			var ids []uint64
+			err = json.Unmarshal([]byte(decrypted), &ids)
+			if err != nil {
+				logrus.Errorf("[api.auth][func:VerifyToken][06] Failed to unmarshal companyIDs: %v", err)
+				return nil, status.Errorf(codes.Internal, "Server error")
+			}
+
+			for i, v := range ids {
+				if i == 0 {
+					currentUser.TaskFilter = currentUser.TaskFilter + fmt.Sprintf("%d", v)
+				} else {
+					currentUser.TaskFilter = currentUser.TaskFilter + fmt.Sprintf(",%d", v)
+				}
 			}
 		}
 	}
