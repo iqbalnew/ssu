@@ -20,6 +20,7 @@ import (
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
+	system_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/system_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
 	"github.com/sirupsen/logrus"
@@ -1184,9 +1185,28 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 				logrus.Println(res)
 			}
+		case "System":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
 
+			systemConn, err := grpc.Dial(getEnv("SYSTEM_SERVICE", ":9101"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to system Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer systemConn.Close()
+
+			systemClient := system_pb.NewApiServiceClient(systemConn)
+
+			data := system_pb.CreateRequest{}
+			json.Unmarshal([]byte(task.Data), &data.Data)
+			data.TaskID = task.TaskID
+			res, err := systemClient.CreateSystem(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
 		}
-
 	}
 
 	if reUpdate {
