@@ -229,6 +229,11 @@ func (this *TaskDataMenuAppearance) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
 		}
 	}
+	if this.Detail != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Detail); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Detail", err)
+		}
+	}
 	return nil
 }
 func (this *GetListTaskMenuAppearanceReq) Validate() error {
@@ -258,6 +263,9 @@ func (this *GetTaskMenuAppearanceRes) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 		}
 	}
+	return nil
+}
+func (this *MenuParent) Validate() error {
 	return nil
 }
 func (this *SetTaskMenuAppearanceReq) Validate() error {
@@ -315,6 +323,53 @@ func (this *GetMenuAppearanceRes) Validate() error {
 	}
 	return nil
 }
+func (this *MenuLicenseWrite) Validate() error {
+	for _, item := range this.TransactionLimit {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("TransactionLimit", err)
+			}
+		}
+	}
+	if this.Company != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Company); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Company", err)
+		}
+	}
+	for _, item := range this.ChargeDate {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("ChargeDate", err)
+			}
+		}
+	}
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	return nil
+}
+func (this *GetMenuLicenseRes) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
 func (this *SetTaskMenuLicenseReq) Validate() error {
 	for _, item := range this.Data {
 		if item != nil {
@@ -345,11 +400,23 @@ func (this *SaveMenuLicenseReq) Validate() error {
 	return nil
 }
 func (this *MenuLicenseSave) Validate() error {
-	if this.ChargeDate != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ChargeDate); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ChargeDate", err)
+	for _, item := range this.TransactionLimit {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("TransactionLimit", err)
+			}
 		}
 	}
+	for _, item := range this.ChargeDate {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("ChargeDate", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *TempLimit) Validate() error {
 	return nil
 }
 func (this *SaveMenuLicenseRes) Validate() error {
@@ -391,6 +458,11 @@ func (this *TaskDataMenuLicense) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
 		}
 	}
+	if this.Detail != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Detail); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Detail", err)
+		}
+	}
 	return nil
 }
 func (this *GetTaskMenuLicenseReq) Validate() error {
@@ -423,5 +495,8 @@ func (this *GetMenuAppearanceDisableRes) Validate() error {
 	return nil
 }
 func (this *FileMenuLicenseTaskRequest) Validate() error {
+	return nil
+}
+func (this *FileMenuAppearanceTaskRequest) Validate() error {
 	return nil
 }
