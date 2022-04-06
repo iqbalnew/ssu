@@ -402,6 +402,29 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task.LastApprovedByName = ""
 	task.LastRejectedByID = 0
 	task.LastRejectedByName = ""
+	task.DataBak = "{}"
+
+	if req.TaskID > 0 {
+		findTask, err := s.provider.FindTaskById(ctx, req.TaskID)
+		if err != nil {
+			return nil, err
+		}
+		if findTask.DataBak != "{}" || findTask.Data != "" {
+			task.DataBak = findTask.DataBak
+		}
+	}
+
+	if task.DataBak == "" {
+		task.DataBak = "{}"
+	}
+
+	if len(task.Childs) > 0 {
+		for i := range task.Childs {
+			if task.Childs[i].DataBak == "" {
+				task.Childs[i].DataBak = "{}"
+			}
+		}
+	}
 
 	// if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu:Appearance" || req.Task.Type == "Menu:License" {
 	// 	task.Step = 3
@@ -524,6 +547,36 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 	return res, nil
 }
 
+func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string) bool {
+	allowed := false
+	authorities := []string{}
+
+	typeSplit := strings.Split(taskType, ":")
+	if len(typeSplit) > 1 {
+		taskType = typeSplit[0]
+	}
+
+	for _, v := range user.ProductRoles {
+		if v.ProductName == taskType {
+			authorities = v.Authorities
+			break
+		}
+	}
+
+	if len(authorities) > 0 {
+		for _, v := range authorities {
+
+			if v == "approve:signer" {
+				allowed = true
+				break
+			}
+		}
+	}
+
+	return allowed
+
+}
+
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
 	currentUser, err := s.getCurrentUser(ctx)
 	if err != nil {
@@ -547,6 +600,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if err != nil {
 		return nil, err
 	}
+
+	// allowed := checkAllowedApproval(currentUser, task.Type)
+	// if !allowed {
+	// 	return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+	// }
+
 	if task.IsParentActive {
 		return nil, status.Errorf(codes.InvalidArgument, "This is child task with active parent, please refer to parent for change status")
 	}
@@ -558,14 +617,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	if req.Comment != "" {
 		task.Comment = req.Comment
-	} else {
-		task.Comment = "-"
 	}
 
 	if req.Reasons != "" {
 		task.Reasons = req.Reasons
-	} else {
-		task.Reasons = "-"
 	}
 
 	sendTask := false
@@ -577,6 +632,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastApprovedByName = ""
 		task.LastRejectedByID = currentUser.UserID
 		task.LastRejectedByName = currentUser.Username
+
+		if req.Comment != "" {
+			task.Comment = req.Comment
+		} else {
+			task.Comment = "-"
+		}
+
+		if req.Reasons != "" {
+			task.Reasons = req.Reasons
+		} else {
+			task.Reasons = "-"
+		}
 
 		task.Status = 3
 		task.Step = 1
@@ -689,9 +756,24 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByID = currentUser.UserID
 		task.LastRejectedByName = currentUser.Username
 
-		if currentStatus == 6 && task.FeatureID > 0 {
+		if req.Comment != "" {
+			task.Comment = req.Comment
+		} else {
+			task.Comment = "-"
+		}
+
+		if req.Reasons != "" {
+			task.Reasons = req.Reasons
+		} else {
+			task.Reasons = "-"
+		}
+
+		if currentStatus == 6 && (task.DataBak != "" && task.DataBak != "{}") {
 			task.Status = 4
 			task.Step = 3
+			if task.DataBak != "" && task.DataBak != "{}" {
+				task.Data = task.DataBak
+			}
 		} else {
 			task.Status = 5
 			task.Step = 0
@@ -708,6 +790,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	}
 
+	logrus.Println("Input Comment" + req.Comment)
+	logrus.Println("Input Reasons" + req.Reasons)
+	logrus.Println("End Val Comment" + task.Comment)
+	logrus.Println("End Val Reasons" + task.Reasons)
+
 	for i := range task.Childs {
 		task.Childs[i].LastApprovedByID = task.LastApprovedByID
 		task.Childs[i].LastApprovedByName = task.LastApprovedByName
@@ -720,6 +807,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		if sendTask {
 			task.Childs[i].Status = task.Status
 			task.Childs[i].Step = task.Step
+		}
+	}
+
+	if sendTask {
+		if task.Data != "" && task.Data != "{}" {
+			logrus.Println("Save Backup")
+			task.DataBak = task.Data
+		}
+		if task.DataBak == "" {
+			task.DataBak = "{}"
 		}
 	}
 

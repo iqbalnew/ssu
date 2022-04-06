@@ -154,7 +154,7 @@ func (p *GormProvider) CreateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 	query := p.db_main.Clauses(clause.OnConflict{
 		UpdateAll: true,
 	})
-	if err := query.Create(&task).Error; err != nil {
+	if err := query.Debug().Create(&task).Error; err != nil {
 		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
@@ -203,7 +203,7 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 			}
 		}
 
-		if err := p.db_main.Model(&pb.TaskORM{}).Where("task_id IN ?", listIDs).Updates(&updateData).Error; err != nil {
+		if err := p.db_main.Debug().Model(&pb.TaskORM{}).Where("task_id IN ?", listIDs).Updates(&updateData).Error; err != nil {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 		}
@@ -215,7 +215,7 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 		UpdateAll: true,
 	})
 	if task != nil || task.Type != "" {
-		if err := query.Model(&taskModel).Updates(&task).Error; err != nil {
+		if err := query.Debug().Model(&taskModel).Updates(&task).Error; err != nil {
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				logrus.Errorln(err)
 				return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
@@ -253,7 +253,7 @@ type QueryBuilder struct {
 }
 
 func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder) (tasks []*pb.TaskORM, err error) {
-	query := p.db_main.Select("*","CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
+	query := p.db_main.Select("*", "CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
 	if filter != nil {
 		query = query.Where(&filter)
 	}

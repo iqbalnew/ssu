@@ -60,6 +60,22 @@ message Task {
     uint64 lastApprovedByID = 6 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {type: INTEGER}];
     uint64 lastRejectedByID = 7 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {type: INTEGER}];
 
+    
+    string data = 8 [(gorm.field).tag = { type: "jsonb" }];
+    
+    string comment = 9 [(gorm.field).tag = { type: "text" }];
+    
+    uint64 featureID = 10;
+    
+    repeated Task childs = 11  [(gorm.field).has_many = {
+        foreignkey: "ParentID"
+        append: true
+        preload: false
+    }];
+    
+    bool isParentActive = 12 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {default: "false" }];
+    
+    string reasons = 13 [(gorm.field).tag = { type: "varchar(255)" }];
     string lastApprovedByName = 14 [(google.api.field_behavior) = OPTIONAL];
     string lastRejectedByName = 15 [(google.api.field_behavior) = OPTIONAL];
     
@@ -67,21 +83,7 @@ message Task {
     string updatedByName = 17 [(google.api.field_behavior) = OPTIONAL];
     string createdByName = 18 [(google.api.field_behavior) = OPTIONAL];
 
-    string data = 8 [(gorm.field).tag = { type: "jsonb" }];
-
-    string comment = 9 [(gorm.field).tag = { type: "text" }];
-
-    uint64 featureID = 10;
-
-    repeated Task childs = 11  [(gorm.field).has_many = {
-        foreignkey: "ParentID"
-        append: true
-        preload: false
-    }];
-
-    bool isParentActive = 12 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = {default: "false" }];
-
-    string reasons = 13 [(gorm.field).tag = { type: "varchar(255)" }];
+    string dataBak = 19 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = { type: "jsonb" }];
 
     google.protobuf.Timestamp createdAt = 101;
     google.protobuf.Timestamp updatedAt = 102;
@@ -99,20 +101,27 @@ message TaskEV {
     string createdByID = 5;
     string lastApprovedByID = 6;
     string lastRejectedByID = 7;
+    
+    string data = 8;
+    
+    string comment = 9;
+    
+    string featureID = 10;
+    
+    repeated TaskEV childs = 11;
+    
+    bool isParentActive = 12;
+    
+    string reasons = 13;
+    
     string lastApprovedByName = 14;
     string lastRejectedByName = 15;
 
-    string data = 8;
+    uint64 updatedByID = 16;
+    string updatedByName = 17;
+    string createdByName = 18;
 
-    string comment = 9;
-
-    string featureID = 10;
-
-    repeated TaskEV childs = 11;
-
-    bool isParentActive = 12;
-
-    string reasons = 13;
+    string dataBak = 19;
 
     google.protobuf.Timestamp createdAt = 101;
     google.protobuf.Timestamp updatedAt = 102;

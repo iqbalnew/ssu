@@ -118,6 +118,7 @@ type TaskORM struct {
 	CreatedByID        uint64 `gorm:"not null"`
 	CreatedByName      string
 	Data               string `gorm:"type:jsonb"`
+	DataBak            string `gorm:"type:jsonb"`
 	DeletedAt          *time.Time
 	FeatureID          uint64
 	IsParentActive     bool `gorm:"default:false"`
@@ -158,11 +159,6 @@ func (m *Task) ToORM(ctx context.Context) (TaskORM, error) {
 	to.CreatedByID = m.CreatedByID
 	to.LastApprovedByID = m.LastApprovedByID
 	to.LastRejectedByID = m.LastRejectedByID
-	to.LastApprovedByName = m.LastApprovedByName
-	to.LastRejectedByName = m.LastRejectedByName
-	to.UpdatedByID = m.UpdatedByID
-	to.UpdatedByName = m.UpdatedByName
-	to.CreatedByName = m.CreatedByName
 	to.Data = m.Data
 	to.Comment = m.Comment
 	to.FeatureID = m.FeatureID
@@ -179,6 +175,12 @@ func (m *Task) ToORM(ctx context.Context) (TaskORM, error) {
 	}
 	to.IsParentActive = m.IsParentActive
 	to.Reasons = m.Reasons
+	to.LastApprovedByName = m.LastApprovedByName
+	to.LastRejectedByName = m.LastRejectedByName
+	to.UpdatedByID = m.UpdatedByID
+	to.UpdatedByName = m.UpdatedByName
+	to.CreatedByName = m.CreatedByName
+	to.DataBak = m.DataBak
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -214,11 +216,6 @@ func (m *TaskORM) ToPB(ctx context.Context) (Task, error) {
 	to.CreatedByID = m.CreatedByID
 	to.LastApprovedByID = m.LastApprovedByID
 	to.LastRejectedByID = m.LastRejectedByID
-	to.LastApprovedByName = m.LastApprovedByName
-	to.LastRejectedByName = m.LastRejectedByName
-	to.UpdatedByID = m.UpdatedByID
-	to.UpdatedByName = m.UpdatedByName
-	to.CreatedByName = m.CreatedByName
 	to.Data = m.Data
 	to.Comment = m.Comment
 	to.FeatureID = m.FeatureID
@@ -235,6 +232,12 @@ func (m *TaskORM) ToPB(ctx context.Context) (Task, error) {
 	}
 	to.IsParentActive = m.IsParentActive
 	to.Reasons = m.Reasons
+	to.LastApprovedByName = m.LastApprovedByName
+	to.LastRejectedByName = m.LastRejectedByName
+	to.UpdatedByID = m.UpdatedByID
+	to.UpdatedByName = m.UpdatedByName
+	to.CreatedByName = m.CreatedByName
+	to.DataBak = m.DataBak
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -1323,26 +1326,6 @@ func DefaultApplyFieldMaskTask(ctx context.Context, patchee *Task, patcher *Task
 			patchee.LastRejectedByID = patcher.LastRejectedByID
 			continue
 		}
-		if f == prefix+"LastApprovedByName" {
-			patchee.LastApprovedByName = patcher.LastApprovedByName
-			continue
-		}
-		if f == prefix+"LastRejectedByName" {
-			patchee.LastRejectedByName = patcher.LastRejectedByName
-			continue
-		}
-		if f == prefix+"UpdatedByID" {
-			patchee.UpdatedByID = patcher.UpdatedByID
-			continue
-		}
-		if f == prefix+"UpdatedByName" {
-			patchee.UpdatedByName = patcher.UpdatedByName
-			continue
-		}
-		if f == prefix+"CreatedByName" {
-			patchee.CreatedByName = patcher.CreatedByName
-			continue
-		}
 		if f == prefix+"Data" {
 			patchee.Data = patcher.Data
 			continue
@@ -1365,6 +1348,30 @@ func DefaultApplyFieldMaskTask(ctx context.Context, patchee *Task, patcher *Task
 		}
 		if f == prefix+"Reasons" {
 			patchee.Reasons = patcher.Reasons
+			continue
+		}
+		if f == prefix+"LastApprovedByName" {
+			patchee.LastApprovedByName = patcher.LastApprovedByName
+			continue
+		}
+		if f == prefix+"LastRejectedByName" {
+			patchee.LastRejectedByName = patcher.LastRejectedByName
+			continue
+		}
+		if f == prefix+"UpdatedByID" {
+			patchee.UpdatedByID = patcher.UpdatedByID
+			continue
+		}
+		if f == prefix+"UpdatedByName" {
+			patchee.UpdatedByName = patcher.UpdatedByName
+			continue
+		}
+		if f == prefix+"CreatedByName" {
+			patchee.CreatedByName = patcher.CreatedByName
+			continue
+		}
+		if f == prefix+"DataBak" {
+			patchee.DataBak = patcher.DataBak
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {

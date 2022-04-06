@@ -107,6 +107,7 @@ func taskEVtoPB(val *pb.TaskEV, aes *customAES.CustomAES) (*pb.Task, error) {
 	data.CreatedAt = val.CreatedAt
 	data.UpdatedAt = val.UpdatedAt
 	data.DeletedAt = val.DeletedAt
+	data.DataBak = val.DataBak
 
 	for _, v := range val.Childs {
 		vr, err := taskEVtoPB(v, aes)
