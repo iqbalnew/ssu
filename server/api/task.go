@@ -357,18 +357,6 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 		return nil, err
 	}
 
-	if taskPB.DataBak == "" {
-		taskPB.DataBak = "{}"
-	}
-
-	if len(taskPB.Childs) > 0 {
-		for i := range taskPB.Childs {
-			if taskPB.Childs[i].DataBak == "" {
-				taskPB.Childs[i].DataBak = "{}"
-			}
-		}
-	}
-
 	request := &pb.SaveTaskRequest{
 		TaskID:  uint64(taskID),
 		Task:    taskPB,
@@ -422,6 +410,18 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 		if findTask.DataBak != "{}" || findTask.Data != "" {
 			task.DataBak = findTask.DataBak
+		}
+	}
+
+	if task.DataBak == "" {
+		task.DataBak = "{}"
+	}
+
+	if len(task.Childs) > 0 {
+		for i := range task.Childs {
+			if task.Childs[i].DataBak == "" {
+				task.Childs[i].DataBak = "{}"
+			}
 		}
 	}
 
