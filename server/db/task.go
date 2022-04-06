@@ -189,7 +189,7 @@ func (p *GormProvider) FindAndSetStatus(ctx context.Context, taskID uint64, stat
 	return task, nil
 }
 
-func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {
+func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateChild bool) (*pb.TaskORM, error) {
 
 	if task.Status == 5 {
 		updateData := map[string]interface{}{
@@ -222,6 +222,20 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 			} else {
 				logrus.Errorln(err)
 				return nil, status.Errorf(codes.NotFound, "Task Not Found")
+			}
+		}
+		if len(task.Childs) > 0 && updateChild {
+			if err := query.Debug().Model(&taskModel).Clauses(clause.OnConflict{
+				Columns:   []clause.Column{{Name: "task_id"}},
+				DoUpdates: clause.AssignmentColumns([]string{"data"}),
+			}).Create(&task.Childs).Error; err != nil {
+				if !errors.Is(err, gorm.ErrRecordNotFound) {
+					logrus.Errorln(err)
+					return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+				} else {
+					logrus.Errorln(err)
+					return nil, status.Errorf(codes.NotFound, "Task Not Found")
+				}
 			}
 		}
 	}

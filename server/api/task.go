@@ -440,7 +440,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		task.UpdatedByID = currentUser.UserID
 		task.UpdatedByName = currentUser.Username
 
-		_, err = s.provider.UpdateTask(ctx, &task)
+		_, err = s.provider.UpdateTask(ctx, &task, true)
 	} else {
 		task.CreatedByID = currentUser.UserID
 		task.CreatedByName = currentUser.Username
@@ -496,7 +496,7 @@ func (s *Server) AssignTypeID(ctx context.Context, req *pb.AssignaTypeIDRequest)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 	data.FeatureID = req.FeatureID
-	_, err = s.provider.UpdateTask(ctx, data)
+	_, err = s.provider.UpdateTask(ctx, data, false)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
@@ -820,7 +820,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 	}
 
-	updatedTask, err := s.provider.UpdateTask(ctx, task)
+	updatedTask, err := s.provider.UpdateTask(ctx, task, false)
 	if err != nil {
 		return nil, err
 	}
@@ -835,6 +835,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		Message: "Task Updated",
 		Data:    &taskPb,
 	}
+
+	fmt.Println("Menu:Licensecl 1")
 
 	if sendTask {
 		switch task.Type {
@@ -1060,7 +1062,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			menuClient := menu_pb.NewApiServiceClient(menuConn)
 
-			if isParent {
+			if strings.Contains(task.Data, `"isParent": true`) {
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := menu_pb.SaveMenuAppearanceReq{}
@@ -1096,6 +1098,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 		case "Menu:License":
+			fmt.Println("Menu:Licensecl")
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1108,7 +1111,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			menuClient := menu_pb.NewApiServiceClient(menuConn)
 
-			if isParent {
+			fmt.Println("result", strings.Contains(task.Data, `"isParent": true`))
+			if strings.Contains(task.Data, `"isParent": true`) {
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := menu_pb.SaveMenuLicenseReq{}
@@ -1117,7 +1121,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 						data.Data = &menu
 						data.TaskID = task.Childs[i].TaskID
-
+						fmt.Println("data ", data.TaskID)
 						res, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
 							return nil, err
@@ -1307,7 +1311,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if reUpdate {
-		updatedTask, err = s.provider.UpdateTask(ctx, task)
+		updatedTask, err = s.provider.UpdateTask(ctx, task, false)
 		if err != nil {
 			return nil, err
 		}
