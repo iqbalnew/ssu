@@ -550,10 +550,10 @@ func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string) bool {
 	allowed := false
 	authorities := []string{}
 
-	typeSplit := strings.Split(taskType, ":")
-	if len(typeSplit) > 1 {
-		taskType = typeSplit[0]
-	}
+	// typeSplit := strings.Split(taskType, ":")
+	// if len(typeSplit) > 1 {
+	// 	taskType = typeSplit[0]
+	// }
 
 	for _, v := range user.ProductRoles {
 		if v.ProductName == taskType {
@@ -600,10 +600,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		return nil, err
 	}
 
-	// allowed := checkAllowedApproval(currentUser, task.Type)
-	// if !allowed {
-	// 	return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
-	// }
+	allowed := checkAllowedApproval(currentUser, task.Type)
+	if !allowed {
+		return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+	}
 
 	if task.IsParentActive {
 		return nil, status.Errorf(codes.InvalidArgument, "This is child task with active parent, please refer to parent for change status")
