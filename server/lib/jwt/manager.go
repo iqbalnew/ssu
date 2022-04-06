@@ -27,10 +27,6 @@ type JWTManager struct {
 
 type UserClaims struct {
 	jwt.StandardClaims
-	Username     string              `json:"username"`
-	UserID       uint64              `json:"user_id"`
-	SessionID    string              `json:"session_id"`
-	DateTime     string              `json:"date_time"`
 	UserType     string              `json:"user_type"`
 	ProductRoles []*ProductAuthority `json:"product_roles"`
 	Authorities  []string            `json:"authorities"`
@@ -67,13 +63,6 @@ func (manager *JWTManager) Generate(username string, userID uint64, sessionID st
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(manager.tokenDuration).Unix(),
 		},
-		Username: username,
-		UserID:   userID,
-	}
-
-	if sessionID != "" && dateTime != "" {
-		claims.SessionID = sessionID
-		claims.DateTime = dateTime
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
