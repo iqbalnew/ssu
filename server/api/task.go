@@ -551,6 +551,14 @@ func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string) bool {
 	allowed := false
 	authorities := []string{}
 
+	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:Licensses"}
+
+	for _, v := range skipProduct {
+		if v == taskType {
+			return true
+		}
+	}
+
 	// typeSplit := strings.Split(taskType, ":")
 	// if len(typeSplit) > 1 {
 	// 	taskType = typeSplit[0]
