@@ -225,7 +225,6 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 			}
 		}
 		if len(task.Childs) > 0 && updateChild {
-			logrus.Printf("update =======> %s", task.Childs)
 			if err := query.Debug().Model(&taskModel).Clauses(clause.OnConflict{
 				Columns:   []clause.Column{{Name: "task_id"}},
 				DoUpdates: clause.AssignmentColumns([]string{"data"}),
