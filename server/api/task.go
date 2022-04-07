@@ -436,12 +436,14 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	}
 
 	if req.TaskID > 0 {
+		logrus.Printf("update =======> %s", req.TaskID)
 		task.TaskID = req.TaskID
 		task.UpdatedByID = currentUser.UserID
 		task.UpdatedByName = currentUser.Username
 
 		_, err = s.provider.UpdateTask(ctx, &task, true)
 	} else {
+		logrus.Printf("create =======> %s", req)
 		task.CreatedByID = currentUser.UserID
 		task.CreatedByName = currentUser.Username
 		task.UpdatedByID = currentUser.UserID
