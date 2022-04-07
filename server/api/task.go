@@ -551,7 +551,7 @@ func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string) bool {
 	allowed := false
 	authorities := []string{}
 
-	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:Lincense"}
+	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License"}
 
 	for _, v := range skipProduct {
 		if v == taskType {
