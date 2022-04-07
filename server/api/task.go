@@ -547,7 +547,7 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 	return res, nil
 }
 
-func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string) bool {
+func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string, permission string) bool {
 	allowed := false
 	authorities := []string{}
 
@@ -574,7 +574,7 @@ func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string) bool {
 	if len(authorities) > 0 {
 		for _, v := range authorities {
 
-			if v == "approve:signer" {
+			if v == permission {
 				allowed = true
 				break
 			}
@@ -609,11 +609,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		return nil, err
 	}
 
-	allowed := checkAllowedApproval(currentUser, task.Type)
-	if !allowed {
-		return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
-	}
-
 	if task.IsParentActive {
 		return nil, status.Errorf(codes.InvalidArgument, "This is child task with active parent, please refer to parent for change status")
 	}
@@ -636,6 +631,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	currentStatus := task.Status
 	switch strings.ToLower(req.Action) {
 	case "rework":
+		allowed := checkAllowedApproval(currentUser, task.Type, "approve:signer")
+		if !allowed {
+			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+		}
+
 		task.LastApprovedByID = 0
 		task.LastApprovedByName = ""
 		task.LastRejectedByID = currentUser.UserID
@@ -656,6 +656,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Status = 3
 		task.Step = 1
 	case "approve":
+		allowed := checkAllowedApproval(currentUser, task.Type, "approve:signer")
+		if !allowed {
+			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+		}
+
 		taskPb, _ := task.ToPB(ctx)
 		if currentStatus == 4 {
 			return &pb.SetTaskResponse{
@@ -759,6 +764,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 	case "reject":
+		allowed := checkAllowedApproval(currentUser, task.Type, "approve:signer")
+		if !allowed {
+			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+		}
 		task.LastApprovedByID = 0
 		task.LastApprovedByName = ""
 		task.LastRejectedByID = currentUser.UserID
@@ -788,6 +797,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 	case "delete":
+		allowed := checkAllowedApproval(currentUser, task.Type, "data_entry:maker")
+		if !allowed {
+			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+		}
 		task.LastApprovedByID = 0
 		task.LastApprovedByName = ""
 		task.LastRejectedByID = 0
