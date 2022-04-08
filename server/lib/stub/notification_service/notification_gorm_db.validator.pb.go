@@ -146,6 +146,39 @@ func (this *Notification) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("NotificationEmail", err)
 		}
 	}
+	if this.StartAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.StartAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("StartAt", err)
+		}
+	}
+	if this.EndAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.EndAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("EndAt", err)
+		}
+	}
+	return nil
+}
+func (this *NotificationCompany) Validate() error {
+	if this.Notification != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Notification); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Notification", err)
+		}
+	}
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	if this.DeletedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
+		}
+	}
 	return nil
 }
 func (this *NotificationTask) Validate() error {

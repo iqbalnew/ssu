@@ -114,7 +114,7 @@ type UserWithAfterToPB interface {
 type NotificationModuleORM struct {
 	CreatedAt    *time.Time
 	DeletedAt    *time.Time
-	ModuleEvents []*ModuleEventORM `gorm:"foreignkey:NotificationModuleModuleID;association_foreignkey:ModuleID;preload:true"`
+	ModuleEvents []*ModuleEventORM `gorm:"foreignkey:NotificationModuleModuleID;association_foreignkey:ModuleID"`
 	ModuleID     uint64            `gorm:"primary_key;not null"`
 	Name         string            `gorm:"type:varchar(255)"`
 	UpdatedAt    *time.Time
@@ -231,7 +231,7 @@ type ModuleEventORM struct {
 	CreatedAt                  *time.Time
 	DeletedAt                  *time.Time
 	EventID                    uint64                 `gorm:"primary_key;not null"`
-	EventVariables             []*EventVariableORM    `gorm:"foreignkey:ModuleEventEventID;association_foreignkey:EventID;preload:true"`
+	EventVariables             []*EventVariableORM    `gorm:"foreignkey:ModuleEventEventID;association_foreignkey:EventID"`
 	Module                     *NotificationModuleORM `gorm:"foreignkey:NotificationModuleModuleID;association_foreignkey:ModuleID"`
 	Name                       string                 `gorm:"type:varchar(255)"`
 	NotificationModuleModuleID *uint64
@@ -476,18 +476,20 @@ type EventVariableWithAfterToPB interface {
 
 type NotificationORM struct {
 	Code                   string `gorm:"type:varchar(255)"`
-	CompanyID              uint64
 	CreatedAt              *time.Time
 	CreatedByID            uint64
 	DeletedAt              *time.Time
 	DeletedByID            uint64
-	Description            string          `gorm:"type:varchar(255)"`
+	Description            string `gorm:"type:varchar(255)"`
+	EndAt                  *time.Time
 	Event                  *ModuleEventORM `gorm:"foreignkey:ModuleEventEventID;association_foreignkey:EventID"`
+	EventID                uint64          `gorm:"column:module_event_event_id"`
 	ModuleEventEventID     *uint64
 	NotificationEmail      *NotificationEmailORM `gorm:"foreignkey:NotificationNotificationID;association_foreignkey:NotificationID"`
 	NotificationID         uint64                `gorm:"primary_key;not null"`
 	NotificationSms        *NotificationSMSORM   `gorm:"foreignkey:NotificationNotificationID;association_foreignkey:NotificationID"`
 	NotificationTaskTaskID *uint64
+	StartAt                *time.Time
 	UpdatedAt              *time.Time
 	UpdatedByID            uint64
 }
@@ -508,7 +510,6 @@ func (m *Notification) ToORM(ctx context.Context) (NotificationORM, error) {
 		}
 	}
 	to.NotificationID = m.NotificationID
-	to.CompanyID = m.CompanyID
 	if m.Event != nil {
 		tempEvent, err := m.Event.ToORM(ctx)
 		if err != nil {
@@ -516,6 +517,7 @@ func (m *Notification) ToORM(ctx context.Context) (NotificationORM, error) {
 		}
 		to.Event = &tempEvent
 	}
+	to.EventID = m.EventID
 	to.Code = m.Code
 	to.Description = m.Description
 	if m.CreatedAt != nil {
@@ -547,6 +549,14 @@ func (m *Notification) ToORM(ctx context.Context) (NotificationORM, error) {
 		}
 		to.NotificationEmail = &tempNotificationEmail
 	}
+	if m.StartAt != nil {
+		t := m.StartAt.AsTime()
+		to.StartAt = &t
+	}
+	if m.EndAt != nil {
+		t := m.EndAt.AsTime()
+		to.EndAt = &t
+	}
 	if posthook, ok := interface{}(m).(NotificationWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -564,7 +574,6 @@ func (m *NotificationORM) ToPB(ctx context.Context) (Notification, error) {
 		}
 	}
 	to.NotificationID = m.NotificationID
-	to.CompanyID = m.CompanyID
 	if m.Event != nil {
 		tempEvent, err := m.Event.ToPB(ctx)
 		if err != nil {
@@ -572,6 +581,7 @@ func (m *NotificationORM) ToPB(ctx context.Context) (Notification, error) {
 		}
 		to.Event = &tempEvent
 	}
+	to.EventID = m.EventID
 	to.Code = m.Code
 	to.Description = m.Description
 	if m.CreatedAt != nil {
@@ -600,6 +610,12 @@ func (m *NotificationORM) ToPB(ctx context.Context) (Notification, error) {
 		}
 		to.NotificationEmail = &tempNotificationEmail
 	}
+	if m.StartAt != nil {
+		to.StartAt = timestamppb.New(*m.StartAt)
+	}
+	if m.EndAt != nil {
+		to.EndAt = timestamppb.New(*m.EndAt)
+	}
 	if posthook, ok := interface{}(m).(NotificationWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -627,6 +643,118 @@ type NotificationWithBeforeToPB interface {
 // NotificationAfterToPB called after default ToPB code
 type NotificationWithAfterToPB interface {
 	AfterToPB(context.Context, *Notification) error
+}
+
+type NotificationCompanyORM struct {
+	CompanyID                  uint64
+	CreatedAt                  *time.Time
+	DeletedAt                  *time.Time
+	Name                       string           `gorm:"type:varchar(255)"`
+	Notification               *NotificationORM `gorm:"foreignkey:NotificationNotificationID;association_foreignkey:NotificationID"`
+	NotificationCompanyID      uint64           `gorm:"primary_key;not null"`
+	NotificationNotificationID *uint64
+	UpdatedAt                  *time.Time
+}
+
+// TableName overrides the default tablename generated by GORM
+func (NotificationCompanyORM) TableName() string {
+	return "notification_company"
+}
+
+// ToORM runs the BeforeToORM hook if present, converts the fields of this
+// object to ORM format, runs the AfterToORM hook, then returns the ORM object
+func (m *NotificationCompany) ToORM(ctx context.Context) (NotificationCompanyORM, error) {
+	to := NotificationCompanyORM{}
+	var err error
+	if prehook, ok := interface{}(m).(NotificationCompanyWithBeforeToORM); ok {
+		if err = prehook.BeforeToORM(ctx, &to); err != nil {
+			return to, err
+		}
+	}
+	to.NotificationCompanyID = m.NotificationCompanyID
+	to.CompanyID = m.CompanyID
+	to.Name = m.Name
+	if m.Notification != nil {
+		tempNotification, err := m.Notification.ToORM(ctx)
+		if err != nil {
+			return to, err
+		}
+		to.Notification = &tempNotification
+	}
+	if m.CreatedAt != nil {
+		t := m.CreatedAt.AsTime()
+		to.CreatedAt = &t
+	}
+	if m.UpdatedAt != nil {
+		t := m.UpdatedAt.AsTime()
+		to.UpdatedAt = &t
+	}
+	if m.DeletedAt != nil {
+		t := m.DeletedAt.AsTime()
+		to.DeletedAt = &t
+	}
+	if posthook, ok := interface{}(m).(NotificationCompanyWithAfterToORM); ok {
+		err = posthook.AfterToORM(ctx, &to)
+	}
+	return to, err
+}
+
+// ToPB runs the BeforeToPB hook if present, converts the fields of this
+// object to PB format, runs the AfterToPB hook, then returns the PB object
+func (m *NotificationCompanyORM) ToPB(ctx context.Context) (NotificationCompany, error) {
+	to := NotificationCompany{}
+	var err error
+	if prehook, ok := interface{}(m).(NotificationCompanyWithBeforeToPB); ok {
+		if err = prehook.BeforeToPB(ctx, &to); err != nil {
+			return to, err
+		}
+	}
+	to.NotificationCompanyID = m.NotificationCompanyID
+	to.CompanyID = m.CompanyID
+	to.Name = m.Name
+	if m.Notification != nil {
+		tempNotification, err := m.Notification.ToPB(ctx)
+		if err != nil {
+			return to, err
+		}
+		to.Notification = &tempNotification
+	}
+	if m.CreatedAt != nil {
+		to.CreatedAt = timestamppb.New(*m.CreatedAt)
+	}
+	if m.UpdatedAt != nil {
+		to.UpdatedAt = timestamppb.New(*m.UpdatedAt)
+	}
+	if m.DeletedAt != nil {
+		to.DeletedAt = timestamppb.New(*m.DeletedAt)
+	}
+	if posthook, ok := interface{}(m).(NotificationCompanyWithAfterToPB); ok {
+		err = posthook.AfterToPB(ctx, &to)
+	}
+	return to, err
+}
+
+// The following are interfaces you can implement for special behavior during ORM/PB conversions
+// of type NotificationCompany the arg will be the target, the caller the one being converted from
+
+// NotificationCompanyBeforeToORM called before default ToORM code
+type NotificationCompanyWithBeforeToORM interface {
+	BeforeToORM(context.Context, *NotificationCompanyORM) error
+}
+
+// NotificationCompanyAfterToORM called after default ToORM code
+type NotificationCompanyWithAfterToORM interface {
+	AfterToORM(context.Context, *NotificationCompanyORM) error
+}
+
+// NotificationCompanyBeforeToPB called before default ToPB code
+type NotificationCompanyWithBeforeToPB interface {
+	BeforeToPB(context.Context, *NotificationCompany) error
+}
+
+// NotificationCompanyAfterToPB called after default ToPB code
+type NotificationCompanyWithAfterToPB interface {
+	AfterToPB(context.Context, *NotificationCompany) error
 }
 
 type NotificationTaskORM struct {
@@ -971,7 +1099,7 @@ type NotificationEmailWithAfterToPB interface {
 }
 
 type TempClientORM struct {
-	ClientID uint64 `gorm:"column:clientID;primary_key;not null"`
+	ClientID uint64 `gorm:"column:ClientID;primary_key;not null"`
 	Email    string `gorm:"column:Email"`
 	Name     string `gorm:"column:Name"`
 	Phone    string `gorm:"column:Phone"`
@@ -3094,13 +3222,11 @@ func DefaultApplyFieldMaskNotification(ctx context.Context, patchee *Notificatio
 	var updatedDeletedAt bool
 	var updatedNotificationSms bool
 	var updatedNotificationEmail bool
+	var updatedStartAt bool
+	var updatedEndAt bool
 	for i, f := range updateMask.Paths {
 		if f == prefix+"NotificationID" {
 			patchee.NotificationID = patcher.NotificationID
-			continue
-		}
-		if f == prefix+"CompanyID" {
-			patchee.CompanyID = patcher.CompanyID
 			continue
 		}
 		if !updatedEvent && strings.HasPrefix(f, prefix+"Event.") {
@@ -3122,6 +3248,10 @@ func DefaultApplyFieldMaskNotification(ctx context.Context, patchee *Notificatio
 		if f == prefix+"Event" {
 			updatedEvent = true
 			patchee.Event = patcher.Event
+			continue
+		}
+		if f == prefix+"EventID" {
+			patchee.EventID = patcher.EventID
 			continue
 		}
 		if f == prefix+"Code" {
@@ -3255,6 +3385,52 @@ func DefaultApplyFieldMaskNotification(ctx context.Context, patchee *Notificatio
 			patchee.NotificationEmail = patcher.NotificationEmail
 			continue
 		}
+		if !updatedStartAt && strings.HasPrefix(f, prefix+"StartAt.") {
+			if patcher.StartAt == nil {
+				patchee.StartAt = nil
+				continue
+			}
+			if patchee.StartAt == nil {
+				patchee.StartAt = &timestamppb.Timestamp{}
+			}
+			childMask := &field_mask.FieldMask{}
+			for j := i; j < len(updateMask.Paths); j++ {
+				if trimPath := strings.TrimPrefix(updateMask.Paths[j], prefix+"StartAt."); trimPath != updateMask.Paths[j] {
+					childMask.Paths = append(childMask.Paths, trimPath)
+				}
+			}
+			if err := gorm1.MergeWithMask(patcher.StartAt, patchee.StartAt, childMask); err != nil {
+				return nil, nil
+			}
+		}
+		if f == prefix+"StartAt" {
+			updatedStartAt = true
+			patchee.StartAt = patcher.StartAt
+			continue
+		}
+		if !updatedEndAt && strings.HasPrefix(f, prefix+"EndAt.") {
+			if patcher.EndAt == nil {
+				patchee.EndAt = nil
+				continue
+			}
+			if patchee.EndAt == nil {
+				patchee.EndAt = &timestamppb.Timestamp{}
+			}
+			childMask := &field_mask.FieldMask{}
+			for j := i; j < len(updateMask.Paths); j++ {
+				if trimPath := strings.TrimPrefix(updateMask.Paths[j], prefix+"EndAt."); trimPath != updateMask.Paths[j] {
+					childMask.Paths = append(childMask.Paths, trimPath)
+				}
+			}
+			if err := gorm1.MergeWithMask(patcher.EndAt, patchee.EndAt, childMask); err != nil {
+				return nil, nil
+			}
+		}
+		if f == prefix+"EndAt" {
+			updatedEndAt = true
+			patchee.EndAt = patcher.EndAt
+			continue
+		}
 	}
 	if err != nil {
 		return nil, err
@@ -3313,6 +3489,447 @@ type NotificationORMWithBeforeListFind interface {
 }
 type NotificationORMWithAfterListFind interface {
 	AfterListFind(context.Context, *gorm.DB, *[]NotificationORM) error
+}
+
+// DefaultCreateNotificationCompany executes a basic gorm create call
+func DefaultCreateNotificationCompany(ctx context.Context, in *NotificationCompany, db *gorm.DB) (*NotificationCompany, error) {
+	if in == nil {
+		return nil, errors.NilArgumentError
+	}
+	ormObj, err := in.ToORM(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if hook, ok := interface{}(&ormObj).(NotificationCompanyORMWithBeforeCreate_); ok {
+		if db, err = hook.BeforeCreate_(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	if err = db.Create(&ormObj).Error; err != nil {
+		return nil, err
+	}
+	if hook, ok := interface{}(&ormObj).(NotificationCompanyORMWithAfterCreate_); ok {
+		if err = hook.AfterCreate_(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	pbResponse, err := ormObj.ToPB(ctx)
+	return &pbResponse, err
+}
+
+type NotificationCompanyORMWithBeforeCreate_ interface {
+	BeforeCreate_(context.Context, *gorm.DB) (*gorm.DB, error)
+}
+type NotificationCompanyORMWithAfterCreate_ interface {
+	AfterCreate_(context.Context, *gorm.DB) error
+}
+
+func DefaultReadNotificationCompany(ctx context.Context, in *NotificationCompany, db *gorm.DB) (*NotificationCompany, error) {
+	if in == nil {
+		return nil, errors.NilArgumentError
+	}
+	ormObj, err := in.ToORM(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if ormObj.NotificationCompanyID == 0 {
+		return nil, errors.EmptyIdError
+	}
+	if hook, ok := interface{}(&ormObj).(NotificationCompanyORMWithBeforeReadApplyQuery); ok {
+		if db, err = hook.BeforeReadApplyQuery(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	if db, err = gorm1.ApplyFieldSelection(ctx, db, nil, &NotificationCompanyORM{}); err != nil {
+		return nil, err
+	}
+	if hook, ok := interface{}(&ormObj).(NotificationCompanyORMWithBeforeReadFind); ok {
+		if db, err = hook.BeforeReadFind(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	ormResponse := NotificationCompanyORM{}
+	if err = db.Where(&ormObj).First(&ormResponse).Error; err != nil {
+		return nil, err
+	}
+	if hook, ok := interface{}(&ormResponse).(NotificationCompanyORMWithAfterReadFind); ok {
+		if err = hook.AfterReadFind(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	pbResponse, err := ormResponse.ToPB(ctx)
+	return &pbResponse, err
+}
+
+type NotificationCompanyORMWithBeforeReadApplyQuery interface {
+	BeforeReadApplyQuery(context.Context, *gorm.DB) (*gorm.DB, error)
+}
+type NotificationCompanyORMWithBeforeReadFind interface {
+	BeforeReadFind(context.Context, *gorm.DB) (*gorm.DB, error)
+}
+type NotificationCompanyORMWithAfterReadFind interface {
+	AfterReadFind(context.Context, *gorm.DB) error
+}
+
+func DefaultDeleteNotificationCompany(ctx context.Context, in *NotificationCompany, db *gorm.DB) error {
+	if in == nil {
+		return errors.NilArgumentError
+	}
+	ormObj, err := in.ToORM(ctx)
+	if err != nil {
+		return err
+	}
+	if ormObj.NotificationCompanyID == 0 {
+		return errors.EmptyIdError
+	}
+	if hook, ok := interface{}(&ormObj).(NotificationCompanyORMWithBeforeDelete_); ok {
+		if db, err = hook.BeforeDelete_(ctx, db); err != nil {
+			return err
+		}
+	}
+	err = db.Where(&ormObj).Delete(&NotificationCompanyORM{}).Error
+	if err != nil {
+		return err
+	}
+	if hook, ok := interface{}(&ormObj).(NotificationCompanyORMWithAfterDelete_); ok {
+		err = hook.AfterDelete_(ctx, db)
+	}
+	return err
+}
+
+type NotificationCompanyORMWithBeforeDelete_ interface {
+	BeforeDelete_(context.Context, *gorm.DB) (*gorm.DB, error)
+}
+type NotificationCompanyORMWithAfterDelete_ interface {
+	AfterDelete_(context.Context, *gorm.DB) error
+}
+
+func DefaultDeleteNotificationCompanySet(ctx context.Context, in []*NotificationCompany, db *gorm.DB) error {
+	if in == nil {
+		return errors.NilArgumentError
+	}
+	var err error
+	keys := []uint64{}
+	for _, obj := range in {
+		ormObj, err := obj.ToORM(ctx)
+		if err != nil {
+			return err
+		}
+		if ormObj.NotificationCompanyID == 0 {
+			return errors.EmptyIdError
+		}
+		keys = append(keys, ormObj.NotificationCompanyID)
+	}
+	if hook, ok := (interface{}(&NotificationCompanyORM{})).(NotificationCompanyORMWithBeforeDeleteSet); ok {
+		if db, err = hook.BeforeDeleteSet(ctx, in, db); err != nil {
+			return err
+		}
+	}
+	err = db.Where("notification_company_id in (?)", keys).Delete(&NotificationCompanyORM{}).Error
+	if err != nil {
+		return err
+	}
+	if hook, ok := (interface{}(&NotificationCompanyORM{})).(NotificationCompanyORMWithAfterDeleteSet); ok {
+		err = hook.AfterDeleteSet(ctx, in, db)
+	}
+	return err
+}
+
+type NotificationCompanyORMWithBeforeDeleteSet interface {
+	BeforeDeleteSet(context.Context, []*NotificationCompany, *gorm.DB) (*gorm.DB, error)
+}
+type NotificationCompanyORMWithAfterDeleteSet interface {
+	AfterDeleteSet(context.Context, []*NotificationCompany, *gorm.DB) error
+}
+
+// DefaultStrictUpdateNotificationCompany clears / replaces / appends first level 1:many children and then executes a gorm update call
+func DefaultStrictUpdateNotificationCompany(ctx context.Context, in *NotificationCompany, db *gorm.DB) (*NotificationCompany, error) {
+	if in == nil {
+		return nil, fmt.Errorf("Nil argument to DefaultStrictUpdateNotificationCompany")
+	}
+	ormObj, err := in.ToORM(ctx)
+	if err != nil {
+		return nil, err
+	}
+	lockedRow := &NotificationCompanyORM{}
+	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("notification_company_id=?", ormObj.NotificationCompanyID).First(lockedRow)
+	if hook, ok := interface{}(&ormObj).(NotificationCompanyORMWithBeforeStrictUpdateCleanup); ok {
+		if db, err = hook.BeforeStrictUpdateCleanup(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	if hook, ok := interface{}(&ormObj).(NotificationCompanyORMWithBeforeStrictUpdateSave); ok {
+		if db, err = hook.BeforeStrictUpdateSave(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	if err = db.Save(&ormObj).Error; err != nil {
+		return nil, err
+	}
+	if hook, ok := interface{}(&ormObj).(NotificationCompanyORMWithAfterStrictUpdateSave); ok {
+		if err = hook.AfterStrictUpdateSave(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	pbResponse, err := ormObj.ToPB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &pbResponse, err
+}
+
+type NotificationCompanyORMWithBeforeStrictUpdateCleanup interface {
+	BeforeStrictUpdateCleanup(context.Context, *gorm.DB) (*gorm.DB, error)
+}
+type NotificationCompanyORMWithBeforeStrictUpdateSave interface {
+	BeforeStrictUpdateSave(context.Context, *gorm.DB) (*gorm.DB, error)
+}
+type NotificationCompanyORMWithAfterStrictUpdateSave interface {
+	AfterStrictUpdateSave(context.Context, *gorm.DB) error
+}
+
+// DefaultPatchNotificationCompany executes a basic gorm update call with patch behavior
+func DefaultPatchNotificationCompany(ctx context.Context, in *NotificationCompany, updateMask *field_mask.FieldMask, db *gorm.DB) (*NotificationCompany, error) {
+	if in == nil {
+		return nil, errors.NilArgumentError
+	}
+	var pbObj NotificationCompany
+	var err error
+	if hook, ok := interface{}(&pbObj).(NotificationCompanyWithBeforePatchRead); ok {
+		if db, err = hook.BeforePatchRead(ctx, in, updateMask, db); err != nil {
+			return nil, err
+		}
+	}
+	if hook, ok := interface{}(&pbObj).(NotificationCompanyWithBeforePatchApplyFieldMask); ok {
+		if db, err = hook.BeforePatchApplyFieldMask(ctx, in, updateMask, db); err != nil {
+			return nil, err
+		}
+	}
+	if _, err := DefaultApplyFieldMaskNotificationCompany(ctx, &pbObj, in, updateMask, "", db); err != nil {
+		return nil, err
+	}
+	if hook, ok := interface{}(&pbObj).(NotificationCompanyWithBeforePatchSave); ok {
+		if db, err = hook.BeforePatchSave(ctx, in, updateMask, db); err != nil {
+			return nil, err
+		}
+	}
+	pbResponse, err := DefaultStrictUpdateNotificationCompany(ctx, &pbObj, db)
+	if err != nil {
+		return nil, err
+	}
+	if hook, ok := interface{}(pbResponse).(NotificationCompanyWithAfterPatchSave); ok {
+		if err = hook.AfterPatchSave(ctx, in, updateMask, db); err != nil {
+			return nil, err
+		}
+	}
+	return pbResponse, nil
+}
+
+type NotificationCompanyWithBeforePatchRead interface {
+	BeforePatchRead(context.Context, *NotificationCompany, *field_mask.FieldMask, *gorm.DB) (*gorm.DB, error)
+}
+type NotificationCompanyWithBeforePatchApplyFieldMask interface {
+	BeforePatchApplyFieldMask(context.Context, *NotificationCompany, *field_mask.FieldMask, *gorm.DB) (*gorm.DB, error)
+}
+type NotificationCompanyWithBeforePatchSave interface {
+	BeforePatchSave(context.Context, *NotificationCompany, *field_mask.FieldMask, *gorm.DB) (*gorm.DB, error)
+}
+type NotificationCompanyWithAfterPatchSave interface {
+	AfterPatchSave(context.Context, *NotificationCompany, *field_mask.FieldMask, *gorm.DB) error
+}
+
+// DefaultPatchSetNotificationCompany executes a bulk gorm update call with patch behavior
+func DefaultPatchSetNotificationCompany(ctx context.Context, objects []*NotificationCompany, updateMasks []*field_mask.FieldMask, db *gorm.DB) ([]*NotificationCompany, error) {
+	if len(objects) != len(updateMasks) {
+		return nil, fmt.Errorf(errors.BadRepeatedFieldMaskTpl, len(updateMasks), len(objects))
+	}
+
+	results := make([]*NotificationCompany, 0, len(objects))
+	for i, patcher := range objects {
+		pbResponse, err := DefaultPatchNotificationCompany(ctx, patcher, updateMasks[i], db)
+		if err != nil {
+			return nil, err
+		}
+
+		results = append(results, pbResponse)
+	}
+
+	return results, nil
+}
+
+// DefaultApplyFieldMaskNotificationCompany patches an pbObject with patcher according to a field mask.
+func DefaultApplyFieldMaskNotificationCompany(ctx context.Context, patchee *NotificationCompany, patcher *NotificationCompany, updateMask *field_mask.FieldMask, prefix string, db *gorm.DB) (*NotificationCompany, error) {
+	if patcher == nil {
+		return nil, nil
+	} else if patchee == nil {
+		return nil, errors.NilArgumentError
+	}
+	var err error
+	var updatedNotification bool
+	var updatedCreatedAt bool
+	var updatedUpdatedAt bool
+	var updatedDeletedAt bool
+	for i, f := range updateMask.Paths {
+		if f == prefix+"NotificationCompanyID" {
+			patchee.NotificationCompanyID = patcher.NotificationCompanyID
+			continue
+		}
+		if f == prefix+"CompanyID" {
+			patchee.CompanyID = patcher.CompanyID
+			continue
+		}
+		if f == prefix+"Name" {
+			patchee.Name = patcher.Name
+			continue
+		}
+		if !updatedNotification && strings.HasPrefix(f, prefix+"Notification.") {
+			updatedNotification = true
+			if patcher.Notification == nil {
+				patchee.Notification = nil
+				continue
+			}
+			if patchee.Notification == nil {
+				patchee.Notification = &Notification{}
+			}
+			if o, err := DefaultApplyFieldMaskNotification(ctx, patchee.Notification, patcher.Notification, &field_mask.FieldMask{Paths: updateMask.Paths[i:]}, prefix+"Notification.", db); err != nil {
+				return nil, err
+			} else {
+				patchee.Notification = o
+			}
+			continue
+		}
+		if f == prefix+"Notification" {
+			updatedNotification = true
+			patchee.Notification = patcher.Notification
+			continue
+		}
+		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {
+			if patcher.CreatedAt == nil {
+				patchee.CreatedAt = nil
+				continue
+			}
+			if patchee.CreatedAt == nil {
+				patchee.CreatedAt = &timestamppb.Timestamp{}
+			}
+			childMask := &field_mask.FieldMask{}
+			for j := i; j < len(updateMask.Paths); j++ {
+				if trimPath := strings.TrimPrefix(updateMask.Paths[j], prefix+"CreatedAt."); trimPath != updateMask.Paths[j] {
+					childMask.Paths = append(childMask.Paths, trimPath)
+				}
+			}
+			if err := gorm1.MergeWithMask(patcher.CreatedAt, patchee.CreatedAt, childMask); err != nil {
+				return nil, nil
+			}
+		}
+		if f == prefix+"CreatedAt" {
+			updatedCreatedAt = true
+			patchee.CreatedAt = patcher.CreatedAt
+			continue
+		}
+		if !updatedUpdatedAt && strings.HasPrefix(f, prefix+"UpdatedAt.") {
+			if patcher.UpdatedAt == nil {
+				patchee.UpdatedAt = nil
+				continue
+			}
+			if patchee.UpdatedAt == nil {
+				patchee.UpdatedAt = &timestamppb.Timestamp{}
+			}
+			childMask := &field_mask.FieldMask{}
+			for j := i; j < len(updateMask.Paths); j++ {
+				if trimPath := strings.TrimPrefix(updateMask.Paths[j], prefix+"UpdatedAt."); trimPath != updateMask.Paths[j] {
+					childMask.Paths = append(childMask.Paths, trimPath)
+				}
+			}
+			if err := gorm1.MergeWithMask(patcher.UpdatedAt, patchee.UpdatedAt, childMask); err != nil {
+				return nil, nil
+			}
+		}
+		if f == prefix+"UpdatedAt" {
+			updatedUpdatedAt = true
+			patchee.UpdatedAt = patcher.UpdatedAt
+			continue
+		}
+		if !updatedDeletedAt && strings.HasPrefix(f, prefix+"DeletedAt.") {
+			if patcher.DeletedAt == nil {
+				patchee.DeletedAt = nil
+				continue
+			}
+			if patchee.DeletedAt == nil {
+				patchee.DeletedAt = &timestamppb.Timestamp{}
+			}
+			childMask := &field_mask.FieldMask{}
+			for j := i; j < len(updateMask.Paths); j++ {
+				if trimPath := strings.TrimPrefix(updateMask.Paths[j], prefix+"DeletedAt."); trimPath != updateMask.Paths[j] {
+					childMask.Paths = append(childMask.Paths, trimPath)
+				}
+			}
+			if err := gorm1.MergeWithMask(patcher.DeletedAt, patchee.DeletedAt, childMask); err != nil {
+				return nil, nil
+			}
+		}
+		if f == prefix+"DeletedAt" {
+			updatedDeletedAt = true
+			patchee.DeletedAt = patcher.DeletedAt
+			continue
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	return patchee, nil
+}
+
+// DefaultListNotificationCompany executes a gorm list call
+func DefaultListNotificationCompany(ctx context.Context, db *gorm.DB) ([]*NotificationCompany, error) {
+	in := NotificationCompany{}
+	ormObj, err := in.ToORM(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if hook, ok := interface{}(&ormObj).(NotificationCompanyORMWithBeforeListApplyQuery); ok {
+		if db, err = hook.BeforeListApplyQuery(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	db, err = gorm1.ApplyCollectionOperators(ctx, db, &NotificationCompanyORM{}, &NotificationCompany{}, nil, nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	if hook, ok := interface{}(&ormObj).(NotificationCompanyORMWithBeforeListFind); ok {
+		if db, err = hook.BeforeListFind(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	db = db.Where(&ormObj)
+	db = db.Order("notification_company_id")
+	ormResponse := []NotificationCompanyORM{}
+	if err := db.Find(&ormResponse).Error; err != nil {
+		return nil, err
+	}
+	if hook, ok := interface{}(&ormObj).(NotificationCompanyORMWithAfterListFind); ok {
+		if err = hook.AfterListFind(ctx, db, &ormResponse); err != nil {
+			return nil, err
+		}
+	}
+	pbResponse := []*NotificationCompany{}
+	for _, responseEntry := range ormResponse {
+		temp, err := responseEntry.ToPB(ctx)
+		if err != nil {
+			return nil, err
+		}
+		pbResponse = append(pbResponse, &temp)
+	}
+	return pbResponse, nil
+}
+
+type NotificationCompanyORMWithBeforeListApplyQuery interface {
+	BeforeListApplyQuery(context.Context, *gorm.DB) (*gorm.DB, error)
+}
+type NotificationCompanyORMWithBeforeListFind interface {
+	BeforeListFind(context.Context, *gorm.DB) (*gorm.DB, error)
+}
+type NotificationCompanyORMWithAfterListFind interface {
+	AfterListFind(context.Context, *gorm.DB, *[]NotificationCompanyORM) error
 }
 
 // DefaultCreateNotificationTask executes a basic gorm create call
@@ -4776,7 +5393,7 @@ func DefaultStrictUpdateTempClient(ctx context.Context, in *TempClient, db *gorm
 		return nil, err
 	}
 	lockedRow := &TempClientORM{}
-	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("clientID=?", ormObj.ClientID).First(lockedRow)
+	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("ClientID=?", ormObj.ClientID).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(TempClientORMWithBeforeStrictUpdateCleanup); ok {
 		if db, err = hook.BeforeStrictUpdateCleanup(ctx, db); err != nil {
 			return nil, err
@@ -4935,7 +5552,7 @@ func DefaultListTempClient(ctx context.Context, db *gorm.DB) ([]*TempClient, err
 		}
 	}
 	db = db.Where(&ormObj)
-	db = db.Order("clientID")
+	db = db.Order("ClientID")
 	ormResponse := []TempClientORM{}
 	if err := db.Find(&ormResponse).Error; err != nil {
 		return nil, err
