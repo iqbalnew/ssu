@@ -201,6 +201,7 @@ type MenuORM struct {
 	IconURI         string `gorm:"type:text"`
 	IsEnable        bool
 	IsModule        bool
+	IsTransactional bool
 	Label           string     `gorm:"type:varchar(255)"`
 	MenuID          uint64     `gorm:"column:MenuID;primary_key;not null"`
 	Menus           []*MenuORM `gorm:"foreignkey:ParentID;association_foreignkey:MenuID;preload:true"`
@@ -264,6 +265,7 @@ func (m *Menu) ToORM(ctx context.Context) (MenuORM, error) {
 	}
 	to.ProductID = m.ProductID
 	to.ProductName = m.ProductName
+	to.IsTransactional = m.IsTransactional
 	to.OrderNumber = m.OrderNumber
 	to.IconURI = m.IconURI
 	to.Name = m.Name
@@ -327,6 +329,7 @@ func (m *MenuORM) ToPB(ctx context.Context) (Menu, error) {
 	}
 	to.ProductID = m.ProductID
 	to.ProductName = m.ProductName
+	to.IsTransactional = m.IsTransactional
 	to.OrderNumber = m.OrderNumber
 	to.IconURI = m.IconURI
 	to.Name = m.Name
@@ -510,6 +513,7 @@ type MenuDisableWithAfterToPB interface {
 }
 
 type MenuLicenseORM struct {
+	AccountAlias     string
 	AccountID        uint64
 	AccountName      string
 	AccountNumber    string
@@ -518,11 +522,17 @@ type MenuLicenseORM struct {
 	CreatedAt        *time.Time
 	CreatedByID      uint64
 	Fee              uint64
+	FeeCurrency      string
 	FeeType          string `gorm:"type:varchar(255)"`
 	IsAllowed        bool
 	IsEnable         bool
+	IsModule         bool
+	IsTransactional  bool
+	Label            string
+	MenuID           uint64
 	MenuLicenseID    uint64 `gorm:"primary_key;not null"`
 	Name             string `gorm:"type:varchar(255)"`
+	OrderNumber      string
 	ProductID        uint64
 	ProductName      string
 	TransactionLimit string `gorm:"type:jsonb"`
@@ -569,6 +579,13 @@ func (m *MenuLicense) ToORM(ctx context.Context) (MenuLicenseORM, error) {
 	to.AccountID = m.AccountID
 	to.AccountNumber = m.AccountNumber
 	to.AccountName = m.AccountName
+	to.MenuID = m.MenuID
+	to.Label = m.Label
+	to.IsModule = m.IsModule
+	to.FeeCurrency = m.FeeCurrency
+	to.OrderNumber = m.OrderNumber
+	to.AccountAlias = m.AccountAlias
+	to.IsTransactional = m.IsTransactional
 	if posthook, ok := interface{}(m).(MenuLicenseWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -607,6 +624,13 @@ func (m *MenuLicenseORM) ToPB(ctx context.Context) (MenuLicense, error) {
 	to.AccountID = m.AccountID
 	to.AccountNumber = m.AccountNumber
 	to.AccountName = m.AccountName
+	to.MenuID = m.MenuID
+	to.Label = m.Label
+	to.IsModule = m.IsModule
+	to.FeeCurrency = m.FeeCurrency
+	to.OrderNumber = m.OrderNumber
+	to.AccountAlias = m.AccountAlias
+	to.IsTransactional = m.IsTransactional
 	if posthook, ok := interface{}(m).(MenuLicenseWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -2017,6 +2041,10 @@ func DefaultApplyFieldMaskMenu(ctx context.Context, patchee *Menu, patcher *Menu
 			patchee.ProductName = patcher.ProductName
 			continue
 		}
+		if f == prefix+"IsTransactional" {
+			patchee.IsTransactional = patcher.IsTransactional
+			continue
+		}
 		if f == prefix+"OrderNumber" {
 			patchee.OrderNumber = patcher.OrderNumber
 			continue
@@ -3011,6 +3039,34 @@ func DefaultApplyFieldMaskMenuLicense(ctx context.Context, patchee *MenuLicense,
 		}
 		if f == prefix+"AccountName" {
 			patchee.AccountName = patcher.AccountName
+			continue
+		}
+		if f == prefix+"MenuID" {
+			patchee.MenuID = patcher.MenuID
+			continue
+		}
+		if f == prefix+"Label" {
+			patchee.Label = patcher.Label
+			continue
+		}
+		if f == prefix+"IsModule" {
+			patchee.IsModule = patcher.IsModule
+			continue
+		}
+		if f == prefix+"FeeCurrency" {
+			patchee.FeeCurrency = patcher.FeeCurrency
+			continue
+		}
+		if f == prefix+"OrderNumber" {
+			patchee.OrderNumber = patcher.OrderNumber
+			continue
+		}
+		if f == prefix+"AccountAlias" {
+			patchee.AccountAlias = patcher.AccountAlias
+			continue
+		}
+		if f == prefix+"IsTransactional" {
+			patchee.IsTransactional = patcher.IsTransactional
 			continue
 		}
 	}

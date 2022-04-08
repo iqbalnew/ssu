@@ -897,13 +897,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/HealthCheck", runtime.WithHTTPPathPattern("/api/menu/health"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/HealthCheck", runtime.WithHTTPPathPattern("/api/menu/health"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_HealthCheck_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_HealthCheck_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -921,13 +920,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_SetTaskMenuAppearance_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_SetTaskMenuAppearance_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -945,13 +943,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_SetTaskMenuAppearance_1(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_SetTaskMenuAppearance_1(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -969,13 +966,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetTaskMenuAppearance_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetTaskMenuAppearance_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -993,13 +989,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/data"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetMenuAppearance_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetMenuAppearance_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1017,13 +1012,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/data"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetMenuLicense_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetMenuLicense_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1041,13 +1035,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_SetTaskMenuLicense_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_SetTaskMenuLicense_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1065,13 +1058,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_SetTaskMenuLicense_1(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_SetTaskMenuLicense_1(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1089,13 +1081,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/DeleteTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/DeleteTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_DeleteTaskMenuLicense_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_DeleteTaskMenuLicense_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1113,13 +1104,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetTaskMenuLicense_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetTaskMenuLicense_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1137,13 +1127,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/ListMenuTask", runtime.WithHTTPPathPattern("/api/menu/task"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/ListMenuTask", runtime.WithHTTPPathPattern("/api/menu/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_ListMenuTask_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_ListMenuTask_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1161,13 +1150,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/ListModule", runtime.WithHTTPPathPattern("/api/menu/modules"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/ListModule", runtime.WithHTTPPathPattern("/api/menu/modules"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_ListModule_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_ListModule_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1185,13 +1173,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/ListMenuDisable", runtime.WithHTTPPathPattern("/api/menu/disables"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/ListMenuDisable", runtime.WithHTTPPathPattern("/api/menu/disables"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_ListMenuDisable_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_ListMenuDisable_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1209,13 +1196,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMenuAppearanceDisable", runtime.WithHTTPPathPattern("/api/menu/appearance/data/disable"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMenuAppearanceDisable", runtime.WithHTTPPathPattern("/api/menu/appearance/data/disable"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetMenuAppearanceDisable_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetMenuAppearanceDisable_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1233,13 +1219,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/FileMenuLicenseTask", runtime.WithHTTPPathPattern("/api/menu/license/task/file/{fileFormat}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/FileMenuLicenseTask", runtime.WithHTTPPathPattern("/api/menu/license/task/file/{fileFormat}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_FileMenuLicenseTask_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_FileMenuLicenseTask_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1257,13 +1242,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/FileMenuAppearanceTask", runtime.WithHTTPPathPattern("/api/menu/appearance/task/file/{fileFormat}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/FileMenuAppearanceTask", runtime.WithHTTPPathPattern("/api/menu/appearance/task/file/{fileFormat}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_FileMenuAppearanceTask_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_FileMenuAppearanceTask_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1281,13 +1265,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/me"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/me"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetMyTasksMenuLicense_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetMyTasksMenuLicense_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1305,13 +1288,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetMyTasksMenuLicense_1(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetMyTasksMenuLicense_1(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1329,13 +1311,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/me"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/me"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetMyTasksMenuAppearance_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetMyTasksMenuAppearance_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1353,13 +1334,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetMyTasksMenuAppearance_1(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetMyTasksMenuAppearance_1(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1416,13 +1396,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/HealthCheck", runtime.WithHTTPPathPattern("/api/menu/health"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/HealthCheck", runtime.WithHTTPPathPattern("/api/menu/health"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_HealthCheck_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_HealthCheck_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1437,13 +1416,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_SetTaskMenuAppearance_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_SetTaskMenuAppearance_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1458,13 +1436,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_SetTaskMenuAppearance_1(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_SetTaskMenuAppearance_1(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1479,13 +1456,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetTaskMenuAppearance_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetTaskMenuAppearance_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1500,13 +1476,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/data"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetMenuAppearance_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetMenuAppearance_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1521,13 +1496,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/data"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetMenuLicense_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetMenuLicense_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1542,13 +1516,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_SetTaskMenuLicense_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_SetTaskMenuLicense_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1563,13 +1536,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_SetTaskMenuLicense_1(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_SetTaskMenuLicense_1(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1584,13 +1556,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/DeleteTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/DeleteTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_DeleteTaskMenuLicense_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_DeleteTaskMenuLicense_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1605,13 +1576,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetTaskMenuLicense_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetTaskMenuLicense_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1626,13 +1596,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/ListMenuTask", runtime.WithHTTPPathPattern("/api/menu/task"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/ListMenuTask", runtime.WithHTTPPathPattern("/api/menu/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_ListMenuTask_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_ListMenuTask_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1647,13 +1616,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/ListModule", runtime.WithHTTPPathPattern("/api/menu/modules"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/ListModule", runtime.WithHTTPPathPattern("/api/menu/modules"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_ListModule_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_ListModule_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1668,13 +1636,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/ListMenuDisable", runtime.WithHTTPPathPattern("/api/menu/disables"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/ListMenuDisable", runtime.WithHTTPPathPattern("/api/menu/disables"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_ListMenuDisable_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_ListMenuDisable_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1689,13 +1656,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMenuAppearanceDisable", runtime.WithHTTPPathPattern("/api/menu/appearance/data/disable"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMenuAppearanceDisable", runtime.WithHTTPPathPattern("/api/menu/appearance/data/disable"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetMenuAppearanceDisable_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetMenuAppearanceDisable_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1710,13 +1676,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/FileMenuLicenseTask", runtime.WithHTTPPathPattern("/api/menu/license/task/file/{fileFormat}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/FileMenuLicenseTask", runtime.WithHTTPPathPattern("/api/menu/license/task/file/{fileFormat}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_FileMenuLicenseTask_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_FileMenuLicenseTask_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1731,13 +1696,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/FileMenuAppearanceTask", runtime.WithHTTPPathPattern("/api/menu/appearance/task/file/{fileFormat}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/FileMenuAppearanceTask", runtime.WithHTTPPathPattern("/api/menu/appearance/task/file/{fileFormat}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_FileMenuAppearanceTask_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_FileMenuAppearanceTask_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1752,13 +1716,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/me"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/me"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetMyTasksMenuLicense_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetMyTasksMenuLicense_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1773,13 +1736,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetMyTasksMenuLicense_1(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetMyTasksMenuLicense_1(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1794,13 +1756,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/me"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/me"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetMyTasksMenuAppearance_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetMyTasksMenuAppearance_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1815,13 +1776,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/GetMyTasksMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetMyTasksMenuAppearance_1(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetMyTasksMenuAppearance_1(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
