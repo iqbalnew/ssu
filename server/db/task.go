@@ -235,7 +235,9 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 		UpdateAll: true,
 	})
 	if task != nil || task.Type != "" {
-		if err := query.Debug().Model(&taskModel).Updates(&task).Error; err != nil {
+		childs := task.Childs
+		task.Childs = nil
+		if err := query.Model(&taskModel).Updates(&task).Error; err != nil {
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				logrus.Errorln(err)
 				return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
@@ -245,7 +247,11 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 			}
 		}
 		if len(task.Childs) > 0 && updateChild {
-			if err := query.Debug().Model(&taskModel).Clauses(clause.OnConflict{
+			for i := range childs {
+				childs[i].ParentID = &task.TaskID
+			}
+
+			if err := query.Model(&taskModel).Clauses(clause.OnConflict{
 				Columns:   []clause.Column{{Name: "task_id"}},
 				UpdateAll: true,
 			}).Create(&task.Childs).Error; err != nil {
