@@ -247,15 +247,7 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 			}
 		}
 
-		logrus.Println("====>1")
-		logrus.Printf("child len: %d", len(childs))
-		logrus.Println("")
-		logrus.Printf("updatedChild: %v", updateChild)
-
 		if len(childs) > 0 && updateChild {
-			logrus.Println("====>")
-			logrus.Printf("Child length: %v", len(task.Childs))
-			logrus.Println("====>")
 
 			for i := range childs {
 				childs[i].ParentID = &task.TaskID
@@ -312,7 +304,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	query = query.Scopes(FilterScoope(sql.Filter), FilterOrScoope(sql.FilterOr), QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In))
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort))
-	if err := query.Preload(clause.Associations).Find(&tasks).Error; err != nil {
+	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
