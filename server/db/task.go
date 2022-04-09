@@ -261,7 +261,7 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 				childs[i].ParentID = &task.TaskID
 			}
 
-			if err := query.Model(&taskModel).Clauses(clause.OnConflict{
+			if err := query.Clauses(clause.OnConflict{
 				Columns:   []clause.Column{{Name: "task_id"}},
 				UpdateAll: true,
 			}).Create(&childs).Error; err != nil {
