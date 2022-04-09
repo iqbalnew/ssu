@@ -154,9 +154,29 @@ func (p *GormProvider) CreateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 	query := p.db_main.Clauses(clause.OnConflict{
 		UpdateAll: true,
 	})
+
+	childs := task.Childs
+	task.Childs = nil
+
 	if err := query.Debug().Create(&task).Error; err != nil {
 		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+	}
+
+	for i := range childs {
+		childs[i].ParentID = &task.TaskID
+	}
+
+	if len(childs) > 0 {
+		if err := query.Debug().Model(&childs).Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "task_id"}},
+			UpdateAll: true,
+		}).Create(&childs).Error; err != nil {
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
+				logrus.Errorln(err)
+				return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+			}
+		}
 	}
 
 	return task, nil
@@ -227,14 +247,11 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 		if len(task.Childs) > 0 && updateChild {
 			if err := query.Debug().Model(&taskModel).Clauses(clause.OnConflict{
 				Columns:   []clause.Column{{Name: "task_id"}},
-				DoUpdates: clause.AssignmentColumns([]string{"data"}),
+				UpdateAll: true,
 			}).Create(&task.Childs).Error; err != nil {
 				if !errors.Is(err, gorm.ErrRecordNotFound) {
 					logrus.Errorln(err)
 					return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
-				} else {
-					logrus.Errorln(err)
-					return nil, status.Errorf(codes.NotFound, "Task Not Found")
 				}
 			}
 		}
