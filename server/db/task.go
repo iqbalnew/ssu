@@ -246,6 +246,12 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 				return nil, status.Errorf(codes.NotFound, "Task Not Found")
 			}
 		}
+
+		logrus.Println("====>1")
+		logrus.Printf("child len: %d", len(childs))
+		logrus.Println("")
+		logrus.Printf("updatedChild: %v", updateChild)
+
 		if len(task.Childs) > 0 && updateChild {
 			logrus.Println("====>")
 			logrus.Printf("Child length: %v", len(task.Childs))
