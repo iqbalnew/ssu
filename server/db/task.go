@@ -252,7 +252,7 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 		logrus.Println("")
 		logrus.Printf("updatedChild: %v", updateChild)
 
-		if len(task.Childs) > 0 && updateChild {
+		if len(childs) > 0 && updateChild {
 			logrus.Println("====>")
 			logrus.Printf("Child length: %v", len(task.Childs))
 			logrus.Println("====>")
