@@ -247,6 +247,10 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 			}
 		}
 		if len(task.Childs) > 0 && updateChild {
+			logrus.Println("====>")
+			logrus.Printf("Child length: %v", len(task.Childs))
+			logrus.Println("====>")
+
 			for i := range childs {
 				childs[i].ParentID = &task.TaskID
 			}
