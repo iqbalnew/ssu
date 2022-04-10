@@ -1093,6 +1093,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 							if err != nil {
 								return nil, err
 							}
+							beforeSave = false
 						}
 
 						data.Data = &menu
