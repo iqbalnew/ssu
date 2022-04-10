@@ -7,11 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/mwitkow/go-proto-validators"
-	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	_ "google.golang.org/protobuf/types/known/structpb"
+	_ "github.com/golang/protobuf/ptypes/struct"
+	_ "github.com/mwitkow/go-proto-validators"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -268,6 +268,9 @@ func (this *GetTaskMenuAppearanceRes) Validate() error {
 func (this *MenuParent) Validate() error {
 	return nil
 }
+func (this *MenuParentAppearance) Validate() error {
+	return nil
+}
 func (this *SetTaskMenuAppearanceReq) Validate() error {
 	for _, item := range this.Data {
 		if item != nil {
@@ -295,6 +298,9 @@ func (this *SaveMenuAppearanceReq) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 		}
 	}
+	return nil
+}
+func (this *BeforeSaveMenuAppearanceReq) Validate() error {
 	return nil
 }
 func (this *SaveMenuAppearanceRes) Validate() error {
@@ -476,6 +482,13 @@ func (this *TaskDataMenuLicense) Validate() error {
 	if this.Detail != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Detail); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Detail", err)
+		}
+	}
+	for _, item := range this.HidedMenus {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("HidedMenus", err)
+			}
 		}
 	}
 	return nil

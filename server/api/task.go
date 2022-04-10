@@ -1078,11 +1078,22 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			menuClient := menu_pb.NewApiServiceClient(menuConn)
 
 			if strings.Contains(task.Data, `"isParent": true`) {
+				beforeSave := true
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := menu_pb.SaveMenuAppearanceReq{}
 						menu := menu_pb.MenuAppearance{}
 						json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+
+						if beforeSave {
+
+							_, err := menuClient.BeforeSaveMenuAppearance(ctx, &menu_pb.BeforeSaveMenuAppearanceReq{
+								UserType: menu.UserType,
+							}, grpc.Header(&header), grpc.Trailer(&trailer))
+							if err != nil {
+								return nil, err
+							}
+						}
 
 						data.Data = &menu
 						data.TaskID = task.Childs[i].TaskID
