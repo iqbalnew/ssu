@@ -247,14 +247,14 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 			}
 		}
 
-		if task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
-			if err := p.db_main.Where("parent_id", task.TaskID).Delete(&pb.TaskORM{}).Error; err != nil {
-				logrus.Errorln(err)
-				return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
-			}
-		}
-
 		if len(childs) > 0 && updateChild {
+
+			if task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
+				if err := p.db_main.Where("parent_id", task.TaskID).Delete(&pb.TaskORM{}).Error; err != nil {
+					logrus.Errorln(err)
+					return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+				}
+			}
 
 			for i := range childs {
 				childs[i].ParentID = &task.TaskID
