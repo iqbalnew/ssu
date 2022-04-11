@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -36,6 +37,7 @@ type Server struct {
 func New(
 	db01 *gorm.DB,
 	conn01 *grpc.ClientConn,
+	mongo01 *mongo.Client,
 ) *Server {
 	secret := os.Getenv("JWT_SECRET")
 	tokenDuration, err := time.ParseDuration(os.Getenv("JWT_DURATION"))
@@ -44,7 +46,7 @@ func New(
 	}
 
 	return &Server{
-		provider:          db.NewProvider(db01),
+		provider:          db.NewProvider(db01, mongo01),
 		announcementConn:  conn01,
 		manager:           manager.NewJWTManager(secret, tokenDuration),
 		TaskServiceServer: nil,

@@ -1105,8 +1105,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						}
 						logrus.Println(res)
 
-						task.Childs[i].IsParentActive = false
-						reUpdate = true
+						// task.Childs[i].IsParentActive = false
+						// reUpdate = true
 					}
 				}
 			} else {
@@ -1155,8 +1155,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						}
 						logrus.Println(res)
 
-						task.Childs[i].IsParentActive = false
-						reUpdate = true
+						// task.Childs[i].IsParentActive = false
+						// reUpdate = true
 					}
 				}
 			} else {

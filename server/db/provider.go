@@ -4,6 +4,7 @@ import (
 	"context"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )
 
@@ -20,9 +21,13 @@ type Provider interface {
 }
 
 type GormProvider struct {
-	db_main *gorm.DB
+	db_main      *gorm.DB
+	mongo_client *mongo.Client
 }
 
-func NewProvider(db *gorm.DB) *GormProvider {
-	return &GormProvider{db_main: db.Debug()}
+func NewProvider(db *gorm.DB, mongo *mongo.Client) *GormProvider {
+	return &GormProvider{
+		db_main:      db.Debug(),
+		mongo_client: mongo,
+	}
 }

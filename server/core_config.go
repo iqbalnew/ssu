@@ -27,6 +27,8 @@ type Config struct {
 
 	AmqpURI string `config:"AMQP_URI`
 
+	MongoURI string `config:"MONGO_URI"`
+
 	AnnouncementService string `config:"ANNOUNCEMENT_SERVICE"`
 	// AccountService      string `config:"ACCOUNT_SERVICE"`
 	// CompanyService      string `config:"COMPANY_SERVICE"`
@@ -50,6 +52,7 @@ func initConfig() {
 		Dsn:                 getEnv("DB_DSN", ""),
 		AmqpURI:             getEnv("AMQP_URI", ""),
 		AnnouncementService: getEnv("ANNOUNCEMENT_SERVICE", ":9091"),
+		MongoURI:            getEnv("MONGO_URI", "mongodb://root:12345@mongo:27017/"),
 		// AccountService:      os.Getenv("ACCOUNT_SERVICE"),
 		// CompanyService:      os.Getenv("COMPANY_SERVICE"),
 	}
