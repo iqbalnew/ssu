@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/jwt"
+	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

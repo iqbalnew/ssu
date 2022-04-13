@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/jwt"
+	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"

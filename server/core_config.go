@@ -29,7 +29,12 @@ type Config struct {
 
 	MongoURI string `config:"MONGO_URI"`
 
+	LoggerPort string `config:"LOGGER_PORT"`
+	LoggerHost string `config:"LOGGER_HOST"`
+	LoggerTag  string `config:"LOGGER_TAG"`
+
 	AnnouncementService string `config:"ANNOUNCEMENT_SERVICE"`
+
 	// AccountService      string `config:"ACCOUNT_SERVICE"`
 	// CompanyService      string `config:"COMPANY_SERVICE"`
 }
@@ -53,6 +58,9 @@ func initConfig() {
 		AmqpURI:             getEnv("AMQP_URI", ""),
 		AnnouncementService: getEnv("ANNOUNCEMENT_SERVICE", ":9091"),
 		MongoURI:            getEnv("MONGO_URI", "mongodb://root:12345@mongo:27017/"),
+		LoggerPort:          getEnv("LOGGER_PORT", ""),
+		LoggerHost:          getEnv("LOGGER_HOST", ""),
+		LoggerTag:           getEnv("LOGGER_TAG", "addons.task.service"),
 		// AccountService:      os.Getenv("ACCOUNT_SERVICE"),
 		// CompanyService:      os.Getenv("COMPANY_SERVICE"),
 	}

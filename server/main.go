@@ -14,6 +14,7 @@ import (
 	"net"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
+	customLogger "bitbucket.bri.co.id/scm/addons/addons-task-service/server/logger"
 
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/api"
 
@@ -194,7 +195,8 @@ func grpcServer(port int) error {
 		return err
 	}
 
-	apiServer := api.New(db_main, announcementConn, mongo_client)
+	logger := customLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
+	apiServer := api.New(db_main, announcementConn, mongo_client, logger)
 	authInterceptor := api.NewAuthInterceptor(apiServer.GetManager())
 
 	unaryInterceptorOpt := grpc.UnaryInterceptor(api.UnaryInterceptors(authInterceptor))

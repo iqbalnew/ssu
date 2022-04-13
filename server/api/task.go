@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/db"
+	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
 	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
-	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/jwt"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
@@ -394,6 +394,18 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 				Username: "",
 			}
 		}
+	} else {
+		me, err := s.manager.GetMeFromJWT(ctx, "")
+		if err == nil {
+			if getEnv("ENV", "DEV") != "LOCAL" {
+				s.logger.InfoUser(
+					"task-save",
+					me.UserID,
+					me.CompanyID,
+					fmt.Sprintf("taskID: %d", req.TaskID),
+				)
+			}
+		}
 	}
 
 	task.Step = 3
@@ -594,6 +606,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			currentUser = &manager.VerifyTokenRes{
 				UserID:   1,
 				Username: "",
+			}
+		}
+	} else {
+		me, err := s.manager.GetMeFromJWT(ctx, "")
+		if err == nil {
+			if getEnv("ENV", "DEV") != "LOCAL" {
+				s.logger.InfoUser(
+					"task-action",
+					me.UserID,
+					me.CompanyID,
+					fmt.Sprintf("SetTask taskID: %d, action: %s", req.TaskID, req.Action),
+				)
 			}
 		}
 	}

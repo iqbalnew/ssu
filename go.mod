@@ -29,6 +29,7 @@ require (
 
 require (
 	github.com/elliotchance/sshtunnel v1.3.1
+	github.com/fluent/fluent-logger-golang v1.9.0
 	github.com/speps/go-hashids v2.0.0+incompatible
 	github.com/spf13/viper v1.10.1
 	go.mongodb.org/mongo-driver v1.9.0
@@ -59,6 +60,7 @@ require (
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
+	github.com/philhofer/fwd v1.1.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
@@ -68,6 +70,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
+	github.com/tinylib/msgp v1.1.6 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.0.2 // indirect
 	github.com/xdg-go/stringprep v1.0.2 // indirect

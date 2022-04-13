@@ -27,10 +27,12 @@ type JWTManager struct {
 
 type UserClaims struct {
 	jwt.StandardClaims
-	UserType     string              `json:"user_type"`
-	ProductRoles []*ProductAuthority `json:"product_roles"`
-	Authorities  []string            `json:"authorities"`
-	CompanyIDs   string              `json:"company_ids"`
+	UserType            string              `json:"user_type"`
+	ProductRoles        []*ProductAuthority `json:"product_roles"`
+	Authorities         []string            `json:"authorities"`
+	EncryptedCompanyIDs string              `json:"company_ids"`
+	P                   string              `json:"p"`
+	E                   string              `json:"e"`
 }
 
 type CurrentUser struct {
@@ -38,6 +40,9 @@ type CurrentUser struct {
 	FilterMe    string   `json:"filter_me"`
 	StatusOrder []string `json:"status_order"`
 	TaskFilter  string   `json:"task_filter"`
+	UserID      string
+	CompanyID   string
+	CompanyIDs  []uint64
 }
 
 type VerifyTokenRes struct {
@@ -164,14 +169,14 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 		return nil, status.Errorf(codes.PermissionDenied, "Authority Denied")
 	}
 
+	key := getEnv("JWT_AES_KEY", "Odj12345*12345678901234567890123")
+	aes := customAES.NewCustomAES(key)
+
 	currentUser.TaskFilter = ""
 	if currentUser.UserType == "ca" || currentUser.UserType == "cu" {
 		currentUser.TaskFilter = "data.user.companyID:"
 
-		key := getEnv("JWT_AES_KEY", "Odj12345*12345678901234567890123")
-		aes := customAES.NewCustomAES(key)
-
-		decrypted, err := aes.Decrypt(userClaims.CompanyIDs)
+		decrypted, err := aes.Decrypt(userClaims.EncryptedCompanyIDs)
 		if err != nil {
 			logrus.Errorf("[api.auth][func:VerifyToken][05] Failed to decrypt companyIDs: %v", err)
 			return nil, status.Errorf(codes.Internal, "Server error")
@@ -185,6 +190,8 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 				return nil, status.Errorf(codes.Internal, "Server error")
 			}
 
+			currentUser.CompanyIDs = ids
+
 			for i, v := range ids {
 				if i == 0 {
 					currentUser.TaskFilter = currentUser.TaskFilter + fmt.Sprintf("%d", v)
@@ -192,6 +199,22 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 					currentUser.TaskFilter = currentUser.TaskFilter + fmt.Sprintf(",%d", v)
 				}
 			}
+		}
+	}
+
+	if userClaims.P != "" {
+		currentUser.UserID, err = aes.Decrypt(userClaims.P)
+		if err != nil {
+			logrus.Errorf("[api.auth][func:VerifyToken][05] Failed to decrypt Principal: %v", err)
+			return nil, status.Errorf(codes.Internal, "Server error")
+		}
+	}
+
+	if userClaims.E != "" {
+		currentUser.CompanyID, err = aes.Decrypt(userClaims.E)
+		if err != nil {
+			logrus.Errorf("[api.auth][func:VerifyToken][05] Failed to decrypt Entity: %v", err)
+			return nil, status.Errorf(codes.Internal, "Server error")
 		}
 	}
 

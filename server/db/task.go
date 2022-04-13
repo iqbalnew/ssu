@@ -249,6 +249,10 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 
 		if len(childs) > 0 && updateChild {
 
+			for i := range childs {
+				childs[i].ParentID = &task.TaskID
+			}
+
 			if task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
 				if err := p.db_main.Where("parent_id", task.TaskID).Delete(&pb.TaskORM{}).Error; err != nil {
 					logrus.Errorln(err)
@@ -256,9 +260,9 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 				}
 			}
 
-			for i := range childs {
-				childs[i].ParentID = &task.TaskID
-			}
+			logrus.Println()
+			logrus.Printf("ParentID: %d", task.TaskID)
+			logrus.Println("Update Childs")
 
 			if err := p.db_main.Clauses(clause.OnConflict{
 				Columns:   []clause.Column{{Name: "task_id"}},
