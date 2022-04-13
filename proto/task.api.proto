@@ -126,10 +126,37 @@ service TaskService {
 
     rpc RejectBySystem(RejectBySystemReq) returns (RejectBySystemRes);
 
-    rpc TestLogger(LoggerTestReq) returns (LoggerTestRes);
+    rpc TestLogger(LoggerTestReq) returns (LoggerTestRes){
+        option (google.api.http) = {
+            post: "/api/task/test/logger"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            security: {}
+        };
+    }
+
+    rpc TestActivityLog(ActivityLogTestReq) returns (ActivityLogTestRes){
+        option (google.api.http) = {
+            post: "/api/task/test/activity-log"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            security: {}
+        };
+    }
 
 }
 
+message ActivityLogTestReq {
+    string command = 1;
+    string type = 2;
+    uint64 taskID = 3;
+}
+
+message ActivityLogTestRes {
+    string message = 1;
+}
 
 message LoggerTestReq {
     string message = 1;

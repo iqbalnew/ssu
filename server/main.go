@@ -192,7 +192,7 @@ func grpcServer(port int) error {
 		return err
 	}
 
-	mongodbClient := mongoClient.NewCLient(config.MongoURI)
+	mongodbClient := mongoClient.NewCLient(config.MongoURI, "task_log", "logs")
 	defer mongodbClient.Close()
 
 	logger := customLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)

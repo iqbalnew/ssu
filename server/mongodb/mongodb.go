@@ -10,10 +10,12 @@ import (
 )
 
 type MongoDB struct {
-	client *mongo.Client
+	client     *mongo.Client
+	Database   *mongo.Database
+	Collection *mongo.Collection
 }
 
-func NewCLient(connection string) *MongoDB {
+func NewCLient(connection string, database string, collection string) *MongoDB {
 	logrus.Printf("Mongo Db - Client Connecting")
 
 	mongo_client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(connection))
@@ -25,10 +27,15 @@ func NewCLient(connection string) *MongoDB {
 		panic(err)
 	}
 
+	db := mongo_client.Database(database)
+	coll := db.Collection(collection)
+
 	logrus.Printf("Mongo Db - Connected")
 
 	return &MongoDB{
-		client: mongo_client,
+		client:     mongo_client,
+		Database:   db,
+		Collection: coll,
 	}
 }
 
