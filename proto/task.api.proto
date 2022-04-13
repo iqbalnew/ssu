@@ -126,4 +126,15 @@ service TaskService {
 
     rpc RejectBySystem(RejectBySystemReq) returns (RejectBySystemRes);
 
+    rpc TestLogger(LoggerTestReq) returns (LoggerTestRes);
+
+}
+
+
+message LoggerTestReq {
+    string message = 1;
+}
+
+message LoggerTestRes {
+    string message = 1;
 }

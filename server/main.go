@@ -15,6 +15,7 @@ import (
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	customLogger "bitbucket.bri.co.id/scm/addons/addons-task-service/server/logger"
+	mongoClient "bitbucket.bri.co.id/scm/addons/addons-task-service/server/mongodb"
 
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/api"
 
@@ -68,7 +69,6 @@ func grpcServerCmd() cli.Command {
 			port := c.Int("port")
 
 			startDBConnection()
-			// startMongoConnection()
 
 			go func() {
 				if err := grpcServer(port); err != nil {
@@ -83,7 +83,6 @@ func grpcServerCmd() cli.Command {
 			<-ch
 
 			closeDBConnections()
-			// closeMongoConnections()
 
 			logrus.Println("Stopping RPC server")
 			s.Stop()
@@ -153,7 +152,6 @@ func grpcGatewayServerCmd() cli.Command {
 			rpcPort, httpPort, grpcEndpoint := c.Int("port1"), c.Int("port2"), c.String("grpc-endpoint")
 
 			startDBConnection()
-			// startMongoConnection()
 
 			go func() {
 				if err := grpcServer(rpcPort); err != nil {
@@ -174,7 +172,6 @@ func grpcGatewayServerCmd() cli.Command {
 			<-ch
 
 			closeDBConnections()
-			// closeMongoConnections()
 
 			logrus.Println("Stopping RPC server")
 			s.GracefulStop()
@@ -195,9 +192,13 @@ func grpcServer(port int) error {
 		return err
 	}
 
+	mongodbClient := mongoClient.NewCLient(config.MongoURI)
+	defer mongodbClient.Close()
+
 	logger := customLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
 	defer logger.Close()
-	apiServer := api.New(db_main, announcementConn, mongo_client, logger)
+
+	apiServer := api.New(db_main, announcementConn, mongodbClient, logger)
 	authInterceptor := api.NewAuthInterceptor(apiServer.GetManager())
 
 	unaryInterceptorOpt := grpc.UnaryInterceptor(api.UnaryInterceptors(authInterceptor))

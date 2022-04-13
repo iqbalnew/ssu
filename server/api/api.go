@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -15,6 +14,7 @@ import (
 	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	logger "bitbucket.bri.co.id/scm/addons/addons-task-service/server/logger"
+	mongoClient "bitbucket.bri.co.id/scm/addons/addons-task-service/server/mongodb"
 
 	"github.com/sirupsen/logrus"
 )
@@ -39,7 +39,7 @@ type Server struct {
 func New(
 	db01 *gorm.DB,
 	conn01 *grpc.ClientConn,
-	mongo01 *mongo.Client,
+	mongo01 *mongoClient.MongoDB,
 	logger *logger.Logger,
 ) *Server {
 	secret := os.Getenv("JWT_SECRET")
@@ -56,6 +56,11 @@ func New(
 
 		TaskServiceServer: nil,
 	}
+}
+
+func (s *Server) TestLogger(ctx context.Context, req *pb.LoggerTestReq) (*pb.LoggerTestRes, error) {
+	s.logger.Info(req.Message)
+	return &pb.LoggerTestRes{}, nil
 }
 
 func (s *Server) GetManager() *manager.JWTManager {

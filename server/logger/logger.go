@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"os"
 	"strconv"
 	"time"
 
@@ -14,22 +15,25 @@ type Logger struct {
 }
 
 func NewLogger(port string, host string, tag string) *Logger {
-	portVal, _ := strconv.Atoi(port)
+	if getEnv("ENV", "DEV") != "LOCAL" {
+		portVal, _ := strconv.Atoi(port)
 
-	fluentd, err := fluent.New(fluent.Config{
-		FluentPort: portVal,
-		FluentHost: host,
-	})
-	if err != nil {
-		panic(err)
+		fluentd, err := fluent.New(fluent.Config{
+			FluentPort: portVal,
+			FluentHost: host,
+		})
+		if err != nil {
+			panic(err)
+		}
+
+		logger := &Logger{
+			fluent: fluentd,
+			tag:    tag,
+		}
+
+		return logger
 	}
-
-	logger := &Logger{
-		fluent: fluentd,
-		tag:    tag,
-	}
-
-	return logger
+	return nil
 }
 
 func (l *Logger) Close() {
@@ -46,9 +50,13 @@ func (l *Logger) Error(function string, text string) {
 		"function": function,
 		"error":    text,
 	}
-	err := l.fluent.PostWithTime(l.tag, time.Now(), data)
-	if err != nil {
-		logrus.Errorln("Error on Send Log to Fluentd: ", err)
+	if getEnv("ENV", "DEV") != "LOCAL" {
+		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
+		if err != nil {
+			logrus.Errorln("Error on Send Log to Fluentd: ", err)
+		}
+	} else {
+		logrus.Errorln(data)
 	}
 }
 
@@ -58,9 +66,13 @@ func (l *Logger) ErrorWithData(text string, x interface{}) {
 		"error": text,
 		"data":  x,
 	}
-	err := l.fluent.PostWithTime(l.tag, time.Now(), data)
-	if err != nil {
-		logrus.Errorln("Error on Send Log to Fluentd: ", err)
+	if getEnv("ENV", "DEV") != "LOCAL" {
+		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
+		if err != nil {
+			logrus.Errorln("Error on Send Log to Fluentd: ", err)
+		}
+	} else {
+		logrus.Errorln(data)
 	}
 }
 
@@ -69,9 +81,13 @@ func (l *Logger) Info(text string) {
 		"level": "info",
 		"info":  text,
 	}
-	err := l.fluent.PostWithTime(l.tag, time.Now(), data)
-	if err != nil {
-		logrus.Errorln("Error on Send Log to Fluentd: ", err)
+	if getEnv("ENV", "DEV") != "LOCAL" {
+		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
+		if err != nil {
+			logrus.Errorln("Error on Send Log to Fluentd: ", err)
+		}
+	} else {
+		logrus.Infoln(data)
 	}
 }
 
@@ -81,9 +97,13 @@ func (l *Logger) InfoWithData(text string, x interface{}) {
 		"info":  text,
 		"data":  x,
 	}
-	err := l.fluent.PostWithTime(l.tag, time.Now(), data)
-	if err != nil {
-		logrus.Errorln("Error on Send Log to Fluentd: ", err)
+	if getEnv("ENV", "DEV") != "LOCAL" {
+		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
+		if err != nil {
+			logrus.Errorln("Error on Send Log to Fluentd: ", err)
+		}
+	} else {
+		logrus.Infoln(data)
 	}
 }
 
@@ -95,9 +115,13 @@ func (l *Logger) InfoUser(text string, userID string, companyID string, action s
 		"companyID": companyID,
 		"action":    action,
 	}
-	err := l.fluent.PostWithTime(l.tag, time.Now(), data)
-	if err != nil {
-		logrus.Errorln("Error on Send Log to Fluentd: ", err)
+	if getEnv("ENV", "DEV") != "LOCAL" {
+		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
+		if err != nil {
+			logrus.Errorln("Error on Send Log to Fluentd: ", err)
+		}
+	} else {
+		logrus.Infoln(data)
 	}
 }
 
@@ -106,9 +130,13 @@ func (l *Logger) Debug(text string) {
 		"level": "debug",
 		"debug": text,
 	}
-	err := l.fluent.PostWithTime(l.tag, time.Now(), data)
-	if err != nil {
-		logrus.Errorln("Error on Send Log to Fluentd: ", err)
+	if getEnv("ENV", "DEV") != "LOCAL" {
+		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
+		if err != nil {
+			logrus.Errorln("Error on Send Log to Fluentd: ", err)
+		}
+	} else {
+		logrus.Debugln(data)
 	}
 }
 
@@ -118,8 +146,19 @@ func (l *Logger) DebugWithData(text string, x interface{}) {
 		"debug": text,
 		"data":  x,
 	}
-	err := l.fluent.PostWithTime(l.tag, time.Now(), data)
-	if err != nil {
-		logrus.Errorln("Error on Send Log to Fluentd: ", err)
+	if getEnv("ENV", "DEV") != "LOCAL" {
+		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
+		if err != nil {
+			logrus.Errorln("Error on Send Log to Fluentd: ", err)
+		}
+	} else {
+		logrus.Debugln(data)
 	}
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }

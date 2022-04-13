@@ -1051,6 +1051,14 @@
         }
       }
     },
+    "v1LoggerTestRes": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "v1PaginationResponse": {
       "type": "object",
       "properties": {
