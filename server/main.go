@@ -196,6 +196,7 @@ func grpcServer(port int) error {
 	}
 
 	logger := customLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
+	defer logger.Close()
 	apiServer := api.New(db_main, announcementConn, mongo_client, logger)
 	authInterceptor := api.NewAuthInterceptor(apiServer.GetManager())
 

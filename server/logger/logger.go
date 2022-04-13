@@ -40,10 +40,11 @@ func (l *Logger) PostWithTime(tag string, data map[string]interface{}, time time
 	l.fluent.PostWithTime(tag, time, data)
 }
 
-func (l *Logger) Error(text string) {
+func (l *Logger) Error(function string, text string) {
 	data := map[string]string{
-		"level": "error",
-		"error": text,
+		"level":    "error",
+		"function": function,
+		"error":    text,
 	}
 	err := l.fluent.PostWithTime(l.tag, time.Now(), data)
 	if err != nil {

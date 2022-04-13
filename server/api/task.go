@@ -91,6 +91,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		data, err := list[0].ToPB(ctx)
 		if err != nil {
 			logrus.Errorln(err)
+			s.logger.Error("GetTaskByTypeID", fmt.Sprintf("%v", err))
 			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 		}
 		res.Data = &data
@@ -180,6 +181,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		task, err := v.ToPB(ctx)
 		if err != nil {
 			logrus.Errorln(err)
+			s.logger.Error("GetListTask", fmt.Sprintf("%v", err))
 			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 		}
 		result.Data = append(result.Data, &task)
@@ -329,6 +331,7 @@ func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (
 		task, err := v.ToPB(ctx)
 		if err != nil {
 			logrus.Errorln(err)
+			s.logger.Error("GetListAnnouncement", fmt.Sprintf("%v", err))
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 		result.Data = append(result.Data, &task)
@@ -344,12 +347,13 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 	text, err := aes.Decrypt(req.TaskID)
 	if err != nil {
 		logrus.Errorf("val: %v | %v", req.TaskID, err)
+		s.logger.Error("SaveTaskWithDataEV", fmt.Sprintf("Failed to decrypt taskID, val: %v | %v", req.TaskID, err))
 		return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
 	}
 	taskID, err := strconv.Atoi(text)
 	if err != nil {
 		// handle error
-		fmt.Println(err)
+		s.logger.Error("SaveTaskWithDataEV", fmt.Sprintf("failed to convert to int: %v", err))
 		return nil, status.Errorf(codes.Internal, "Failed to decrypt taskID")
 	}
 
@@ -385,7 +389,6 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	currentUser, err := s.getCurrentUser(ctx)
 	if err != nil {
-		logrus.Errorln(err)
 		if getEnv("ENV", "DEV") == "PROD" {
 			return nil, status.Errorf(codes.Unauthenticated, "%v", err)
 		} else {
@@ -398,6 +401,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		me, err := s.manager.GetMeFromJWT(ctx, "")
 		if err == nil {
 			if getEnv("ENV", "DEV") != "LOCAL" {
+				logrus.Println("Send Log to fluentd")
 				s.logger.InfoUser(
 					"task-save",
 					me.UserID,
@@ -483,12 +487,14 @@ func (s *Server) AssignTypeIDEV(ctx context.Context, req *pb.AssignaTypeIDReques
 	text, err := aes.Decrypt(req.TaskID)
 	if err != nil {
 		logrus.Errorf("val: %v | %v", req.TaskID, err)
+		s.logger.Error("AssignTypeIDEV", fmt.Sprintf("val: %v | %v", req.TaskID, err))
 		return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
 	}
 	taskID, err := strconv.Atoi(text)
 	if err != nil {
 		// handle error
 		fmt.Println(err)
+		s.logger.Error("AssignTypeIDEV", fmt.Sprintf("%v", err))
 		return nil, status.Errorf(codes.Internal, "Failed to decrypt taskID")
 	}
 
@@ -505,6 +511,7 @@ func (s *Server) AssignTypeID(ctx context.Context, req *pb.AssignaTypeIDRequest)
 	data, err := s.provider.FindTaskById(ctx, req.TaskID)
 	if err != nil {
 		logrus.Errorln(err)
+		s.logger.Error("AssignTypeID", fmt.Sprintf("%v", err))
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 	data.FeatureID = req.FeatureID
@@ -526,12 +533,14 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 	text, err := aes.Decrypt(req.TaskID)
 	if err != nil {
 		logrus.Errorf("val: %v | %v", req.TaskID, err)
+		s.logger.Error("SetTaskEV", fmt.Sprintf("val: %v | %v", req.TaskID, err))
 		return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
 	}
 	taskID, err := strconv.Atoi(text)
 	if err != nil {
 		// handle error
 		fmt.Println(err)
+		s.logger.Error("SetTaskEV", fmt.Sprintf("%v", err))
 		return nil, status.Errorf(codes.Internal, "Failed to decrypt taskID")
 	}
 
@@ -612,6 +621,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		me, err := s.manager.GetMeFromJWT(ctx, "")
 		if err == nil {
 			if getEnv("ENV", "DEV") != "LOCAL" {
+				logrus.Println("Send Log to fluentd")
 				s.logger.InfoUser(
 					"task-action",
 					me.UserID,
@@ -910,6 +920,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			announcementConn, err := grpc.Dial(getEnv("ANNOUNCEMENT_SERVICE", ":9091"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to Announcement Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Announcement Service: %v", err))
+
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer announcementConn.Close()
@@ -935,6 +947,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to Company Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
+
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer companyConn.Close()
@@ -991,7 +1005,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9093"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Company Service: %v", err)
+				logrus.Errorln("Failed connect to Account Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Account Service: %v", err))
+
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer accountConn.Close()
@@ -1040,6 +1056,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			notificationConn, err := grpc.Dial(getEnv("NOTIFICATION_SERVICE", ":9094"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to Notification Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Notification Service: %v", err))
+
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer notificationConn.Close()
@@ -1063,6 +1081,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			usersConn, err := grpc.Dial(getEnv("USER_SERVICE", ":9095"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to User Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to User Service: %v", err))
+
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer usersConn.Close()
@@ -1094,7 +1114,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			menuConn, err := grpc.Dial(getEnv("MENU_SERVICE", ":9093"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Company Service: %v", err)
+				logrus.Errorln("Failed connect to Menu Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Menu Service: %v", err))
+
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer menuConn.Close()
@@ -1155,7 +1177,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			menuConn, err := grpc.Dial(getEnv("MENU_SERVICE", ":9096"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Company Service: %v", err)
+				logrus.Errorln("Failed connect to Menu Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Menu Service: %v", err))
+
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer menuConn.Close()
@@ -1205,6 +1229,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9098"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to Role Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Role Service: %v", err))
+
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer roleConn.Close()
@@ -1237,6 +1263,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to Workflow Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer workflowConn.Close()
@@ -1262,7 +1289,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			liquidityConn, err := grpc.Dial(getEnv("LIQUIDITY_SERVICE", ":9010"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Workflow Service: %v", err)
+				logrus.Errorln("Failed connect to Liquidity Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Liquidity Service: %v", err))
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer liquidityConn.Close()
@@ -1289,6 +1317,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			ssoConn, err := grpc.Dial(getEnv("SSO_SERVICE", ":9106"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to SSO Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to SSO Service: %v", err))
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer ssoConn.Close()
@@ -1317,6 +1346,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			ssoConn, err := grpc.Dial(getEnv("SSO_SERVICE", ":9106"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to SSO Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to SSO Service: %v", err))
+
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer ssoConn.Close()
@@ -1344,6 +1375,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			systemConn, err := grpc.Dial(getEnv("SYSTEM_SERVICE", ":9101"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to system Service: %v", err)
+				s.logger.Error("SetTask", fmt.Sprintf("Failed connect to system Service: %v", err))
+
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer systemConn.Close()
@@ -1424,6 +1457,7 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 		data, err := list[0].ToPB(ctx)
 		if err != nil {
 			logrus.Errorln(err)
+			s.logger.Error("GetTaskByID", fmt.Sprintf("Error: %v", err))
 			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 		}
 		res.Data = &data
