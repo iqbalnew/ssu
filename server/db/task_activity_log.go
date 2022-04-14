@@ -35,7 +35,7 @@ type ActivityLogFind struct {
 }
 
 func (p *GormProvider) GetLogByTaskID(ctx context.Context, taskID uint64, perPage int, page int) (*ActivityLogFind, error) {
-	if getEnv("ENV", "LOCAL") == "LOCAL" {
+	if getEnv("ENV", "LOCAL") != "DEV" {
 		return nil, nil
 	}
 	var logs []*ActivityLog
@@ -60,7 +60,7 @@ func (p *GormProvider) GetLogByTaskID(ctx context.Context, taskID uint64, perPag
 }
 
 func (p *GormProvider) GetLogByTaskType(ctx context.Context, taskType string, perPage int, page int) (*ActivityLogFind, error) {
-	if getEnv("ENV", "LOCAL") == "LOCAL" {
+	if getEnv("ENV", "LOCAL") != "DEV" {
 		return nil, nil
 	}
 	var logs []*ActivityLog
