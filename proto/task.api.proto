@@ -127,23 +127,23 @@ service TaskService {
     rpc RejectBySystem(RejectBySystemReq) returns (RejectBySystemRes);
 
     rpc TestLogger(LoggerTestReq) returns (LoggerTestRes){
-        option (google.api.http) = {
-            post: "/api/task/test/logger"
-            body: "*"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            security: {}
-        };
+        // option (google.api.http) = {
+        //     post: "/api/task/test/logger"
+        //     body: "*"
+        // };
+        // option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        //     security: {}
+        // };
     }
 
     rpc TestActivityLog(ActivityLogTestReq) returns (ActivityLogTestRes){
-        option (google.api.http) = {
-            post: "/api/task/test/activity-log"
-            body: "*"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            security: {}
-        };
+        // option (google.api.http) = {
+        //     post: "/api/task/test/activity-log"
+        //     body: "*"
+        // };
+        // option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        //     security: {}
+        // };
     }
 
 }

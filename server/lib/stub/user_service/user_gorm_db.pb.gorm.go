@@ -13,6 +13,7 @@ import (
 )
 
 type UserORM struct {
+	Authority    string     `gorm:"column:Authority"`
 	CompanyID    uint64     `gorm:"column:CompanyID"`
 	CompanyName  string     `gorm:"column:CompanyName"`
 	CreatedAt    *time.Time `gorm:"not null"`
@@ -57,6 +58,7 @@ func (m *User) ToORM(ctx context.Context) (UserORM, error) {
 	to.CreatedByID = m.CreatedByID
 	to.UpdatedByID = m.UpdatedByID
 	to.DeletedByID = m.DeletedByID
+	to.Authority = m.Authority
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -97,6 +99,7 @@ func (m *UserORM) ToPB(ctx context.Context) (User, error) {
 	to.CreatedByID = m.CreatedByID
 	to.UpdatedByID = m.UpdatedByID
 	to.DeletedByID = m.DeletedByID
+	to.Authority = m.Authority
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -459,6 +462,10 @@ func DefaultApplyFieldMaskUser(ctx context.Context, patchee *User, patcher *User
 		}
 		if f == prefix+"DeletedByID" {
 			patchee.DeletedByID = patcher.DeletedByID
+			continue
+		}
+		if f == prefix+"Authority" {
+			patchee.Authority = patcher.Authority
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {
