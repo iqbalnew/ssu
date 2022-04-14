@@ -68,6 +68,20 @@ func (this *LiquiditySchemes) Validate() error {
 			}
 		}
 	}
+	for _, item := range this.Source {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Source", err)
+			}
+		}
+	}
+	for _, item := range this.Beneficiaries {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Beneficiaries", err)
+			}
+		}
+	}
 	return nil
 }
 func (this *LiquiditySources) Validate() error {
@@ -137,5 +151,8 @@ func (this *LiquidityCashflow) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
 		}
 	}
+	return nil
+}
+func (this *TBAValue) Validate() error {
 	return nil
 }
