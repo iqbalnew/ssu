@@ -35,6 +35,9 @@ type ActivityLogFind struct {
 }
 
 func (p *GormProvider) GetLogByTaskID(ctx context.Context, taskID uint64, perPage int, page int) (*ActivityLogFind, error) {
+	if getEnv("ENV", "LOCAL") == "LOCAL" {
+		return nil, nil
+	}
 	var logs []*ActivityLog
 	results := p.mongo.Collection.Find(bson.M{"task_id": taskID})
 
@@ -57,6 +60,9 @@ func (p *GormProvider) GetLogByTaskID(ctx context.Context, taskID uint64, perPag
 }
 
 func (p *GormProvider) GetLogByTaskType(ctx context.Context, taskType string, perPage int, page int) (*ActivityLogFind, error) {
+	if getEnv("ENV", "LOCAL") == "LOCAL" {
+		return nil, nil
+	}
 	var logs []*ActivityLog
 	results := p.mongo.Collection.Find(bson.M{"type": taskType})
 

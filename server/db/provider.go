@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"os"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	mongoClient "bitbucket.bri.co.id/scm/addons/addons-task-service/server/mongodb"
@@ -30,4 +31,11 @@ func NewProvider(db *gorm.DB, mongo *mongoClient.MongoDB) *GormProvider {
 		db_main: db.Debug(),
 		mongo:   mongo,
 	}
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }
