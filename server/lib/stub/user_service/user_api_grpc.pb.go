@@ -29,7 +29,9 @@ type ApiServiceClient interface {
 	GetUserTasks(ctx context.Context, in *ListUserWithTaskRequest, opts ...grpc.CallOption) (*ListUserWithTaskResponse, error)
 	DownloadListUserTasks(ctx context.Context, in *DownloadListUserWithTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	GetUserTaskByID(ctx context.Context, in *GetTaskByIDReq, opts ...grpc.CallOption) (*GetUserWithTaskRes, error)
-	DownloadUserTasks(ctx context.Context, in *ListUserWithTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
+	GetMyTasks(ctx context.Context, in *ListUserWithTaskRequest, opts ...grpc.CallOption) (*ListUserWithTaskResponse, error)
+	GetMyTasksCreatedBy(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ArrayString, error)
+	GetMyTasksApprovedBy(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ArrayString, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	CreateUserTask(ctx context.Context, in *CreateUserTaskRequest, opts ...grpc.CallOption) (*CommonResponse, error)
 	DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*DeleteUserRes, error)
@@ -105,9 +107,27 @@ func (c *apiServiceClient) GetUserTaskByID(ctx context.Context, in *GetTaskByIDR
 	return out, nil
 }
 
-func (c *apiServiceClient) DownloadUserTasks(ctx context.Context, in *ListUserWithTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
-	out := new(httpbody.HttpBody)
-	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/DownloadUserTasks", in, out, opts...)
+func (c *apiServiceClient) GetMyTasks(ctx context.Context, in *ListUserWithTaskRequest, opts ...grpc.CallOption) (*ListUserWithTaskResponse, error) {
+	out := new(ListUserWithTaskResponse)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/GetMyTasks", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetMyTasksCreatedBy(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ArrayString, error) {
+	out := new(ArrayString)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/GetMyTasksCreatedBy", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetMyTasksApprovedBy(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ArrayString, error) {
+	out := new(ArrayString)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/GetMyTasksApprovedBy", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +243,9 @@ type ApiServiceServer interface {
 	GetUserTasks(context.Context, *ListUserWithTaskRequest) (*ListUserWithTaskResponse, error)
 	DownloadListUserTasks(context.Context, *DownloadListUserWithTaskRequest) (*httpbody.HttpBody, error)
 	GetUserTaskByID(context.Context, *GetTaskByIDReq) (*GetUserWithTaskRes, error)
-	DownloadUserTasks(context.Context, *ListUserWithTaskRequest) (*httpbody.HttpBody, error)
+	GetMyTasks(context.Context, *ListUserWithTaskRequest) (*ListUserWithTaskResponse, error)
+	GetMyTasksCreatedBy(context.Context, *Empty) (*ArrayString, error)
+	GetMyTasksApprovedBy(context.Context, *Empty) (*ArrayString, error)
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	CreateUserTask(context.Context, *CreateUserTaskRequest) (*CommonResponse, error)
 	DeleteUser(context.Context, *DeleteUserReq) (*DeleteUserRes, error)
@@ -260,8 +282,14 @@ func (UnimplementedApiServiceServer) DownloadListUserTasks(context.Context, *Dow
 func (UnimplementedApiServiceServer) GetUserTaskByID(context.Context, *GetTaskByIDReq) (*GetUserWithTaskRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserTaskByID not implemented")
 }
-func (UnimplementedApiServiceServer) DownloadUserTasks(context.Context, *ListUserWithTaskRequest) (*httpbody.HttpBody, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DownloadUserTasks not implemented")
+func (UnimplementedApiServiceServer) GetMyTasks(context.Context, *ListUserWithTaskRequest) (*ListUserWithTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMyTasks not implemented")
+}
+func (UnimplementedApiServiceServer) GetMyTasksCreatedBy(context.Context, *Empty) (*ArrayString, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMyTasksCreatedBy not implemented")
+}
+func (UnimplementedApiServiceServer) GetMyTasksApprovedBy(context.Context, *Empty) (*ArrayString, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMyTasksApprovedBy not implemented")
 }
 func (UnimplementedApiServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
@@ -417,20 +445,56 @@ func _ApiService_GetUserTaskByID_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_DownloadUserTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ApiService_GetMyTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListUserWithTaskRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).DownloadUserTasks(ctx, in)
+		return srv.(ApiServiceServer).GetMyTasks(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.service.v1.ApiService/DownloadUserTasks",
+		FullMethod: "/user.service.v1.ApiService/GetMyTasks",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).DownloadUserTasks(ctx, req.(*ListUserWithTaskRequest))
+		return srv.(ApiServiceServer).GetMyTasks(ctx, req.(*ListUserWithTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetMyTasksCreatedBy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetMyTasksCreatedBy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.ApiService/GetMyTasksCreatedBy",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetMyTasksCreatedBy(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetMyTasksApprovedBy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetMyTasksApprovedBy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.ApiService/GetMyTasksApprovedBy",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetMyTasksApprovedBy(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -665,8 +729,16 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_GetUserTaskByID_Handler,
 		},
 		{
-			MethodName: "DownloadUserTasks",
-			Handler:    _ApiService_DownloadUserTasks_Handler,
+			MethodName: "GetMyTasks",
+			Handler:    _ApiService_GetMyTasks_Handler,
+		},
+		{
+			MethodName: "GetMyTasksCreatedBy",
+			Handler:    _ApiService_GetMyTasksCreatedBy_Handler,
+		},
+		{
+			MethodName: "GetMyTasksApprovedBy",
+			Handler:    _ApiService_GetMyTasksApprovedBy_Handler,
 		},
 		{
 			MethodName: "CreateUser",
