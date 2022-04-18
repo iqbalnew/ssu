@@ -13,7 +13,7 @@ import (
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/db"
 	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
-	logger "bitbucket.bri.co.id/scm/addons/addons-task-service/server/logger"
+	addonsLogger "bitbucket.bri.co.id/scm/addons/addons-task-service/server/logger"
 	mongoClient "bitbucket.bri.co.id/scm/addons/addons-task-service/server/mongodb"
 
 	"github.com/sirupsen/logrus"
@@ -31,7 +31,7 @@ type Server struct {
 	provider         *db.GormProvider
 	manager          *manager.JWTManager
 	announcementConn *grpc.ClientConn
-	logger           *logger.Logger
+	logger           *addonsLogger.Logger
 
 	pb.TaskServiceServer
 }
@@ -40,7 +40,7 @@ func New(
 	db01 *gorm.DB,
 	conn01 *grpc.ClientConn,
 	mongo01 *mongoClient.MongoDB,
-	logger *logger.Logger,
+	logger *addonsLogger.Logger,
 ) *Server {
 	secret := os.Getenv("JWT_SECRET")
 	tokenDuration, err := time.ParseDuration(os.Getenv("JWT_DURATION"))
