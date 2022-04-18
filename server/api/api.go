@@ -62,7 +62,9 @@ func New(
 
 func (s *Server) TestLogger(ctx context.Context, req *pb.LoggerTestReq) (*pb.LoggerTestRes, error) {
 	s.logger.Info(req.Message)
-	return &pb.LoggerTestRes{}, nil
+	return &pb.LoggerTestRes{
+		Message: req.Message,
+	}, nil
 }
 
 func (s *Server) GetManager() *manager.JWTManager {
