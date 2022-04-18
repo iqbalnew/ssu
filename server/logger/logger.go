@@ -23,8 +23,10 @@ func NewLogger(port string, host string, tag string) *Logger {
 		portVal, _ := strconv.Atoi(port)
 
 		fluentd, err := fluent.New(fluent.Config{
-			FluentPort: portVal,
-			FluentHost: host,
+			FluentPort:    portVal,
+			FluentHost:    host,
+			MarshalAsJSON: true,
+			RequestAck:    true,
 		})
 		if err != nil {
 			panic(err)
