@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -40,7 +40,23 @@ func (this *Sort) Validate() error {
 func (this *ErrorBodyResponse) Validate() error {
 	return nil
 }
+func (this *ListLiquidityFilter) Validate() error {
+	return nil
+}
 func (this *ListTaskLiquidityRequest) Validate() error {
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+		}
+	}
+	return nil
+}
+func (this *DownloadListTaskLiquidityRequest) Validate() error {
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+		}
+	}
 	return nil
 }
 func (this *ListLiquidityTaskResponse) Validate() error {
@@ -69,15 +85,29 @@ func (this *ListTaskLiquidityRes) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Company", err)
 		}
 	}
-	if this.CurrencyTask != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CurrencyTask); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CurrencyTask", err)
+	if this.Currency != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Currency); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Currency", err)
 		}
 	}
 	for _, item := range this.Cashflow {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
 				return github_com_mwitkow_go_proto_validators.FieldError("Cashflow", err)
+			}
+		}
+	}
+	for _, item := range this.Source {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Source", err)
+			}
+		}
+	}
+	for _, item := range this.Beneficiary {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Beneficiary", err)
 			}
 		}
 	}
@@ -135,31 +165,35 @@ func (this *DetailTaskLiquidityRes) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Company", err)
 		}
 	}
-	if this.CurrencyTask != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CurrencyTask); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CurrencyTask", err)
+	if this.Currency != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Currency); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Currency", err)
 		}
 	}
-	for _, item := range this.Cashflows {
+	for _, item := range this.Cashflow {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Cashflows", err)
+				return github_com_mwitkow_go_proto_validators.FieldError("Cashflow", err)
+			}
+		}
+	}
+	for _, item := range this.Source {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Source", err)
+			}
+		}
+	}
+	for _, item := range this.Beneficiary {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Beneficiary", err)
 			}
 		}
 	}
 	if this.Task != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
-		}
-	}
-	if this.CreatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
-		}
-	}
-	if this.UpdatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
 		}
 	}
 	return nil
@@ -200,6 +234,20 @@ func (this *CreateTaskLiquidityRequest) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Currency", err)
 		}
 	}
+	for _, item := range this.Source {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Source", err)
+			}
+		}
+	}
+	for _, item := range this.Beneficiary {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Beneficiary", err)
+			}
+		}
+	}
 	for _, item := range this.Cashflow {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
@@ -214,6 +262,18 @@ func (this *CreateTaskLiquidityRequest) Validate() error {
 			}
 		}
 	}
+	return nil
+}
+func (this *LiquiditySourceReq) Validate() error {
+	return nil
+}
+func (this *LiquidityBeneficiaryReq) Validate() error {
+	return nil
+}
+func (this *LiquiditySourceRes) Validate() error {
+	return nil
+}
+func (this *LiquidityBeneficiaryRes) Validate() error {
 	return nil
 }
 func (this *CompanyCreateTask) Validate() error {
@@ -234,9 +294,62 @@ func (this *CashflowsCreateTask) Validate() error {
 func (this *CreateTaskLiquidityResponse) Validate() error {
 	return nil
 }
+func (this *DeleteTaskLiquidityResponse) Validate() error {
+	return nil
+}
 func (this *DeleteLiquidityTaskRequest) Validate() error {
 	return nil
 }
-func (this *DeleteTaskLiquidityResponse) Validate() error {
+func (this *DeleteLiquidityTaskResponse) Validate() error {
+	return nil
+}
+func (this *DeleteLiquidityRequest) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *DeleteLiquidityResponse) Validate() error {
+	return nil
+}
+func (this *ListDataRequest) Validate() error {
+	if this.Liquidity != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Liquidity); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Liquidity", err)
+		}
+	}
+	return nil
+}
+func (this *Pagination) Validate() error {
+	return nil
+}
+func (this *Search) Validate() error {
+	return nil
+}
+func (this *ListDataResponse) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
+func (this *ListTBAValueResponse) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
 	return nil
 }

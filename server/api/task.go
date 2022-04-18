@@ -399,6 +399,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	} else {
 		// me, err := s.manager.GetMeFromJWT(ctx, "")
+
 		// if err == nil {
 		// 	if getEnv("ENV", "DEV") != "LOCAL" {
 		// 		logrus.Println("Send Log to fluentd")
@@ -619,6 +620,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 	} else {
 		// me, err := s.manager.GetMeFromJWT(ctx, "")
+
 		// if err == nil {
 		// 	if getEnv("ENV", "DEV") != "LOCAL" {
 		// 		logrus.Println("Send Log to fluentd")
@@ -1284,6 +1286,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			logrus.Println(res)
 
 		case "Liquidity":
+			logrus.Println("Liquidity")
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1304,7 +1307,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data.Data = &liquidityTask
 			data.TaskID = task.TaskID
 
-			res, err := client.CreateLiquidity(ctx, &data)
+			res, err := client.CreateLiquidity(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
