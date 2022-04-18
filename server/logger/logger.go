@@ -22,12 +22,16 @@ func NewLogger(port string, host string, tag string) *Logger {
 	if getEnv("ENV", "DEV") != "LOCAL" {
 		portVal, _ := strconv.Atoi(port)
 
-		fluentd, err := fluent.New(fluent.Config{
+		config := fluent.Config{
 			FluentPort:    portVal,
 			FluentHost:    host,
 			MarshalAsJSON: true,
 			RequestAck:    true,
-		})
+		}
+
+		logrus.Println("MarshalAsJson : ", config.MarshalAsJSON)
+
+		fluentd, err := fluent.New(config)
 		if err != nil {
 			panic(err)
 		}
