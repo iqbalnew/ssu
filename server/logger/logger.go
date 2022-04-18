@@ -89,10 +89,11 @@ func (l *Logger) Info(text string) {
 		now := time.Now()
 		logrus.Println("Sending log to fluentd")
 		logrus.Println(data)
-		logrus.Println(l.tag)
+		logrus.Println(getEnv("LOGGER_TAG", ""))
 		logrus.Println(now.String())
+		logrus.Println(l)
 		logrus.Println(l.fluent)
-		err := l.fluent.PostWithTime(l.tag, now, data)
+		err := l.fluent.PostWithTime(getEnv("LOGGER_TAG", ""), now, data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
 		}
