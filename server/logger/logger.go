@@ -87,13 +87,7 @@ func (l *Logger) Info(text string) {
 	}
 	if getEnv("ENV", "DEV") != "LOCAL" {
 		now := time.Now()
-		logrus.Println("Sending log to fluentd")
-		logrus.Println(data)
-		logrus.Println(getEnv("LOGGER_TAG", ""))
-		logrus.Println(now.String())
-		logrus.Println(l)
-		 
-		err := l.fluent.PostWithTime(getEnv("LOGGER_TAG", ""), now, data)
+		err := l.fluent.PostWithTime(l.tag, now, data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
 		}

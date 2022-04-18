@@ -48,8 +48,6 @@ func New(
 		logrus.Panic(err)
 	}
 
-	logrus.Println("(2) api.go :", logger)
-
 	server := &Server{
 		provider:         db.NewProvider(db01, mongo01),
 		announcementConn: conn01,
@@ -58,8 +56,6 @@ func New(
 
 		TaskServiceServer: nil,
 	}
-
-	logrus.Println("(3) api.go :", server.logger)
 
 	return server
 }

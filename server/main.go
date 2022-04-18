@@ -196,18 +196,15 @@ func grpcServer(port int) error {
 	var logger *addonsLogger.Logger
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
 		logrus.Println("[starting utilit] Connecting to Mongo ")
-		mongodbClient := mongoClient.NewCLient(config.MongoURI, "task_log", "logs")
+		mongodbClient = mongoClient.NewCLient(config.MongoURI, "task_log", "logs")
 		defer mongodbClient.Close()
 
 		logrus.Println("[stating utility] Connecting to Fluentd ")
 		logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
 		defer logger.Close()
 
-		logrus.Println("(1) main.go :", logger)
-
 	}
 
-	logrus.Println("(1.1) main.go :", logger)
 	apiServer := api.New(db_main, announcementConn, mongodbClient, logger)
 	authInterceptor := api.NewAuthInterceptor(apiServer.GetManager())
 
