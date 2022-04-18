@@ -194,7 +194,7 @@ func grpcServer(port int) error {
 
 	var mongodbClient *mongoClient.MongoDB
 	var logger *customLogger.Logger
-	if getEnv("ENV", "LOCAL") == "DEV" {
+	if getEnv("ENV", "LOCAL") != "LOCAL" {
 		logrus.Println("[starting utilit] Connecting to Mongo ")
 		mongodbClient := mongoClient.NewCLient(config.MongoURI, "task_log", "logs")
 		defer mongodbClient.Close()
