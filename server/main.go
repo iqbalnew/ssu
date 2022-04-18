@@ -199,7 +199,7 @@ func grpcServer(port int) error {
 		mongodbClient := mongoClient.NewCLient(config.MongoURI, "task_log", "logs")
 		defer mongodbClient.Close()
 
-		logrus.Println("[stating utility] Connectiong to Fluentd ")
+		logrus.Println("[stating utility] Connecting to Fluentd ")
 		logger := customLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
 		defer logger.Close()
 	}

@@ -15,6 +15,10 @@ type Logger struct {
 }
 
 func NewLogger(port string, host string, tag string) *Logger {
+	logrus.Println("Logger host: ", host)
+	logrus.Println("Logger port: ", port)
+	logrus.Println("Logger tag: ", tag)
+
 	if getEnv("ENV", "DEV") != "LOCAL" {
 		portVal, _ := strconv.Atoi(port)
 
@@ -82,7 +86,13 @@ func (l *Logger) Info(text string) {
 		"info":  text,
 	}
 	if getEnv("ENV", "DEV") != "LOCAL" {
-		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
+		now := time.Now()
+		logrus.Println("Sending log to fluentd")
+		logrus.Println(data)
+		logrus.Println(l.tag)
+		logrus.Println(now.String())
+		logrus.Println(l.fluent)
+		err := l.fluent.PostWithTime(l.tag, now, data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
 		}
