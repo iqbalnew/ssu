@@ -202,6 +202,9 @@ func grpcServer(port int) error {
 		logrus.Println("[stating utility] Connecting to Fluentd ")
 		logger := customLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
 		defer logger.Close()
+
+		logrus.Println("(1) main.go :", logger)
+
 	}
 
 	apiServer := api.New(db_main, announcementConn, mongodbClient, logger)

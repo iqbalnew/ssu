@@ -48,7 +48,9 @@ func New(
 		logrus.Panic(err)
 	}
 
-	return &Server{
+	logrus.Println("(2) api.go :", logger)
+
+	server := &Server{
 		provider:         db.NewProvider(db01, mongo01),
 		announcementConn: conn01,
 		manager:          manager.NewJWTManager(secret, tokenDuration),
@@ -56,6 +58,10 @@ func New(
 
 		TaskServiceServer: nil,
 	}
+
+	logrus.Println("(3) api.go :", server.logger)
+
+	return server
 }
 
 func (s *Server) TestLogger(ctx context.Context, req *pb.LoggerTestReq) (*pb.LoggerTestRes, error) {
