@@ -15,13 +15,23 @@ type Logger struct {
 }
 
 func NewLogger(port string, host string, tag string) *Logger {
+	logrus.Println("Logger host: ", host)
+	logrus.Println("Logger port: ", port)
+	logrus.Println("Logger tag: ", tag)
+
 	if getEnv("ENV", "DEV") != "LOCAL" {
 		portVal, _ := strconv.Atoi(port)
 
-		fluentd, err := fluent.New(fluent.Config{
-			FluentPort: portVal,
-			FluentHost: host,
-		})
+		config := fluent.Config{
+			FluentPort:    portVal,
+			FluentHost:    host,
+			MarshalAsJSON: true,
+			RequestAck:    true,
+		}
+
+		logrus.Println("MarshalAsJson : ", config.MarshalAsJSON)
+
+		fluentd, err := fluent.New(config)
 		if err != nil {
 			panic(err)
 		}
@@ -82,7 +92,9 @@ func (l *Logger) Info(text string) {
 		"info":  text,
 	}
 	if getEnv("ENV", "DEV") != "LOCAL" {
-		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
+		now := time.Now()
+		logrus.Println("Logger send: ", data)
+		err := l.fluent.PostWithTime(l.tag, now, data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
 		}

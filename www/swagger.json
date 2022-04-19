@@ -695,6 +695,72 @@
         ]
       }
     },
+    "/api/task/test/activity-log": {
+      "post": {
+        "operationId": "TaskService_TestActivityLog",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ActivityLogTestRes"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ActivityLogTestReq"
+            }
+          }
+        ],
+        "tags": [
+          "TaskService"
+        ],
+        "security": []
+      }
+    },
+    "/api/task/test/logger": {
+      "post": {
+        "operationId": "TaskService_TestLogger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LoggerTestRes"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1LoggerTestReq"
+            }
+          }
+        ],
+        "tags": [
+          "TaskService"
+        ],
+        "security": []
+      }
+    },
     "/api/task/{taskID}": {
       "put": {
         "summary": "Set status task by action",
@@ -828,6 +894,21 @@
           "items": {
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "v1ActivityLogTestReq": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "taskID": {
+          "type": "string",
+          "format": "uint64"
         }
       }
     },
@@ -1056,6 +1137,14 @@
         },
         "pagination": {
           "$ref": "#/definitions/v1PaginationResponse"
+        }
+      }
+    },
+    "v1LoggerTestReq": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
         }
       }
     },

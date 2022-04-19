@@ -14,7 +14,7 @@ import (
 	"net"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
-	customLogger "bitbucket.bri.co.id/scm/addons/addons-task-service/server/logger"
+	addonsLogger "bitbucket.bri.co.id/scm/addons/addons-task-service/server/logger"
 	mongoClient "bitbucket.bri.co.id/scm/addons/addons-task-service/server/mongodb"
 
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/api"
@@ -193,13 +193,16 @@ func grpcServer(port int) error {
 	}
 
 	var mongodbClient *mongoClient.MongoDB
-	var logger *customLogger.Logger
-	if getEnv("ENV", "LOCAL") == "DEV" {
-		mongodbClient := mongoClient.NewCLient(config.MongoURI, "task_log", "logs")
+	var logger *addonsLogger.Logger
+	if getEnv("ENV", "LOCAL") != "LOCAL" {
+		logrus.Println("[starting utilit] Connecting to Mongo ")
+		mongodbClient = mongoClient.NewCLient(config.MongoURI, "task_log", "logs")
 		defer mongodbClient.Close()
 
-		logger := customLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
+		logrus.Println("[stating utility] Connecting to Fluentd ")
+		logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
 		defer logger.Close()
+
 	}
 
 	apiServer := api.New(db_main, announcementConn, mongodbClient, logger)
