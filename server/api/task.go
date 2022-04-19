@@ -887,8 +887,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		Data:    &taskPb,
 	}
 
-	fmt.Println("Menu:Licensecl 1")
-
 	if sendTask {
 		switch task.Type {
 		case "Announcement":

@@ -7,6 +7,8 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "google.golang.org/protobuf/types/known/structpb"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
@@ -39,7 +41,21 @@ func (this *JWTTokenResponse) Validate() error {
 func (this *ListRequest) Validate() error {
 	return nil
 }
-func (this *ListNotificationResponse) Validate() error {
+func (this *NotificationFilter) Validate() error {
+	return nil
+}
+func (this *GetNotificationsReq) Validate() error {
+	if this.Notification != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Notification); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Notification", err)
+		}
+	}
+	return nil
+}
+func (this *Sort) Validate() error {
+	return nil
+}
+func (this *ListNotificationRes) Validate() error {
 	for _, item := range this.Data {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
@@ -47,12 +63,27 @@ func (this *ListNotificationResponse) Validate() error {
 			}
 		}
 	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
+func (this *ErrorBodyResponse) Validate() error {
 	return nil
 }
 func (this *CreateNotificationRequest) Validate() error {
 	if this.Notification != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Notification); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Notification", err)
+		}
+	}
+	for _, item := range this.Company {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Company", err)
+			}
 		}
 	}
 	if this.NotificationEmail != nil {
@@ -63,6 +94,16 @@ func (this *CreateNotificationRequest) Validate() error {
 	if this.NotificationSMS != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.NotificationSMS); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("NotificationSMS", err)
+		}
+	}
+	if this.Event != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Event); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Event", err)
+		}
+	}
+	if this.Client != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Client); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Client", err)
 		}
 	}
 	return nil
@@ -79,9 +120,23 @@ func (this *CommonResponse) Validate() error {
 	return nil
 }
 func (this *CreateNotificationTaskResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *CreateNotificationTaskResponseData) Validate() error {
+	return nil
+}
+func (this *GetNotificationTaskByIDRequest) Validate() error {
 	return nil
 }
 func (this *GetNotificationTaskRequest) Validate() error {
+	return nil
+}
+func (this *PaginationResponse) Validate() error {
 	return nil
 }
 func (this *GetNotificationTaskResponse) Validate() error {
@@ -90,6 +145,19 @@ func (this *GetNotificationTaskResponse) Validate() error {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
 				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
+func (this *GetDetailNotificationTaskResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 		}
 	}
 	return nil
@@ -108,6 +176,16 @@ func (this *CreateNotificationTask) Validate() error {
 	return nil
 }
 func (this *NotificationTaskDto) Validate() error {
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
 	return nil
 }
 func (this *ListNotificationModuleResponse) Validate() error {
@@ -148,5 +226,14 @@ func (this *BRIGateNotificationResponse) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Detail", err)
 		}
 	}
+	return nil
+}
+func (this *FileListNotificationTaskRequest) Validate() error {
+	return nil
+}
+func (this *SendNotificationRequest) Validate() error {
+	return nil
+}
+func (this *SendNotificationResponse) Validate() error {
 	return nil
 }
