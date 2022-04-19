@@ -23,6 +23,7 @@ import (
 	system_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/system_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
+	abonnement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/abonnement_service"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -1390,6 +1391,29 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
 			res, err := systemClient.CreateSystem(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
+		case "Abonnement":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			abonnementConn, err := grpc.Dial(getEnv("ABONNEMENT_SERVICE", ":9100"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Abonnement Service: %v", err)
+				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Abonnement Service: %v", err))
+
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer abonnementConn.Close()
+
+			abonnementClient := abonnement_pb.NewApiServiceClient(abonnementConn)
+
+			data := abonnement_pb.CreateAbonnementRequest{}
+			json.Unmarshal([]byte(task.Data), &data.Data)
+			data.TaskID = task.TaskID
+			res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
