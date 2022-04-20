@@ -262,6 +262,44 @@ func (manager *JWTManager) GetMeFromAuthService(ctx context.Context, accessToken
 	return user, nil
 }
 
+func (manager *JWTManager) GetMeMD(ctx context.Context) (metadata.MD, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		if len(md["user-userid"]) > 0 {
+			return md, nil
+		}
+
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+
+	}
+
+	// Make RPC using the context with the metadata.
+	var trailer metadata.MD
+
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	authConn, err := grpc.Dial(getEnv("AUTH_SERVICE", ":9105"), opts...)
+	if err != nil {
+		logrus.Errorln("Failed connect to Task Service: %v", err)
+		return nil, status.Errorf(codes.Internal, "Error Internal")
+	}
+	defer authConn.Close()
+
+	authClient := authPb.NewApiServiceClient(authConn)
+
+	_, err = authClient.SetMe(ctx, &authPb.VerifyTokenReq{}, grpc.Trailer(&trailer))
+	if err != nil {
+		return nil, err
+	}
+
+	logrus.Println(trailer)
+
+	md = metadata.Join(md, trailer)
+
+	return md, nil
+}
+
 func getEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value

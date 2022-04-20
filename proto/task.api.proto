@@ -132,7 +132,7 @@ service TaskService {
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            security: {}
+            // security: {}
         };
     }
 

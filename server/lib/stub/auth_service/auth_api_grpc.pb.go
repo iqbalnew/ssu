@@ -27,6 +27,8 @@ type ApiServiceClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*Empty, error)
 	VerifyToken(ctx context.Context, in *VerifyTokenReq, opts ...grpc.CallOption) (*VerifyTokenRes, error)
+	SetMe(ctx context.Context, in *VerifyTokenReq, opts ...grpc.CallOption) (*SetMeRes, error)
+	GetMe(ctx context.Context, in *VerifyTokenReq, opts ...grpc.CallOption) (*FilteredVerifyTokenRes, error)
 	GetTokenBySession(ctx context.Context, in *VerifySessionReq, opts ...grpc.CallOption) (*LoginResponse, error)
 	BricamsVerify(ctx context.Context, in *BricamsVerifyReq, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	BricamsLogin(ctx context.Context, in *BricamsLoginReq, opts ...grpc.CallOption) (*LoginResponse, error)
@@ -76,6 +78,24 @@ func (c *apiServiceClient) VerifyToken(ctx context.Context, in *VerifyTokenReq, 
 	return out, nil
 }
 
+func (c *apiServiceClient) SetMe(ctx context.Context, in *VerifyTokenReq, opts ...grpc.CallOption) (*SetMeRes, error) {
+	out := new(SetMeRes)
+	err := c.cc.Invoke(ctx, "/auth.service.v1.ApiService/SetMe", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetMe(ctx context.Context, in *VerifyTokenReq, opts ...grpc.CallOption) (*FilteredVerifyTokenRes, error) {
+	out := new(FilteredVerifyTokenRes)
+	err := c.cc.Invoke(ctx, "/auth.service.v1.ApiService/GetMe", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) GetTokenBySession(ctx context.Context, in *VerifySessionReq, opts ...grpc.CallOption) (*LoginResponse, error) {
 	out := new(LoginResponse)
 	err := c.cc.Invoke(ctx, "/auth.service.v1.ApiService/GetTokenBySession", in, out, opts...)
@@ -111,6 +131,8 @@ type ApiServiceServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	Logout(context.Context, *LogoutRequest) (*Empty, error)
 	VerifyToken(context.Context, *VerifyTokenReq) (*VerifyTokenRes, error)
+	SetMe(context.Context, *VerifyTokenReq) (*SetMeRes, error)
+	GetMe(context.Context, *VerifyTokenReq) (*FilteredVerifyTokenRes, error)
 	GetTokenBySession(context.Context, *VerifySessionReq) (*LoginResponse, error)
 	BricamsVerify(context.Context, *BricamsVerifyReq) (*httpbody.HttpBody, error)
 	BricamsLogin(context.Context, *BricamsLoginReq) (*LoginResponse, error)
@@ -132,6 +154,12 @@ func (UnimplementedApiServiceServer) Logout(context.Context, *LogoutRequest) (*E
 }
 func (UnimplementedApiServiceServer) VerifyToken(context.Context, *VerifyTokenReq) (*VerifyTokenRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyToken not implemented")
+}
+func (UnimplementedApiServiceServer) SetMe(context.Context, *VerifyTokenReq) (*SetMeRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetMe not implemented")
+}
+func (UnimplementedApiServiceServer) GetMe(context.Context, *VerifyTokenReq) (*FilteredVerifyTokenRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMe not implemented")
 }
 func (UnimplementedApiServiceServer) GetTokenBySession(context.Context, *VerifySessionReq) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTokenBySession not implemented")
@@ -227,6 +255,42 @@ func _ApiService_VerifyToken_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_SetMe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).SetMe(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.service.v1.ApiService/SetMe",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).SetMe(ctx, req.(*VerifyTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetMe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetMe(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.service.v1.ApiService/GetMe",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetMe(ctx, req.(*VerifyTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_GetTokenBySession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VerifySessionReq)
 	if err := dec(in); err != nil {
@@ -303,6 +367,14 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VerifyToken",
 			Handler:    _ApiService_VerifyToken_Handler,
+		},
+		{
+			MethodName: "SetMe",
+			Handler:    _ApiService_SetMe_Handler,
+		},
+		{
+			MethodName: "GetMe",
+			Handler:    _ApiService_GetMe_Handler,
 		},
 		{
 			MethodName: "GetTokenBySession",

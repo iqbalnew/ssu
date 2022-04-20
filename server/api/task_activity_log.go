@@ -8,6 +8,7 @@ import (
 )
 
 func (s *Server) TestActivityLog(ctx context.Context, req *pb.ActivityLogTestReq) (*pb.ActivityLogTestRes, error) {
+	
 	task, err := s.GetTaskByID(ctx, &pb.GetTaskByIDReq{
 		ID:   req.TaskID,
 		Type: req.Type,

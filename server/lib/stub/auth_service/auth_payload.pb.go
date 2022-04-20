@@ -13,7 +13,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 )
@@ -579,12 +579,19 @@ type VerifyTokenRes struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	IsValid      bool                `protobuf:"varint,1,opt,name=isValid,proto3" json:"isValid,omitempty"`
-	IsExpired    bool                `protobuf:"varint,2,opt,name=isExpired,proto3" json:"isExpired,omitempty"`
-	UserID       uint64              `protobuf:"varint,3,opt,name=userID,proto3" json:"userID,omitempty"`
-	Username     string              `protobuf:"bytes,4,opt,name=username,proto3" json:"username,omitempty"`
-	UserType     string              `protobuf:"bytes,5,opt,name=userType,proto3" json:"userType,omitempty"`
-	ProductRoles []*ProductAuthority `protobuf:"bytes,6,rep,name=productRoles,proto3" json:"productRoles,omitempty"`
+	IsValid      bool                   `protobuf:"varint,1,opt,name=isValid,proto3" json:"isValid,omitempty"`
+	IsExpired    bool                   `protobuf:"varint,2,opt,name=isExpired,proto3" json:"isExpired,omitempty"`
+	UserID       uint64                 `protobuf:"varint,3,opt,name=userID,proto3" json:"userID,omitempty"`
+	Username     string                 `protobuf:"bytes,4,opt,name=username,proto3" json:"username,omitempty"`
+	UserType     string                 `protobuf:"bytes,5,opt,name=userType,proto3" json:"userType,omitempty"`
+	ProductRoles []*ProductAuthority    `protobuf:"bytes,6,rep,name=productRoles,proto3" json:"productRoles,omitempty"`
+	Authorities  []string               `protobuf:"bytes,7,rep,name=authorities,proto3" json:"authorities,omitempty"`
+	CompanyIDs   []uint64               `protobuf:"varint,8,rep,packed,name=companyIDs,proto3" json:"companyIDs,omitempty"`
+	SessionID    string                 `protobuf:"bytes,9,opt,name=sessionID,proto3" json:"sessionID,omitempty"`
+	CompanyID    uint64                 `protobuf:"varint,10,opt,name=companyID,proto3" json:"companyID,omitempty"`
+	CompanyName  string                 `protobuf:"bytes,11,opt,name=companyName,proto3" json:"companyName,omitempty"`
+	DateTime     string                 `protobuf:"bytes,12,opt,name=dateTime,proto3" json:"dateTime,omitempty"`
+	CreatedAt    *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
 }
 
 func (x *VerifyTokenRes) Reset() {
@@ -661,6 +668,190 @@ func (x *VerifyTokenRes) GetProductRoles() []*ProductAuthority {
 	return nil
 }
 
+func (x *VerifyTokenRes) GetAuthorities() []string {
+	if x != nil {
+		return x.Authorities
+	}
+	return nil
+}
+
+func (x *VerifyTokenRes) GetCompanyIDs() []uint64 {
+	if x != nil {
+		return x.CompanyIDs
+	}
+	return nil
+}
+
+func (x *VerifyTokenRes) GetSessionID() string {
+	if x != nil {
+		return x.SessionID
+	}
+	return ""
+}
+
+func (x *VerifyTokenRes) GetCompanyID() uint64 {
+	if x != nil {
+		return x.CompanyID
+	}
+	return 0
+}
+
+func (x *VerifyTokenRes) GetCompanyName() string {
+	if x != nil {
+		return x.CompanyName
+	}
+	return ""
+}
+
+func (x *VerifyTokenRes) GetDateTime() string {
+	if x != nil {
+		return x.DateTime
+	}
+	return ""
+}
+
+func (x *VerifyTokenRes) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+type SetMeRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Status  bool `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	IsExist bool `protobuf:"varint,2,opt,name=isExist,proto3" json:"isExist,omitempty"`
+}
+
+func (x *SetMeRes) Reset() {
+	*x = SetMeRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_auth_payload_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SetMeRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetMeRes) ProtoMessage() {}
+
+func (x *SetMeRes) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_payload_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetMeRes.ProtoReflect.Descriptor instead.
+func (*SetMeRes) Descriptor() ([]byte, []int) {
+	return file_auth_payload_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *SetMeRes) GetStatus() bool {
+	if x != nil {
+		return x.Status
+	}
+	return false
+}
+
+func (x *SetMeRes) GetIsExist() bool {
+	if x != nil {
+		return x.IsExist
+	}
+	return false
+}
+
+type FilteredVerifyTokenRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	IsValid   bool `protobuf:"varint,1,opt,name=isValid,proto3" json:"isValid,omitempty"`
+	IsExpired bool `protobuf:"varint,2,opt,name=isExpired,proto3" json:"isExpired,omitempty"`
+	// uint64 userID = 3;
+	Username     string              `protobuf:"bytes,4,opt,name=username,proto3" json:"username,omitempty"`
+	UserType     string              `protobuf:"bytes,5,opt,name=userType,proto3" json:"userType,omitempty"`
+	ProductRoles []*ProductAuthority `protobuf:"bytes,6,rep,name=productRoles,proto3" json:"productRoles,omitempty"` // repeated string authoritis = 7;
+}
+
+func (x *FilteredVerifyTokenRes) Reset() {
+	*x = FilteredVerifyTokenRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_auth_payload_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FilteredVerifyTokenRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FilteredVerifyTokenRes) ProtoMessage() {}
+
+func (x *FilteredVerifyTokenRes) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_payload_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FilteredVerifyTokenRes.ProtoReflect.Descriptor instead.
+func (*FilteredVerifyTokenRes) Descriptor() ([]byte, []int) {
+	return file_auth_payload_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *FilteredVerifyTokenRes) GetIsValid() bool {
+	if x != nil {
+		return x.IsValid
+	}
+	return false
+}
+
+func (x *FilteredVerifyTokenRes) GetIsExpired() bool {
+	if x != nil {
+		return x.IsExpired
+	}
+	return false
+}
+
+func (x *FilteredVerifyTokenRes) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *FilteredVerifyTokenRes) GetUserType() string {
+	if x != nil {
+		return x.UserType
+	}
+	return ""
+}
+
+func (x *FilteredVerifyTokenRes) GetProductRoles() []*ProductAuthority {
+	if x != nil {
+		return x.ProductRoles
+	}
+	return nil
+}
+
 var File_auth_payload_proto protoreflect.FileDescriptor
 
 var file_auth_payload_proto_rawDesc = []byte{
@@ -727,7 +918,7 @@ var file_auth_payload_proto_rawDesc = []byte{
 	0x53, 0x45, 0x52, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x55, 0x53, 0x45,
 	0x52, 0x49, 0x44, 0x12, 0x1c, 0x0a, 0x09, 0x53, 0x45, 0x53, 0x53, 0x49, 0x4f, 0x4e, 0x49, 0x44,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x53, 0x45, 0x53, 0x53, 0x49, 0x4f, 0x4e, 0x49,
-	0x44, 0x22, 0xdf, 0x01, 0x0a, 0x0e, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x54, 0x6f, 0x6b, 0x65,
+	0x44, 0x22, 0xd5, 0x03, 0x0a, 0x0e, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x54, 0x6f, 0x6b, 0x65,
 	0x6e, 0x52, 0x65, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x69, 0x73, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x69, 0x73, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x12, 0x1c,
 	0x0a, 0x09, 0x69, 0x73, 0x45, 0x78, 0x70, 0x69, 0x72, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
@@ -741,8 +932,40 @@ var file_auth_payload_proto_rawDesc = []byte{
 	0x28, 0x0b, 0x32, 0x21, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
 	0x65, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x41, 0x75, 0x74, 0x68,
 	0x6f, 0x72, 0x69, 0x74, 0x79, 0x52, 0x0c, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x6f,
-	0x6c, 0x65, 0x73, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x6c, 0x65, 0x73, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x69,
+	0x65, 0x73, 0x18, 0x07, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72,
+	0x69, 0x74, 0x69, 0x65, 0x73, 0x12, 0x1e, 0x0a, 0x0a, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x6e, 0x79,
+	0x49, 0x44, 0x73, 0x18, 0x08, 0x20, 0x03, 0x28, 0x04, 0x52, 0x0a, 0x63, 0x6f, 0x6d, 0x70, 0x61,
+	0x6e, 0x79, 0x49, 0x44, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x49, 0x44, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x49, 0x44, 0x12, 0x1c, 0x0a, 0x09, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x6e, 0x79, 0x49, 0x44,
+	0x18, 0x0a, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x6e, 0x79, 0x49,
+	0x44, 0x12, 0x20, 0x0a, 0x0b, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x6e, 0x79, 0x4e, 0x61, 0x6d, 0x65,
+	0x18, 0x0b, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x6e, 0x79, 0x4e,
+	0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x64, 0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x18,
+	0x0c, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x64, 0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x12,
+	0x38, 0x0a, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x18, 0x0d, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09,
+	0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x22, 0x3c, 0x0a, 0x08, 0x53, 0x65, 0x74,
+	0x4d, 0x65, 0x52, 0x65, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x18, 0x0a,
+	0x07, 0x69, 0x73, 0x45, 0x78, 0x69, 0x73, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07,
+	0x69, 0x73, 0x45, 0x78, 0x69, 0x73, 0x74, 0x22, 0xcf, 0x01, 0x0a, 0x16, 0x46, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x65, 0x64, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x52,
+	0x65, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x69, 0x73, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x07, 0x69, 0x73, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x12, 0x1c, 0x0a, 0x09,
+	0x69, 0x73, 0x45, 0x78, 0x70, 0x69, 0x72, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x09, 0x69, 0x73, 0x45, 0x78, 0x70, 0x69, 0x72, 0x65, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73,
+	0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73,
+	0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x54, 0x79,
+	0x70, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x54, 0x79,
+	0x70, 0x65, 0x12, 0x45, 0x0a, 0x0c, 0x70, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x6f, 0x6c,
+	0x65, 0x73, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e,
+	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f, 0x64, 0x75,
+	0x63, 0x74, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x52, 0x0c, 0x70, 0x72, 0x6f,
+	0x64, 0x75, 0x63, 0x74, 0x52, 0x6f, 0x6c, 0x65, 0x73, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70,
+	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -757,28 +980,33 @@ func file_auth_payload_proto_rawDescGZIP() []byte {
 	return file_auth_payload_proto_rawDescData
 }
 
-var file_auth_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_auth_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_auth_payload_proto_goTypes = []interface{}{
-	(*LoginRequest)(nil),        // 0: auth.service.v1.LoginRequest
-	(*AccessToken)(nil),         // 1: auth.service.v1.AccessToken
-	(*LoginResponse)(nil),       // 2: auth.service.v1.LoginResponse
-	(*HealthCheckResponse)(nil), // 3: auth.service.v1.HealthCheckResponse
-	(*Empty)(nil),               // 4: auth.service.v1.Empty
-	(*ErrorBodyResponse)(nil),   // 5: auth.service.v1.ErrorBodyResponse
-	(*ProductAuthority)(nil),    // 6: auth.service.v1.ProductAuthority
-	(*LogoutRequest)(nil),       // 7: auth.service.v1.LogoutRequest
-	(*VerifyTokenReq)(nil),      // 8: auth.service.v1.VerifyTokenReq
-	(*VerifySessionReq)(nil),    // 9: auth.service.v1.VerifySessionReq
-	(*VerifyTokenRes)(nil),      // 10: auth.service.v1.VerifyTokenRes
+	(*LoginRequest)(nil),           // 0: auth.service.v1.LoginRequest
+	(*AccessToken)(nil),            // 1: auth.service.v1.AccessToken
+	(*LoginResponse)(nil),          // 2: auth.service.v1.LoginResponse
+	(*HealthCheckResponse)(nil),    // 3: auth.service.v1.HealthCheckResponse
+	(*Empty)(nil),                  // 4: auth.service.v1.Empty
+	(*ErrorBodyResponse)(nil),      // 5: auth.service.v1.ErrorBodyResponse
+	(*ProductAuthority)(nil),       // 6: auth.service.v1.ProductAuthority
+	(*LogoutRequest)(nil),          // 7: auth.service.v1.LogoutRequest
+	(*VerifyTokenReq)(nil),         // 8: auth.service.v1.VerifyTokenReq
+	(*VerifySessionReq)(nil),       // 9: auth.service.v1.VerifySessionReq
+	(*VerifyTokenRes)(nil),         // 10: auth.service.v1.VerifyTokenRes
+	(*SetMeRes)(nil),               // 11: auth.service.v1.SetMeRes
+	(*FilteredVerifyTokenRes)(nil), // 12: auth.service.v1.FilteredVerifyTokenRes
+	(*timestamppb.Timestamp)(nil),  // 13: google.protobuf.Timestamp
 }
 var file_auth_payload_proto_depIdxs = []int32{
-	1, // 0: auth.service.v1.LoginResponse.data:type_name -> auth.service.v1.AccessToken
-	6, // 1: auth.service.v1.VerifyTokenRes.productRoles:type_name -> auth.service.v1.ProductAuthority
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	1,  // 0: auth.service.v1.LoginResponse.data:type_name -> auth.service.v1.AccessToken
+	6,  // 1: auth.service.v1.VerifyTokenRes.productRoles:type_name -> auth.service.v1.ProductAuthority
+	13, // 2: auth.service.v1.VerifyTokenRes.createdAt:type_name -> google.protobuf.Timestamp
+	6,  // 3: auth.service.v1.FilteredVerifyTokenRes.productRoles:type_name -> auth.service.v1.ProductAuthority
+	4,  // [4:4] is the sub-list for method output_type
+	4,  // [4:4] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_auth_payload_proto_init() }
@@ -920,6 +1148,30 @@ func file_auth_payload_proto_init() {
 				return nil
 			}
 		}
+		file_auth_payload_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SetMeRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_auth_payload_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FilteredVerifyTokenRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -927,7 +1179,7 @@ func file_auth_payload_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_auth_payload_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

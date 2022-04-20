@@ -63,5 +63,23 @@ func (this *VerifyTokenRes) Validate() error {
 			}
 		}
 	}
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	return nil
+}
+func (this *SetMeRes) Validate() error {
+	return nil
+}
+func (this *FilteredVerifyTokenRes) Validate() error {
+	for _, item := range this.ProductRoles {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("ProductRoles", err)
+			}
+		}
+	}
 	return nil
 }
