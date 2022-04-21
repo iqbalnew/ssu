@@ -30,6 +30,10 @@ func (p *GormProvider) SaveLog(ctx context.Context, log *ActivityLog) error {
 		log.Type = log.Data.Type
 	}
 
+	if log.Data.Status == 7 {
+		log.Action = "deleted"
+	}
+
 	log.Type = strings.Replace(log.Type, ":", "_", -1)
 	log.Type = strings.ToLower(log.Type)
 
