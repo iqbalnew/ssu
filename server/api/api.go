@@ -69,7 +69,7 @@ func (s *Server) TestLogger(ctx context.Context, req *pb.LoggerTestReq) (*pb.Log
 
 	logrus.Println(meMD["user-username"][0])
 
-	// s.logger.Info(req.Message)
+	s.logger.Info(req.Message)
 	return &pb.LoggerTestRes{
 		Message: req.Message,
 	}, nil
