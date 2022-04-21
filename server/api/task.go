@@ -618,8 +618,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	// }
 
 	if len(md[productName]) > 0 {
-		result := []string{}
-		_ = json.Unmarshal([]byte(md[productName][0]), &result)
+		result := strings.Split(md[productName][0], ",")
 		if len(result) > 0 {
 			authorities = result
 		}

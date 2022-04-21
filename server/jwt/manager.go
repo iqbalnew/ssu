@@ -339,24 +339,28 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 
 	ids := strings.Split(md["user-groupids"][0], ",")
 	for _, v := range ids {
-		id, err := strconv.ParseUint(v, 10, 64)
-		if err != nil {
-			logrus.Errorln("Failed to parse groupID: %v", err)
-			logrus.Println("GroupIDs: ", ids)
-			return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+		if len(v) > 0 {
+			id, err := strconv.ParseUint(v, 10, 64)
+			if err != nil {
+				logrus.Errorln("Failed to parse groupID: %v", err)
+				logrus.Println("GroupIDs: ", ids)
+				return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+			}
+			user.GroupIDs = append(user.GroupIDs, id)
 		}
-		user.GroupIDs = append(user.GroupIDs, id)
 	}
 
 	ids = strings.Split(md["user-roleids"][0], ",")
 	for _, v := range ids {
-		id, err := strconv.ParseUint(v, 10, 64)
-		if err != nil {
-			logrus.Errorln("Failed to parse roleID: %v", err)
-			logrus.Println("RoleIDs: ", ids)
-			return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+		if len(v) > 0 {
+			id, err := strconv.ParseUint(v, 10, 64)
+			if err != nil {
+				logrus.Errorln("Failed to parse roleID: %v", err)
+				logrus.Println("RoleIDs: ", ids)
+				return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+			}
+			user.RoleIDs = append(user.RoleIDs, id)
 		}
-		user.RoleIDs = append(user.RoleIDs, id)
 	}
 
 	user.SessionID = md["user-sessionid"][0]
@@ -373,13 +377,7 @@ func (manager *JWTManager) GetProductAuthority(md metadata.MD, productName strin
 	productName = fmt.Sprintf("user-product-%s", productName)
 
 	if len(md[productName]) > 0 {
-		result := []string{}
-		err := json.Unmarshal([]byte(md[productName][0]), &result)
-		if err != nil {
-			logrus.Errorln("Failed to parse md %s authorities: %v", productName, err)
-			logrus.Errorln(md[productName][0])
-			return nil, status.Errorf(codes.Internal, "Error Internal")
-		}
+		result := strings.Split(md[productName][0], ",")
 		if len(result) > 0 {
 			authorities = result
 		}
