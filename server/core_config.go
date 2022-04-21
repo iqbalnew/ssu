@@ -60,7 +60,7 @@ func initConfig() {
 		MongoURI:            getEnv("MONGO_URI", "mongodb://root:12345@mongo:27017/"),
 		LoggerPort:          getEnv("LOGGER_PORT", ""),
 		LoggerHost:          getEnv("LOGGER_HOST", ""),
-		LoggerTag:           getEnv("LOGGER_TAG", "addons.task.service"),
+		LoggerTag:           getEnv("LOGGER_TAG", ""),
 		// AccountService:      os.Getenv("ACCOUNT_SERVICE"),
 		// CompanyService:      os.Getenv("COMPANY_SERVICE"),
 	}
