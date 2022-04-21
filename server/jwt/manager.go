@@ -294,8 +294,6 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 		return nil, err
 	}
 
-	logrus.Println(trailer)
-
 	md = metadata.Join(md, trailer)
 
 	return md, nil
