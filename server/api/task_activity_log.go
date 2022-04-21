@@ -58,20 +58,23 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 	}
 
 	for _, log := range find.Logs {
-		data, err := log.Data.ToPB(ctx)
-		if err != nil {
-			logrus.Errorln("Error Get Activity Logs: ", err)
-			return nil, status.Error(codes.Internal, "Server Error")
-		}
-		reponses.Data = append(reponses.Data, &pb.ActivityLog{
+		data := &pb.ActivityLog{
 			Command:     log.Command,
 			Type:        log.Type,
 			Action:      log.Action,
 			Description: log.Description,
 			Username:    log.Username,
 			CompanyName: log.CompanyName,
-			Task:        &data,
-		})
+		}
+		if req.TaskID > 0 {
+			task, err := log.Data.ToPB(ctx)
+			if err != nil {
+				logrus.Errorln("Error Get Activity Logs: ", err)
+				return nil, status.Error(codes.Internal, "Server Error")
+			}
+			data.Task = &task
+		}
+		reponses.Data = append(reponses.Data, data)
 	}
 
 	return reponses, nil
