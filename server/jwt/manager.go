@@ -335,25 +335,28 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 	user.CompanyName = md["user-companyname"][0]
 	user.UserType = md["user-usertype"][0]
 
-	err = json.Unmarshal([]byte(md["user-authorities"][0]), &user.Authorities)
-	if err != nil {
-		logrus.Errorln("Failed to parse authorities: %v", err)
-		logrus.Println("Authorities: ", md["user-authorities"][0])
-		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+	user.Authorities = strings.Split(md["user-authorities"][0], ",")
+
+	ids := strings.Split(md["user-groupids"][0], ",")
+	for _, v := range ids {
+		id, err := strconv.ParseUint(v, 10, 64)
+		if err != nil {
+			logrus.Errorln("Failed to parse groupID: %v", err)
+			logrus.Println("GroupIDs: ", ids)
+			return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+		}
+		user.GroupIDs = append(user.GroupIDs, id)
 	}
 
-	err = json.Unmarshal([]byte(md["user-groupids"][0]), &user.GroupIDs)
-	if err != nil {
-		logrus.Errorln("Failed to parse groupIDs: %v", err)
-		logrus.Println("GroupIDs: ", md["user-authorities"][0])
-		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
-	}
-
-	err = json.Unmarshal([]byte(md["user-roleids"][0]), &user.RoleIDs)
-	if err != nil {
-		logrus.Errorln("Failed to parse roleIDs: %v", err)
-		logrus.Println("RoleIDs: ", md["user-authorities"][0])
-		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+	ids = strings.Split(md["user-roleids"][0], ",")
+	for _, v := range ids {
+		id, err := strconv.ParseUint(v, 10, 64)
+		if err != nil {
+			logrus.Errorln("Failed to parse roleID: %v", err)
+			logrus.Println("RoleIDs: ", ids)
+			return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+		}
+		user.RoleIDs = append(user.RoleIDs, id)
 	}
 
 	user.SessionID = md["user-sessionid"][0]
