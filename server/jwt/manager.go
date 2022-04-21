@@ -338,18 +338,21 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 	err = json.Unmarshal([]byte(md["user-authorities"][0]), &user.Authorities)
 	if err != nil {
 		logrus.Errorln("Failed to parse authorities: %v", err)
+		logrus.Println("Authorities: ", md["user-authorities"][0])
 		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
 	}
 
 	err = json.Unmarshal([]byte(md["user-groupids"][0]), &user.GroupIDs)
 	if err != nil {
 		logrus.Errorln("Failed to parse groupIDs: %v", err)
+		logrus.Println("GroupIDs: ", md["user-authorities"][0])
 		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
 	}
 
 	err = json.Unmarshal([]byte(md["user-roleids"][0]), &user.RoleIDs)
 	if err != nil {
 		logrus.Errorln("Failed to parse roleIDs: %v", err)
+		logrus.Println("RoleIDs: ", md["user-authorities"][0])
 		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
 	}
 
