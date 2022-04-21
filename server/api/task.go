@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/db"
-	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
 	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
+	abonnement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/abonnement_service"
 	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
@@ -23,7 +23,6 @@ import (
 	system_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/system_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
-	abonnement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/abonnement_service"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -388,16 +387,9 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task, _ := req.Task.ToORM(ctx)
 	var err error
 
-	currentUser, err := s.getCurrentUser(ctx)
+	currentUser, _, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
-		if getEnv("ENV", "DEV") == "PROD" {
-			return nil, status.Errorf(codes.Unauthenticated, "%v", err)
-		} else {
-			currentUser = &manager.VerifyTokenRes{
-				UserID:   1,
-				Username: "",
-			}
-		}
+		return nil, err
 	} else {
 		// me, err := s.manager.GetMeFromJWT(ctx, "")
 
@@ -453,7 +445,10 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		task.Status = 2
 	}
 
+	command := "Create"
+
 	if req.TaskID > 0 {
+		command = "Update"
 		task.TaskID = req.TaskID
 		task.UpdatedByID = currentUser.UserID
 		task.UpdatedByName = currentUser.Username
@@ -477,6 +472,26 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		Data: &pb.Task{
 			TaskID: task.TaskID,
 		},
+	}
+
+	// Save activity Log
+	if getEnv("ENV", "LOCAL") != "LOCAL" {
+		err = s.provider.SaveLog(ctx, &db.ActivityLog{
+			TaskID:      task.TaskID,
+			Command:     command,
+			Type:        task.Type,
+			Action:      "save",
+			Description: task.Reasons,
+			UserID:      currentUser.UserID,
+			Username:    currentUser.Username,
+			CompanyID:   currentUser.CompanyID,
+			CompanyName: currentUser.CompanyName,
+			RoleIDs:     currentUser.RoleIDs,
+			Data:        &task,
+		})
+		if err != nil {
+			logrus.Errorln("Error SaveActivityLog: ", err)
+		}
 	}
 
 	return res, nil
@@ -570,7 +585,7 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 	return res, nil
 }
 
-func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string, permission string) bool {
+func checkAllowedApproval(md metadata.MD, taskType string, permission string) bool {
 	allowed := false
 	authorities := []string{}
 
@@ -582,15 +597,27 @@ func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string, permiss
 		}
 	}
 
+	productName := strings.Replace(taskType, ":", "_", -1)
+	productName = strings.ToLower(productName)
+	productName = fmt.Sprintf("user-product-%s", productName)
+
 	// typeSplit := strings.Split(taskType, ":")
 	// if len(typeSplit) > 1 {
 	// 	taskType = typeSplit[0]
 	// }
 
-	for _, v := range user.ProductRoles {
-		if v.ProductName == taskType {
-			authorities = v.Authorities
-			break
+	// for _, v := range user.ProductRoles {
+	// 	if v.ProductName == taskType {
+	// 		authorities = v.Authorities
+	// 		break
+	// 	}
+	// }
+
+	if len(md[productName]) > 0 {
+		result := []string{}
+		_ = json.Unmarshal([]byte(md[productName][0]), &result)
+		if len(result) > 0 {
+			authorities = result
 		}
 	}
 
@@ -609,16 +636,9 @@ func checkAllowedApproval(user *manager.VerifyTokenRes, taskType string, permiss
 }
 
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
-	currentUser, err := s.getCurrentUser(ctx)
+	currentUser, userMd, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
-		if getEnv("ENV", "DEV") == "PROD" {
-			return nil, status.Errorf(codes.Unauthenticated, "%v", err)
-		} else {
-			currentUser = &manager.VerifyTokenRes{
-				UserID:   1,
-				Username: "",
-			}
-		}
+		return nil, err
 	} else {
 		// me, err := s.manager.GetMeFromJWT(ctx, "")
 
@@ -647,12 +667,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if strings.ToLower(req.Action) == "delete" {
-		allowed := checkAllowedApproval(currentUser, task.Type, "data_entry:maker")
+		allowed := checkAllowedApproval(userMd, task.Type, "data_entry:maker")
 		if !allowed {
 			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
 		}
 	} else {
-		allowed := checkAllowedApproval(currentUser, task.Type, "approve:signer")
+		allowed := checkAllowedApproval(userMd, task.Type, "approve:signer")
 		if !allowed {
 			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
 		}
@@ -1423,6 +1443,26 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		updatedTask, err = s.provider.UpdateTask(ctx, task, false)
 		if err != nil {
 			return nil, err
+		}
+	}
+
+	// Save activity Log
+	if getEnv("ENV", "LOCAL") != "LOCAL" {
+		err = s.provider.SaveLog(ctx, &db.ActivityLog{
+			TaskID:      updatedTask.TaskID,
+			Command:     "Update",
+			Type:        updatedTask.Type,
+			Action:      req.Action,
+			Description: updatedTask.Reasons,
+			UserID:      currentUser.UserID,
+			Username:    currentUser.Username,
+			CompanyID:   currentUser.CompanyID,
+			CompanyName: currentUser.CompanyName,
+			RoleIDs:     currentUser.RoleIDs,
+			Data:        updatedTask,
+		})
+		if err != nil {
+			logrus.Errorln("Error SaveActivityLog: ", err)
 		}
 	}
 

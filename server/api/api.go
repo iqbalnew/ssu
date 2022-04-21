@@ -61,7 +61,7 @@ func New(
 }
 
 func (s *Server) TestLogger(ctx context.Context, req *pb.LoggerTestReq) (*pb.LoggerTestRes, error) {
-	meMD, err := s.manager.GetMeMD(ctx)
+	meMD, err := s.manager.GetUserMD(ctx)
 	if err != nil {
 		logrus.Errorln(err)
 		return nil, err

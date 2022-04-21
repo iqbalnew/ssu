@@ -11,16 +11,17 @@ import (
 
 type ActivityLog struct {
 	bongo.DocumentBase `bson:",inline"`
-	TaskID             uint64   `bson:"taskid" json:"taskID"`
-	Command            string   `bson:"command" json:"command"`
-	Type               string   `bson:"type" json:"type"`
-	Action             string   `bson:"action" json:"action"`
-	Description        string   `bson:"description" json:"description"`
-	UserID             uint64   `bson:"userid" json:"userID"`
-	Username           string   `bson:"username" json:"username"`
-	CompanyID          uint64   `bson:"companyid" json:"companyID"`
-	CompanyName        string   `bson:"companyname" json:"companyName"`
-	Data               *pb.Task `bson:"data" json:"data"`
+	TaskID             uint64      `bson:"taskid" json:"taskID"`
+	Command            string      `bson:"command" json:"command"`
+	Type               string      `bson:"type" json:"type"`
+	Action             string      `bson:"action" json:"action"`
+	Description        string      `bson:"description" json:"description"`
+	UserID             uint64      `bson:"userid" json:"userID"`
+	Username           string      `bson:"username" json:"username"`
+	CompanyID          uint64      `bson:"companyid" json:"companyID"`
+	CompanyName        string      `bson:"companyname" json:"companyName"`
+	RoleIDs            []uint64    `bson:"roleids" json:"roleIDs"`
+	Data               *pb.TaskORM `bson:"data" json:"data"`
 }
 
 func (p *GormProvider) SaveLog(ctx context.Context, log *ActivityLog) error {

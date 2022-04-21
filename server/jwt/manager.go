@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -262,7 +263,7 @@ func (manager *JWTManager) GetMeFromAuthService(ctx context.Context, accessToken
 	return user, nil
 }
 
-func (manager *JWTManager) GetMeMD(ctx context.Context) (metadata.MD, error) {
+func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		if len(md["user-userid"]) > 0 {
@@ -298,6 +299,89 @@ func (manager *JWTManager) GetMeMD(ctx context.Context) (metadata.MD, error) {
 	md = metadata.Join(md, trailer)
 
 	return md, nil
+}
+
+type UserData struct {
+	UserID         uint64   `json:"userID"`
+	Username       string   `json:"username"`
+	CompanyID      uint64   `json:"companyID"`
+	CompanyName    string   `json:"companyName"`
+	UserType       string   `json:"userType"`
+	Authorities    []string `json:"authorities"`
+	GroupIDs       []uint64 `json:"groupIDs"`
+	RoleIDs        []uint64 `json:"roleIDs"`
+	SessionID      string   `json:"sessionID"`
+	DateTime       string   `json:"dateTime"`
+	TokenCreatedAt string   `json:"tokenCreatedAt"`
+}
+
+func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md metadata.MD, err error) {
+	md, err = manager.GetUserMD(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user = &UserData{}
+	user.UserID, err = strconv.ParseUint(md["user-userid"][0], 10, 64)
+	if err != nil {
+		logrus.Errorln("Failed to parse userID: %v", err)
+		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+	}
+	user.CompanyID, err = strconv.ParseUint(md["user-companyid"][0], 10, 64)
+	if err != nil {
+		logrus.Errorln("Failed to parse companyID: %v", err)
+		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+	}
+
+	user.Username = md["user-username"][0]
+	user.CompanyName = md["user-companyname"][0]
+	user.UserType = md["user-usertype"][0]
+
+	err = json.Unmarshal([]byte(md["user-authorities"][0]), &user.Authorities)
+	if err != nil {
+		logrus.Errorln("Failed to parse authorities: %v", err)
+		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+	}
+
+	err = json.Unmarshal([]byte(md["user-groupids"][0]), &user.GroupIDs)
+	if err != nil {
+		logrus.Errorln("Failed to parse groupIDs: %v", err)
+		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+	}
+
+	err = json.Unmarshal([]byte(md["user-roleids"][0]), &user.RoleIDs)
+	if err != nil {
+		logrus.Errorln("Failed to parse roleIDs: %v", err)
+		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+	}
+
+	user.SessionID = md["user-sessionid"][0]
+	user.DateTime = md["user-datetime"][0]
+	user.TokenCreatedAt = md["user-tokencreatedat"][0]
+
+	return user, md, nil
+}
+
+func (manager *JWTManager) GetProductAuthority(md metadata.MD, productName string) ([]string, error) {
+	var authorities []string
+	productName = strings.Replace(productName, ":", "_", -1)
+	productName = strings.ToLower(productName)
+	productName = fmt.Sprintf("user-product-%s", productName)
+
+	if len(md[productName]) > 0 {
+		result := []string{}
+		err := json.Unmarshal([]byte(md[productName][0]), &result)
+		if err != nil {
+			logrus.Errorln("Failed to parse md %s authorities: %v", productName, err)
+			logrus.Errorln(md[productName][0])
+			return nil, status.Errorf(codes.Internal, "Error Internal")
+		}
+		if len(result) > 0 {
+			authorities = result
+		}
+	}
+
+	return authorities, nil
 }
 
 func getEnv(key, fallback string) string {

@@ -274,10 +274,7 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 				}
 			}
 
-			for _, v := range childs {
-				logrus.Println(v.TaskID)
-				logrus.Println(v.ParentID)
-			}
+			task.Childs = childs
 		}
 	}
 
