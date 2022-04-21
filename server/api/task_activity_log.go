@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq) (*pb.GetActivityLogsRes, error) {
@@ -65,6 +66,7 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 			Description: log.Description,
 			Username:    log.Username,
 			CompanyName: log.CompanyName,
+			CreatedAt:   timestamppb.New(log.Created),
 		}
 		if req.TaskID > 0 {
 			task, err := log.Data.ToPB(ctx)
