@@ -2,30 +2,69 @@ package api
 
 import (
 	"context"
+	"fmt"
 
+	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/db"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
+	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-func (s *Server) TestActivityLog(ctx context.Context, req *pb.ActivityLogTestReq) (*pb.ActivityLogTestRes, error) {
+func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq) (*pb.GetActivityLogsRes, error) {
+	if req.Type == "" {
+		return nil, status.Error(codes.InvalidArgument, "type is required")
+	}
 
-	// task, err := s.GetTaskByID(ctx, &pb.GetTaskByIDReq{
-	// 	ID:   req.TaskID,
-	// 	Type: req.Type,
-	// })
-	// if err != nil {
-	// 	return nil, err
-	// }
+	if req.Limit < 1 || req.Limit > 50 {
+		req.Limit = 10
+	}
 
-	// err = s.provider.SaveLog(ctx, &db.ActivityLog{
-	// 	TaskID:  req.TaskID,
-	// 	Command: req.Command,
-	// 	Data:    task.Data,
-	// })
-	// if err != nil {
-	// 	return nil, err
-	// }
+	if req.Page < 1 {
+		req.Page = 1
+	}
 
-	return &pb.ActivityLogTestRes{
-		Message: "Success",
-	}, nil
+	currentUser, _, err := s.manager.GetMeFromMD(ctx)
+	if err != nil {
+		return nil, err
+	}
+	filter := &db.ActivityLogFindReq{
+		TaskID:   req.TaskID,
+		TaskType: req.Type,
+		Page:     int(req.Page),
+		Limit:    int(req.Limit),
+		Sort:     "",
+		GroupIDs: currentUser.GroupIDs,
+	}
+
+	find, err := s.provider.GetActivityLogs(ctx, filter)
+	if err != nil {
+		logrus.Errorln("Error Get Activity Logs: ", err)
+		return nil, status.Error(codes.Internal, "Server Error")
+	}
+
+	reponses := &pb.GetActivityLogsRes{
+		Error:   false,
+		Code:    200,
+		Message: fmt.Sprintf("Success Get Activity Logs %s", req.Type),
+	}
+
+	for _, log := range find.Logs {
+		data, err := log.Data.ToPB(ctx)
+		if err != nil {
+			logrus.Errorln("Error Get Activity Logs: ", err)
+			return nil, status.Error(codes.Internal, "Server Error")
+		}
+		reponses.Data = append(reponses.Data, &pb.ActivityLog{
+			Command:     log.Command,
+			Type:        log.Type,
+			Action:      log.Action,
+			Description: log.Description,
+			Username:    log.Username,
+			CompanyName: log.CompanyName,
+			Task:        &data,
+		})
+	}
+
+	return reponses, nil
 }

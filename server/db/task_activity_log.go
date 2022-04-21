@@ -36,57 +36,54 @@ func (p *GormProvider) SaveLog(ctx context.Context, log *ActivityLog) error {
 	return nil
 }
 
-type ActivityLogFind struct {
-	logs     []*ActivityLog
-	paginate *bongo.PaginationInfo
+type ActivityLogFindRes struct {
+	Logs     []*ActivityLog
+	Paginate *bongo.PaginationInfo
 }
 
-func (p *GormProvider) GetLogByTaskID(ctx context.Context, taskID uint64, perPage int, page int) (*ActivityLogFind, error) {
-	if getEnv("ENV", "LOCAL") != "DEV" {
-		return nil, nil
-	}
+type ActivityLogFindReq struct {
+	TaskID   uint64   `json:"taskID"`
+	TaskType string   `json:"taskType"`
+	Page     int      `json:"page"`
+	Limit    int      `json:"limit"`
+	Sort     string   `json:"sort"`
+	GroupIDs []uint64 `json:"groupIDs"`
+}
+
+func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFindReq) (*ActivityLogFindRes, error) {
+
 	var logs []*ActivityLog
-	results := p.mongo.Collection.Find(bson.M{"task_id": taskID})
+	query := bson.M{
+		"type": req.TaskType,
+	}
+	if req.TaskID > 0 {
+		query["taskid"] = req.TaskID
+	}
+	if len(req.GroupIDs) > 0 {
+		query["companyid"] = bson.M{"$in": req.GroupIDs}
+	}
 
-	log := &ActivityLog{}
+	results := p.mongo.Collection.Find(query)
+	if req.Sort != "" {
+		_ = results.Query.Sort("-_created")
+	} else {
+		_ = results.Query.Sort(req.Sort)
+	}
 
-	pagination, err := results.Paginate(perPage, page)
+	pagination, err := results.Paginate(req.Limit, req.Page)
 	if err != nil {
 		logrus.Errorf("Failed to paginate data log: %v", err)
 		return nil, err
 	}
 
-	for results.Next(log) {
-		logs = append(logs, log)
-	}
-
-	return &ActivityLogFind{
-		logs:     logs,
-		paginate: pagination,
-	}, nil
-}
-
-func (p *GormProvider) GetLogByTaskType(ctx context.Context, taskType string, perPage int, page int) (*ActivityLogFind, error) {
-	if getEnv("ENV", "LOCAL") != "DEV" {
-		return nil, nil
-	}
-	var logs []*ActivityLog
-	results := p.mongo.Collection.Find(bson.M{"type": taskType})
-
 	log := &ActivityLog{}
 
-	pagination, err := results.Paginate(perPage, page)
-	if err != nil {
-		logrus.Errorf("Failed to paginate data log: %v", err)
-		return nil, err
-	}
-
 	for results.Next(log) {
 		logs = append(logs, log)
 	}
 
-	return &ActivityLogFind{
-		logs:     logs,
-		paginate: pagination,
+	return &ActivityLogFindRes{
+		Logs:     logs,
+		Paginate: pagination,
 	}, nil
 }

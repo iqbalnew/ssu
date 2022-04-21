@@ -38,8 +38,8 @@ type TaskServiceClient interface {
 	GetTaskByID(ctx context.Context, in *GetTaskByIDReq, opts ...grpc.CallOption) (*GetTaskByIDRes, error)
 	GetTaskByTypeID(ctx context.Context, in *GetTaskByTypeIDReq, opts ...grpc.CallOption) (*GetTaskByTypeIDRes, error)
 	RejectBySystem(ctx context.Context, in *RejectBySystemReq, opts ...grpc.CallOption) (*RejectBySystemRes, error)
+	GetActivityLogs(ctx context.Context, in *GetActivityLogsReq, opts ...grpc.CallOption) (*GetActivityLogsRes, error)
 	TestLogger(ctx context.Context, in *LoggerTestReq, opts ...grpc.CallOption) (*LoggerTestRes, error)
-	TestActivityLog(ctx context.Context, in *ActivityLogTestReq, opts ...grpc.CallOption) (*ActivityLogTestRes, error)
 }
 
 type taskServiceClient struct {
@@ -194,18 +194,18 @@ func (c *taskServiceClient) RejectBySystem(ctx context.Context, in *RejectBySyst
 	return out, nil
 }
 
-func (c *taskServiceClient) TestLogger(ctx context.Context, in *LoggerTestReq, opts ...grpc.CallOption) (*LoggerTestRes, error) {
-	out := new(LoggerTestRes)
-	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/TestLogger", in, out, opts...)
+func (c *taskServiceClient) GetActivityLogs(ctx context.Context, in *GetActivityLogsReq, opts ...grpc.CallOption) (*GetActivityLogsRes, error) {
+	out := new(GetActivityLogsRes)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetActivityLogs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *taskServiceClient) TestActivityLog(ctx context.Context, in *ActivityLogTestReq, opts ...grpc.CallOption) (*ActivityLogTestRes, error) {
-	out := new(ActivityLogTestRes)
-	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/TestActivityLog", in, out, opts...)
+func (c *taskServiceClient) TestLogger(ctx context.Context, in *LoggerTestReq, opts ...grpc.CallOption) (*LoggerTestRes, error) {
+	out := new(LoggerTestRes)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/TestLogger", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -232,8 +232,8 @@ type TaskServiceServer interface {
 	GetTaskByID(context.Context, *GetTaskByIDReq) (*GetTaskByIDRes, error)
 	GetTaskByTypeID(context.Context, *GetTaskByTypeIDReq) (*GetTaskByTypeIDRes, error)
 	RejectBySystem(context.Context, *RejectBySystemReq) (*RejectBySystemRes, error)
+	GetActivityLogs(context.Context, *GetActivityLogsReq) (*GetActivityLogsRes, error)
 	TestLogger(context.Context, *LoggerTestReq) (*LoggerTestRes, error)
-	TestActivityLog(context.Context, *ActivityLogTestReq) (*ActivityLogTestRes, error)
 	mustEmbedUnimplementedTaskServiceServer()
 }
 
@@ -289,11 +289,11 @@ func (UnimplementedTaskServiceServer) GetTaskByTypeID(context.Context, *GetTaskB
 func (UnimplementedTaskServiceServer) RejectBySystem(context.Context, *RejectBySystemReq) (*RejectBySystemRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RejectBySystem not implemented")
 }
+func (UnimplementedTaskServiceServer) GetActivityLogs(context.Context, *GetActivityLogsReq) (*GetActivityLogsRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetActivityLogs not implemented")
+}
 func (UnimplementedTaskServiceServer) TestLogger(context.Context, *LoggerTestReq) (*LoggerTestRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestLogger not implemented")
-}
-func (UnimplementedTaskServiceServer) TestActivityLog(context.Context, *ActivityLogTestReq) (*ActivityLogTestRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method TestActivityLog not implemented")
 }
 func (UnimplementedTaskServiceServer) mustEmbedUnimplementedTaskServiceServer() {}
 
@@ -596,6 +596,24 @@ func _TaskService_RejectBySystem_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskService_GetActivityLogs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetActivityLogsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GetActivityLogs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/GetActivityLogs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GetActivityLogs(ctx, req.(*GetActivityLogsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TaskService_TestLogger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoggerTestReq)
 	if err := dec(in); err != nil {
@@ -610,24 +628,6 @@ func _TaskService_TestLogger_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TaskServiceServer).TestLogger(ctx, req.(*LoggerTestReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _TaskService_TestActivityLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ActivityLogTestReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TaskServiceServer).TestActivityLog(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/task.service.v1.TaskService/TestActivityLog",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TaskServiceServer).TestActivityLog(ctx, req.(*ActivityLogTestReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -704,12 +704,12 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TaskService_RejectBySystem_Handler,
 		},
 		{
-			MethodName: "TestLogger",
-			Handler:    _TaskService_TestLogger_Handler,
+			MethodName: "GetActivityLogs",
+			Handler:    _TaskService_GetActivityLogs_Handler,
 		},
 		{
-			MethodName: "TestActivityLog",
-			Handler:    _TaskService_TestActivityLog_Handler,
+			MethodName: "TestLogger",
+			Handler:    _TaskService_TestLogger_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -4,6 +4,8 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/any.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
 
 import "task.gorm_db.proto";
 
@@ -71,6 +73,41 @@ message SetTaskResponse {
 
 message ListRequest {
     
+}
+
+message GetActivityLogsReq{
+    string type = 1;
+    uint64 taskID = 2;
+    int32 page = 3;
+    int32 limit = 4;
+}
+
+message ActivityLog{
+    string command = 1;
+    string type = 2;
+    string action = 3;
+    string description = 4;
+    string username = 5;
+    string companyName  = 6;
+    Task task = 7;
+    google.protobuf.Timestamp createdAt  = 8;
+}
+
+message GetActivityLogsRes{
+    bool error = 1;
+    uint32 code = 2;
+    string message = 3;
+    repeated ActivityLog data = 4;
+
+    message ActivityLogPagination {
+        int32 limit = 1;
+        int32 page = 2;
+        int32 totalRows = 3;   
+        int32 totalPages = 4;   
+        int32 recordsOnPage = 5;
+    }
+
+    ActivityLogPagination pagination = 5;
 }
 
 message ListTaskRequest {
