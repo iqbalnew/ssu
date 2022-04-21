@@ -476,11 +476,15 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	// Save activity Log
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
+		action := "save"
+		if req.IsDraft {
+			action = "draft"
+		}
 		err = s.provider.SaveLog(ctx, &db.ActivityLog{
 			TaskID:      task.TaskID,
 			Command:     command,
 			Type:        task.Type,
-			Action:      "save",
+			Action:      action,
 			Description: task.Reasons,
 			UserID:      currentUser.UserID,
 			Username:    currentUser.Username,
