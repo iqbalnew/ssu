@@ -49,6 +49,14 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 		Message: fmt.Sprintf("Success Get Activity Logs %s", req.Type),
 	}
 
+	reponses.Pagination = &pb.GetActivityLogsRes_ActivityLogPagination{
+		Page:          int32(find.Paginate.Current),
+		Limit:         int32(find.Paginate.PerPage),
+		TotalRows:     int32(find.Paginate.TotalRecords),
+		TotalPages:    int32(find.Paginate.TotalPages),
+		RecordsOnPage: int32(find.Paginate.RecordsOnPage),
+	}
+
 	for _, log := range find.Logs {
 		data, err := log.Data.ToPB(ctx)
 		if err != nil {
