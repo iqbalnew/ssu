@@ -64,10 +64,10 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	}
 
 	results := p.mongo.Collection.Find(query)
-	if req.Sort != "" {
-		_ = results.Query.Sort("-_created")
+	if req.Sort == "" {
+		results.Query = results.Query.Sort("-_created")
 	} else {
-		_ = results.Query.Sort(req.Sort)
+		results.Query = results.Query.Sort(req.Sort)
 	}
 
 	pagination, err := results.Paginate(req.Limit, req.Page)
