@@ -23,10 +23,9 @@ func NewLogger(port string, host string, tag string) *Logger {
 		portVal, _ := strconv.Atoi(port)
 
 		config := fluent.Config{
-			FluentPort:    portVal,
-			FluentHost:    host,
-			MarshalAsJSON: true,
-			RequestAck:    true,
+			FluentPort: portVal,
+			FluentHost: host,
+			// MarshalAsJSON: true,
 		}
 
 		logrus.Println("MarshalAsJson : ", config.MarshalAsJSON)
@@ -95,6 +94,10 @@ func (l *Logger) Info(text string) {
 		now := time.Now()
 		logrus.Println("Logger send: ", data)
 		err := l.fluent.PostWithTime(l.tag, now, data)
+		if err != nil {
+			logrus.Errorln("Error on Send Log to Fluentd: ", err)
+		}
+		err = l.fluent.Post(l.tag, data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
 		}
