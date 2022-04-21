@@ -58,6 +58,10 @@ type ActivityLogFindReq struct {
 func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFindReq) (*ActivityLogFindRes, error) {
 
 	var logs []*ActivityLog
+
+	req.TaskType = strings.Replace(req.TaskType, ":", "_", -1)
+	req.TaskType = strings.ToLower(req.TaskType)
+
 	query := bson.M{
 		"type": req.TaskType,
 	}
