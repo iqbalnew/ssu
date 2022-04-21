@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"strings"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/go-bongo/bongo"
@@ -28,6 +29,10 @@ func (p *GormProvider) SaveLog(ctx context.Context, log *ActivityLog) error {
 	if log.Type == "" && log.Data != nil {
 		log.Type = log.Data.Type
 	}
+
+	log.Type = strings.Replace(log.Type, ":", "_", -1)
+	log.Type = strings.ToLower(log.Type)
+
 	err := p.mongo.Collection.Save(log)
 	if err != nil {
 		return err
