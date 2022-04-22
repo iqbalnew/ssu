@@ -80,6 +80,7 @@ message GetActivityLogsReq{
     uint64 taskID = 2;
     int32 page = 3;
     int32 limit = 4;
+    bool
 }
 
 message ActivityLog{
