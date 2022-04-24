@@ -62,18 +62,21 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 		RecordsOnPage: int32(find.Paginate.RecordsOnPage),
 	}
 
-	for _, log := range find.Logs {
+	for _, v := range find.Logs {
+		logrus.Println("v: ", v)
+		logrus.Println("taskID: ", v.TaskID)
+		logrus.Println("username: ", v.Username)
 		data := &pb.ActivityLog{
-			Command:     log.Command,
-			Type:        log.Type,
-			Action:      log.Action,
-			Description: log.Description,
-			Username:    log.Username,
-			CompanyName: log.CompanyName,
-			CreatedAt:   timestamppb.New(log.Created),
+			Command:     v.Command,
+			Type:        v.Type,
+			Action:      v.Action,
+			Description: v.Description,
+			Username:    v.Username,
+			CompanyName: v.CompanyName,
+			CreatedAt:   timestamppb.New(v.Created),
 		}
 		if req.TaskID > 0 {
-			task, err := log.Data.ToPB(ctx)
+			task, err := v.Data.ToPB(ctx)
 			if err != nil {
 				logrus.Errorln("Error Get Activity Logs: ", err)
 				return nil, status.Error(codes.Internal, "Server Error")
