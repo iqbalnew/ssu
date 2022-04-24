@@ -125,14 +125,16 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 		return nil, err
 	}
 
+	result := &ActivityLogFindRes{
+		Logs:     logs,
+		Paginate: pagination,
+	}
+
 	log := &ActivityLog{}
 
 	for results.Next(log) {
-		logs = append(logs, log)
+		result.Logs = append(result.Logs, log)
 	}
 
-	return &ActivityLogFindRes{
-		Logs:     logs,
-		Paginate: pagination,
-	}, nil
+	return result, nil
 }
