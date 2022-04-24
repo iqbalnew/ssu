@@ -1,0 +1,14 @@
+go run ./server/ grpc-gw-server
+=================> start log
+time="2022-04-22T15:13:55+07:00" level=info msg="Starting Db Connections..."
+time="2022-04-22T15:13:55+07:00" level=info msg="Main Db - Connecting"
+time="2022-04-22T15:13:55+07:00" level=info msg="Main Db - Connected"
+time="2022-04-22T15:13:55+07:00" level=info msg="Starting Task Service ................"
+time="2022-04-22T15:13:55+07:00" level=info msg="Starting RPC server on port 9090..."
+time="2022-04-22T15:13:55+07:00" level=info msg="Starting JSON Gateway server on port 3000..."
+time="2022-04-22T15:14:01+07:00" level=info msg="Closing DB Main Connection ... "
+time="2022-04-22T15:14:01+07:00" level=info msg="Closing DB Main Success"
+time="2022-04-22T15:14:01+07:00" level=info msg="Stopping RPC server"
+time="2022-04-22T15:14:01+07:00" level=info msg="RPC server stopped"
+time="2022-04-22T15:14:01+07:00" level=info msg="JSON Gateway server stopped"
+make: *** [Makefile:49: run] Error 1

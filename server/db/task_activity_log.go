@@ -51,12 +51,16 @@ type ActivityLogFindRes struct {
 }
 
 type ActivityLogFindReq struct {
-	TaskID   uint64   `json:"taskID"`
-	TaskType string   `json:"taskType"`
-	Page     int      `json:"page"`
-	Limit    int      `json:"limit"`
-	Sort     string   `json:"sort"`
-	GroupIDs []uint64 `json:"groupIDs"`
+	TaskType string                `json:"taskType"`
+	TaskID   uint64                `json:"taskID"`
+	Page     int                   `json:"page"`
+	Limit    int                   `json:"limit"`
+	Sort     string                `json:"sort"`
+	Search   string                `json:"search"`
+	DateFrom string                `json:"dateFrom"`
+	DateTo   string                `json:"dateTo"`
+	Filter   *pb.ActivityLogFilter `json:"filter"`
+	GroupIDs []uint64              `json:"groupIDs"`
 }
 
 func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFindReq) (*ActivityLogFindRes, error) {
@@ -69,11 +73,43 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	query := bson.M{
 		"type": req.TaskType,
 	}
+
 	if req.TaskID > 0 {
 		query["taskid"] = req.TaskID
 	}
+
 	if len(req.GroupIDs) > 0 {
 		query["companyid"] = bson.M{"$in": req.GroupIDs}
+	}
+
+	if req.Filter != nil {
+		if req.Filter.Command != "" {
+			query["command"] = req.Filter.Command
+		}
+
+		if req.Filter.Action != "" {
+			query["action"] = req.Filter.Action
+		}
+
+		if req.Filter.Description != "" {
+			query["description"] = req.Filter.Description
+		}
+
+		if req.Filter.Username != "" {
+			query["username"] = req.Filter.Username
+		}
+
+		if req.Filter.CompanyName != "" {
+			query["companyname"] = req.Filter.CompanyName
+		}
+	}
+
+	if req.Search != "" {
+		query["$or"] = []bson.M{
+			{"description": bson.M{"$regex": req.Search, "$options": "i"}},
+			{"username": bson.M{"$regex": req.Search, "$options": "i"}},
+			{"companyname": bson.M{"$regex": req.Search, "$options": "i"}},
+		}
 	}
 
 	results := p.mongo.Collection.Find(query)

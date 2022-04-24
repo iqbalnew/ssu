@@ -30,11 +30,15 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 		return nil, err
 	}
 	filter := &db.ActivityLogFindReq{
-		TaskID:   req.TaskID,
 		TaskType: req.Type,
+		TaskID:   req.TaskID,
 		Page:     int(req.Page),
 		Limit:    int(req.Limit),
-		Sort:     "",
+		Sort:     req.Sort,
+		Search:   req.Search,
+		DateFrom: req.DateFrom,
+		DateTo:   req.DateTo,
+		Filter:   req.Filter,
 		GroupIDs: currentUser.GroupIDs,
 	}
 

@@ -80,7 +80,19 @@ message GetActivityLogsReq{
     uint64 taskID = 2;
     int32 page = 3;
     int32 limit = 4;
-    bool
+	string sort = 5;
+	string search = 6;
+	string dateFrom = 7;
+	string dateTo = 8;
+	ActivityLogFilter filter = 9;
+}
+
+message ActivityLogFilter{
+    string command = 1;
+    string action = 2;
+    string description = 3;
+    string username = 4;
+    string companyName = 5;
 }
 
 message ActivityLog{

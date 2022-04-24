@@ -299,6 +299,21 @@
                 "limit": {
                   "type": "integer",
                   "format": "int32"
+                },
+                "sort": {
+                  "type": "string"
+                },
+                "search": {
+                  "type": "string"
+                },
+                "dateFrom": {
+                  "type": "string"
+                },
+                "dateTo": {
+                  "type": "string"
+                },
+                "filter": {
+                  "$ref": "#/definitions/v1ActivityLogFilter"
                 }
               }
             }
@@ -969,6 +984,26 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1ActivityLogFilter": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "companyName": {
+          "type": "string"
         }
       }
     },
