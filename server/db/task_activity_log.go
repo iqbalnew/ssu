@@ -128,6 +128,8 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	log := &ActivityLog{}
 
 	for results.Next(log) {
+		logrus.Println("======>")
+		logrus.Println(log.TaskID)
 		logs = append(logs, log)
 	}
 
