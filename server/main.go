@@ -38,8 +38,8 @@ var s *grpc.Server
 
 func main() {
 
-	fn := logOutput()
-	defer fn()
+	// fn := logOutput()
+	// defer fn()
 	initConfig()
 
 	app := cli.NewApp()
