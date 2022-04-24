@@ -1063,7 +1063,24 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				account := account_pb.Account{}
 				json.Unmarshal([]byte(task.Data), &account)
 
-				data.Data = &account
+				data.Data = &account_pb.Account{
+					AccountID:        account.AccountID,
+					CompanyID:        account.CompanyID,
+					AccountNumber:    account.AccountNumber,
+					AccountAlias:     account.AccountAlias,
+					AccountName:      account.AccountName,
+					AccountType:      account.AccountType,
+					AccountStatus:    account.AccountStatus,
+					AccountCurrency:  account.AccountCurrency,
+					AccessLevel:      account.AccessLevel,
+					IsOwnedByCompany: account.IsOwnedByCompany,
+					CreatedByID:      account.CreatedByID,
+					UpdatedByID:      account.UpdatedByID,
+					DeletedByID:      account.DeletedByID,
+					CreatedAt:        account.CreatedAt,
+					UpdatedAt:        account.UpdatedAt,
+					DeletedAt:        account.DeletedAt,
+				}
 				data.TaskID = task.TaskID
 
 				res, err := companyClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
