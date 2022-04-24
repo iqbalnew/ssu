@@ -3,6 +3,7 @@ syntax = "proto3";
 import "google/api/annotations.proto";
 import "mwitkow/go-proto-validators/validator.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/httpbody.proto";
 
 import "task.payload.proto";
 import "task.payload_ev.proto";
@@ -134,6 +135,17 @@ service TaskService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get activity logs"
             description: "This API is used for get activity logs"
+        };
+    };
+
+    rpc DownloadActivityLogs(DownloadActivityLogsReq) returns (google.api.HttpBody){
+        option (google.api.http) = {
+            post: "/api/task/activity-logs/{type}/download/{fileformat}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Download activity logs"
+            description: "This API is used for download activity logs"
         };
     };
 

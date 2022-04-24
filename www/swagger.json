@@ -324,6 +324,87 @@
         ]
       }
     },
+    "/api/task/activity-logs/{type}/download/{fileformat}": {
+      "post": {
+        "summary": "Download activity logs",
+        "description": "This API is used for download activity logs",
+        "operationId": "TaskService_DownloadActivityLogs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiHttpBody"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fileformat",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "null",
+              "xls",
+              "xlsx",
+              "csv"
+            ]
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "taskID": {
+                  "type": "string",
+                  "format": "uint64"
+                },
+                "page": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "limit": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "sort": {
+                  "type": "string"
+                },
+                "search": {
+                  "type": "string"
+                },
+                "dateFrom": {
+                  "type": "string"
+                },
+                "dateTo": {
+                  "type": "string"
+                },
+                "filter": {
+                  "$ref": "#/definitions/v1ActivityLogFilter"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "TaskService"
+        ]
+      }
+    },
     "/api/task/graph/column-type": {
       "get": {
         "summary": "Get graph data by column name",
@@ -903,6 +984,16 @@
     }
   },
   "definitions": {
+    "DownloadActivityLogsReqFormats": {
+      "type": "string",
+      "enum": [
+        "null",
+        "xls",
+        "xlsx",
+        "csv"
+      ],
+      "default": "null"
+    },
     "GetActivityLogsResActivityLogPagination": {
       "type": "object",
       "properties": {
@@ -927,6 +1018,28 @@
           "format": "int32"
         }
       }
+    },
+    "apiHttpBody": {
+      "type": "object",
+      "properties": {
+        "contentType": {
+          "type": "string",
+          "description": "The HTTP Content-Type header value specifying the content type of the body."
+        },
+        "data": {
+          "type": "string",
+          "format": "byte",
+          "description": "The HTTP request/response body as raw binary."
+        },
+        "extensions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          },
+          "description": "Application specific response metadata. Must be set in the first response\nfor streaming APIs."
+        }
+      },
+      "description": "Message that represents an arbitrary HTTP body. It should only be used for\npayload formats that can't be represented as JSON, such as raw binary or\nan HTML page.\n\n\nThis message can be used both in streaming and non-streaming API methods in\nthe request as well as the response.\n\nIt can be used as a top-level request field, which is convenient if one\nwants to extract parameters from either the URL or HTTP template into the\nrequest fields and also want access to the raw HTTP body.\n\nExample:\n\n    message GetResourceRequest {\n      // A unique request id.\n      string request_id = 1;\n\n      // The raw HTTP body is bound to this field.\n      google.api.HttpBody http_body = 2;\n\n    }\n\n    service ResourceService {\n      rpc GetResource(GetResourceRequest)\n        returns (google.api.HttpBody);\n      rpc UpdateResource(google.api.HttpBody)\n        returns (google.protobuf.Empty);\n\n    }\n\nExample with streaming methods:\n\n    service CaldavService {\n      rpc GetCalendar(stream google.api.HttpBody)\n        returns (stream google.api.HttpBody);\n      rpc UpdateCalendar(stream google.api.HttpBody)\n        returns (stream google.api.HttpBody);\n\n    }\n\nUse of this type only changes how the request and response bodies are\nhandled, all other features will continue to work unchanged."
     },
     "protobufAny": {
       "type": "object",

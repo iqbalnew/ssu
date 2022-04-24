@@ -87,6 +87,26 @@ message GetActivityLogsReq{
 	ActivityLogFilter filter = 9;
 }
 
+message DownloadActivityLogsReq{
+    enum Formats {
+        null = 0;
+        xls = 2;
+        xlsx = 3;
+        csv = 4;
+    }
+
+    Formats fileformat = 21;
+    string type = 1;
+    uint64 taskID = 2;
+    int32 page = 3;
+    int32 limit = 4;
+    string sort = 5;
+    string search = 6;
+    string dateFrom = 7;
+    string dateTo = 8;
+    ActivityLogFilter filter = 9;
+}
+
 message ActivityLogFilter{
     string command = 1;
     string action = 2;
