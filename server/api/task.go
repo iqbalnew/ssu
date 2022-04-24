@@ -1083,6 +1083,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 				data.TaskID = task.TaskID
 
+				logrus.Printf("Task Account for save ===>: %v", data)
+
 				res, err := companyClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
