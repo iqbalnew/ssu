@@ -51,4 +51,4 @@ EXPOSE 9090
 EXPOSE 3000
 
 ENTRYPOINT ["/usr/app/app"]
-CMD ["grpc-gw-server", "--port1", "9090", "--port2", "3000", "--grpc-endpoint", ":9090", "&>", "./logs/app.log"]
+CMD ["grpc-gw-server", "--port1", "9090", "--port2", "3000", "--grpc-endpoint", ":9090"]
