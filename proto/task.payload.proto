@@ -104,6 +104,7 @@ message ActivityLog{
     string companyName  = 6;
     Task task = 7;
     google.protobuf.Timestamp createdAt  = 8;
+    uint64 taskID = 9;
 }
 
 message GetActivityLogsRes{
