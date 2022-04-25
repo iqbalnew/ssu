@@ -93,6 +93,7 @@ message DownloadActivityLogsReq{
         xls = 2;
         xlsx = 3;
         csv = 4;
+        pdf = 5;
     }
 
     Formats fileformat = 21;

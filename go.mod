@@ -31,6 +31,7 @@ require (
 	github.com/elliotchance/sshtunnel v1.3.1
 	github.com/fluent/fluent-logger-golang v1.9.0
 	github.com/go-bongo/bongo v0.10.4
+	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/speps/go-hashids v2.0.0+incompatible
 	github.com/spf13/viper v1.10.1
 	github.com/xuri/excelize/v2 v2.6.0

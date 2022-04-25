@@ -359,7 +359,8 @@
               "null",
               "xls",
               "xlsx",
-              "csv"
+              "csv",
+              "pdf"
             ]
           },
           {
@@ -990,7 +991,8 @@
         "null",
         "xls",
         "xlsx",
-        "csv"
+        "csv",
+        "pdf"
       ],
       "default": "null"
     },
