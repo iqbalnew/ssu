@@ -854,6 +854,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 0
 		}
 
+		if task.Type == "System" {
+			if task.DataBak != "" && task.DataBak != "{}" {
+				task.Status = 4
+				task.Step = 3
+				task.Data = task.DataBak
+			}
+		}
+
 	case "delete":
 		task.LastApprovedByID = 0
 		task.LastApprovedByName = ""
