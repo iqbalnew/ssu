@@ -106,6 +106,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 
 	if req.Search != "" {
 		query["$or"] = []bson.M{
+			{"action": bson.M{"$regex": req.Search, "$options": "i"}},
 			{"description": bson.M{"$regex": req.Search, "$options": "i"}},
 			{"username": bson.M{"$regex": req.Search, "$options": "i"}},
 			{"companyname": bson.M{"$regex": req.Search, "$options": "i"}},
