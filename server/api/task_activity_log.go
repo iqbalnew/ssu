@@ -65,6 +65,8 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 	logrus.Println("lenght: ", len(find.Logs))
 
 	for _, v := range find.Logs {
+		logrus.Println("Print task id")
+		logrus.Println(v.TaskID)
 		data := &pb.ActivityLog{
 			TaskID:      v.TaskID,
 			Command:     v.Command,

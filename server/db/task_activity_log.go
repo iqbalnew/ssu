@@ -133,7 +133,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	log := &ActivityLog{}
 
 	for results.Next(log) {
-		result.Logs = append(result.Logs, &ActivityLog{
+		data := &ActivityLog{
 			DocumentBase: log.DocumentBase,
 			TaskID:       log.TaskID,
 			Command:      log.Command,
@@ -146,7 +146,8 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 			CompanyName:  log.CompanyName,
 			RoleIDs:      log.RoleIDs,
 			Data:         log.Data,
-		})
+		}
+		result.Logs = append(result.Logs, data)
 	}
 
 	return result, nil
