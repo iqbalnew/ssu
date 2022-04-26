@@ -138,7 +138,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 
 		query = append(query, bson.DocElem{
 			Name: "$or",
-			Value: []interface{}{
+			Value: bson.D{
 				bson.DocElem{Name: "action", Value: bson.DocElem{
 					Name:  "$regex",
 					Value: bson.RegEx{Pattern: req.Search, Options: "i"},
@@ -159,6 +159,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 		})
 	}
 
+	logrus.Println("===<Mongo Find Filter>===")
 	logrus.Println(query)
 
 	results := p.mongo.Collection.Find(query)
@@ -180,6 +181,8 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	}
 
 	log := &ActivityLog{}
+
+	results.
 
 	for results.Next(log) {
 		data := &ActivityLog{
