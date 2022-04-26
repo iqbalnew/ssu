@@ -96,7 +96,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	if len(req.GroupIDs) > 0 {
 		query = append(query, bson.DocElem{
 			Name:  "companyid",
-			Value: bson.M{"$in": req.GroupIDs},
+			Value: bson.DocElem{Name: "$in", Value: req.GroupIDs},
 		})
 	}
 
@@ -141,10 +141,10 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 		query = append(query, bson.DocElem{
 			Name: "$or",
 			Value: []interface{}{
-				bson.M{"action": fmt.Sprintf("/%s/", req.Search)},
-				bson.M{"description": fmt.Sprintf("/%s/", req.Search)},
-				bson.M{"username": fmt.Sprintf("/%s/", req.Search)},
-				bson.M{"companyname": fmt.Sprintf("/%s/", req.Search)},
+				bson.DocElem{Name: "action", Value: fmt.Sprintf("/%s/", req.Search)},
+				bson.DocElem{Name: "description", Value: fmt.Sprintf("/%s/", req.Search)},
+				bson.DocElem{Name: "username", Value: fmt.Sprintf("/%s/", req.Search)},
+				bson.DocElem{Name: "companyname", Value: fmt.Sprintf("/%s/", req.Search)},
 			},
 		})
 	}
