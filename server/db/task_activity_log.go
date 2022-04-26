@@ -141,11 +141,11 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 
 		query = append(query, bson.DocElem{
 			Name: "$or",
-			Value: []interface{}{
-				bson.DocElem{Name: "action", Value: fmt.Sprintf("/%s/i", req.Search)},
-				bson.DocElem{Name: "description", Value: fmt.Sprintf("/%s/i", req.Search)},
-				bson.DocElem{Name: "username", Value: fmt.Sprintf("/%s/i", req.Search)},
-				bson.DocElem{Name: "companyname", Value: fmt.Sprintf("/%s/i", req.Search)},
+			Value: []bson.DocElem{
+				{Name: "action", Value: fmt.Sprintf("/%s/i", req.Search)},
+				{Name: "description", Value: fmt.Sprintf("/%s/i", req.Search)},
+				{Name: "username", Value: fmt.Sprintf("/%s/i", req.Search)},
+				{Name: "companyname", Value: fmt.Sprintf("/%s/i", req.Search)},
 			},
 		})
 	}
