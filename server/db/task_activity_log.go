@@ -113,6 +113,8 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 		}
 	}
 
+	logrus.Println(query)
+
 	results := p.mongo.Collection.Find(query)
 	if req.Sort == "" {
 		results.Query = results.Query.Sort("-_created")
