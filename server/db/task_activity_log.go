@@ -79,48 +79,74 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	req.TaskType = strings.Replace(req.TaskType, ":", "_", -1)
 	req.TaskType = strings.ToLower(req.TaskType)
 
-	query := bson.M{
-		"type": req.TaskType,
+	query := bson.D{
+		{
+			Name:  "type",
+			Value: req.TaskType,
+		},
 	}
 
 	if req.TaskID > 0 {
-		query["taskid"] = req.TaskID
+		query = append(query, bson.DocElem{
+			Name:  "taskid",
+			Value: req.TaskID,
+		})
 	}
 
 	if len(req.GroupIDs) > 0 {
-		query["companyid"] = bson.M{"$in": req.GroupIDs}
+		query = append(query, bson.DocElem{
+			Name:  "companyid",
+			Value: bson.M{"$in": req.GroupIDs},
+		})
 	}
 
 	if req.Filter != nil {
 		if req.Filter.Command != "" {
-			query["command"] = req.Filter.Command
+			query = append(query, bson.DocElem{
+				Name:  "command",
+				Value: req.Filter.Command,
+			})
 		}
 
 		if req.Filter.Action != "" {
-			query["action"] = req.Filter.Action
+			query = append(query, bson.DocElem{
+				Name:  "action",
+				Value: req.Filter.Action,
+			})
 		}
 
 		if req.Filter.Description != "" {
-			query["description"] = req.Filter.Description
+			query = append(query, bson.DocElem{
+				Name:  "description",
+				Value: req.Filter.Description,
+			})
 		}
 
 		if req.Filter.Username != "" {
-			query["username"] = req.Filter.Username
+			query = append(query, bson.DocElem{
+				Name:  "username",
+				Value: req.Filter.Username,
+			})
 		}
 
 		if req.Filter.CompanyName != "" {
-			query["companyname"] = req.Filter.CompanyName
+			query = append(query, bson.DocElem{
+				Name:  "companyname",
+				Value: req.Filter.CompanyName,
+			})
 		}
 	}
 
 	if req.Search != "" {
-		query["$or"] = []interface{}{
-			bson.M{"action": fmt.Sprintf("/%s/", req.Search)},
-			bson.M{"description": fmt.Sprintf("/%s/", req.Search)},
-			bson.M{"username": fmt.Sprintf("/%s/", req.Search)},
-			bson.M{"companyname": fmt.Sprintf("/%s/", req.Search)},
-		}
-
+		query = append(query, bson.DocElem{
+			Name: "$or",
+			Value: []interface{}{
+				bson.M{"action": fmt.Sprintf("/%s/", req.Search)},
+				bson.M{"description": fmt.Sprintf("/%s/", req.Search)},
+				bson.M{"username": fmt.Sprintf("/%s/", req.Search)},
+				bson.M{"companyname": fmt.Sprintf("/%s/", req.Search)},
+			},
+		})
 	}
 
 	logrus.Println(query)
