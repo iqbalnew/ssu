@@ -80,13 +80,15 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 
 	query := bson.D{
 		{
-			"type": req.TaskType,
+			Name:  "type",
+			Value: req.TaskType,
 		},
 	}
 
 	if req.TaskID > 0 {
-		query = append(query, bson.D{
-			"taskid": req.TaskID,
+		query = append(query, bson.DocElem{
+			Name:  "taskid",
+			Value: req.TaskID,
 		})
 	}
 
