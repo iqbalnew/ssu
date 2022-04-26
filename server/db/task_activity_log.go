@@ -123,7 +123,8 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	}
 
 	logrus.Println("===<Mongo Find Filter>===")
-	logrus.Println(query)
+	queryS, _ := bson.Marshal(query)
+	logrus.Println(string(queryS))
 
 	results := p.mongo.Collection.Find(query)
 	if req.Sort == "" {
