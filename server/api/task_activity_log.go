@@ -48,13 +48,13 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 		return nil, status.Error(codes.Internal, "Server Error")
 	}
 
-	reponses := &pb.GetActivityLogsRes{
+	responses := &pb.GetActivityLogsRes{
 		Error:   false,
 		Code:    200,
 		Message: fmt.Sprintf("Success Get Activity Logs %s", req.Type),
 	}
 
-	reponses.Pagination = &pb.GetActivityLogsRes_ActivityLogPagination{
+	responses.Pagination = &pb.GetActivityLogsRes_ActivityLogPagination{
 		Page:          int32(find.Paginate.Current),
 		Limit:         int32(find.Paginate.PerPage),
 		TotalRows:     int32(find.Paginate.TotalRecords),
@@ -85,8 +85,8 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 			}
 			data.Task = &task
 		}
-		reponses.Data = append(reponses.Data, data)
+		responses.Data = append(responses.Data, data)
 	}
 
-	return reponses, nil
+	return responses, nil
 }

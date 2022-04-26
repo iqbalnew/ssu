@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
@@ -28,6 +29,14 @@ type ActivityLog struct {
 func (p *GormProvider) SaveLog(ctx context.Context, log *ActivityLog) error {
 	if log.Type == "" && log.Data != nil {
 		log.Type = log.Data.Type
+	}
+
+	switch log.Action {
+	case "save":
+		log.Action = "save & send for approval"
+
+	case "draft":
+		log.Action = "save as draft"
 	}
 
 	if log.Data.Status == 7 {
@@ -106,10 +115,11 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 
 	if req.Search != "" {
 		query["$or"] = []bson.M{
-			{"action": bson.M{"$regex": req.Search, "$options": "i"}},
-			{"description": bson.M{"$regex": req.Search, "$options": "i"}},
-			{"username": bson.M{"$regex": req.Search, "$options": "i"}},
-			{"companyname": bson.M{"$regex": req.Search, "$options": "i"}},
+
+			{"action": fmt.Sprintf("/%s/", req.Search)},
+			{"description": fmt.Sprintf("/%s/", req.Search)},
+			{"username": fmt.Sprintf("/%s/", req.Search)},
+			{"companyname": fmt.Sprintf("/%s/", req.Search)},
 		}
 	}
 
