@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
@@ -138,13 +137,14 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	}
 
 	if req.Search != "" {
+
 		query = append(query, bson.DocElem{
 			Name: "$or",
 			Value: []interface{}{
-				bson.DocElem{Name: "action", Value: fmt.Sprintf("/%s/", req.Search)},
-				bson.DocElem{Name: "description", Value: fmt.Sprintf("/%s/", req.Search)},
-				bson.DocElem{Name: "username", Value: fmt.Sprintf("/%s/", req.Search)},
-				bson.DocElem{Name: "companyname", Value: fmt.Sprintf("/%s/", req.Search)},
+				bson.DocElem{Name: "action", Value: bson.RegEx{Pattern: req.Search, Options: "i"}},
+				bson.DocElem{Name: "description", Value: bson.RegEx{Pattern: req.Search, Options: "i"}},
+				bson.DocElem{Name: "username", Value: bson.RegEx{Pattern: req.Search, Options: "i"}},
+				bson.DocElem{Name: "companyname", Value: bson.RegEx{Pattern: req.Search, Options: "i"}},
 			},
 		})
 	}
