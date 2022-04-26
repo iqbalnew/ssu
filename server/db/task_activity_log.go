@@ -78,83 +78,48 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	req.TaskType = strings.Replace(req.TaskType, ":", "_", -1)
 	req.TaskType = strings.ToLower(req.TaskType)
 
-	query := bson.D{
-		{
-			Name:  "type",
-			Value: req.TaskType,
-		},
+	query := bson.M{
+		"type": req.TaskType,
 	}
 
 	if req.TaskID > 0 {
-		query = append(query, bson.DocElem{
-			Name:  "taskid",
-			Value: req.TaskID,
-		})
+		query["taskid"] = req.TaskID
 	}
 
 	if len(req.GroupIDs) > 0 {
-		query = append(query, bson.DocElem{
-			Name:  "companyid",
-			Value: bson.DocElem{Name: "$in", Value: req.GroupIDs},
-		})
+		query["companyid"] = bson.M{"$in": req.GroupIDs}
 	}
 
 	if req.Filter != nil {
 		if req.Filter.Command != "" {
-			query = append(query, bson.DocElem{
-				Name:  "command",
-				Value: req.Filter.Command,
-			})
+			query["command"] = req.Filter.Command
 		}
 
 		if req.Filter.Action != "" {
-			query = append(query, bson.DocElem{
-				Name:  "action",
-				Value: req.Filter.Action,
-			})
+			query["action"] = req.Filter.Action
 		}
 
 		if req.Filter.Description != "" {
-			query = append(query, bson.DocElem{
-				Name:  "description",
-				Value: req.Filter.Description,
-			})
+			query["description"] = req.Filter.Description
 		}
 
 		if req.Filter.Username != "" {
-			query = append(query, bson.DocElem{
-				Name:  "username",
-				Value: req.Filter.Username,
-			})
+			query["username"] = req.Filter.Username
 		}
 
 		if req.Filter.CompanyName != "" {
-			query = append(query, bson.DocElem{
-				Name:  "companyname",
-				Value: req.Filter.CompanyName,
-			})
+			query["companyname"] = req.Filter.CompanyName
 		}
 	}
 
 	if req.Search != "" {
-
-		query = append(query, bson.DocElem{
-			Name: "$or",
-			Value: []interface{}{
-				bson.DocElem{Name: "action", Value: bson.D{
-					{Name: "$regex", Value: req.Search}, {Name: "$options", Value: "i"},
-				}},
-				bson.DocElem{Name: "description", Value: bson.D{
-					{Name: "$regex", Value: req.Search}, {Name: "$options", Value: "i"},
-				}},
-				bson.DocElem{Name: "username", Value: bson.D{
-					{Name: "$regex", Value: req.Search}, {Name: "$options", Value: "i"},
-				}},
-				bson.DocElem{Name: "companyname", Value: bson.D{
-					{Name: "$regex", Value: req.Search}, {Name: "$options", Value: "i"},
-				}},
-			},
-		})
+		query["$or"] = []interface{}{
+			bson.M{"command": bson.M{"$regex": req.Search, "$options": "i"}},
+			bson.M{"action": bson.M{"$regex": req.Search, "$options": "i"}},
+			bson.M{"description": bson.M{"$regex": req.Search, "$options": "i"}},
+			bson.M{"username": bson.M{"$regex": req.Search, "$options": "i"}},
+			bson.M{"companyname": bson.M{"$regex": req.Search, "$options": "i"}},
+		}
 	}
 
 	logrus.Println("===<Mongo Find Filter>===")
