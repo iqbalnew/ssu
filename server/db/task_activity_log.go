@@ -114,12 +114,13 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	}
 
 	if req.Search != "" {
-		query["$or"] = []bson.M{
-
-			{"action": fmt.Sprintf("/%s/", req.Search)},
-			{"description": fmt.Sprintf("/%s/", req.Search)},
-			{"username": fmt.Sprintf("/%s/", req.Search)},
-			{"companyname": fmt.Sprintf("/%s/", req.Search)},
+		query["$and"] = []bson.M{
+			{"$or": []bson.M{
+				{"action": fmt.Sprintf("/%s/", req.Search)},
+				{"description": fmt.Sprintf("/%s/", req.Search)},
+				{"username": fmt.Sprintf("/%s/", req.Search)},
+				{"companyname": fmt.Sprintf("/%s/", req.Search)},
+			}},
 		}
 	}
 
