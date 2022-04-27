@@ -30,6 +30,14 @@ func (p *GormProvider) SaveLog(ctx context.Context, log *ActivityLog) error {
 		log.Type = log.Data.Type
 	}
 
+	switch log.Action {
+	case "save":
+		log.Action = "save & send for approval"
+
+	case "draft":
+		log.Action = "save as draft"
+	}
+
 	if log.Data.Status == 7 {
 		log.Action = "deleted"
 	}
@@ -105,12 +113,18 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	}
 
 	if req.Search != "" {
-		query["$or"] = []bson.M{
-			{"description": bson.M{"$regex": req.Search, "$options": "i"}},
-			{"username": bson.M{"$regex": req.Search, "$options": "i"}},
-			{"companyname": bson.M{"$regex": req.Search, "$options": "i"}},
+		query["$or"] = []interface{}{
+			bson.M{"command": bson.M{"$regex": req.Search, "$options": "i"}},
+			bson.M{"action": bson.M{"$regex": req.Search, "$options": "i"}},
+			bson.M{"description": bson.M{"$regex": req.Search, "$options": "i"}},
+			bson.M{"username": bson.M{"$regex": req.Search, "$options": "i"}},
+			bson.M{"companyname": bson.M{"$regex": req.Search, "$options": "i"}},
 		}
 	}
+
+	logrus.Println("===<Mongo Find Filter>===")
+	queryS, _ := bson.Marshal(query)
+	logrus.Println(string(queryS))
 
 	results := p.mongo.Collection.Find(query)
 	if req.Sort == "" {
@@ -133,7 +147,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	log := &ActivityLog{}
 
 	for results.Next(log) {
-		result.Logs = append(result.Logs, &ActivityLog{
+		data := &ActivityLog{
 			DocumentBase: log.DocumentBase,
 			TaskID:       log.TaskID,
 			Command:      log.Command,
@@ -146,7 +160,8 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 			CompanyName:  log.CompanyName,
 			RoleIDs:      log.RoleIDs,
 			Data:         log.Data,
-		})
+		}
+		result.Logs = append(result.Logs, data)
 	}
 
 	return result, nil

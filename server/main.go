@@ -234,6 +234,7 @@ func httpGatewayServer(port int, grpcEndpoint string) error {
 
 	rmux := runtime.NewServeMux(
 		runtime.WithErrorHandler(CustomHTTPError),
+		runtime.WithForwardResponseOption(httpResponseModifier),
 	)
 	// opts := []grpc.DialOption{grpc.WithInsecure()}
 	// err := pb.RegisterBaseServiceHandlerFromEndpoint(ctx, rmux, grpcEndpoint, opts)
