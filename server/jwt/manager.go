@@ -366,6 +366,7 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 	user.SessionID = md["user-sessionid"][0]
 	user.DateTime = md["user-datetime"][0]
 	user.TokenCreatedAt = md["user-tokencreatedat"][0]
+	// user.Fcm = md["user-fcm"][0]
 
 	return user, md, nil
 }

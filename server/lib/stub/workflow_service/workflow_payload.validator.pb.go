@@ -7,11 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/mwitkow/go-proto-validators"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "github.com/golang/protobuf/ptypes/any"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "github.com/mwitkow/go-proto-validators"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -135,10 +135,35 @@ func (this *WorkflowTask) Validate() error {
 	}
 	return nil
 }
+func (this *Company) Validate() error {
+	return nil
+}
+func (this *Account) Validate() error {
+	return nil
+}
+func (this *Product) Validate() error {
+	return nil
+}
 func (this *CreateWorkflowTaskResponse) Validate() error {
 	return nil
 }
+func (this *ListWorkflowTaskFilter) Validate() error {
+	return nil
+}
 func (this *ListWorkflowTaskRequest) Validate() error {
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+		}
+	}
+	return nil
+}
+func (this *DownloadListWorkflowTaskRequest) Validate() error {
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+		}
+	}
 	return nil
 }
 func (this *PaginationResponse) Validate() error {
