@@ -320,11 +320,16 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 		}
 
 		orderByQuery := ""
-		for i, v := range valArray {
+		for i, _ := range valArray {
+			// if i == 0 {
+			// 	orderByQuery += fmt.Sprintf("%s!= '%s'", key, v)
+			// } else {
+			// 	orderByQuery += fmt.Sprintf(", %s!= '%s'", key, v)
+			// }
 			if i == 0 {
-				orderByQuery += fmt.Sprintf("%s!= '%s'", key, v)
+				orderByQuery += fmt.Sprintf("%s", key)
 			} else {
-				orderByQuery += fmt.Sprintf(", %s!= '%s'", key, v)
+				orderByQuery += fmt.Sprintf(", %s", key)
 			}
 		}
 
