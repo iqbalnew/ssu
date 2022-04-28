@@ -17,12 +17,17 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 		return nil, status.Error(codes.InvalidArgument, "type is required")
 	}
 
-	if req.Limit < 1 || req.Limit > 50 {
+	if req.Limit < 1 || req.Limit > 100 {
 		req.Limit = 10
 	}
 
 	if req.Page < 1 {
 		req.Page = 1
+	}
+
+	if req.DateFrom != "" && req.DateTo != "" {
+		req.Limit = 0
+		req.Page = 0
 	}
 
 	currentUser, _, err := s.manager.GetMeFromMD(ctx)

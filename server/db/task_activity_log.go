@@ -133,6 +133,13 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 		results.Query = results.Query.Sort(req.Sort)
 	}
 
+	// pagination := &bongo.PaginationInfo{
+	// 	Current:       -1,
+	// 	TotalPages:    -1,
+	// 	PerPage:       -1,
+	// 	TotalRecords:  -1,
+	// 	RecordsOnPage: -1,
+	// }
 	pagination, err := results.Paginate(req.Limit, req.Page)
 	if err != nil {
 		logrus.Errorf("Failed to paginate data log: %v", err)
