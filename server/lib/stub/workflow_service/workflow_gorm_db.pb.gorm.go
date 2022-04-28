@@ -20,11 +20,12 @@ type WorkflowORM struct {
 	CreatedByID  uint64              `gorm:"column:CreatedByID;not null"`
 	DeletedAt    *time.Time          `gorm:"column:DeletedAt"`
 	DeletedByID  uint64              `gorm:"column:DeletedByID"`
+	Description  string              `gorm:"column:Description;type:varchar(255)"`
 	Logics       []*WorkflowLogicORM `gorm:"foreignkey:WorkflowID;association_foreignkey:WorkflowID;preload:true;append:true"`
 	ModuleID     uint64              `gorm:"column:ModuleID;not null"`
 	UpdatedAt    *time.Time          `gorm:"column:UpdatedAt;not null"`
 	UpdatedByID  uint64              `gorm:"column:UpdatedByID;not null"`
-	WorkflowCode string              `gorm:"column:WorkflowCode;not null"`
+	WorkflowCode string              `gorm:"column:WorkflowCode;type:varchar(255);not null"`
 	WorkflowID   uint64              `gorm:"column:WorkflowID;primary_key;not null;auto_increment"`
 }
 
@@ -52,6 +53,7 @@ func (m *Workflow) ToORM(ctx context.Context) (WorkflowORM, error) {
 	to.DeletedByID = m.DeletedByID
 	to.AccountAlias = m.AccountAlias
 	to.WorkflowCode = m.WorkflowCode
+	to.Description = m.Description
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -100,6 +102,7 @@ func (m *WorkflowORM) ToPB(ctx context.Context) (Workflow, error) {
 	to.DeletedByID = m.DeletedByID
 	to.AccountAlias = m.AccountAlias
 	to.WorkflowCode = m.WorkflowCode
+	to.Description = m.Description
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -688,6 +691,10 @@ func DefaultApplyFieldMaskWorkflow(ctx context.Context, patchee *Workflow, patch
 		}
 		if f == prefix+"WorkflowCode" {
 			patchee.WorkflowCode = patcher.WorkflowCode
+			continue
+		}
+		if f == prefix+"Description" {
+			patchee.Description = patcher.Description
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {
