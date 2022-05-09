@@ -669,15 +669,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		return nil, err
 	}
 
-	if strings.ToLower(req.Action) == "delete" {
-		allowed := checkAllowedApproval(userMd, task.Type, "data_entry:maker")
-		if !allowed {
-			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
-		}
-	} else {
-		allowed := checkAllowedApproval(userMd, task.Type, "approve:signer")
-		if !allowed {
-			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+	if task.Type != "System" {
+
+		if strings.ToLower(req.Action) == "delete" {
+			allowed := checkAllowedApproval(userMd, task.Type, "data_entry:maker")
+			if !allowed {
+				return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+			}
+		} else {
+			allowed := checkAllowedApproval(userMd, task.Type, "approve:signer")
+			if !allowed {
+				return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+			}
 		}
 	}
 
@@ -852,6 +855,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		} else {
 			task.Status = 5
 			task.Step = 0
+		}
+
+		if task.Type == "System" {
+			if task.DataBak != "" && task.DataBak != "{}" {
+				task.Status = 4
+				task.Step = 3
+				task.Data = task.DataBak
+			}
 		}
 
 	case "delete":

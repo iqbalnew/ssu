@@ -8,6 +8,7 @@ package pb
 
 import (
 	context "context"
+	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -39,6 +40,7 @@ type TaskServiceClient interface {
 	GetTaskByTypeID(ctx context.Context, in *GetTaskByTypeIDReq, opts ...grpc.CallOption) (*GetTaskByTypeIDRes, error)
 	RejectBySystem(ctx context.Context, in *RejectBySystemReq, opts ...grpc.CallOption) (*RejectBySystemRes, error)
 	GetActivityLogs(ctx context.Context, in *GetActivityLogsReq, opts ...grpc.CallOption) (*GetActivityLogsRes, error)
+	DownloadActivityLogs(ctx context.Context, in *DownloadActivityLogsReq, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	TestLogger(ctx context.Context, in *LoggerTestReq, opts ...grpc.CallOption) (*LoggerTestRes, error)
 }
 
@@ -203,6 +205,15 @@ func (c *taskServiceClient) GetActivityLogs(ctx context.Context, in *GetActivity
 	return out, nil
 }
 
+func (c *taskServiceClient) DownloadActivityLogs(ctx context.Context, in *DownloadActivityLogsReq, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+	out := new(httpbody.HttpBody)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/DownloadActivityLogs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *taskServiceClient) TestLogger(ctx context.Context, in *LoggerTestReq, opts ...grpc.CallOption) (*LoggerTestRes, error) {
 	out := new(LoggerTestRes)
 	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/TestLogger", in, out, opts...)
@@ -233,6 +244,7 @@ type TaskServiceServer interface {
 	GetTaskByTypeID(context.Context, *GetTaskByTypeIDReq) (*GetTaskByTypeIDRes, error)
 	RejectBySystem(context.Context, *RejectBySystemReq) (*RejectBySystemRes, error)
 	GetActivityLogs(context.Context, *GetActivityLogsReq) (*GetActivityLogsRes, error)
+	DownloadActivityLogs(context.Context, *DownloadActivityLogsReq) (*httpbody.HttpBody, error)
 	TestLogger(context.Context, *LoggerTestReq) (*LoggerTestRes, error)
 	mustEmbedUnimplementedTaskServiceServer()
 }
@@ -291,6 +303,9 @@ func (UnimplementedTaskServiceServer) RejectBySystem(context.Context, *RejectByS
 }
 func (UnimplementedTaskServiceServer) GetActivityLogs(context.Context, *GetActivityLogsReq) (*GetActivityLogsRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActivityLogs not implemented")
+}
+func (UnimplementedTaskServiceServer) DownloadActivityLogs(context.Context, *DownloadActivityLogsReq) (*httpbody.HttpBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DownloadActivityLogs not implemented")
 }
 func (UnimplementedTaskServiceServer) TestLogger(context.Context, *LoggerTestReq) (*LoggerTestRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestLogger not implemented")
@@ -614,6 +629,24 @@ func _TaskService_GetActivityLogs_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskService_DownloadActivityLogs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DownloadActivityLogsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).DownloadActivityLogs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/DownloadActivityLogs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).DownloadActivityLogs(ctx, req.(*DownloadActivityLogsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TaskService_TestLogger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoggerTestReq)
 	if err := dec(in); err != nil {
@@ -706,6 +739,10 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetActivityLogs",
 			Handler:    _TaskService_GetActivityLogs_Handler,
+		},
+		{
+			MethodName: "DownloadActivityLogs",
+			Handler:    _TaskService_DownloadActivityLogs_Handler,
 		},
 		{
 			MethodName: "TestLogger",
