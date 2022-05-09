@@ -481,6 +481,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		if req.IsDraft {
 			action = "draft"
 		}
+		logrus.Println("Set to save log")
 		err = s.provider.SaveLog(ctx, &db.ActivityLog{
 			TaskID:      task.TaskID,
 			Command:     command,
@@ -1485,6 +1486,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	logrus.Println("Save LOG task 'update', type: ", task.Type)
 	// Save activity Log
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
+		logrus.Println("Set to save log")
 		err = s.provider.SaveLog(ctx, &db.ActivityLog{
 			TaskID:      updatedTask.TaskID,
 			Command:     "Update",
