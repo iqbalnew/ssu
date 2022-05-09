@@ -331,7 +331,7 @@ var file_notification_api_proto_rawDesc = []byte{
 	0x65, 0x74, 0x4d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x42, 0x79,
 	0x4d, 0x6f, 0x64, 0x69, 0x6c, 0x65, 0x49, 0x44, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
 	0x1a, 0x0a, 0x08, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x08, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x49, 0x44, 0x32, 0x80, 0x23, 0x0a, 0x0a,
+	0x04, 0x52, 0x08, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x49, 0x44, 0x32, 0x9f, 0x24, 0x0a, 0x0a,
 	0x41, 0x70, 0x69, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0xb2, 0x01, 0x0a, 0x0b, 0x48,
 	0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x12, 0x1e, 0x2e, 0x6e, 0x6f, 0x74,
 	0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
@@ -611,15 +611,25 @@ var file_notification_api_proto_rawDesc = []byte{
 	0x73, 0x74, 0x20, 0x6e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x20,
 	0x74, 0x61, 0x73, 0x6b, 0x1a, 0x26, 0x54, 0x68, 0x69, 0x73, 0x20, 0x41, 0x50, 0x49, 0x20, 0x66,
 	0x6f, 0x72, 0x20, 0x64, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x73, 0x20, 0x6e, 0x6f, 0x74, 0x69, 0x66,
-	0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x20, 0x74, 0x61, 0x73, 0x6b, 0x62, 0x00, 0x42, 0x72,
-	0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x92, 0x41, 0x69, 0x5a, 0x59, 0x0a, 0x57, 0x0a, 0x06, 0x62,
-	0x65, 0x61, 0x72, 0x65, 0x72, 0x12, 0x4d, 0x08, 0x02, 0x12, 0x38, 0x41, 0x75, 0x74, 0x68, 0x65,
-	0x6e, 0x74, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x20, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x2c,
-	0x20, 0x70, 0x72, 0x65, 0x66, 0x69, 0x78, 0x65, 0x64, 0x20, 0x62, 0x79, 0x20, 0x42, 0x65, 0x61,
-	0x72, 0x65, 0x72, 0x3a, 0x20, 0x42, 0x65, 0x61, 0x72, 0x65, 0x72, 0x20, 0x3c, 0x74, 0x6f, 0x6b,
-	0x65, 0x6e, 0x3e, 0x1a, 0x0d, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x20, 0x02, 0x62, 0x0c, 0x0a, 0x0a, 0x0a, 0x06, 0x62, 0x65, 0x61, 0x72, 0x65, 0x72,
-	0x12, 0x00, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x20, 0x74, 0x61, 0x73, 0x6b, 0x62, 0x00, 0x12, 0x9c,
+	0x01, 0x0a, 0x10, 0x53, 0x65, 0x6e, 0x64, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x12, 0x30, 0x2e, 0x6e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65,
+	0x6e, 0x64, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x31, 0x2e, 0x6e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e,
+	0x53, 0x65, 0x6e, 0x64, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x23, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x18,
+	0x22, 0x16, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6e, 0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x2f, 0x73, 0x65, 0x6e, 0x64, 0x92, 0x41, 0x02, 0x62, 0x00, 0x42, 0x72, 0x5a,
+	0x04, 0x2e, 0x2f, 0x70, 0x62, 0x92, 0x41, 0x69, 0x5a, 0x59, 0x0a, 0x57, 0x0a, 0x06, 0x62, 0x65,
+	0x61, 0x72, 0x65, 0x72, 0x12, 0x4d, 0x08, 0x02, 0x12, 0x38, 0x41, 0x75, 0x74, 0x68, 0x65, 0x6e,
+	0x74, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x20, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x2c, 0x20,
+	0x70, 0x72, 0x65, 0x66, 0x69, 0x78, 0x65, 0x64, 0x20, 0x62, 0x79, 0x20, 0x42, 0x65, 0x61, 0x72,
+	0x65, 0x72, 0x3a, 0x20, 0x42, 0x65, 0x61, 0x72, 0x65, 0x72, 0x20, 0x3c, 0x74, 0x6f, 0x6b, 0x65,
+	0x6e, 0x3e, 0x1a, 0x0d, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x20, 0x02, 0x62, 0x0c, 0x0a, 0x0a, 0x0a, 0x06, 0x62, 0x65, 0x61, 0x72, 0x65, 0x72, 0x12,
+	0x00, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -654,16 +664,18 @@ var file_notification_api_proto_goTypes = []interface{}{
 	(*SendSmsRequest)(nil),                    // 15: notification.service.v1.SendSmsRequest
 	(*ModuleEvent)(nil),                       // 16: notification.service.v1.ModuleEvent
 	(*FileListNotificationTaskRequest)(nil),   // 17: notification.service.v1.FileListNotificationTaskRequest
-	(*HealthCheckResponse)(nil),               // 18: notification.service.v1.HealthCheckResponse
-	(*ListNotificationRes)(nil),               // 19: notification.service.v1.ListNotificationRes
-	(*CommonResponse)(nil),                    // 20: notification.service.v1.CommonResponse
-	(*CreateNotificationTaskResponse)(nil),    // 21: notification.service.v1.CreateNotificationTaskResponse
-	(*GetNotificationTaskResponse)(nil),       // 22: notification.service.v1.GetNotificationTaskResponse
-	(*GetDetailNotificationTaskResponse)(nil), // 23: notification.service.v1.GetDetailNotificationTaskResponse
-	(*ListNotificationModuleResponse)(nil),    // 24: notification.service.v1.ListNotificationModuleResponse
-	(*ListModuleEventResponse)(nil),           // 25: notification.service.v1.ListModuleEventResponse
-	(*BRIGateNotificationResponse)(nil),       // 26: notification.service.v1.BRIGateNotificationResponse
-	(*httpbody.HttpBody)(nil),                 // 27: google.api.HttpBody
+	(*SendNotificationRequest)(nil),           // 18: notification.service.v1.SendNotificationRequest
+	(*HealthCheckResponse)(nil),               // 19: notification.service.v1.HealthCheckResponse
+	(*ListNotificationRes)(nil),               // 20: notification.service.v1.ListNotificationRes
+	(*CommonResponse)(nil),                    // 21: notification.service.v1.CommonResponse
+	(*CreateNotificationTaskResponse)(nil),    // 22: notification.service.v1.CreateNotificationTaskResponse
+	(*GetNotificationTaskResponse)(nil),       // 23: notification.service.v1.GetNotificationTaskResponse
+	(*GetDetailNotificationTaskResponse)(nil), // 24: notification.service.v1.GetDetailNotificationTaskResponse
+	(*ListNotificationModuleResponse)(nil),    // 25: notification.service.v1.ListNotificationModuleResponse
+	(*ListModuleEventResponse)(nil),           // 26: notification.service.v1.ListModuleEventResponse
+	(*BRIGateNotificationResponse)(nil),       // 27: notification.service.v1.BRIGateNotificationResponse
+	(*httpbody.HttpBody)(nil),                 // 28: google.api.HttpBody
+	(*SendNotificationResponse)(nil),          // 29: notification.service.v1.SendNotificationResponse
 }
 var file_notification_api_proto_depIdxs = []int32{
 	4,  // 0: notification.service.v1.ListModuleResponse.data:type_name -> notification.service.v1.NotificationModule
@@ -688,27 +700,29 @@ var file_notification_api_proto_depIdxs = []int32{
 	6,  // 19: notification.service.v1.ApiService.SaveClient:input_type -> notification.service.v1.TempClient
 	17, // 20: notification.service.v1.ApiService.DownloadListNotificationTasks:input_type -> notification.service.v1.FileListNotificationTaskRequest
 	12, // 21: notification.service.v1.ApiService.RequestDeleteNotificationTask:input_type -> notification.service.v1.GetNotificationTaskByIDRequest
-	18, // 22: notification.service.v1.ApiService.HealthCheck:output_type -> notification.service.v1.HealthCheckResponse
-	19, // 23: notification.service.v1.ApiService.GetNotifications:output_type -> notification.service.v1.ListNotificationRes
-	20, // 24: notification.service.v1.ApiService.CreateNotification:output_type -> notification.service.v1.CommonResponse
-	21, // 25: notification.service.v1.ApiService.CreateNotificationTask:output_type -> notification.service.v1.CreateNotificationTaskResponse
-	22, // 26: notification.service.v1.ApiService.GetNotificationTask:output_type -> notification.service.v1.GetNotificationTaskResponse
-	23, // 27: notification.service.v1.ApiService.GetNotificationTaskByID:output_type -> notification.service.v1.GetDetailNotificationTaskResponse
-	24, // 28: notification.service.v1.ApiService.GetNotificationModules:output_type -> notification.service.v1.ListNotificationModuleResponse
-	25, // 29: notification.service.v1.ApiService.GetModuleEvents:output_type -> notification.service.v1.ListModuleEventResponse
-	25, // 30: notification.service.v1.ApiService.GetModuleEventsByModuleID:output_type -> notification.service.v1.ListModuleEventResponse
-	26, // 31: notification.service.v1.ApiService.BRIGateSendEmail:output_type -> notification.service.v1.BRIGateNotificationResponse
-	26, // 32: notification.service.v1.ApiService.BRIGateSendSms:output_type -> notification.service.v1.BRIGateNotificationResponse
-	4,  // 33: notification.service.v1.ApiService.SaveNotificationModule:output_type -> notification.service.v1.NotificationModule
-	16, // 34: notification.service.v1.ApiService.SaveModuleEvent:output_type -> notification.service.v1.ModuleEvent
-	1,  // 35: notification.service.v1.ApiService.ListEventVariable:output_type -> notification.service.v1.ListVariableResponse
-	5,  // 36: notification.service.v1.ApiService.SaveEventVariable:output_type -> notification.service.v1.EventVariable
-	2,  // 37: notification.service.v1.ApiService.ListClient:output_type -> notification.service.v1.ListClientResponse
-	6,  // 38: notification.service.v1.ApiService.SaveClient:output_type -> notification.service.v1.TempClient
-	27, // 39: notification.service.v1.ApiService.DownloadListNotificationTasks:output_type -> google.api.HttpBody
-	23, // 40: notification.service.v1.ApiService.RequestDeleteNotificationTask:output_type -> notification.service.v1.GetDetailNotificationTaskResponse
-	22, // [22:41] is the sub-list for method output_type
-	3,  // [3:22] is the sub-list for method input_type
+	18, // 22: notification.service.v1.ApiService.SendNotification:input_type -> notification.service.v1.SendNotificationRequest
+	19, // 23: notification.service.v1.ApiService.HealthCheck:output_type -> notification.service.v1.HealthCheckResponse
+	20, // 24: notification.service.v1.ApiService.GetNotifications:output_type -> notification.service.v1.ListNotificationRes
+	21, // 25: notification.service.v1.ApiService.CreateNotification:output_type -> notification.service.v1.CommonResponse
+	22, // 26: notification.service.v1.ApiService.CreateNotificationTask:output_type -> notification.service.v1.CreateNotificationTaskResponse
+	23, // 27: notification.service.v1.ApiService.GetNotificationTask:output_type -> notification.service.v1.GetNotificationTaskResponse
+	24, // 28: notification.service.v1.ApiService.GetNotificationTaskByID:output_type -> notification.service.v1.GetDetailNotificationTaskResponse
+	25, // 29: notification.service.v1.ApiService.GetNotificationModules:output_type -> notification.service.v1.ListNotificationModuleResponse
+	26, // 30: notification.service.v1.ApiService.GetModuleEvents:output_type -> notification.service.v1.ListModuleEventResponse
+	26, // 31: notification.service.v1.ApiService.GetModuleEventsByModuleID:output_type -> notification.service.v1.ListModuleEventResponse
+	27, // 32: notification.service.v1.ApiService.BRIGateSendEmail:output_type -> notification.service.v1.BRIGateNotificationResponse
+	27, // 33: notification.service.v1.ApiService.BRIGateSendSms:output_type -> notification.service.v1.BRIGateNotificationResponse
+	4,  // 34: notification.service.v1.ApiService.SaveNotificationModule:output_type -> notification.service.v1.NotificationModule
+	16, // 35: notification.service.v1.ApiService.SaveModuleEvent:output_type -> notification.service.v1.ModuleEvent
+	1,  // 36: notification.service.v1.ApiService.ListEventVariable:output_type -> notification.service.v1.ListVariableResponse
+	5,  // 37: notification.service.v1.ApiService.SaveEventVariable:output_type -> notification.service.v1.EventVariable
+	2,  // 38: notification.service.v1.ApiService.ListClient:output_type -> notification.service.v1.ListClientResponse
+	6,  // 39: notification.service.v1.ApiService.SaveClient:output_type -> notification.service.v1.TempClient
+	28, // 40: notification.service.v1.ApiService.DownloadListNotificationTasks:output_type -> google.api.HttpBody
+	24, // 41: notification.service.v1.ApiService.RequestDeleteNotificationTask:output_type -> notification.service.v1.GetDetailNotificationTaskResponse
+	29, // 42: notification.service.v1.ApiService.SendNotification:output_type -> notification.service.v1.SendNotificationResponse
+	23, // [23:43] is the sub-list for method output_type
+	3,  // [3:23] is the sub-list for method input_type
 	3,  // [3:3] is the sub-list for extension type_name
 	3,  // [3:3] is the sub-list for extension extendee
 	0,  // [0:3] is the sub-list for field type_name
