@@ -868,7 +868,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 		if task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
-			if task.ChildBak != "" || task.ChildBak != "[]" {
+			if task.DataBak != "" && task.DataBak != "{}" {
+				task.Status = 4
+				task.Step = 3
+				if task.DataBak != "" && task.DataBak != "{}" {
+					task.Data = task.DataBak
+				}
+
+			}
+
+			if task.ChildBak != "" && task.ChildBak != "[]" {
 				taskChilds := []*pb.TaskORM{}
 				err := json.Unmarshal([]byte(task.ChildBak), &taskChilds)
 				if err != nil {
