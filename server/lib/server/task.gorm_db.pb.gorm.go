@@ -112,6 +112,7 @@ type UserWithAfterToPB interface {
 }
 
 type TaskORM struct {
+	ChildBak           string     `gorm:"type:jsonb;default:[]"`
 	Childs             []*TaskORM `gorm:"foreignkey:ParentID;association_foreignkey:TaskID;append:true"`
 	Comment            string     `gorm:"type:text"`
 	CreatedAt          *time.Time
@@ -181,6 +182,7 @@ func (m *Task) ToORM(ctx context.Context) (TaskORM, error) {
 	to.UpdatedByName = m.UpdatedByName
 	to.CreatedByName = m.CreatedByName
 	to.DataBak = m.DataBak
+	to.ChildBak = m.ChildBak
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -238,6 +240,7 @@ func (m *TaskORM) ToPB(ctx context.Context) (Task, error) {
 	to.UpdatedByName = m.UpdatedByName
 	to.CreatedByName = m.CreatedByName
 	to.DataBak = m.DataBak
+	to.ChildBak = m.ChildBak
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -1372,6 +1375,10 @@ func DefaultApplyFieldMaskTask(ctx context.Context, patchee *Task, patcher *Task
 		}
 		if f == prefix+"DataBak" {
 			patchee.DataBak = patcher.DataBak
+			continue
+		}
+		if f == prefix+"ChildBak" {
+			patchee.ChildBak = patcher.ChildBak
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {

@@ -867,6 +867,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 		}
 
+		if task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
+			if task.ChildBak != "" || task.ChildBak != "[]" {
+				taskChilds := []*pb.TaskORM{}
+				err := json.Unmarshal([]byte(task.ChildBak), &taskChilds)
+				if err != nil {
+					logrus.Errorln("Error Unmarshal Task Childs: ", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				task.Childs = taskChilds
+			}
+		}
+
 	case "delete":
 		task.LastApprovedByID = 0
 		task.LastApprovedByName = ""
@@ -905,6 +917,17 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 		if task.DataBak == "" {
 			task.DataBak = "{}"
+		}
+
+		if (task.Type == "Menu:License" || task.Type == "Menu:Appearance") && len(task.Childs) > 0 {
+			childs, err := json.Marshal(task.Childs)
+			if err != nil {
+				logrus.Println("Error Marshal Childs")
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			task.ChildBak = string(childs)
+		} else {
+			task.ChildBak = "[]"
 		}
 	}
 

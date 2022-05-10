@@ -41,10 +41,10 @@ protoc --proto_path=./proto ./proto/task.api.proto \
 
 mv ./proto/task.api.swagger.json ./www/swagger.json
 
-# protoc --proto_path=./proto ./proto/task.gorm_db.proto \
-#     --proto_path=./proto/libs \
-#     --plugin=$(go env GOPATH)/bin/protoc-gen-gorm \
-#     --gorm_out=./server
+protoc --proto_path=./proto ./proto/task.gorm_db.proto \
+    --proto_path=./proto/libs \
+    --plugin=$(go env GOPATH)/bin/protoc-gen-gorm \
+    --gorm_out=./server
 
 if [ -d "./server/pb" ] ; then
     rsync -a ./server/pb/ ./server/lib/server/

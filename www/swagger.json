@@ -747,6 +747,12 @@
             "type": "string"
           },
           {
+            "name": "task.childBak",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "task.createdAt",
             "in": "query",
             "required": false,
@@ -1544,6 +1550,10 @@
           "type": "string"
         },
         "dataBak": {
+          "type": "string",
+          "readOnly": true
+        },
+        "childBak": {
           "type": "string",
           "readOnly": true
         },
