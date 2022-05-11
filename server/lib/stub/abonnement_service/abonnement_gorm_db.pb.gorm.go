@@ -320,7 +320,7 @@ type AbonnementAccountORM struct {
 	AbonnementId  *uint64
 	AccountAlias  string
 	AccountID     uint64
-	AccountNumber uint64
+	AccountNumber string
 	CreatedAt     *time.Time
 	CreatedByID   uint64
 	Id            uint64 `gorm:"primary_key;not null"`
@@ -440,7 +440,7 @@ type AbonnementInvoiceORM struct {
 	AbonnementId  *uint64
 	AccountAlias  string
 	AccountID     uint64
-	AccountNumber uint64
+	AccountNumber string
 	Amount        uint64
 	CreatedAt     *time.Time
 	CreatedByID   uint64

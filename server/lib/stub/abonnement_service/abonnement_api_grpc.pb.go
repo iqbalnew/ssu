@@ -31,8 +31,10 @@ type ApiServiceClient interface {
 	CreateAbonnementTask(ctx context.Context, in *CreateAbonnementTaskRequest, opts ...grpc.CallOption) (*CreateAbonnementTaskResponse, error)
 	DownloadListAbonnementTasks(ctx context.Context, in *DownloadListAbonnementTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	ListAbonnementTask(ctx context.Context, in *ListAbonnementTaskRequest, opts ...grpc.CallOption) (*ListAbonnementTaskResponse, error)
+	DownloadListAbonnementInvoice(ctx context.Context, in *DownloadListAbonnementInvoiceRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	AbonnementTaskDetail(ctx context.Context, in *AbonnementTaskDetailRequest, opts ...grpc.CallOption) (*AbonnementTaskDetailResponse, error)
 	ListAbonnementInvoice(ctx context.Context, in *ListAbonnementInvoiceRequest, opts ...grpc.CallOption) (*ListAbonnementInvoiceResponse, error)
+	CekAccountAvaibility(ctx context.Context, in *CekAvaibilityReq, opts ...grpc.CallOption) (*CekAvaibilityRes, error)
 }
 
 type apiServiceClient struct {
@@ -115,6 +117,15 @@ func (c *apiServiceClient) ListAbonnementTask(ctx context.Context, in *ListAbonn
 	return out, nil
 }
 
+func (c *apiServiceClient) DownloadListAbonnementInvoice(ctx context.Context, in *DownloadListAbonnementInvoiceRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+	out := new(httpbody.HttpBody)
+	err := c.cc.Invoke(ctx, "/abonnement.service.v1.ApiService/DownloadListAbonnementInvoice", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) AbonnementTaskDetail(ctx context.Context, in *AbonnementTaskDetailRequest, opts ...grpc.CallOption) (*AbonnementTaskDetailResponse, error) {
 	out := new(AbonnementTaskDetailResponse)
 	err := c.cc.Invoke(ctx, "/abonnement.service.v1.ApiService/AbonnementTaskDetail", in, out, opts...)
@@ -133,6 +144,15 @@ func (c *apiServiceClient) ListAbonnementInvoice(ctx context.Context, in *ListAb
 	return out, nil
 }
 
+func (c *apiServiceClient) CekAccountAvaibility(ctx context.Context, in *CekAvaibilityReq, opts ...grpc.CallOption) (*CekAvaibilityRes, error) {
+	out := new(CekAvaibilityRes)
+	err := c.cc.Invoke(ctx, "/abonnement.service.v1.ApiService/CekAccountAvaibility", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
@@ -145,8 +165,10 @@ type ApiServiceServer interface {
 	CreateAbonnementTask(context.Context, *CreateAbonnementTaskRequest) (*CreateAbonnementTaskResponse, error)
 	DownloadListAbonnementTasks(context.Context, *DownloadListAbonnementTaskRequest) (*httpbody.HttpBody, error)
 	ListAbonnementTask(context.Context, *ListAbonnementTaskRequest) (*ListAbonnementTaskResponse, error)
+	DownloadListAbonnementInvoice(context.Context, *DownloadListAbonnementInvoiceRequest) (*httpbody.HttpBody, error)
 	AbonnementTaskDetail(context.Context, *AbonnementTaskDetailRequest) (*AbonnementTaskDetailResponse, error)
 	ListAbonnementInvoice(context.Context, *ListAbonnementInvoiceRequest) (*ListAbonnementInvoiceResponse, error)
+	CekAccountAvaibility(context.Context, *CekAvaibilityReq) (*CekAvaibilityRes, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -178,11 +200,17 @@ func (UnimplementedApiServiceServer) DownloadListAbonnementTasks(context.Context
 func (UnimplementedApiServiceServer) ListAbonnementTask(context.Context, *ListAbonnementTaskRequest) (*ListAbonnementTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAbonnementTask not implemented")
 }
+func (UnimplementedApiServiceServer) DownloadListAbonnementInvoice(context.Context, *DownloadListAbonnementInvoiceRequest) (*httpbody.HttpBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DownloadListAbonnementInvoice not implemented")
+}
 func (UnimplementedApiServiceServer) AbonnementTaskDetail(context.Context, *AbonnementTaskDetailRequest) (*AbonnementTaskDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AbonnementTaskDetail not implemented")
 }
 func (UnimplementedApiServiceServer) ListAbonnementInvoice(context.Context, *ListAbonnementInvoiceRequest) (*ListAbonnementInvoiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAbonnementInvoice not implemented")
+}
+func (UnimplementedApiServiceServer) CekAccountAvaibility(context.Context, *CekAvaibilityReq) (*CekAvaibilityRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CekAccountAvaibility not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -341,6 +369,24 @@ func _ApiService_ListAbonnementTask_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_DownloadListAbonnementInvoice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DownloadListAbonnementInvoiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DownloadListAbonnementInvoice(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/abonnement.service.v1.ApiService/DownloadListAbonnementInvoice",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DownloadListAbonnementInvoice(ctx, req.(*DownloadListAbonnementInvoiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_AbonnementTaskDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AbonnementTaskDetailRequest)
 	if err := dec(in); err != nil {
@@ -373,6 +419,24 @@ func _ApiService_ListAbonnementInvoice_Handler(srv interface{}, ctx context.Cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).ListAbonnementInvoice(ctx, req.(*ListAbonnementInvoiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_CekAccountAvaibility_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CekAvaibilityReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CekAccountAvaibility(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/abonnement.service.v1.ApiService/CekAccountAvaibility",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CekAccountAvaibility(ctx, req.(*CekAvaibilityReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -417,12 +481,20 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_ListAbonnementTask_Handler,
 		},
 		{
+			MethodName: "DownloadListAbonnementInvoice",
+			Handler:    _ApiService_DownloadListAbonnementInvoice_Handler,
+		},
+		{
 			MethodName: "AbonnementTaskDetail",
 			Handler:    _ApiService_AbonnementTaskDetail_Handler,
 		},
 		{
 			MethodName: "ListAbonnementInvoice",
 			Handler:    _ApiService_ListAbonnementInvoice_Handler,
+		},
+		{
+			MethodName: "CekAccountAvaibility",
+			Handler:    _ApiService_CekAccountAvaibility_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
