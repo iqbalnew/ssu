@@ -1505,6 +1505,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if err != nil {
 				return nil, err
 			}
+			logrus.Println(res)
 
 			// data := abonnement_pb.CreateAbonnementRequest{}
 			// json.Unmarshal([]byte(task.Data), &data.Data)
