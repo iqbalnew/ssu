@@ -236,7 +236,7 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 	})
 	if task != nil || task.Type != "" {
 		childs := task.Childs
-		task.Childs = nil
+		task.Childs = []*pb.TaskORM{}
 		if err := query.Model(&taskModel).Updates(&task).Error; err != nil {
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				logrus.Errorln(err)
@@ -276,10 +276,14 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 
 			task.Childs = childs
 		}
+		if task.Type == "Menu:License" {
+			logrus.Println("Menu License Child length 201: ", len(task.Childs))
+			logrus.Println("Menu License Child length 202: ", len(childs))
+		}
 	}
 
 	if task.Type == "Menu:License" {
-		logrus.Println("Menu License Child length 201: ", len(task.Childs))
+		logrus.Println("Menu License Child length 203: ", len(task.Childs))
 	}
 
 	return task, nil
