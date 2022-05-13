@@ -670,6 +670,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if err != nil {
 		return nil, err
 	}
+	logrus.Println("==========> Task Type: ", task.Type)
 	if task.Type == "Menu:License" {
 		logrus.Println("Menu License Child length: ", len(task.Childs))
 	}
