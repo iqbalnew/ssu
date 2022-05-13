@@ -672,7 +672,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 	logrus.Println("==========> Task Type: ", task.Type)
 	if task.Type == "Menu:License" {
-		logrus.Println("Menu License Child length: ", len(task.Childs))
+		logrus.Println("Menu License Child length 101 : ", len(task.Childs))
 	}
 
 	if task.Type != "System" {
@@ -908,6 +908,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	logrus.Println("End Val Comment" + task.Comment)
 	logrus.Println("End Val Reasons" + task.Reasons)
 
+	if task.Type == "Menu:License" {
+		logrus.Println("Menu License Child length 102 : ", len(task.Childs))
+	}
+
 	for i := range task.Childs {
 		task.Childs[i].LastApprovedByID = task.LastApprovedByID
 		task.Childs[i].LastApprovedByName = task.LastApprovedByName
@@ -923,6 +927,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 	}
 
+	if task.Type == "Menu:License" {
+		logrus.Println("Menu License Child length 103 : ", len(task.Childs))
+	}
+
 	if sendTask {
 		if task.Data != "" && task.Data != "{}" {
 			logrus.Println("Save Backup")
@@ -933,15 +941,19 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 		if (task.Type == "Menu:License" || task.Type == "Menu:Appearance") && len(task.Childs) > 0 {
-			childs, err := json.Marshal(task.Childs)
+			jsonChilds, err := json.Marshal(task.Childs)
 			if err != nil {
 				logrus.Println("Error Marshal Childs")
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
-			task.ChildBak = string(childs)
+			task.ChildBak = string(jsonChilds)
 		} else {
 			task.ChildBak = "[]"
 		}
+	}
+
+	if task.Type == "Menu:License" {
+		logrus.Println("Menu License Child length 104 : ", len(task.Childs))
 	}
 
 	updatedTask, err := s.provider.UpdateTask(ctx, task, false)
@@ -1216,6 +1228,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			menuClient := menu_pb.NewApiServiceClient(menuConn)
 
 			if strings.Contains(task.Data, `"isParent": true`) {
+				// isParent = true
 				beforeSave := true
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
@@ -1280,7 +1293,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			fmt.Println("result", strings.Contains(task.Data, `"isParent": true`))
 			if strings.Contains(task.Data, `"isParent": true`) {
-				logrus.Println("Child Length : ", len(task.Childs))
+				// isParent = true
+				logrus.Println("Child Length  105 : ", len(task.Childs))
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := menu_pb.SaveMenuLicenseReq{}
