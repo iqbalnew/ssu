@@ -388,9 +388,11 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	var err error
 
 	logrus.Println("==> 01: ", task.Type)
+	logrus.Println("==> taskID: ", task.TaskID)
 	if len(task.Childs) > 0 {
 		for i, v := range task.Childs {
 			logrus.Println("==> 01: ", i, ": ", v.Type)
+			logrus.Println("ParentID: ", v.ParentID)
 		}
 	}
 
