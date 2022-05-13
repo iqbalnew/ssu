@@ -1501,14 +1501,25 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			abonnementClient := abonnement_pb.NewApiServiceClient(abonnementConn)
 
-			data := abonnement_pb.CreateAbonnementRequest{}
+			data := abonnement_pb.CreateAbonnementTaskRequest{}
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
-			res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			data.Data.BillingStatus = "Waiting Schedule"
+			res, err := abonnementClient.CreateAbonnementTask(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
 			logrus.Println(res)
+
+			// data := abonnement_pb.CreateAbonnementRequest{}
+			// json.Unmarshal([]byte(task.Data), &data.Data)
+			// data.TaskID = task.TaskID
+			// data.Data.BillingStatus = "Waiting Schedule"
+			// res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			// if err != nil {
+			// 	return nil, err
+			// }
+			// logrus.Println(res)
 		}
 	}
 

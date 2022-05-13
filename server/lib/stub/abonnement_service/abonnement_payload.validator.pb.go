@@ -272,11 +272,6 @@ func (this *ListTaskAbonnementRes) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
 		}
 	}
-	if this.Task != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
-		}
-	}
 	return nil
 }
 func (this *TaskListTask) Validate() error {
@@ -314,10 +309,21 @@ func (this *CompanyCreateTask) Validate() error {
 func (this *CompanyListTask) Validate() error {
 	return nil
 }
+func (this *ListFilterAbannomentInvoice) Validate() error {
+	return nil
+}
 func (this *ListAbonnementInvoiceRequest) Validate() error {
-	if this.Invoice != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Invoice); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Invoice", err)
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+		}
+	}
+	return nil
+}
+func (this *DownloadListAbonnementInvoiceRequest) Validate() error {
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
 		}
 	}
 	return nil
@@ -338,5 +344,11 @@ func (this *ListAbonnementInvoiceResponse) Validate() error {
 	return nil
 }
 func (this *AbonnementInvoiceDetailRequest) Validate() error {
+	return nil
+}
+func (this *CekAvaibilityReq) Validate() error {
+	return nil
+}
+func (this *CekAvaibilityRes) Validate() error {
 	return nil
 }
