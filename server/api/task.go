@@ -670,6 +670,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if err != nil {
 		return nil, err
 	}
+	if task.Type == "Menu:License" {
+		logrus.Println("Menu License Child length: ", len(task.Childs))
+	}
 
 	if task.Type != "System" {
 
@@ -1259,7 +1262,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 		case "Menu:License":
-			fmt.Println("Menu:Licensecl")
+			fmt.Println("Menu:License")
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1276,6 +1279,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			fmt.Println("result", strings.Contains(task.Data, `"isParent": true`))
 			if strings.Contains(task.Data, `"isParent": true`) {
+				logrus.Println("Child Length : ", len(task.Childs))
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := menu_pb.SaveMenuLicenseReq{}
