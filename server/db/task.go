@@ -247,10 +247,11 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 			}
 		}
 
-		if len(childs) > 0 && updateChild {
+		if len(childs) > 0 && (updateChild || task.Type == "Menu:Appearance" || task.Type == "Menu:License") {
 
 			for i := range childs {
 				childs[i].ParentID = &task.TaskID
+				task.Childs = append(task.Childs, childs[i])
 			}
 
 			if task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
@@ -274,9 +275,6 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 				}
 			}
 
-			for i := range childs {
-				task.Childs = append(task.Childs, childs[i])
-			}
 		}
 		if task.Type == "Menu:License" {
 			logrus.Println("Menu License Child length 201: ", len(task.Childs))
