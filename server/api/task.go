@@ -387,6 +387,13 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task, _ := req.Task.ToORM(ctx)
 	var err error
 
+	logrus.Println("==> 01: ", task.Type)
+	if len(task.Childs) > 0 {
+		for i, v := range task.Childs {
+			logrus.Println("==> 01: ", i, ": ", v.Type)
+		}
+	}
+
 	currentUser, _, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		return nil, err
@@ -875,10 +882,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if task.DataBak != "" && task.DataBak != "{}" {
 				task.Status = 4
 				task.Step = 3
-				if task.DataBak != "" && task.DataBak != "{}" {
-					task.Data = task.DataBak
-				}
-
+				task.Data = task.DataBak
 			}
 
 			if task.ChildBak != "" && task.ChildBak != "[]" {
