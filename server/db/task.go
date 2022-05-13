@@ -274,7 +274,9 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 				}
 			}
 
-			task.Childs = childs
+			for i := range childs {
+				task.Childs = append(task.Childs, childs[i])
+			}
 		}
 		if task.Type == "Menu:License" {
 			logrus.Println("Menu License Child length 201: ", len(task.Childs))
