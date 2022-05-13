@@ -378,7 +378,7 @@ type MenuWithAfterToPB interface {
 type MenuDisableORM struct {
 	CreatedAt     *time.Time
 	CreatedByID   uint64
-	CustomTime    string `gorm:"type:varchar(255)"`
+	CustomTime    string `gorm:"type:jsonb"`
 	DeletedAt     *time.Time
 	DeletedByID   uint64
 	EndDateTime   *time.Time

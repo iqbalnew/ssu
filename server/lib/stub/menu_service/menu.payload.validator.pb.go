@@ -7,11 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/golang/protobuf/ptypes/struct"
 	_ "github.com/mwitkow/go-proto-validators"
-	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -314,6 +314,9 @@ func (this *SaveMenuAppearanceRes) Validate() error {
 func (this *GetMenuAppearanceReq) Validate() error {
 	return nil
 }
+func (this *GetMenuLicenseReq) Validate() error {
+	return nil
+}
 func (this *GetMenuAppearanceRes) Validate() error {
 	for _, item := range this.Data {
 		if item != nil {
@@ -325,6 +328,19 @@ func (this *GetMenuAppearanceRes) Validate() error {
 	if this.Pagination != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
+func (this *GetMyMenuReq) Validate() error {
+	return nil
+}
+func (this *GetMyMenuRes) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
 		}
 	}
 	return nil

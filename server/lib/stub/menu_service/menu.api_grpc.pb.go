@@ -30,7 +30,7 @@ type ApiServiceClient interface {
 	SaveMenuAppearance(ctx context.Context, in *SaveMenuAppearanceReq, opts ...grpc.CallOption) (*SaveMenuAppearanceRes, error)
 	BeforeSaveMenuAppearance(ctx context.Context, in *BeforeSaveMenuAppearanceReq, opts ...grpc.CallOption) (*SaveMenuAppearanceRes, error)
 	GetMenuAppearance(ctx context.Context, in *GetMenuAppearanceReq, opts ...grpc.CallOption) (*GetMenuAppearanceRes, error)
-	GetMenuLicense(ctx context.Context, in *GetMenuAppearanceReq, opts ...grpc.CallOption) (*GetMenuLicenseRes, error)
+	GetMenuLicense(ctx context.Context, in *GetMenuLicenseReq, opts ...grpc.CallOption) (*GetMenuLicenseRes, error)
 	SetTaskMenuLicense(ctx context.Context, in *SetTaskMenuLicenseReq, opts ...grpc.CallOption) (*SetTaskMenuLicenseRes, error)
 	SaveMenuLicense(ctx context.Context, in *SaveMenuLicenseReq, opts ...grpc.CallOption) (*SaveMenuLicenseRes, error)
 	DeleteMenuLicense(ctx context.Context, in *SaveMenuLicenseReq, opts ...grpc.CallOption) (*SaveMenuLicenseRes, error)
@@ -45,6 +45,7 @@ type ApiServiceClient interface {
 	FileMenuAppearanceTask(ctx context.Context, in *FileMenuAppearanceTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	GetMyTasksMenuLicense(ctx context.Context, in *GetListTaskMenuLicenseReq, opts ...grpc.CallOption) (*GetListTaskMenuLicenseRes, error)
 	GetMyTasksMenuAppearance(ctx context.Context, in *GetListTaskMenuAppearanceReq, opts ...grpc.CallOption) (*GetListTaskMenuAppearanceRes, error)
+	GetMyMenu(ctx context.Context, in *GetMyMenuReq, opts ...grpc.CallOption) (*GetMyMenuRes, error)
 }
 
 type apiServiceClient struct {
@@ -118,7 +119,7 @@ func (c *apiServiceClient) GetMenuAppearance(ctx context.Context, in *GetMenuApp
 	return out, nil
 }
 
-func (c *apiServiceClient) GetMenuLicense(ctx context.Context, in *GetMenuAppearanceReq, opts ...grpc.CallOption) (*GetMenuLicenseRes, error) {
+func (c *apiServiceClient) GetMenuLicense(ctx context.Context, in *GetMenuLicenseReq, opts ...grpc.CallOption) (*GetMenuLicenseRes, error) {
 	out := new(GetMenuLicenseRes)
 	err := c.cc.Invoke(ctx, "/menu.service.v1.ApiService/GetMenuLicense", in, out, opts...)
 	if err != nil {
@@ -253,6 +254,15 @@ func (c *apiServiceClient) GetMyTasksMenuAppearance(ctx context.Context, in *Get
 	return out, nil
 }
 
+func (c *apiServiceClient) GetMyMenu(ctx context.Context, in *GetMyMenuReq, opts ...grpc.CallOption) (*GetMyMenuRes, error) {
+	out := new(GetMyMenuRes)
+	err := c.cc.Invoke(ctx, "/menu.service.v1.ApiService/GetMyMenu", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
@@ -264,7 +274,7 @@ type ApiServiceServer interface {
 	SaveMenuAppearance(context.Context, *SaveMenuAppearanceReq) (*SaveMenuAppearanceRes, error)
 	BeforeSaveMenuAppearance(context.Context, *BeforeSaveMenuAppearanceReq) (*SaveMenuAppearanceRes, error)
 	GetMenuAppearance(context.Context, *GetMenuAppearanceReq) (*GetMenuAppearanceRes, error)
-	GetMenuLicense(context.Context, *GetMenuAppearanceReq) (*GetMenuLicenseRes, error)
+	GetMenuLicense(context.Context, *GetMenuLicenseReq) (*GetMenuLicenseRes, error)
 	SetTaskMenuLicense(context.Context, *SetTaskMenuLicenseReq) (*SetTaskMenuLicenseRes, error)
 	SaveMenuLicense(context.Context, *SaveMenuLicenseReq) (*SaveMenuLicenseRes, error)
 	DeleteMenuLicense(context.Context, *SaveMenuLicenseReq) (*SaveMenuLicenseRes, error)
@@ -279,6 +289,7 @@ type ApiServiceServer interface {
 	FileMenuAppearanceTask(context.Context, *FileMenuAppearanceTaskRequest) (*httpbody.HttpBody, error)
 	GetMyTasksMenuLicense(context.Context, *GetListTaskMenuLicenseReq) (*GetListTaskMenuLicenseRes, error)
 	GetMyTasksMenuAppearance(context.Context, *GetListTaskMenuAppearanceReq) (*GetListTaskMenuAppearanceRes, error)
+	GetMyMenu(context.Context, *GetMyMenuReq) (*GetMyMenuRes, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -307,7 +318,7 @@ func (UnimplementedApiServiceServer) BeforeSaveMenuAppearance(context.Context, *
 func (UnimplementedApiServiceServer) GetMenuAppearance(context.Context, *GetMenuAppearanceReq) (*GetMenuAppearanceRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMenuAppearance not implemented")
 }
-func (UnimplementedApiServiceServer) GetMenuLicense(context.Context, *GetMenuAppearanceReq) (*GetMenuLicenseRes, error) {
+func (UnimplementedApiServiceServer) GetMenuLicense(context.Context, *GetMenuLicenseReq) (*GetMenuLicenseRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMenuLicense not implemented")
 }
 func (UnimplementedApiServiceServer) SetTaskMenuLicense(context.Context, *SetTaskMenuLicenseReq) (*SetTaskMenuLicenseRes, error) {
@@ -351,6 +362,9 @@ func (UnimplementedApiServiceServer) GetMyTasksMenuLicense(context.Context, *Get
 }
 func (UnimplementedApiServiceServer) GetMyTasksMenuAppearance(context.Context, *GetListTaskMenuAppearanceReq) (*GetListTaskMenuAppearanceRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMyTasksMenuAppearance not implemented")
+}
+func (UnimplementedApiServiceServer) GetMyMenu(context.Context, *GetMyMenuReq) (*GetMyMenuRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMyMenu not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -492,7 +506,7 @@ func _ApiService_GetMenuAppearance_Handler(srv interface{}, ctx context.Context,
 }
 
 func _ApiService_GetMenuLicense_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMenuAppearanceReq)
+	in := new(GetMenuLicenseReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -504,7 +518,7 @@ func _ApiService_GetMenuLicense_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/menu.service.v1.ApiService/GetMenuLicense",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GetMenuLicense(ctx, req.(*GetMenuAppearanceReq))
+		return srv.(ApiServiceServer).GetMenuLicense(ctx, req.(*GetMenuLicenseReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -761,6 +775,24 @@ func _ApiService_GetMyTasksMenuAppearance_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_GetMyMenu_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMyMenuReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetMyMenu(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/menu.service.v1.ApiService/GetMyMenu",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetMyMenu(ctx, req.(*GetMyMenuReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -855,6 +887,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMyTasksMenuAppearance",
 			Handler:    _ApiService_GetMyTasksMenuAppearance_Handler,
+		},
+		{
+			MethodName: "GetMyMenu",
+			Handler:    _ApiService_GetMyMenu_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
