@@ -1232,6 +1232,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			defer menuConn.Close()
 
 			menuClient := menu_pb.NewApiServiceClient(menuConn)
+			logrus.Println("@@@@@@@@> Task Type: ", task.Data)
 
 			if strings.Contains(task.Data, `"isParent": true`) {
 				// isParent = true
@@ -1260,7 +1261,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						if err != nil {
 							return nil, err
 						}
-						logrus.Println(res)
+						logrus.Println("@@@@@@@@111> Task Type: ", res)
+						// logrus.Println(res)
 
 						// task.Childs[i].IsParentActive = false
 						// reUpdate = true
@@ -1278,7 +1280,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				if err != nil {
 					return nil, err
 				}
-				logrus.Println(res)
+				logrus.Println("@@@@@@@@222> Task Type: ", res)
+				// logrus.Println(res)
 			}
 
 		case "Menu:License":
