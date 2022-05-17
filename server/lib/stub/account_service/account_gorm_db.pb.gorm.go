@@ -3,14 +3,13 @@ package pb
 import (
 	context "context"
 	fmt "fmt"
-	strings "strings"
-	time "time"
-
 	gorm1 "github.com/infobloxopen/atlas-app-toolkit/gorm"
 	errors "github.com/infobloxopen/protoc-gen-gorm/errors"
 	gorm "github.com/jinzhu/gorm"
 	field_mask "google.golang.org/genproto/protobuf/field_mask"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	strings "strings"
+	time "time"
 )
 
 type UserORM struct {
@@ -114,20 +113,22 @@ type UserWithAfterToPB interface {
 
 type AccountORM struct {
 	AccessLevel      string     `gorm:"column:AccessLevel;not null"`
-	AccountAlias     string     `gorm:"column:AccountAlias;not null"`
+	AccountAlias     string     `gorm:"column:AccountAlias;type:jsonb;default:[];not null"`
 	AccountCurrency  string     `gorm:"column:AccountCurrency;not null"`
 	AccountID        uint64     `gorm:"column:AccountID;primary_key;not null;auto_increment"`
 	AccountName      string     `gorm:"column:AccountName;not null"`
-	AccountNumber    uint64     `gorm:"column:AccountNumber;not null"`
+	AccountNumber    string     `gorm:"column:AccountNumber;not null"`
 	AccountStatus    string     `gorm:"column:AccountStatus;not null"`
 	AccountType      string     `gorm:"column:AccountType;not null"`
 	CompanyID        uint64     `gorm:"column:CompanyID;not null"`
-	CreatedAt        *time.Time `gorm:"column:CreatedAt;autoCreateTime"`
+	CreatedAt        *time.Time `gorm:"column:CreatedAt"`
 	CreatedByID      uint64     `gorm:"column:CreatedByID;not null"`
 	DeletedAt        *time.Time `gorm:"column:DeletedAt"`
 	DeletedByID      uint64     `gorm:"column:DeletedByID;not null"`
+	Disabled         bool       `gorm:"column:Disabled"`
 	IsOwnedByCompany bool       `gorm:"column:IsOwnedByCompany;not null"`
-	UpdatedAt        *time.Time `gorm:"column:UpdatedAt;autoUpdateTime:milli"`
+	RoleID           uint64     `gorm:"column:RoleID"`
+	UpdatedAt        *time.Time `gorm:"column:UpdatedAt"`
 	UpdatedByID      uint64     `gorm:"column:UpdatedByID;not null"`
 }
 
@@ -159,6 +160,8 @@ func (m *Account) ToORM(ctx context.Context) (AccountORM, error) {
 	to.CreatedByID = m.CreatedByID
 	to.UpdatedByID = m.UpdatedByID
 	to.DeletedByID = m.DeletedByID
+	to.RoleID = m.RoleID
+	to.Disabled = m.Disabled
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -200,6 +203,8 @@ func (m *AccountORM) ToPB(ctx context.Context) (Account, error) {
 	to.CreatedByID = m.CreatedByID
 	to.UpdatedByID = m.UpdatedByID
 	to.DeletedByID = m.DeletedByID
+	to.RoleID = m.RoleID
+	to.Disabled = m.Disabled
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -994,6 +999,14 @@ func DefaultApplyFieldMaskAccount(ctx context.Context, patchee *Account, patcher
 		}
 		if f == prefix+"DeletedByID" {
 			patchee.DeletedByID = patcher.DeletedByID
+			continue
+		}
+		if f == prefix+"RoleID" {
+			patchee.RoleID = patcher.RoleID
+			continue
+		}
+		if f == prefix+"Disabled" {
+			patchee.Disabled = patcher.Disabled
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {
