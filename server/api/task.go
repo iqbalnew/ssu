@@ -679,12 +679,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if err != nil {
 		return nil, err
 	}
-	logrus.Println("==========> Task Type: ", task.Type)
-	if task.Type == "Menu:License" {
-		logrus.Println("Menu License Child length 101 : ", len(task.Childs))
-	}
 
-	if task.Type != "System" {
+	// if task.Type == "Menu:License" {
+	// 	logrus.Println("Menu License Child length 101 : ", len(task.Childs))
+	// }
+
+	if task.Type != "System" && task.Type != "Menu:License" {
 
 		if strings.ToLower(req.Action) == "delete" {
 			allowed := checkAllowedApproval(userMd, task.Type, "data_entry:maker")
