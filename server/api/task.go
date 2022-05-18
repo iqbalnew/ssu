@@ -1256,6 +1256,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 						data.Data = &menu
 						data.TaskID = task.Childs[i].TaskID
+						logrus.Println("@@@@@@@@000> Task Type: ", data)
 
 						res, err := menuClient.SaveMenuAppearance(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
