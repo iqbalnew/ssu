@@ -1109,7 +1109,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := account_pb.CreateAccountRequest{}
-						account := account_pb.Account{}
+						account := account_pb.AccountTaskDataString{}
 						json.Unmarshal([]byte(task.Childs[i].Data), &account)
 
 						data.Data = &account
@@ -1127,10 +1127,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 			} else {
 				data := account_pb.CreateAccountRequest{}
-				account := account_pb.Account{}
+				account := account_pb.AccountTaskDataString{}
 				json.Unmarshal([]byte(task.Data), &account)
 
-				data.Data = &account_pb.Account{
+				data.Data = &account_pb.AccountTaskDataString{
 					AccountID:        account.AccountID,
 					CompanyID:        account.CompanyID,
 					AccountNumber:    account.AccountNumber,

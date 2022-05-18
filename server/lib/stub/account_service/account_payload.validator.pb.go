@@ -9,7 +9,8 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "google.golang.org/protobuf/types/known/wrapperspb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -47,12 +48,20 @@ func (this *ListAccountRequest) Validate() error {
 	}
 	return nil
 }
+func (this *Sort) Validate() error {
+	return nil
+}
 func (this *ListAccountResponse) Validate() error {
 	for _, item := range this.Data {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
 				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
 		}
 	}
 	return nil
@@ -83,6 +92,37 @@ func (this *CreateAccountTaskRequest) Validate() error {
 	}
 	return nil
 }
+func (this *AccountWrite) Validate() error {
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	if this.DeletedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
+		}
+	}
+	return nil
+}
+func (this *CreateAccountTaskBulkRequest) Validate() error {
+	for _, item := range this.Accounts {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Accounts", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *AccountAlias) Validate() error {
+	return nil
+}
 func (this *CreateAccountResponse) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
@@ -104,6 +144,47 @@ func (this *Task) Validate() error {
 	}
 	return nil
 }
+func (this *AccountTaskData) Validate() error {
+	if this.IsOwnedByCompany != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.IsOwnedByCompany); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("IsOwnedByCompany", err)
+		}
+	}
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	if this.DeletedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
+		}
+	}
+	return nil
+}
+func (this *AccountTaskDataString) Validate() error {
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	if this.DeletedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
+		}
+	}
+	return nil
+}
 func (this *AccountTask) Validate() error {
 	if this.Account != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Account); err != nil {
@@ -115,9 +196,19 @@ func (this *AccountTask) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
 		}
 	}
+	for _, item := range this.Accounts {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Accounts", err)
+			}
+		}
+	}
 	return nil
 }
 func (this *CreateAccountTaskResponse) Validate() error {
+	return nil
+}
+func (this *CreateAccountTaskMultipleResponse) Validate() error {
 	return nil
 }
 func (this *ListAccountTaskRequest) Validate() error {
@@ -142,5 +233,37 @@ func (this *ListAccountTaskResponse) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
 		}
 	}
+	return nil
+}
+func (this *ErrorBodyResponse) Validate() error {
+	return nil
+}
+func (this *AccountDetailRequest) Validate() error {
+	return nil
+}
+func (this *AccountDetailResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *UpdateAccountRoleRequest) Validate() error {
+	return nil
+}
+func (this *UpdateAccountRoleResponse) Validate() error {
+	return nil
+}
+func (this *FileListTemplateRequest) Validate() error {
+	return nil
+}
+func (this *FileListAccountTaskRequest) Validate() error {
+	return nil
+}
+func (this *CekAccountAvaibilityReq) Validate() error {
+	return nil
+}
+func (this *CekAccountAvaibilityRes) Validate() error {
 	return nil
 }
