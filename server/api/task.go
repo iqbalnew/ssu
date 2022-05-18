@@ -1237,6 +1237,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if strings.Contains(task.Data, `"isParent": true`) {
 				// isParent = true
 				beforeSave := true
+
+				logrus.Println("@@@@@@@@***> Task Type: ", task.Childs)
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := menu_pb.SaveMenuAppearanceReq{}
