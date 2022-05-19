@@ -878,7 +878,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 0
 		}
 
-		if task.Type == "System" {
+		taskType := []string{"System", "Account"}
+
+		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
 				task.Status = 4
 				task.Step = 3
