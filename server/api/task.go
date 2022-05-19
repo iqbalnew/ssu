@@ -104,6 +104,10 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 	key := getEnv("AES_KEY", "Odj12345*12345678901234567890123")
 	aes := customAES.NewCustomAES(key)
 
+	logrus.Println("DEBUGAES ===>")
+	logrus.Println(req.Task)
+	logrus.Println("DEBUGAES ===>")
+	logrus.Println(aes)
 	taskPB, err := taskEVtoPB(req.Task, aes)
 	if err != nil {
 		return nil, err
