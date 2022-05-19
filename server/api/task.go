@@ -1133,10 +1133,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 			} else {
 				data := account_pb.CreateAccountRequest{}
-				account := account_pb.AccountTaskDataString{}
+				account := account_pb.Account{}
 				json.Unmarshal([]byte(task.Data), &account)
 
-				data.Data = &account_pb.AccountTaskDataString{
+				data.Data = &account_pb.Account{
 					AccountID:        account.AccountID,
 					CompanyID:        account.CompanyID,
 					AccountNumber:    account.AccountNumber,
