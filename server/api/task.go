@@ -687,6 +687,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	// if task.Type == "Menu:License" {
 	// 	logrus.Println("Menu License Child length 101 : ", len(task.Childs))
 	// }
+	logrus.Printf("<==== result =======>> %s", req)
+	logrus.Printf("<==== result =======>>> %s", task.Type)
 
 	if task.Type != "System" && task.Type != "Menu:License" {
 
