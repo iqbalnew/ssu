@@ -10,7 +10,6 @@ import (
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
-	_ "google.golang.org/protobuf/types/known/wrapperspb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -145,11 +144,6 @@ func (this *Task) Validate() error {
 	return nil
 }
 func (this *AccountTaskData) Validate() error {
-	if this.IsOwnedByCompany != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.IsOwnedByCompany); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("IsOwnedByCompany", err)
-		}
-	}
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)

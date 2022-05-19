@@ -126,7 +126,7 @@ type AccountORM struct {
 	DeletedAt        *time.Time `gorm:"column:DeletedAt"`
 	DeletedByID      uint64     `gorm:"column:DeletedByID;not null"`
 	Disabled         bool       `gorm:"column:Disabled"`
-	IsOwnedByCompany bool       `gorm:"column:IsOwnedByCompany;not null"`
+	IsOwnedByCompany string     `gorm:"column:IsOwnedByCompany;not null"`
 	RoleID           uint64     `gorm:"column:RoleID"`
 	UpdatedAt        *time.Time `gorm:"column:UpdatedAt"`
 	UpdatedByID      uint64     `gorm:"column:UpdatedByID;not null"`
