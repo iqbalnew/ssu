@@ -1117,7 +1117,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := account_pb.CreateAccountRequest{}
-						account := account_pb.AccountTaskDataString{}
+						account := account_pb.Account{}
 						json.Unmarshal([]byte(task.Childs[i].Data), &account)
 
 						data.Data = &account
