@@ -28,6 +28,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func setPagination(v *pb.ListTaskRequest) *pb.PaginationResponse {
@@ -777,6 +778,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 		if currentStatus == 2 {
+
 			task.Step = 3
 			task.Status = 1
 
@@ -810,10 +812,53 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				// }
 			}
 			if currentStep == 4 {
+
 				sendTask = true
 				task.Status = 4
 				if currentStatus == 6 {
 					task.Status = 7
+				}
+
+				if task.Type == "Company" {
+
+					var opts []grpc.DialOption
+					opts = append(opts, grpc.WithInsecure())
+
+					workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9097"), opts...)
+					if err != nil {
+						logrus.Errorln("Failed connect to Workflow Service: %v", err)
+						// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
+
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+					defer workflowConn.Close()
+
+					workflowClient := workflow_pb.NewApiServiceClient(workflowConn)
+
+					company := company_pb.CreateCompanyReq{}
+					json.Unmarshal([]byte(task.Data), company)
+
+					data := workflow_pb.CreateCompanyWorkflowRequest{}
+					data.TaskID = task.TaskID
+					data.Data = &workflow_pb.CompanyWorkflows{
+						CompanyID:                company.GetData().Company.CompanyID,
+						IsTransactionSTP:         false,
+						IsTransactionChecker:     false,
+						IsTransactionSigner:      false,
+						IsTransactionReleaser:    false,
+						IsNonTransactionSTP:      false,
+						IsNonTransactionChecker:  false,
+						IsNonTransactionSigner:   false,
+						IsNonTransactionReleaser: false,
+						CreatedByID:              currentUser.UserID,
+					}
+
+					res, err := workflowClient.CreateCompanyWorkflow(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+					if err != nil {
+						return nil, err
+					}
+					logrus.Println(res)
+
 				}
 			}
 			// } else {
@@ -1117,7 +1162,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := account_pb.CreateAccountRequest{}
-						account := account_pb.AccountTaskDataString{}
+						// account := account_pb.AccountTaskDataString{}
+						account := account_pb.Account{}
 						json.Unmarshal([]byte(task.Childs[i].Data), &account)
 
 						data.Data = &account
@@ -1403,7 +1449,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			workflowTask := workflow_pb.WorkflowTask{}
 			json.Unmarshal([]byte(task.Data), &workflowTask)
 
-			data.Data = workflowTask.Workflow
+			data.Data = &workflow_pb.Workflow{
+				WorkflowID:   workflowTask.Workflow.WorkflowID,
+				ModuleID:     workflowTask.Workflow.ModuleID[0],
+				CompanyID:    workflowTask.Workflow.CompanyID,
+				CurrencyID:   workflowTask.Workflow.CurrencyID,
+				CreatedByID:  currentUser.UserID,
+				UpdatedByID:  currentUser.UserID,
+				CurrencyName: workflowTask.Workflow.CurrencyName,
+				WorkflowCode: workflowTask.Workflow.WorkflowCode,
+				Description:  workflowTask.Workflow.Description,
+				CreatedAt:    &timestamppb.Timestamp{},
+				UpdatedAt:    &timestamppb.Timestamp{},
+				Logics:       []*workflow_pb.WorkflowLogic{},
+			}
 			data.TaskID = task.TaskID
 
 			res, err := client.CreateWorkflow(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
