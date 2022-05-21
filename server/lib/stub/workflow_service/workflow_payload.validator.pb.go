@@ -9,7 +9,6 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
-	_ "github.com/golang/protobuf/ptypes/any"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
@@ -78,6 +77,14 @@ func (this *CreateWorkflowRequest) Validate() error {
 	}
 	return nil
 }
+func (this *CreateCompanyWorkflowRequest) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
 func (this *CreateWorkflowTaskRequest) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
@@ -86,7 +93,40 @@ func (this *CreateWorkflowTaskRequest) Validate() error {
 	}
 	return nil
 }
+func (this *WorkflowWrite) Validate() error {
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	if this.DeletedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
+		}
+	}
+	for _, item := range this.Logics {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Logics", err)
+			}
+		}
+	}
+	return nil
+}
 func (this *CreateWorkflowResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *CreateCompanyWorkflowResponse) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
@@ -123,19 +163,24 @@ func (this *WorkflowTask) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Company", err)
 		}
 	}
-	if this.Account != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Account); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Account", err)
+	if this.Currency != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Currency); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Currency", err)
 		}
 	}
-	if this.Module != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Module); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Module", err)
+	for _, item := range this.Module {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Module", err)
+			}
 		}
 	}
 	return nil
 }
 func (this *Company) Validate() error {
+	return nil
+}
+func (this *Currency) Validate() error {
 	return nil
 }
 func (this *Account) Validate() error {
@@ -148,6 +193,17 @@ func (this *CreateWorkflowTaskResponse) Validate() error {
 	return nil
 }
 func (this *ListWorkflowTaskFilter) Validate() error {
+	return nil
+}
+func (this *GetWorkflowTaskRequest) Validate() error {
+	return nil
+}
+func (this *GetWorkflowTaskResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
 	return nil
 }
 func (this *ListWorkflowTaskRequest) Validate() error {
