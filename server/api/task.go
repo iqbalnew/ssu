@@ -1360,6 +1360,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			menuClient := menu_pb.NewApiServiceClient(menuConn)
 
+			logrus.Printf("1 create =======> %v", task.Data)
 			fmt.Println("result", strings.Contains(task.Data, `"isParent": true`))
 			if strings.Contains(task.Data, `"isParent": true`) {
 				// isParent = true
@@ -1372,15 +1373,17 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						menu := menu_pb.MenuLicenseSave{}
 						json.Unmarshal([]byte(task.Childs[i].Data), &menu)
 
+						logrus.Printf("2-1 create =======> %v", menu)
 						data.Data = &menu
 						data.TaskID = task.Childs[i].TaskID
 						fmt.Println("data ", data.TaskID)
-						// _, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+						_, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						res, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
 							return nil, err
 						}
 						logrus.Println(res)
+						logrus.Printf("3-3 create =======> %v", "done")
 
 						// task.Childs[i].IsParentActive = false
 						// reUpdate = true
@@ -1391,15 +1394,17 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				menu := menu_pb.MenuLicenseSave{}
 				json.Unmarshal([]byte(task.Data), &menu)
 
+				logrus.Printf("2-2 create =======> %v", menu)
 				data.Data = &menu
 				data.TaskID = task.TaskID
 
-				// _, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				_, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 
 				res, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
 				}
+				logrus.Printf("3-2 create =======> %v", "done")
 				logrus.Println(res)
 			}
 
