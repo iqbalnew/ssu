@@ -282,7 +282,7 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-	logrus.Printf("<@@ result @@>13 %s", opts)
+	logrus.Printf("<@@ result @@>13")
 	authConn, err := grpc.Dial(getEnv("AUTH_SERVICE", ":9105"), opts...)
 	if err != nil {
 		logrus.Errorln("Failed connect to Task Service: %v", err)
@@ -290,11 +290,12 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 	}
 	defer authConn.Close()
 
-	logrus.Printf("<@@ result @@>14 %s", authConn)
+	logrus.Printf("<@@ result @@>14")
 	authClient := authPb.NewApiServiceClient(authConn)
 
 	result, err := authClient.SetMe(ctx, &authPb.VerifyTokenReq{}, grpc.Header(&header), grpc.Trailer(&trailer))
 	if err != nil {
+		logrus.Errorf("<@@ result @@> %v", result)
 		return nil, err
 	}
 	logrus.Printf("<@@ result @@>15.0 %s", result)
