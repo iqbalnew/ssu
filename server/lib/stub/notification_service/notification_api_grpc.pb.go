@@ -42,6 +42,7 @@ type ApiServiceClient interface {
 	SaveClient(ctx context.Context, in *TempClient, opts ...grpc.CallOption) (*TempClient, error)
 	DownloadListNotificationTasks(ctx context.Context, in *FileListNotificationTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	RequestDeleteNotificationTask(ctx context.Context, in *GetNotificationTaskByIDRequest, opts ...grpc.CallOption) (*GetDetailNotificationTaskResponse, error)
+	SendNotification(ctx context.Context, in *SendNotificationRequest, opts ...grpc.CallOption) (*SendNotificationResponse, error)
 }
 
 type apiServiceClient struct {
@@ -223,6 +224,15 @@ func (c *apiServiceClient) RequestDeleteNotificationTask(ctx context.Context, in
 	return out, nil
 }
 
+func (c *apiServiceClient) SendNotification(ctx context.Context, in *SendNotificationRequest, opts ...grpc.CallOption) (*SendNotificationResponse, error) {
+	out := new(SendNotificationResponse)
+	err := c.cc.Invoke(ctx, "/notification.service.v1.ApiService/SendNotification", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
@@ -246,6 +256,7 @@ type ApiServiceServer interface {
 	SaveClient(context.Context, *TempClient) (*TempClient, error)
 	DownloadListNotificationTasks(context.Context, *FileListNotificationTaskRequest) (*httpbody.HttpBody, error)
 	RequestDeleteNotificationTask(context.Context, *GetNotificationTaskByIDRequest) (*GetDetailNotificationTaskResponse, error)
+	SendNotification(context.Context, *SendNotificationRequest) (*SendNotificationResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -309,6 +320,9 @@ func (UnimplementedApiServiceServer) DownloadListNotificationTasks(context.Conte
 }
 func (UnimplementedApiServiceServer) RequestDeleteNotificationTask(context.Context, *GetNotificationTaskByIDRequest) (*GetDetailNotificationTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestDeleteNotificationTask not implemented")
+}
+func (UnimplementedApiServiceServer) SendNotification(context.Context, *SendNotificationRequest) (*SendNotificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendNotification not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -665,6 +679,24 @@ func _ApiService_RequestDeleteNotificationTask_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_SendNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendNotificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).SendNotification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification.service.v1.ApiService/SendNotification",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).SendNotification(ctx, req.(*SendNotificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -747,6 +779,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RequestDeleteNotificationTask",
 			Handler:    _ApiService_RequestDeleteNotificationTask_Handler,
+		},
+		{
+			MethodName: "SendNotification",
+			Handler:    _ApiService_SendNotification_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

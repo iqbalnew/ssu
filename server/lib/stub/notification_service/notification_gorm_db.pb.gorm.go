@@ -475,6 +475,7 @@ type EventVariableWithAfterToPB interface {
 }
 
 type NotificationORM struct {
+	AllCompany             bool
 	Code                   string `gorm:"type:varchar(255)"`
 	CreatedAt              *time.Time
 	CreatedByID            uint64
@@ -557,6 +558,7 @@ func (m *Notification) ToORM(ctx context.Context) (NotificationORM, error) {
 		t := m.EndAt.AsTime()
 		to.EndAt = &t
 	}
+	to.AllCompany = m.AllCompany
 	if posthook, ok := interface{}(m).(NotificationWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -616,6 +618,7 @@ func (m *NotificationORM) ToPB(ctx context.Context) (Notification, error) {
 	if m.EndAt != nil {
 		to.EndAt = timestamppb.New(*m.EndAt)
 	}
+	to.AllCompany = m.AllCompany
 	if posthook, ok := interface{}(m).(NotificationWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -3429,6 +3432,10 @@ func DefaultApplyFieldMaskNotification(ctx context.Context, patchee *Notificatio
 		if f == prefix+"EndAt" {
 			updatedEndAt = true
 			patchee.EndAt = patcher.EndAt
+			continue
+		}
+		if f == prefix+"AllCompany" {
+			patchee.AllCompany = patcher.AllCompany
 			continue
 		}
 	}
