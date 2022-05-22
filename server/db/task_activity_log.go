@@ -80,7 +80,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 
 	query := bson.M{
 		"type":     req.TaskType,
-		"_created": bson.M{"$gt": req.DateFrom, "$lt": req.DateTo},
+	//	"_created": bson.M{"$gt": req.DateFrom, "$lt": req.DateTo},
 	}
 
 	if req.TaskID > 0 {
@@ -171,7 +171,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 			Data:         log.Data,
 		}
 		result.Logs = append(result.Logs, data)
-
+		logrus.Println(data)
 	}
 
 	return result, nil
