@@ -16,6 +16,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
@@ -223,7 +224,7 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 
 func (manager *JWTManager) GetMeFromAuthService(ctx context.Context, accessToken string) (*VerifyTokenRes, error) {
 	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithInsecure())
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	authConn, err := grpc.Dial(getEnv("AUTH_SERVICE", ":9105"), opts...)
 	if err != nil {
@@ -276,10 +277,10 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 
 	logrus.Printf("<@@ result @@>12 %s", md)
 	// Make RPC using the context with the metadata.
-	var trailer metadata.MD
+	var header, trailer metadata.MD
 
 	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithInsecure())
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	logrus.Printf("<@@ result @@>13 %s", opts)
 	authConn, err := grpc.Dial(getEnv("AUTH_SERVICE", ":9105"), opts...)
@@ -292,11 +293,12 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 	logrus.Printf("<@@ result @@>14 %s", authConn)
 	authClient := authPb.NewApiServiceClient(authConn)
 
-	_, err = authClient.SetMe(ctx, &authPb.VerifyTokenReq{}, grpc.Trailer(&trailer))
+	result, err := authClient.SetMe(ctx, &authPb.VerifyTokenReq{}, grpc.Header(&header), grpc.Trailer(&trailer))
 	if err != nil {
 		return nil, err
 	}
-	logrus.Printf("<@@ result @@>15 %s", md)
+	logrus.Printf("<@@ result @@>15.0 %s", result)
+	logrus.Printf("<@@ result @@>15.1 %s", md)
 
 	md = metadata.Join(md, trailer)
 	logrus.Printf("<@@ result @@>16 %s", md)
