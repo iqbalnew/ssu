@@ -1364,7 +1364,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			isDeleted := false
 			if strings.Contains(task.Data, `"isParent": true`) {
 				// isParent = true
-				logrus.Println("Child Length  105 : ", len(task.Childs))
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := menu_pb.SaveMenuLicenseReq{}
@@ -1379,13 +1378,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 							if err != nil {
 								return nil, err
 							}
-							isDeleted = false
+							isDeleted = true
 						}
 						res, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
 							return nil, err
 						}
 						logrus.Println(res)
+						logrus.Printf("3-3 create =======> %v", "done")
 
 						// task.Childs[i].IsParentActive = false
 						// reUpdate = true
@@ -1396,7 +1396,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				menu := menu_pb.MenuLicenseSave{}
 				json.Unmarshal([]byte(task.Data), &menu)
 
-				logrus.Printf("2-2 create =======> %v", menu)
 				data.Data = &menu
 				data.TaskID = task.TaskID
 
@@ -1405,8 +1404,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					if err != nil {
 						return nil, err
 					}
-					isDeleted = false
+					isDeleted = true
 				}
+
 				res, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
