@@ -290,14 +290,17 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 	}
 	defer authConn.Close()
 
+	logrus.Printf("<@@ result @@>14 %s", authConn)
 	authClient := authPb.NewApiServiceClient(authConn)
 
 	_, err = authClient.SetMe(ctx, &authPb.VerifyTokenReq{}, grpc.Trailer(&trailer))
 	if err != nil {
 		return nil, err
 	}
+	logrus.Printf("<@@ result @@>15 %s", md)
 
 	md = metadata.Join(md, trailer)
+	logrus.Printf("<@@ result @@>16 %s", md)
 
 	return md, nil
 }
