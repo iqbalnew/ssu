@@ -16,7 +16,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
@@ -224,7 +223,7 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 
 func (manager *JWTManager) GetMeFromAuthService(ctx context.Context, accessToken string) (*VerifyTokenRes, error) {
 	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	opts = append(opts, grpc.WithInsecure())
 
 	authConn, err := grpc.Dial(getEnv("AUTH_SERVICE", ":9105"), opts...)
 	if err != nil {
@@ -280,7 +279,7 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 	var trailer metadata.MD
 
 	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	opts = append(opts, grpc.WithInsecure())
 
 	logrus.Printf("<@@ result @@>13 %s", opts)
 	authConn, err := grpc.Dial(getEnv("AUTH_SERVICE", ":9105"), opts...)
