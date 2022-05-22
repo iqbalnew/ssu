@@ -17,6 +17,8 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 		return nil, status.Error(codes.InvalidArgument, "type is required")
 	}
 
+	logrus.Println("=========================> 0")
+
 	if req.Limit < 1 || req.Limit > 100 {
 		req.Limit = 10
 	}
@@ -34,6 +36,7 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 	if err != nil {
 		return nil, err
 	}
+	logrus.Println("=========================> 1")
 	filter := &db.ActivityLogFindReq{
 		TaskType: req.Type,
 		TaskID:   req.TaskID,
@@ -52,6 +55,8 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 		logrus.Errorln("Error Get Activity Logs: ", err)
 		return nil, status.Error(codes.Internal, "Server Error")
 	}
+
+	logrus.Println("=========================> 2")
 
 	responses := &pb.GetActivityLogsRes{
 		Error:   false,
@@ -92,6 +97,8 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 		}
 		responses.Data = append(responses.Data, data)
 	}
+
+	logrus.Println("=========================> 4")
 
 	return responses, nil
 }
