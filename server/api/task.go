@@ -1360,30 +1360,32 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			menuClient := menu_pb.NewApiServiceClient(menuConn)
 
-			logrus.Printf("1 create =======> %v", task.Data)
 			fmt.Println("result", strings.Contains(task.Data, `"isParent": true`))
+			isDeleted := false
 			if strings.Contains(task.Data, `"isParent": true`) {
 				// isParent = true
 				logrus.Println("Child Length  105 : ", len(task.Childs))
 				for i := range task.Childs {
-					logrus.Println("Child Data, IsParentActive : ", task.Childs[i].IsParentActive)
-					logrus.Println("Child TaskID: ", task.Childs[i].TaskID)
 					if task.Childs[i].IsParentActive {
 						data := menu_pb.SaveMenuLicenseReq{}
 						menu := menu_pb.MenuLicenseSave{}
 						json.Unmarshal([]byte(task.Childs[i].Data), &menu)
 
-						logrus.Printf("2-1 create =======> %v", menu)
 						data.Data = &menu
 						data.TaskID = task.Childs[i].TaskID
 						fmt.Println("data ", data.TaskID)
-						_, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+						if !isDeleted {
+							_, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+							if err != nil {
+								return nil, err
+							}
+							isDeleted = false
+						}
 						res, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
 							return nil, err
 						}
 						logrus.Println(res)
-						logrus.Printf("3-3 create =======> %v", "done")
 
 						// task.Childs[i].IsParentActive = false
 						// reUpdate = true
@@ -1398,13 +1400,17 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				data.Data = &menu
 				data.TaskID = task.TaskID
 
-				_, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-
+				if !isDeleted {
+					_, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+					if err != nil {
+						return nil, err
+					}
+					isDeleted = false
+				}
 				res, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
 				}
-				logrus.Printf("3-2 create =======> %v", "done")
 				logrus.Println(res)
 			}
 
