@@ -656,6 +656,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
 	currentUser, userMd, err := s.manager.GetMeFromMD(ctx)
+	logrus.Printf("<@@ result @@>1 %s", req)
 	if err != nil {
 		return nil, err
 	} else {
@@ -674,11 +675,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		// }
 	}
 
+	logrus.Printf("<@@ result @@>2 %s", req)
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
 	var header, trailer metadata.MD
+	logrus.Printf("<@@ result @@>3 %s", req)
 
 	task, err := s.provider.FindTaskById(ctx, req.TaskID)
 	if err != nil {
