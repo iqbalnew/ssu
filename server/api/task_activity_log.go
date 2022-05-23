@@ -17,8 +17,10 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 		return nil, status.Error(codes.InvalidArgument, "type is required")
 	}
 
-	if req.Limit < 1 {
+	if req.Limit < 0 {
 		req.Limit = 1000000
+	} else if req.Limit == 0 {
+		req.Limit = 10
 	}
 
 	if req.Page < 1 {
