@@ -24,7 +24,7 @@ func (s *Server) DownloadActivityLogs(ctx context.Context, req *pb.DownloadActiv
 		Type:     req.Type,
 		TaskID:   req.TaskID,
 		Page:     req.Page,
-		Limit:    req.Limit,
+		Limit:    -1,
 		Sort:     req.Sort,
 		Search:   req.Search,
 		DateFrom: req.DateFrom,

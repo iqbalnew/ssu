@@ -86,6 +86,10 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 		//	"_created": bson.M{"$gt": req.DateFrom, "$lt": req.DateTo},
 	}
 
+	if req.DateFrom != "" && req.DateTo != "" {
+		query["_created"] = bson.M{"$gt": req.DateFrom, "$lt": req.DateTo}
+	}
+
 	if req.TaskID > 0 {
 		query["taskid"] = req.TaskID
 	}
