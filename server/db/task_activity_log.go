@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"strings"
+	"time"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/go-bongo/bongo"
@@ -83,7 +84,12 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 
 	query := bson.M{
 		"type": req.TaskType,
-		//	"_created": bson.M{"$gt": req.DateFrom, "$lt": req.DateTo},
+	}
+
+	if req.DateFrom != "" && req.DateTo != "" {
+		date1, _ := time.Parse("2006-01-02", req.DateFrom)
+		date2, _ := time.Parse("2006-01-02", req.DateTo)
+		query["_created"] = bson.M{"$gt": date1, "$lt": date2}
 	}
 
 	if req.TaskID > 0 {
