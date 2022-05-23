@@ -355,7 +355,7 @@ func (file *ActivityLogFile) ToPDFv2(ctx context.Context) (*httpbody.HttpBody, e
 	align := []string{"TL", "TL", "TL", "TL", "TL", "TL", "TL", "TL"}
 
 	var (
-		cellList [9]cellType
+		cellList [8]cellType
 		cell     cellType
 	)
 
