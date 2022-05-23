@@ -21,10 +21,11 @@ import (
 func (s *Server) DownloadActivityLogs(ctx context.Context, req *pb.DownloadActivityLogsReq) (*httpbody.HttpBody, error) {
 
 	reqPb := &pb.GetActivityLogsReq{
-		Type:     req.Type,
-		TaskID:   req.TaskID,
-		Page:     req.Page,
-		Limit:    req.Limit,
+		Type:   req.Type,
+		TaskID: req.TaskID,
+		Page:   req.Page,
+		Limit:  9999999,
+		// Limit:    req.Limit,
 		Sort:     req.Sort,
 		Search:   req.Search,
 		DateFrom: req.DateFrom,
@@ -78,16 +79,16 @@ func (file *ActivityLogFile) ToCsv(ctx context.Context) (*httpbody.HttpBody, err
 
 	w := csv.NewWriter(&buf)
 
-	fields := []string{"No", "Type", "User", "Company Name", "Command", "Action", "Date", "Description", "Task ID"}
+	fields := []string{"No", "Type", "User", "Company Name", "Command", "Action", "Date", "Description"}
 
 	_ = w.Write(fields)
 
 	for index, v := range file.res.Data {
 
-		taskID := "-"
-		if v.TaskID > 0 {
-			taskID = fmt.Sprintf("%d", v.TaskID)
-		}
+		// taskID := "-"
+		// if v.TaskID > 0 {
+		// 	taskID = fmt.Sprintf("%d", v.TaskID)
+		// }
 
 		taskType := ""
 		if v.Type != "" {
@@ -133,7 +134,7 @@ func (file *ActivityLogFile) ToCsv(ctx context.Context) (*httpbody.HttpBody, err
 			action,
 			createdAt,
 			description,
-			taskID,
+			// taskID,
 		}
 		_ = w.Write(row)
 	}
@@ -170,13 +171,13 @@ func (file *ActivityLogFile) ToXlsx(ctx context.Context) (*httpbody.HttpBody, er
 	_ = f.SetCellValue("Sheet1", "F1", "Action")
 	_ = f.SetCellValue("Sheet1", "G1", "Date")
 	_ = f.SetCellValue("Sheet1", "H1", "Description")
-	_ = f.SetCellValue("Sheet1", "I1", "Task ID")
+	// _ = f.SetCellValue("Sheet1", "I1", "Task ID")
 
 	for k, v := range file.res.Data {
-		taskID := "-"
-		if v.TaskID > 0 {
-			taskID = fmt.Sprintf("%d", v.TaskID)
-		}
+		// taskID := "-"
+		// if v.TaskID > 0 {
+		// 	taskID = fmt.Sprintf("%d", v.TaskID)
+		// }
 
 		taskType := ""
 		if v.Type != "" {
@@ -223,7 +224,7 @@ func (file *ActivityLogFile) ToXlsx(ctx context.Context) (*httpbody.HttpBody, er
 		_ = f.SetCellValue("Sheet1", fmt.Sprintf("F%d", rowNumber), action)
 		_ = f.SetCellValue("Sheet1", fmt.Sprintf("G%d", rowNumber), createdAt)
 		_ = f.SetCellValue("Sheet1", fmt.Sprintf("H%d", rowNumber), description)
-		_ = f.SetCellValue("Sheet1", fmt.Sprintf("I%d", rowNumber), taskID)
+		// _ = f.SetCellValue("Sheet1", fmt.Sprintf("I%d", rowNumber), taskID)
 
 	}
 
@@ -258,13 +259,13 @@ func (file *ActivityLogFile) ToXls(ctx context.Context) (*httpbody.HttpBody, err
 	_ = f.SetCellValue("Sheet1", "F1", "Action")
 	_ = f.SetCellValue("Sheet1", "G1", "Date")
 	_ = f.SetCellValue("Sheet1", "H1", "Description")
-	_ = f.SetCellValue("Sheet1", "I1", "Task ID")
+	// _ = f.SetCellValue("Sheet1", "I1", "Task ID")
 
 	for k, v := range file.res.Data {
-		taskID := "-"
-		if v.TaskID > 0 {
-			taskID = fmt.Sprintf("%d", v.TaskID)
-		}
+		// taskID := "-"
+		// if v.TaskID > 0 {
+		// 	taskID = fmt.Sprintf("%d", v.TaskID)
+		// }
 
 		taskType := ""
 		if v.Type != "" {
@@ -311,7 +312,7 @@ func (file *ActivityLogFile) ToXls(ctx context.Context) (*httpbody.HttpBody, err
 		_ = f.SetCellValue("Sheet1", fmt.Sprintf("F%d", rowNumber), action)
 		_ = f.SetCellValue("Sheet1", fmt.Sprintf("G%d", rowNumber), createdAt)
 		_ = f.SetCellValue("Sheet1", fmt.Sprintf("H%d", rowNumber), description)
-		_ = f.SetCellValue("Sheet1", fmt.Sprintf("I%d", rowNumber), taskID)
+		// _ = f.SetCellValue("Sheet1", fmt.Sprintf("I%d", rowNumber), taskID)
 
 	}
 
@@ -350,9 +351,9 @@ func (file *ActivityLogFile) ToPDFv2(ctx context.Context) (*httpbody.HttpBody, e
 
 	pdf := gofpdf.New("L", "mm", "Letter", "")
 
-	fields := []string{"No", "Type", "User", "Company Name", "Command", "Action", "Date", "Description", "Task ID"}
-	widths := []float64{8, 20, 30, 30, 25, 20, 30, 45, 20}
-	align := []string{"TL", "TL", "TL", "TL", "TL", "TL", "TL", "TL", "TL"}
+	fields := []string{"No", "Type", "User", "Company Name", "Command", "Action", "Date", "Description"}
+	widths := []float64{8, 20, 30, 30, 25, 20, 30, 45}
+	align := []string{"TL", "TL", "TL", "TL", "TL", "TL", "TL", "TL"}
 
 	var (
 		cellList [9]cellType
@@ -377,10 +378,10 @@ func (file *ActivityLogFile) ToPDFv2(ctx context.Context) (*httpbody.HttpBody, e
 	x := marginH
 
 	for index, v := range file.res.Data {
-		taskID := "-"
-		if v.TaskID > 0 {
-			taskID = fmt.Sprintf("%d", v.TaskID)
-		}
+		// taskID := "-"
+		// if v.TaskID > 0 {
+		// 	taskID = fmt.Sprintf("%d", v.TaskID)
+		// }
 
 		taskType := ""
 		if v.Type != "" {
@@ -427,7 +428,7 @@ func (file *ActivityLogFile) ToPDFv2(ctx context.Context) (*httpbody.HttpBody, e
 			action,
 			createdAt,
 			description,
-			taskID,
+			// taskID,
 		}
 		// Cell height calculation loop
 		for colJ := 0; colJ < len(vals); colJ++ {

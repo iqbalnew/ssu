@@ -36,10 +36,13 @@ func (p *GormProvider) SaveLog(ctx context.Context, log *ActivityLog) error {
 
 	case "draft":
 		log.Action = "save as draft"
+
+	case "delete":
+		log.Action = "request for deleted"
 	}
 
 	if log.Data.Status == 7 {
-		log.Action = "request for deleted"
+		log.Action = "deleted"
 	}
 
 	log.Type = strings.Replace(log.Type, ":", "_", -1)
@@ -79,8 +82,8 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	req.TaskType = strings.ToLower(req.TaskType)
 
 	query := bson.M{
-		"type":     req.TaskType,
-	//	"_created": bson.M{"$gt": req.DateFrom, "$lt": req.DateTo},
+		"type": req.TaskType,
+		//	"_created": bson.M{"$gt": req.DateFrom, "$lt": req.DateTo},
 	}
 
 	if req.TaskID > 0 {
