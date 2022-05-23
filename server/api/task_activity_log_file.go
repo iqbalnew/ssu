@@ -79,7 +79,7 @@ func (file *ActivityLogFile) ToCsv(ctx context.Context) (*httpbody.HttpBody, err
 
 	w := csv.NewWriter(&buf)
 
-	fields := []string{"No", "Type", "User", "Company Name", "Command", "Action", "Date", "Description", "Task ID"}
+	fields := []string{"No", "Type", "User", "Company Name", "Command", "Action", "Date", "Description"}
 
 	_ = w.Write(fields)
 
@@ -378,7 +378,7 @@ func (file *ActivityLogFile) ToPDFv2(ctx context.Context) (*httpbody.HttpBody, e
 	x := marginH
 
 	for index, v := range file.res.Data {
-		taskID := "-"
+		// taskID := "-"
 		// if v.TaskID > 0 {
 		// 	taskID = fmt.Sprintf("%d", v.TaskID)
 		// }
