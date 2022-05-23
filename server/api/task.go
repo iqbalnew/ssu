@@ -842,14 +842,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					data.TaskID = task.TaskID
 					data.Data = &workflow_pb.CompanyWorkflows{
 						CompanyID:                company.GetData().Company.CompanyID,
-						IsTransactionSTP:         false,
-						IsTransactionChecker:     false,
-						IsTransactionSigner:      false,
-						IsTransactionReleaser:    false,
-						IsNonTransactionSTP:      false,
-						IsNonTransactionChecker:  false,
-						IsNonTransactionSigner:   false,
-						IsNonTransactionReleaser: false,
+						IsTransactionSTP:         company.GetData().Workflow.IsTansactionalStp,
+						IsTransactionChecker:     company.GetData().Workflow.TansactionalStpStep.Verifier,
+						IsTransactionSigner:      company.GetData().Workflow.TansactionalStpStep.Approver,
+						IsTransactionReleaser:    company.GetData().Workflow.TansactionalStpStep.Releaser,
+						IsNonTransactionSTP:      company.GetData().Workflow.IsNonTansactionalStp,
+						IsNonTransactionChecker:  company.GetData().Workflow.NonTansactionalStpStep.Verifier,
+						IsNonTransactionSigner:   company.GetData().Workflow.NonTansactionalStpStep.Approver,
+						IsNonTransactionReleaser: company.GetData().Workflow.NonTansactionalStpStep.Releaser,
 						CreatedByID:              currentUser.UserID,
 					}
 
