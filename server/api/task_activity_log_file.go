@@ -21,11 +21,10 @@ import (
 func (s *Server) DownloadActivityLogs(ctx context.Context, req *pb.DownloadActivityLogsReq) (*httpbody.HttpBody, error) {
 
 	reqPb := &pb.GetActivityLogsReq{
-		Type:   req.Type,
-		TaskID: req.TaskID,
-		Page:   req.Page,
-		Limit:  9999999,
-		// Limit:    req.Limit,
+		Type:     req.Type,
+		TaskID:   req.TaskID,
+		Page:     req.Page,
+		Limit:    req.Limit,
 		Sort:     req.Sort,
 		Search:   req.Search,
 		DateFrom: req.DateFrom,

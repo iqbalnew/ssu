@@ -277,7 +277,7 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 
 	logrus.Printf("<@@ result @@>12 %s", md)
 	// Make RPC using the context with the metadata.
-	var header, trailer metadata.MD
+	var trailer metadata.MD
 
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -293,7 +293,7 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 	logrus.Printf("<@@ result @@>14")
 	authClient := authPb.NewApiServiceClient(authConn)
 
-	result, err := authClient.SetMe(ctx, &authPb.VerifyTokenReq{}, grpc.Header(&header), grpc.Trailer(&trailer))
+	result, err := authClient.SetMe(ctx, &authPb.VerifyTokenReq{}, grpc.Trailer(&trailer))
 	if err != nil {
 		logrus.Errorf("<@@ result @@> %v", result)
 		return nil, err
