@@ -461,6 +461,9 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	command := "Create"
 
+	logrus.Println("Task save ==> Task Type: ", task.Type)
+	logrus.Println("Task save ==> Task ID: ", task.TaskID)
+
 	if req.TaskID > 0 {
 		command = "Update"
 		task.TaskID = req.TaskID
