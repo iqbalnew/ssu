@@ -3,10 +3,13 @@ package db
 import (
 	"context"
 	"strings"
+	"time"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/go-bongo/bongo"
 	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -87,7 +90,16 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	}
 
 	if req.DateFrom != "" && req.DateTo != "" {
-		query["_created"] = bson.M{"$gt": req.DateFrom, "$lt": req.DateTo}
+		dateLayout := "2014-04-26"
+		dateFrom, err := time.Parse(dateLayout, req.DateFrom)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid dateFrom")
+		}
+		dateTo, err := time.Parse(dateLayout, req.DateTo)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid dateTo")
+		}
+		query["_created"] = bson.M{"$gte": dateFrom, "$lte": dateTo}
 	}
 
 	if req.TaskID > 0 {
