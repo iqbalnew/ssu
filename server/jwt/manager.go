@@ -264,6 +264,7 @@ func (manager *JWTManager) GetMeFromAuthService(ctx context.Context, accessToken
 }
 
 func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
+	logrus.Printf("<@@ result @@>11 %s", ctx)
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		if len(md["user-userid"]) > 0 {
@@ -274,12 +275,14 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 
 	}
 
+	logrus.Printf("<@@ result @@>12 %s", md)
 	// Make RPC using the context with the metadata.
-	var trailer metadata.MD
+	var header, trailer metadata.MD
 
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
+	logrus.Printf("<@@ result @@>13")
 	authConn, err := grpc.Dial(getEnv("AUTH_SERVICE", ":9105"), opts...)
 	if err != nil {
 		logrus.Errorln("Failed connect to Task Service: %v", err)
@@ -287,14 +290,19 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 	}
 	defer authConn.Close()
 
+	logrus.Printf("<@@ result @@>14")
 	authClient := authPb.NewApiServiceClient(authConn)
 
-	_, err = authClient.SetMe(ctx, &authPb.VerifyTokenReq{}, grpc.Trailer(&trailer))
+	result, err := authClient.SetMe(ctx, &authPb.VerifyTokenReq{}, grpc.Header(&header), grpc.Trailer(&trailer))
 	if err != nil {
+		logrus.Errorf("<@@ result @@> %v", result)
 		return nil, err
 	}
+	logrus.Printf("<@@ result @@>15.0 %s", result)
+	logrus.Printf("<@@ result @@>15.1 %s", md)
 
 	md = metadata.Join(md, trailer)
+	logrus.Printf("<@@ result @@>16 %s", md)
 
 	return md, nil
 }
@@ -314,12 +322,14 @@ type UserData struct {
 }
 
 func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md metadata.MD, err error) {
+	logrus.Printf("<@@ result @@>1 %s", ctx)
 	md, err = manager.GetUserMD(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	user = &UserData{}
+	logrus.Printf("<@@ result @@>2 %s", user)
 	user.UserID, err = strconv.ParseUint(md["user-userid"][0], 10, 64)
 	if err != nil {
 		logrus.Errorln("Failed to parse userID: %v", err)
@@ -331,6 +341,7 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
 	}
 
+	logrus.Printf("<@@ result @@>3 %s", user)
 	user.Username = md["user-username"][0]
 	user.CompanyName = md["user-companyname"][0]
 	user.UserType = md["user-usertype"][0]
@@ -338,6 +349,7 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 	user.Authorities = strings.Split(md["user-authorities"][0], ",")
 
 	ids := strings.Split(md["user-groupids"][0], ",")
+	logrus.Printf("<@@ result @@>4 %s", user)
 	for _, v := range ids {
 		if len(v) > 0 {
 			id, err := strconv.ParseUint(v, 10, 64)
