@@ -90,7 +90,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	}
 
 	if req.DateFrom != "" && req.DateTo != "" {
-		dateLayout := "2006-02-01"
+		dateLayout := "2006-01-02"
 		dateFrom, err := time.Parse(dateLayout, req.DateFrom)
 		if err != nil {
 			logrus.Errorln(err)
