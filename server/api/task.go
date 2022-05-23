@@ -1120,7 +1120,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						account := account_pb.AccountTaskDataString{}
 						json.Unmarshal([]byte(task.Childs[i].Data), &account)
 
-						data.Data = &account
+						data.Data = &account.
 						data.TaskID = task.Childs[i].TaskID
 
 						res, err := companyClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
