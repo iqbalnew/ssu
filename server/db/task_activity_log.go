@@ -93,10 +93,12 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 		dateLayout := "2014-04-26"
 		dateFrom, err := time.Parse(dateLayout, req.DateFrom)
 		if err != nil {
+			logrus.Errorln(err)
 			return nil, status.Errorf(codes.InvalidArgument, "invalid dateFrom")
 		}
 		dateTo, err := time.Parse(dateLayout, req.DateTo)
 		if err != nil {
+			logrus.Errorln(err)
 			return nil, status.Errorf(codes.InvalidArgument, "invalid dateTo")
 		}
 		query["_created"] = bson.M{"$gte": dateFrom, "$lte": dateTo}
