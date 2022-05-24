@@ -315,7 +315,7 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 		if len(valArray) < 1 {
 			return db
 		}
-		if direction == "<" {
+		if direction == ">" {
 			valArray = reverseArrayString(valArray)
 		}
 
