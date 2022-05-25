@@ -315,7 +315,7 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 		if len(valArray) < 1 {
 			return db
 		}
-		if direction == ">" {
+		if direction == "<" {
 			valArray = reverseArrayString(valArray)
 		}
 
@@ -334,6 +334,13 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 					orderByQuery += fmt.Sprintf(", %s", key)
 				}
 			}
+		}
+
+		if key == "status" {
+			if orderByQuery != "" {
+				orderByQuery = orderByQuery + ", "
+			}
+			orderByQuery = orderByQuery + "updated_at DESC"
 		}
 
 		logrus.Println("[DEBUG] Custom Order: ", orderByQuery)
