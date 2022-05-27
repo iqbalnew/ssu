@@ -336,16 +336,13 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 			}
 		}
 
-		if key == "status" {
-			if orderByQuery != "" {
-				orderByQuery = orderByQuery + ", "
-			}
-			orderByQuery = orderByQuery + "updated_at ASC"
-		}
-
 		logrus.Println("[DEBUG] Custom Order: ", orderByQuery)
 
 		db = db.Order(orderByQuery)
+
+		if key == "status" {
+			db = db.Order("updated_at DESC")
+		}
 
 		return db
 	}
