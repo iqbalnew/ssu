@@ -31,6 +31,7 @@ func NewCLient(connection string, database string, collection string) *MongoDB {
 
 	session, err := mgo.Dial(connection)
 	if err != nil {
+		logrus.Errorln("Mongo DB - Lib: mgo")
 		panic(err)
 	}
 
