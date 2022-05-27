@@ -59,7 +59,7 @@ func initConfig() {
 		Dsn:                 getEnv("DB_DSN", ""),
 		AmqpURI:             getEnv("AMQP_URI", ""),
 		AnnouncementService: getEnv("ANNOUNCEMENT_SERVICE", ":9091"),
-		MongoURI:            getEnv("MONGO_URI", "mongodb://root:12345@mongo:27017/"),
+		MongoURI:            getEnv("MONGO_URI", "mongodb://userTaskLog:TaskLogBricamsAddons2022@172.18.140.122:27017/"),
 		LoggerPort:          getEnv("LOGGER_PORT", ""),
 		LoggerHost:          getEnv("LOGGER_HOST", ""),
 		LoggerTag:           getEnv("LOGGER_TAG", ""),

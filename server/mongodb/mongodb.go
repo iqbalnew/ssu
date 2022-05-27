@@ -11,7 +11,8 @@ type MongoDB struct {
 }
 
 func NewCLient(connection string, database string, collection string) *MongoDB {
-	logrus.Printf("Mongo Db - Client Connecting")
+	logrus.Println("Mongo DB - Client Connecting")
+	logrus.Println("Mongo DB - conncetion string: ", connection)
 
 	config := &bongo.Config{
 		ConnectionString: connection,
