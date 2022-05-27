@@ -8,7 +8,6 @@ import (
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 func Paginate(value interface{}, v *pb.PaginationResponse, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
@@ -321,46 +320,26 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 		}
 
 		orderByQuery := ""
-		for i, _ := range valArray {
-			// if v != "" {
-			// 	if i == 0 {
-			// 		orderByQuery += fmt.Sprintf("%s!= '%s'", key, v)
-			// 	} else {
-			// 		orderByQuery += fmt.Sprintf(", %s!= '%s'", key, v)
-			// 	}
-			// } else {
-			if i == 0 {
-				orderByQuery += fmt.Sprintf("%s", key)
+		for i, v := range valArray {
+			if v != "" {
+				if i == 0 {
+					orderByQuery += fmt.Sprintf("%s!= '%s'", key, v)
+				} else {
+					orderByQuery += fmt.Sprintf(", %s!= '%s'", key, v)
+				}
 			} else {
-				orderByQuery += fmt.Sprintf(", %s", key)
+				if i == 0 {
+					orderByQuery += fmt.Sprintf("%s", key)
+				} else {
+					orderByQuery += fmt.Sprintf(", %s", key)
+				}
 			}
-			// }
 		}
 
 		logrus.Println("[DEBUG] Custom Order: ", orderByQuery)
 		logrus.Println("[DEBUG] Key: ", key)
 
-		if key == "status" {
-			db = db.Clauses(
-				clause.OrderBy{
-					Expression: clause.Expr{
-						SQL:                "FIELD(status,?)",
-						Vars:               []interface{}{valArray},
-						WithoutParentheses: true,
-					},
-				},
-				clause.OrderBy{
-					Columns: []clause.OrderByColumn{
-						{
-							Column: clause.Column{Name: "updated_at"},
-							Desc:   true,
-						},
-					},
-				},
-			)
-		} else {
-			db = db.Order(orderByQuery)
-		}
+		db = db.Order(orderByQuery)
 
 		return db
 	}

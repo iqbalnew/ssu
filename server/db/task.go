@@ -319,7 +319,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	}
 	query = query.Scopes(FilterScoope(sql.Filter), FilterOrScoope(sql.FilterOr), QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In))
 	query = query.Scopes(DistinctScoope(sql.Distinct))
-	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "asc"}))
+	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "desc"}))
 	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
