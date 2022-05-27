@@ -30,6 +30,7 @@ type Config struct {
 	AmqpURI string `config:"AMQP_URI`
 
 	MongoURI string `config:"MONGO_URI"`
+	MongoDB  string `config:"MONGO_DB"`
 
 	LoggerPort string `config:"LOGGER_PORT"`
 	LoggerHost string `config:"LOGGER_HOST"`
@@ -60,6 +61,7 @@ func initConfig() {
 		AmqpURI:             getEnv("AMQP_URI", ""),
 		AnnouncementService: getEnv("ANNOUNCEMENT_SERVICE", ":9091"),
 		MongoURI:            getEnv("MONGO_URI", "mongodb://userTaskLog:TaskLogBricamsAddons2022@172.18.140.122:27017/"),
+		MongoDB:             getEnv("MONGO_DB", "task_log"),
 		LoggerPort:          getEnv("LOGGER_PORT", ""),
 		LoggerHost:          getEnv("LOGGER_HOST", ""),
 		LoggerTag:           getEnv("LOGGER_TAG", ""),
