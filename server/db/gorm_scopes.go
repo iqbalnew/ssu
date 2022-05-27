@@ -340,7 +340,7 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 			if orderByQuery != "" {
 				orderByQuery = orderByQuery + ", "
 			}
-			orderByQuery = orderByQuery + "updated_at DESC"
+			orderByQuery = orderByQuery + "updated_at ASC"
 		}
 
 		logrus.Println("[DEBUG] Custom Order: ", orderByQuery)
