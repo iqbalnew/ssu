@@ -321,32 +321,45 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 		}
 
 		orderByQuery := ""
-		for i, v := range valArray {
-			if v != "" {
-				if i == 0 {
-					orderByQuery += fmt.Sprintf("%s!= '%s'", key, v)
-				} else {
-					orderByQuery += fmt.Sprintf(", %s!= '%s'", key, v)
-				}
+		for i, _ := range valArray {
+			// if v != "" {
+			// 	if i == 0 {
+			// 		orderByQuery += fmt.Sprintf("%s!= '%s'", key, v)
+			// 	} else {
+			// 		orderByQuery += fmt.Sprintf(", %s!= '%s'", key, v)
+			// 	}
+			// } else {
+			if i == 0 {
+				orderByQuery += fmt.Sprintf("%s", key)
 			} else {
-				if i == 0 {
-					orderByQuery += fmt.Sprintf("%s", key)
-				} else {
-					orderByQuery += fmt.Sprintf(", %s", key)
-				}
+				orderByQuery += fmt.Sprintf(", %s", key)
 			}
+			// }
 		}
 
 		logrus.Println("[DEBUG] Custom Order: ", orderByQuery)
 		logrus.Println("[DEBUG] Key: ", key)
 
-		db = db.Order(orderByQuery)
-
 		if key == "status" {
-			db = db.Debug().Order(clause.OrderByColumn{
-				Column: clause.Column{Name: "updated_at"},
-				Desc:   true,
-			})
+			db = db.Clauses(
+				clause.OrderBy{
+					Expression: clause.Expr{
+						SQL:                "FIELD(status,?)",
+						Vars:               []interface{}{valArray},
+						WithoutParentheses: true,
+					},
+				},
+				clause.OrderBy{
+					Columns: []clause.OrderByColumn{
+						{
+							Column: clause.Column{Name: "updated_at"},
+							Desc:   true,
+						},
+					},
+				},
+			)
+		} else {
+			db = db.Order(orderByQuery)
 		}
 
 		return db
