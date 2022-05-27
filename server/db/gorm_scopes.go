@@ -8,6 +8,7 @@ import (
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func Paginate(value interface{}, v *pb.PaginationResponse, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
@@ -342,7 +343,10 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 		db = db.Order(orderByQuery)
 
 		if key == "status" {
-			db = db.Debug().Order("updated_at desc")
+			db = db.Debug().Order(clause.OrderByColumn{
+				Column: clause.Column{Name: "updated_at"},
+				Desc:   true,
+			})
 		}
 
 		return db
