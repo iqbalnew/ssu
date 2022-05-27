@@ -337,6 +337,7 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 		}
 
 		logrus.Println("[DEBUG] Custom Order: ", orderByQuery)
+		logrus.Println("[DEBUG] Key: ", key)
 
 		db = db.Order(orderByQuery)
 
