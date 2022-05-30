@@ -72,6 +72,13 @@ func (this *Abonnement) Validate() error {
 			}
 		}
 	}
+	for _, item := range this.CustomAbonnements {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("CustomAbonnements", err)
+			}
+		}
+	}
 	return nil
 }
 func (this *AbonnementRetry) Validate() error {
@@ -129,6 +136,14 @@ func (this *AbonnementInvoice) Validate() error {
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	return nil
+}
+func (this *CustomAbonnement) Validate() error {
+	if this.Abonnement != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Abonnement); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Abonnement", err)
 		}
 	}
 	return nil
