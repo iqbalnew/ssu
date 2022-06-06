@@ -870,7 +870,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			// if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
 			if currentStep == 1 {
 				task.Status = 1
-				task.Step = 3
+				task.Step = 0
 				if currentStatus == 6 {
 					task.Status = currentStatus
 				}
