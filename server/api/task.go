@@ -18,6 +18,7 @@ import (
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
+	product_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/product_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
 	system_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/system_service"
@@ -368,9 +369,10 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 	}
 
 	request := &pb.SaveTaskRequest{
-		TaskID:  uint64(taskID),
-		Task:    taskPB,
-		IsDraft: req.IsDraft,
+		TaskID:            uint64(taskID),
+		Task:              taskPB,
+		IsDraft:           req.IsDraft,
+		TransactionAmount: req.TransactionAmount,
 	}
 
 	response, err := s.SaveTaskWithData(ctx, request)
@@ -427,6 +429,77 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task.LastRejectedByID = 0
 	task.LastRejectedByName = ""
 	task.DataBak = "{}"
+
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithInsecure())
+
+	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9097"), opts...)
+	if err != nil {
+		logrus.Errorln("Failed connect to Product Service: %v", err)
+		// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Announcement Service: %v", err))
+
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	defer productConn.Close()
+
+	productClient := product_pb.NewApiServiceClient(productConn)
+	productData, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
+		Limit: 1,
+		Page:  1,
+		Product: &product_pb.Product{
+			Name: task.Type,
+		},
+	})
+
+	errorProduct := status.Errorf(codes.NotFound, "This task type product, not found")
+	if len(productData.Data) < 1 {
+		return nil, errorProduct
+	} else {
+		if productData.Data[0].Name != task.Type {
+			return nil, errorProduct
+		}
+	}
+
+	product := productData.Data[0]
+
+	if product.IsTransactional {
+		if req.TransactionAmount == 0 {
+			return nil, status.Errorf(codes.InvalidArgument, "Transaction amount is required")
+		}
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
+		if err != nil {
+			logrus.Errorln("Failed connect to Workflow Service: %v", err)
+			// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer workflowConn.Close()
+
+		client := workflow_pb.NewApiServiceClient(workflowConn)
+
+		getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
+			ProductID:           product.ProductID,
+			CompanyID:           currentUser.CompanyID,
+			TransactionalNumber: uint64(req.TransactionAmount),
+		})
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+
+		if getWorkflow.Data == nil {
+			return nil, status.Errorf(codes.NotFound, "workflow for this task type not found")
+		}
+
+		workflow, err := json.Marshal(getWorkflow.Data)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed to marshal workflow: %v", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		task.WorkflowDoc = string(workflow)
+	}
 
 	if req.TaskID > 0 {
 		findTask, err := s.provider.FindTaskById(ctx, req.TaskID)

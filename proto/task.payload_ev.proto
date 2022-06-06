@@ -17,6 +17,7 @@ message SaveTaskRequestEV {
     string taskID = 1;
     TaskEV task = 3 [(google.api.field_behavior) = OPTIONAL];
     bool isDraft = 2;
+    double transactionAmount = 4;
 }
 
 message SaveTaskResponseEV {

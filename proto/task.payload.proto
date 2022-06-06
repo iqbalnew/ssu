@@ -38,6 +38,7 @@ message SaveTaskRequest {
     uint64 taskID = 1;
     Task task = 3 [(google.api.field_behavior) = OPTIONAL];
     bool isDraft = 2;
+    double transactionAmount = 4;
 }
 
 message SaveTaskResponse {

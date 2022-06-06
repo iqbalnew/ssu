@@ -302,16 +302,6 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-type QueryBuilder struct {
-	Filter        string
-	FilterOr      string
-	CollectiveAnd string
-	In            string
-	Distinct      string
-	CustomOrder   string
-	Sort          *pb.Sort
-}
-
 func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder) (tasks []*pb.TaskORM, err error) {
 	query := p.db_main.Select("*", "CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
 	if filter != nil {

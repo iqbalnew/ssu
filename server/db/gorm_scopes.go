@@ -10,6 +10,16 @@ import (
 	"gorm.io/gorm"
 )
 
+type QueryBuilder struct {
+	Filter        string
+	FilterOr      string
+	CollectiveAnd string
+	In            string
+	Distinct      string
+	CustomOrder   string
+	Sort          *pb.Sort
+}
+
 func Paginate(value interface{}, v *pb.PaginationResponse, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
 	if v.Limit > 0 || v.Page > 0 {
 		var totalRows int64
