@@ -1704,15 +1704,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 			logrus.Println(res)
 
-			// data := abonnement_pb.CreateAbonnementRequest{}
-			// json.Unmarshal([]byte(task.Data), &data.Data)
-			// data.TaskID = task.TaskID
-			// data.Data.BillingStatus = "Waiting Schedule"
-			// res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			// if err != nil {
-			// 	return nil, err
-			// }
-			// logrus.Println(res)
+			// update task billing status
+			dataTask := abonnement_pb.CreateAbonnementTaskRequest{}
+			json.Unmarshal([]byte(task.Data), &dataTask.Data)
+			dataTask.TaskID = task.TaskID
+			dataTask.Data.BillingStatus = "Waiting Schedule"
+			resTask, err := abonnementClient.CreateAbonnementTask(ctx, &dataTask, grpc.Header(&header), grpc.Trailer(&trailer))
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(resTask)
 		}
 	}
 
