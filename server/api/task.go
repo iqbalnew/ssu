@@ -450,6 +450,10 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 			Name: task.Type,
 		},
 	})
+	if err != nil {
+		logrus.Errorln("[api][func: SaveTaskWithData] Failed to get product data: %v", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
 
 	errorProduct := status.Errorf(codes.NotFound, "This task type product, not found")
 	if len(productData.Data) < 1 {
