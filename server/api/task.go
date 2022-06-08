@@ -408,7 +408,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
 
-	currentUser, userMD, err := s.manager.GetMeFromMD(ctx)
+	currentUser, _, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		return nil, err
 	} else {
@@ -426,7 +426,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		// 	}
 		// }
 	}
-	var header metadata.MD
+	// var header metadata.MD
 
 	task.Step = 3
 	task.Status = 1
@@ -470,7 +470,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 
-	product := productData.Data[0]
+	// product := productData.Data[0]
 
 	// if product.IsTransactional {
 	// 	if product.Name == "Swift" { //skip for difference variable name, revisit later
