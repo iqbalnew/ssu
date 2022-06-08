@@ -467,42 +467,45 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	product := productData.Data[0]
 
 	if product.IsTransactional {
-		if req.TransactionAmount == 0 {
-			return nil, status.Errorf(codes.InvalidArgument, "Transaction amount is required")
-		}
-		var opts []grpc.DialOption
-		opts = append(opts, grpc.WithInsecure())
+		if product.Name == "Swift" { //skip for difference variable name, revisit later
 
-		workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
-		if err != nil {
-			logrus.Errorln("Failed connect to Workflow Service: %v", err)
-			// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
-			return nil, status.Errorf(codes.Internal, "Internal Error")
-		}
-		defer workflowConn.Close()
+			if req.TransactionAmount == 0 {
+				return nil, status.Errorf(codes.InvalidArgument, "Transaction amount is required")
+			}
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
 
-		client := workflow_pb.NewApiServiceClient(workflowConn)
+			workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Workflow Service: %v", err)
+				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer workflowConn.Close()
 
-		getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
-			ProductID:           product.ProductID,
-			CompanyID:           currentUser.CompanyID,
-			TransactionalNumber: uint64(req.TransactionAmount),
-		})
-		if err != nil {
-			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
-		}
+			client := workflow_pb.NewApiServiceClient(workflowConn)
 
-		if getWorkflow.Data == nil {
-			return nil, status.Errorf(codes.NotFound, "workflow for this task type not found")
-		}
+			getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
+				ProductID:           product.ProductID,
+				CompanyID:           currentUser.CompanyID,
+				TransactionalNumber: uint64(req.TransactionAmount),
+			})
+			if err != nil {
+				logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
 
-		workflow, err := json.Marshal(getWorkflow.Data)
-		if err != nil {
-			logrus.Errorln("[api][func: SaveTaskWithData] Failed to marshal workflow: %v", err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
+			if getWorkflow.Data == nil {
+				return nil, status.Errorf(codes.NotFound, "workflow for this task type not found")
+			}
+
+			workflow, err := json.Marshal(getWorkflow.Data)
+			if err != nil {
+				logrus.Errorln("[api][func: SaveTaskWithData] Failed to marshal workflow: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			task.WorkflowDoc = string(workflow)
 		}
-		task.WorkflowDoc = string(workflow)
 	}
 
 	if req.TaskID > 0 {
