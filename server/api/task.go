@@ -403,7 +403,12 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 
-	currentUser, _, err := s.manager.GetMeFromMD(ctx)
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	}
+
+	currentUser, userMD, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		return nil, err
 	} else {
@@ -421,6 +426,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		// 	}
 		// }
 	}
+	var header metadata.MD
 
 	task.Step = 3
 	task.Status = 1
@@ -487,7 +493,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 			ProductID:           product.ProductID,
 			CompanyID:           currentUser.CompanyID,
 			TransactionalNumber: uint64(req.TransactionAmount),
-		})
+		}, grpc.Header(&header), grpc.Trailer(&userMD))
 		if err != nil {
 			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
