@@ -497,7 +497,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 			}, grpc.Header(&header), grpc.Trailer(&userMD))
 			if err != nil {
 				logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
+				return nil, err
 			}
 
 			if getWorkflow.Data == nil {
