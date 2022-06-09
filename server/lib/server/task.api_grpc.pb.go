@@ -25,6 +25,8 @@ const _ = grpc.SupportPackageIsVersion7
 type TaskServiceClient interface {
 	SaveTaskWithData(ctx context.Context, in *SaveTaskRequest, opts ...grpc.CallOption) (*SaveTaskResponse, error)
 	SaveTaskWithDataEV(ctx context.Context, in *SaveTaskRequestEV, opts ...grpc.CallOption) (*SaveTaskResponseEV, error)
+	GenerateTaskWithWokflow(ctx context.Context, in *GenerateTaskWithWokflowRequest, opts ...grpc.CallOption) (*SaveTaskResponse, error)
+	SaveTaskWithWorkflow(ctx context.Context, in *SaveTaskRequest, opts ...grpc.CallOption) (*SaveTaskResponse, error)
 	SetTask(ctx context.Context, in *SetTaskRequest, opts ...grpc.CallOption) (*SetTaskResponse, error)
 	SetTaskEV(ctx context.Context, in *SetTaskRequestEV, opts ...grpc.CallOption) (*SetTaskResponseEV, error)
 	GetListTask(ctx context.Context, in *ListTaskRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
@@ -64,6 +66,24 @@ func (c *taskServiceClient) SaveTaskWithData(ctx context.Context, in *SaveTaskRe
 func (c *taskServiceClient) SaveTaskWithDataEV(ctx context.Context, in *SaveTaskRequestEV, opts ...grpc.CallOption) (*SaveTaskResponseEV, error) {
 	out := new(SaveTaskResponseEV)
 	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/SaveTaskWithDataEV", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceClient) GenerateTaskWithWokflow(ctx context.Context, in *GenerateTaskWithWokflowRequest, opts ...grpc.CallOption) (*SaveTaskResponse, error) {
+	out := new(SaveTaskResponse)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GenerateTaskWithWokflow", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceClient) SaveTaskWithWorkflow(ctx context.Context, in *SaveTaskRequest, opts ...grpc.CallOption) (*SaveTaskResponse, error) {
+	out := new(SaveTaskResponse)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/SaveTaskWithWorkflow", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -229,6 +249,8 @@ func (c *taskServiceClient) TestLogger(ctx context.Context, in *LoggerTestReq, o
 type TaskServiceServer interface {
 	SaveTaskWithData(context.Context, *SaveTaskRequest) (*SaveTaskResponse, error)
 	SaveTaskWithDataEV(context.Context, *SaveTaskRequestEV) (*SaveTaskResponseEV, error)
+	GenerateTaskWithWokflow(context.Context, *GenerateTaskWithWokflowRequest) (*SaveTaskResponse, error)
+	SaveTaskWithWorkflow(context.Context, *SaveTaskRequest) (*SaveTaskResponse, error)
 	SetTask(context.Context, *SetTaskRequest) (*SetTaskResponse, error)
 	SetTaskEV(context.Context, *SetTaskRequestEV) (*SetTaskResponseEV, error)
 	GetListTask(context.Context, *ListTaskRequest) (*ListTaskResponse, error)
@@ -258,6 +280,12 @@ func (UnimplementedTaskServiceServer) SaveTaskWithData(context.Context, *SaveTas
 }
 func (UnimplementedTaskServiceServer) SaveTaskWithDataEV(context.Context, *SaveTaskRequestEV) (*SaveTaskResponseEV, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveTaskWithDataEV not implemented")
+}
+func (UnimplementedTaskServiceServer) GenerateTaskWithWokflow(context.Context, *GenerateTaskWithWokflowRequest) (*SaveTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateTaskWithWokflow not implemented")
+}
+func (UnimplementedTaskServiceServer) SaveTaskWithWorkflow(context.Context, *SaveTaskRequest) (*SaveTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveTaskWithWorkflow not implemented")
 }
 func (UnimplementedTaskServiceServer) SetTask(context.Context, *SetTaskRequest) (*SetTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetTask not implemented")
@@ -355,6 +383,42 @@ func _TaskService_SaveTaskWithDataEV_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TaskServiceServer).SaveTaskWithDataEV(ctx, req.(*SaveTaskRequestEV))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskService_GenerateTaskWithWokflow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateTaskWithWokflowRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GenerateTaskWithWokflow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/GenerateTaskWithWokflow",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GenerateTaskWithWokflow(ctx, req.(*GenerateTaskWithWokflowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskService_SaveTaskWithWorkflow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveTaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).SaveTaskWithWorkflow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/SaveTaskWithWorkflow",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).SaveTaskWithWorkflow(ctx, req.(*SaveTaskRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -679,6 +743,14 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveTaskWithDataEV",
 			Handler:    _TaskService_SaveTaskWithDataEV_Handler,
+		},
+		{
+			MethodName: "GenerateTaskWithWokflow",
+			Handler:    _TaskService_GenerateTaskWithWokflow_Handler,
+		},
+		{
+			MethodName: "SaveTaskWithWorkflow",
+			Handler:    _TaskService_SaveTaskWithWorkflow_Handler,
 		},
 		{
 			MethodName: "SetTask",

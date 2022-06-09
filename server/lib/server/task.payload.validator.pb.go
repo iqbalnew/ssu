@@ -36,6 +36,17 @@ func (this *Empty) Validate() error {
 func (this *InvalidKeyError) Validate() error {
 	return nil
 }
+func (this *GenerateTaskWithWokflowRequest) Validate() error {
+	if this.Task != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
+		}
+	}
+	return nil
+}
+func (this *GenerateTaskWithWokflowResponse) Validate() error {
+	return nil
+}
 func (this *SaveTaskRequest) Validate() error {
 	if this.Task != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {

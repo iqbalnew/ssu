@@ -350,10 +350,13 @@ func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskO
 }
 
 func (p *GormProvider) SaveTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {
-	if err := p.db_main.Save(&task).Error; err != nil {
-		logrus.Errorln(err)
-		return nil, status.Errorf(codes.Internal, "DB Internal Error")
-	}
+	if err := p.db_main.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "task_id"}},
+		UpdateAll: true,
+	}).Save(&task).Error; err != nil {
+		logrus.Errorln("[db][func: SaveTask] Error save task", err)
+		return nil, err
+	}	
 	return task, nil
 }
 

@@ -34,6 +34,18 @@ message InvalidKeyError {
     string message = 2;
 }
 
+message GenerateTaskWithWokflowRequest{
+    uint64 taskID = 1;
+    Task task = 3 [(google.api.field_behavior) = OPTIONAL];
+    bool isDraft = 2;
+    double transactionAmount = 4;
+    string currencyCode = 5;
+}
+
+message GenerateTaskWithWokflowResponse{
+    
+}
+
 message SaveTaskRequest {
     uint64 taskID = 1;
     Task task = 3 [(google.api.field_behavior) = OPTIONAL];
