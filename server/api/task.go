@@ -403,6 +403,11 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	}
+
 	currentUser, _, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		return nil, err
@@ -421,6 +426,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		// 	}
 		// }
 	}
+	// var header metadata.MD
 
 	task.Step = 3
 	task.Status = 1
@@ -464,49 +470,48 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 
-	product := productData.Data[0]
+	// product := productData.Data[0]
 
-	if product.IsTransactional {
-		if product.Name == "Swift" { //skip for difference variable name, revisit later
+	// if product.IsTransactional {
+	// 	if product.Name == "Swift" { //skip for difference variable name, revisit later
 
-			if req.TransactionAmount == 0 {
-				return nil, status.Errorf(codes.InvalidArgument, "Transaction amount is required")
-			}
-			var opts []grpc.DialOption
-			opts = append(opts, grpc.WithInsecure())
+	// 		if req.TransactionAmount == 0 {
+	// 			return nil, status.Errorf(codes.InvalidArgument, "Transaction amount is required")
+	// 		}
+	// 		var opts []grpc.DialOption
+	// 		opts = append(opts, grpc.WithInsecure())
 
-			workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
-			if err != nil {
-				logrus.Errorln("Failed connect to Workflow Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-			defer workflowConn.Close()
+	// 		workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
+	// 		if err != nil {
+	// 			logrus.Errorln("Failed connect to Workflow Service: %v", err)
+	// 			// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
+	// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+	// 		}
+	// 		defer workflowConn.Close()
 
-			client := workflow_pb.NewApiServiceClient(workflowConn)
+	// 		client := workflow_pb.NewApiServiceClient(workflowConn)
+	// 		getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
+	// 			ProductID:           product.ProductID,
+	// 			CompanyID:           currentUser.CompanyID,
+	// 			TransactionalNumber: uint64(req.TransactionAmount),
+	// 		}, grpc.Header(&header), grpc.Trailer(&userMD))
+	// 		if err != nil {
+	// 			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
+	// 			return nil, err
+	// 		}
 
-			getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
-				ProductID:           product.ProductID,
-				CompanyID:           currentUser.CompanyID,
-				TransactionalNumber: uint64(req.TransactionAmount),
-			})
-			if err != nil {
-				logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
+	// 		if getWorkflow.Data == nil {
+	// 			return nil, status.Errorf(codes.NotFound, "workflow for this task type not found")
+	// 		}
 
-			if getWorkflow.Data == nil {
-				return nil, status.Errorf(codes.NotFound, "workflow for this task type not found")
-			}
-
-			workflow, err := json.Marshal(getWorkflow.Data)
-			if err != nil {
-				logrus.Errorln("[api][func: SaveTaskWithData] Failed to marshal workflow: %v", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-			task.WorkflowDoc = string(workflow)
-		}
-	}
+	// 		workflow, err := json.Marshal(getWorkflow.Data)
+	// 		if err != nil {
+	// 			logrus.Errorln("[api][func: SaveTaskWithData] Failed to marshal workflow: %v", err)
+	// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+	// 		}
+	// 		task.WorkflowDoc = string(workflow)
+	// 	}
+	// }
 
 	if req.TaskID > 0 {
 		findTask, err := s.provider.FindTaskById(ctx, req.TaskID)
@@ -1708,15 +1713,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			logrus.Println(res)
 
 			// update task billing status
-			dataTask := abonnement_pb.CreateAbonnementTaskRequest{}
-			json.Unmarshal([]byte(task.Data), &dataTask.Data)
-			dataTask.TaskID = task.TaskID
-			dataTask.Data.BillingStatus = "Waiting Schedule"
-			resTask, err := abonnementClient.CreateAbonnementTask(ctx, &dataTask, grpc.Header(&header), grpc.Trailer(&trailer))
+			dataUpdate, err := json.Marshal(data.Data)
 			if err != nil {
-				return nil, err
+				logrus.Errorln("Failed to marshal data: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
-			logrus.Println(resTask)
+			task.Data = string(dataUpdate)
+			reUpdate = true
 		}
 	}
 
