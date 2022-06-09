@@ -696,8 +696,8 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 func checkAllowedApproval(md metadata.MD, taskType string, permission string) bool {
 	allowed := false
 	authorities := []string{}
-
-	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity"}
+	//TODO: REVISIT LATTER, skip beneficary and cash polling
+	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account"}
 
 	for _, v := range skipProduct {
 		if v == taskType {
@@ -1713,15 +1713,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			logrus.Println(res)
 
 			// update task billing status
-			dataTask := abonnement_pb.CreateAbonnementTaskRequest{}
-			json.Unmarshal([]byte(task.Data), &dataTask.Data)
-			dataTask.TaskID = task.TaskID
-			dataTask.Data.BillingStatus = "Waiting Schedule"
-			resTask, err := abonnementClient.CreateAbonnementTask(ctx, &dataTask, grpc.Header(&header), grpc.Trailer(&trailer))
+			dataUpdate, err := json.Marshal(data.Data)
 			if err != nil {
-				return nil, err
+				logrus.Errorln("Failed to marshal data: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
-			logrus.Println(resTask)
+			task.Data = string(dataUpdate)
+			reUpdate = true
 		}
 	}
 
