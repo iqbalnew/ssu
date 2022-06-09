@@ -691,7 +691,7 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 func checkAllowedApproval(md metadata.MD, taskType string, permission string) bool {
 	allowed := false
 	authorities := []string{}
-
+	//TODO: REVISIT LATTER, skip beneficary and cash polling
 	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account"}
 
 	for _, v := range skipProduct {
