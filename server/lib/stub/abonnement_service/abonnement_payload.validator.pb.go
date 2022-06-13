@@ -7,11 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "google.golang.org/protobuf/types/known/structpb"
 	_ "github.com/mwitkow/go-proto-validators"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -103,6 +103,11 @@ func (this *CreateAbonnementTaskRequest) Validate() error {
 	return nil
 }
 func (this *CreateAbonnementResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
 	return nil
 }
 func (this *AbonnementTask) Validate() error {
@@ -262,11 +267,6 @@ func (this *Mechanism) Validate() error {
 	return nil
 }
 func (this *ListTaskAbonnementRes) Validate() error {
-	if this.DeadlineDate != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeadlineDate); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("DeadlineDate", err)
-		}
-	}
 	for _, item := range this.MechanismTransaction {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
@@ -410,5 +410,86 @@ func (this *CekAvaibilityReq) Validate() error {
 	return nil
 }
 func (this *CekAvaibilityRes) Validate() error {
+	return nil
+}
+func (this *ChargeCompaniesReq) Validate() error {
+	return nil
+}
+func (this *ChargeCompaniesRes) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
+func (this *ChargeCompanyResponse) Validate() error {
+	return nil
+}
+func (this *ListPendingAbonnementInvoiceRequest) Validate() error {
+	return nil
+}
+func (this *ListPendingAbonnementInvoiceResponse) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *CreateAbonnementInvoiceRequest) Validate() error {
+	if this.DeadlineDate != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeadlineDate); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("DeadlineDate", err)
+		}
+	}
+	return nil
+}
+func (this *CreateAbonnementInvoiceResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *UpdateAbonnementInvoiceRequest) Validate() error {
+	return nil
+}
+func (this *UpdateAbonnementInvoiceResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *GenerateBulkInvoiceReq) Validate() error {
+	return nil
+}
+func (this *GenerateBulkInvoiceRes) Validate() error {
+	for _, item := range this.SuccessData {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("SuccessData", err)
+			}
+		}
+	}
+	for _, item := range this.FailedData {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("FailedData", err)
+			}
+		}
+	}
 	return nil
 }

@@ -1719,6 +1719,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			task.Data = string(dataUpdate)
+			task.FeatureID = res.Data.Id
 			reUpdate = true
 		}
 	}
