@@ -1687,7 +1687,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, err
 			}
 			logrus.Println(res)
-		case "Abonnement":
+		case "Subscription":
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
