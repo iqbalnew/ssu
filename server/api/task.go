@@ -152,6 +152,14 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 
 func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
 	// logrus.Println("After %v", pb)
+	me, err := s.manager.GetMeFromJWT(ctx, "")
+	if err != nil {
+		return nil, err
+	}
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	}
 
 	var dataorm pb.TaskORM
 	if req.Task != nil {
@@ -174,7 +182,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		Filter:        req.GetFilter(),
 		FilterOr:      req.GetFilterOr(),
 		CollectiveAnd: req.GetQuery(),
-		In:            req.GetIn(),
+		In:            me.FilterMe,
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 	}
