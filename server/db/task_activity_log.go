@@ -89,12 +89,6 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	}
 
 	if req.DateFrom != "" && req.DateTo != "" {
-		date1, _ := time.Parse("2006-01-02", req.DateFrom)
-		date2, _ := time.Parse("2006-01-02", req.DateTo)
-		query["_created"] = bson.M{"$gt": date1, "$lt": date2}
-	}
-
-	if req.DateFrom != "" && req.DateTo != "" {
 		dateLayout := "2006-01-02"
 		dateFrom, err := time.Parse(dateLayout, req.DateFrom)
 		if err != nil {
