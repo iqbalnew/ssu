@@ -182,7 +182,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		Filter:        req.GetFilter(),
 		FilterOr:      req.GetFilterOr(),
 		CollectiveAnd: req.GetQuery(),
-		In:            me.FilterMe,
+		In:            me.TaskFilter,
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 	}
