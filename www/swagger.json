@@ -597,7 +597,7 @@
       "get": {
         "summary": "Get list data task",
         "description": "This API is used for get list data task",
-        "operationId": "TaskService_GetListTask",
+        "operationId": "TaskService_GetListTaskWithToken",
         "responses": {
           "200": {
             "description": "A successful response.",

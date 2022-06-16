@@ -150,7 +150,7 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 	return res, nil
 }
 
-func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
+func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
 	// logrus.Println("After %v", pb)
 	me, err := s.manager.GetMeFromJWT(ctx, "")
 	if err != nil {
@@ -183,6 +183,53 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		FilterOr:      req.GetFilterOr(),
 		CollectiveAnd: req.GetQuery(),
 		In:            me.TaskFilter,
+		CustomOrder:   req.GetCustomOrder(),
+		Sort:          sort,
+	}
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, v := range list {
+		task, err := v.ToPB(ctx)
+		if err != nil {
+			logrus.Errorln(err)
+			// s.logger.Error("GetListTask", fmt.Sprintf("%v", err))
+			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+		}
+		result.Data = append(result.Data, &task)
+	}
+
+	return &result, err
+
+}
+
+func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
+	// logrus.Println("After %v", pb)
+
+	var dataorm pb.TaskORM
+	if req.Task != nil {
+		dataorm, _ = req.Task.ToORM(ctx)
+	}
+
+	result := pb.ListTaskResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Task List",
+		Data:    []*pb.Task{},
+	}
+
+	result.Pagination = setPagination(req)
+	sort := &pb.Sort{
+		Column:    req.GetSort(),
+		Direction: req.GetDir().Enum().String(),
+	}
+	sqlBuilder := &db.QueryBuilder{
+		Filter:        req.GetFilter(),
+		FilterOr:      req.GetFilterOr(),
+		CollectiveAnd: req.GetQuery(),
+		In:            req.GetIn(),
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 	}
