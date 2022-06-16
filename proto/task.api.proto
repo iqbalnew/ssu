@@ -44,6 +44,9 @@ service TaskService {
     rpc SaveTaskWithData(SaveTaskRequest) returns (SaveTaskResponse) {};
     rpc SaveTaskWithDataEV(SaveTaskRequestEV) returns (SaveTaskResponseEV) {};
 
+    rpc GenerateTaskWithWokflow(GenerateTaskWithWokflowRequest) returns (SaveTaskResponse) {};
+    rpc SaveTaskWithWorkflow(SaveTaskRequest) returns (SaveTaskResponse) {};
+
     rpc SetTask(SetTaskRequest) returns (SetTaskResponse) {
         option (google.api.http) = {
             put: "/api/task/{taskID}"

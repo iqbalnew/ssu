@@ -8,6 +8,8 @@ import (
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/go-bongo/bongo"
 	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -90,6 +92,21 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 		date1, _ := time.Parse("2006-01-02", req.DateFrom)
 		date2, _ := time.Parse("2006-01-02", req.DateTo)
 		query["_created"] = bson.M{"$gt": date1, "$lt": date2}
+	}
+
+	if req.DateFrom != "" && req.DateTo != "" {
+		dateLayout := "2006-01-02"
+		dateFrom, err := time.Parse(dateLayout, req.DateFrom)
+		if err != nil {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.InvalidArgument, "invalid dateFrom")
+		}
+		dateTo, err := time.Parse(dateLayout, req.DateTo)
+		if err != nil {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.InvalidArgument, "invalid dateTo")
+		}
+		query["_created"] = bson.M{"$gte": dateFrom, "$lte": dateTo}
 	}
 
 	if req.TaskID > 0 {

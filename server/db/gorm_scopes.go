@@ -10,6 +10,16 @@ import (
 	"gorm.io/gorm"
 )
 
+type QueryBuilder struct {
+	Filter        string
+	FilterOr      string
+	CollectiveAnd string
+	In            string
+	Distinct      string
+	CustomOrder   string
+	Sort          *pb.Sort
+}
+
 func Paginate(value interface{}, v *pb.PaginationResponse, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
 	if v.Limit > 0 || v.Page > 0 {
 		var totalRows int64
@@ -320,18 +330,24 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 		}
 
 		orderByQuery := ""
-		for i, _ := range valArray {
-			// if i == 0 {
-			// 	orderByQuery += fmt.Sprintf("%s!= '%s'", key, v)
-			// } else {
-			// 	orderByQuery += fmt.Sprintf(", %s!= '%s'", key, v)
-			// }
-			if i == 0 {
-				orderByQuery += fmt.Sprintf("%s", key)
+		for i, v := range valArray {
+			if v != "" {
+				if i == 0 {
+					orderByQuery += fmt.Sprintf("%s!= '%s'", key, v)
+				} else {
+					orderByQuery += fmt.Sprintf(", %s!= '%s'", key, v)
+				}
 			} else {
-				orderByQuery += fmt.Sprintf(", %s", key)
+				if i == 0 {
+					orderByQuery += fmt.Sprintf("%s", key)
+				} else {
+					orderByQuery += fmt.Sprintf(", %s", key)
+				}
 			}
 		}
+
+		logrus.Println("[DEBUG] Custom Order: ", orderByQuery)
+		logrus.Println("[DEBUG] Key: ", key)
 
 		db = db.Order(orderByQuery)
 

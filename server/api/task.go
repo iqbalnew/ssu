@@ -18,6 +18,7 @@ import (
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
+	product_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/product_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
 	system_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/system_service"
@@ -151,6 +152,14 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 
 func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
 	// logrus.Println("After %v", pb)
+	me, err := s.manager.GetMeFromJWT(ctx, "")
+	if err != nil {
+		return nil, err
+	}
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	}
 
 	var dataorm pb.TaskORM
 	if req.Task != nil {
@@ -173,7 +182,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		Filter:        req.GetFilter(),
 		FilterOr:      req.GetFilterOr(),
 		CollectiveAnd: req.GetQuery(),
-		In:            req.GetIn(),
+		In:            me.FilterMe,
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 	}
@@ -368,9 +377,10 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 	}
 
 	request := &pb.SaveTaskRequest{
-		TaskID:  uint64(taskID),
-		Task:    taskPB,
-		IsDraft: req.IsDraft,
+		TaskID:            uint64(taskID),
+		Task:              taskPB,
+		IsDraft:           req.IsDraft,
+		TransactionAmount: req.TransactionAmount,
 	}
 
 	response, err := s.SaveTaskWithData(ctx, request)
@@ -401,6 +411,11 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	}
+
 	currentUser, _, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		return nil, err
@@ -419,6 +434,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		// 	}
 		// }
 	}
+	// var header metadata.MD
 
 	task.Step = 3
 	task.Status = 1
@@ -427,6 +443,83 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task.LastRejectedByID = 0
 	task.LastRejectedByName = ""
 	task.DataBak = "{}"
+
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithInsecure())
+
+	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9097"), opts...)
+	if err != nil {
+		logrus.Errorln("Failed connect to Product Service: %v", err)
+		// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Announcement Service: %v", err))
+
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	defer productConn.Close()
+
+	productClient := product_pb.NewApiServiceClient(productConn)
+	productData, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
+		Limit: 1,
+		Page:  1,
+		Product: &product_pb.Product{
+			Name: task.Type,
+		},
+	})
+	if err != nil {
+		logrus.Errorln("[api][func: SaveTaskWithData] Failed to get product data: %v", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+
+	errorProduct := status.Errorf(codes.NotFound, "This task type product, not found")
+	if len(productData.Data) < 1 {
+		return nil, errorProduct
+	} else {
+		if productData.Data[0].Name != task.Type {
+			return nil, errorProduct
+		}
+	}
+
+	// product := productData.Data[0]
+
+	// if product.IsTransactional {
+	// 	if product.Name == "Swift" { //skip for difference variable name, revisit later
+
+	// 		if req.TransactionAmount == 0 {
+	// 			return nil, status.Errorf(codes.InvalidArgument, "Transaction amount is required")
+	// 		}
+	// 		var opts []grpc.DialOption
+	// 		opts = append(opts, grpc.WithInsecure())
+
+	// 		workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
+	// 		if err != nil {
+	// 			logrus.Errorln("Failed connect to Workflow Service: %v", err)
+	// 			// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
+	// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+	// 		}
+	// 		defer workflowConn.Close()
+
+	// 		client := workflow_pb.NewApiServiceClient(workflowConn)
+	// 		getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
+	// 			ProductID:           product.ProductID,
+	// 			CompanyID:           currentUser.CompanyID,
+	// 			TransactionalNumber: uint64(req.TransactionAmount),
+	// 		}, grpc.Header(&header), grpc.Trailer(&userMD))
+	// 		if err != nil {
+	// 			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
+	// 			return nil, err
+	// 		}
+
+	// 		if getWorkflow.Data == nil {
+	// 			return nil, status.Errorf(codes.NotFound, "workflow for this task type not found")
+	// 		}
+
+	// 		workflow, err := json.Marshal(getWorkflow.Data)
+	// 		if err != nil {
+	// 			logrus.Errorln("[api][func: SaveTaskWithData] Failed to marshal workflow: %v", err)
+	// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+	// 		}
+	// 		task.WorkflowDoc = string(workflow)
+	// 	}
+	// }
 
 	if req.TaskID > 0 {
 		findTask, err := s.provider.FindTaskById(ctx, req.TaskID)
@@ -460,6 +553,9 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	}
 
 	command := "Create"
+
+	logrus.Println("Task save ==> Task Type: ", task.Type)
+	logrus.Println("Task save ==> Task ID: ", task.TaskID)
 
 	if req.TaskID > 0 {
 		command = "Update"
@@ -608,8 +704,8 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 func checkAllowedApproval(md metadata.MD, taskType string, permission string) bool {
 	allowed := false
 	authorities := []string{}
-
-	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License"}
+	//TODO: REVISIT LATTER, skip beneficary and cash polling
+	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account"}
 
 	for _, v := range skipProduct {
 		if v == taskType {
@@ -1599,7 +1695,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, err
 			}
 			logrus.Println(res)
-		case "Abonnement":
+		case "Subscription":
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1614,25 +1710,25 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			abonnementClient := abonnement_pb.NewApiServiceClient(abonnementConn)
 
-			data := abonnement_pb.CreateAbonnementTaskRequest{}
+			data := abonnement_pb.CreateAbonnementRequest{}
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
 			data.Data.BillingStatus = "Waiting Schedule"
-			res, err := abonnementClient.CreateAbonnementTask(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
 			logrus.Println(res)
 
-			// data := abonnement_pb.CreateAbonnementRequest{}
-			// json.Unmarshal([]byte(task.Data), &data.Data)
-			// data.TaskID = task.TaskID
-			// data.Data.BillingStatus = "Waiting Schedule"
-			// res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			// if err != nil {
-			// 	return nil, err
-			// }
-			// logrus.Println(res)
+			// update task billing status
+			dataUpdate, err := json.Marshal(data.Data)
+			if err != nil {
+				logrus.Errorln("Failed to marshal data: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			task.Data = string(dataUpdate)
+			task.FeatureID = res.Data.Id
+			reUpdate = true
 		}
 	}
 

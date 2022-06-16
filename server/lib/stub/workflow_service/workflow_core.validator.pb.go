@@ -16,7 +16,7 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
-func (this *Checker) Validate() error {
+func (this *Participant) Validate() error {
 	if this.ApprovedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ApprovedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("ApprovedAt", err)
@@ -24,43 +24,30 @@ func (this *Checker) Validate() error {
 	}
 	return nil
 }
-func (this *Signer) Validate() error {
-	if this.ApprovedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ApprovedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ApprovedAt", err)
-		}
-	}
-	return nil
-}
-func (this *Checkers) Validate() error {
-	for _, item := range this.Checkers {
+func (this *Participants) Validate() error {
+	for _, item := range this.Participants {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Checkers", err)
-			}
-		}
-	}
-	return nil
-}
-func (this *Signers) Validate() error {
-	for _, item := range this.Signers {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Signers", err)
+				return github_com_mwitkow_go_proto_validators.FieldError("Participants", err)
 			}
 		}
 	}
 	return nil
 }
 func (this *Flow) Validate() error {
-	if this.Checkers != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Checkers); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Checkers", err)
+	if this.Verifier != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Verifier); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Verifier", err)
 		}
 	}
-	if this.Signers != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Signers); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Signers", err)
+	if this.Approver != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Approver); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Approver", err)
+		}
+	}
+	if this.Releaser != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Releaser); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Releaser", err)
 		}
 	}
 	if this.CompletedAt != nil {

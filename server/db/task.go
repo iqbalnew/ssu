@@ -302,16 +302,6 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-type QueryBuilder struct {
-	Filter        string
-	FilterOr      string
-	CollectiveAnd string
-	In            string
-	Distinct      string
-	CustomOrder   string
-	Sort          *pb.Sort
-}
-
 func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder) (tasks []*pb.TaskORM, err error) {
 	query := p.db_main.Select("*", "CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
 	if filter != nil {
@@ -319,7 +309,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	}
 	query = query.Scopes(FilterScoope(sql.Filter), FilterOrScoope(sql.FilterOr), QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In))
 	query = query.Scopes(DistinctScoope(sql.Distinct))
-	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "asc"}))
+	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
 	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
@@ -360,10 +350,13 @@ func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskO
 }
 
 func (p *GormProvider) SaveTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {
-	if err := p.db_main.Save(&task).Error; err != nil {
-		logrus.Errorln(err)
-		return nil, status.Errorf(codes.Internal, "DB Internal Error")
-	}
+	if err := p.db_main.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "task_id"}},
+		UpdateAll: true,
+	}).Save(&task).Error; err != nil {
+		logrus.Errorln("[db][func: SaveTask] Error save task", err)
+		return nil, err
+	}	
 	return task, nil
 }
 

@@ -38,7 +38,12 @@ func NewLogger(port string, host string, tag string) *Logger {
 
 		logger := &Logger{
 			fluent: fluentd,
-			tag:    tag,
+		}
+
+		if tag != "" {
+			logger.tag = tag
+		} else {
+			logger.tag = "default"
 		}
 
 		return logger

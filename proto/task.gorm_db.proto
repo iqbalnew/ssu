@@ -86,6 +86,8 @@ message Task {
     string dataBak = 19 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = { type: "jsonb" }];
     string childBak = 20 [(google.api.field_behavior) = OUTPUT_ONLY, (gorm.field).tag = { type: "jsonb" default: "[]" }];
 
+    string workflowDoc = 21 [(gorm.field).tag = { type: "jsonb" default: "{}" }];
+
     google.protobuf.Timestamp createdAt = 101;
     google.protobuf.Timestamp updatedAt = 102;
     google.protobuf.Timestamp deletedAt = 103;
