@@ -356,7 +356,7 @@ func (p *GormProvider) SaveTask(ctx context.Context, task *pb.TaskORM) (*pb.Task
 	}).Save(&task).Error; err != nil {
 		logrus.Errorln("[db][func: SaveTask] Error save task", err)
 		return nil, err
-	}	
+	}
 	return task, nil
 }
 
