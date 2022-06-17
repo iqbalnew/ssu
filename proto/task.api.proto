@@ -77,6 +77,7 @@ service TaskService {
             description: "This API is used for get list data task"
         };
     };
+    rpc GetListTask(ListTaskRequest) returns (ListTaskResponse);
 
     rpc GetListTaskPluck(ListTaskPluckRequest) returns (ListTaskPluckResponse);
 
