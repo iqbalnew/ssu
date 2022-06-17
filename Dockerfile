@@ -1,6 +1,9 @@
-# To comply with standard BKN practice, we use alpine.
-ARG BUILDER_IMAGE=golang:1.17-buster
-ARG BASE_IMAGE=bitnami/minideb:buster
+# # To comply with standard BKN practice, we use alpine.
+# ARG BUILDER_IMAGE=golang:1.17-buster
+# ARG BASE_IMAGE=bitnami/minideb:buster
+
+ARG BUILDER_IMAGE=image-registry.openshift-image-registry.svc:5000/bricams/addons-task-service:latest
+ARG BASE_IMAGE=image-registry.openshift-image-registry.svc:5000/bricams/addons-task-service:latest
 
 FROM $BUILDER_IMAGE as builder
 
