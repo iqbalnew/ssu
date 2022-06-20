@@ -1073,7 +1073,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 0
 		}
 
-		taskType := []string{"System", "Account", "Beneficiary Account"}
+		taskType := []string{"System", "Account", "Beneficiary Account", "Company"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
