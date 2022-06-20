@@ -1073,7 +1073,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 0
 		}
 
-		taskType := []string{"System", "Account"}
+		taskType := []string{"System", "Account", "Beneficiary Account"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
@@ -1614,18 +1614,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &workflowTask)
 
 			data.Data = &workflow_pb.Workflow{
-				WorkflowID:   workflowTask.Workflow.WorkflowID,
-				ModuleID:     workflowTask.Workflow.ModuleID[0],
-				CompanyID:    workflowTask.Workflow.CompanyID,
-				CurrencyID:   workflowTask.Workflow.CurrencyID,
-				CreatedByID:  currentUser.UserID,
-				UpdatedByID:  currentUser.UserID,
-				CurrencyName: workflowTask.Workflow.CurrencyName,
-				WorkflowCode: workflowTask.Workflow.WorkflowCode,
-				Description:  workflowTask.Workflow.Description,
-				CreatedAt:    &timestamppb.Timestamp{},
-				UpdatedAt:    &timestamppb.Timestamp{},
-				Logics:       []*workflow_pb.WorkflowLogic{},
+				WorkflowID:            workflowTask.Workflow.WorkflowID,
+				ModuleID:              workflowTask.Workflow.ModuleID[0],
+				CompanyID:             workflowTask.Workflow.CompanyID,
+				CurrencyID:            workflowTask.Workflow.CurrencyID,
+				CreatedByID:           currentUser.UserID,
+				UpdatedByID:           currentUser.UserID,
+				CurrencyName:          workflowTask.Workflow.CurrencyName,
+				WorkflowCode:          workflowTask.Workflow.WorkflowCode,
+				Description:           workflowTask.Workflow.Description,
+				CreatedAt:             &timestamppb.Timestamp{},
+				UpdatedAt:             &timestamppb.Timestamp{},
+				IsCreatedInputAccount: workflowTask.Workflow.IsCreatedInputAccount,
+				IsCustomInputAccount:  workflowTask.Workflow.IsCustomInputAccount,
+				Logics:                []*workflow_pb.WorkflowLogic{},
 			}
 			data.TaskID = task.TaskID
 
