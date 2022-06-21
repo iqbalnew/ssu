@@ -351,10 +351,14 @@ func (s *Server) GraphStatusColumnType(ctx context.Context, req *pb.GraphStatusC
 }
 
 func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest) (*pb.GraphStepResponse, error) {
+	me, err := s.manager.GetMeFromJWT(ctx, "")
+	if err != nil {
+		return nil, err
+	}
 	step := req.Step.Number()
 	stat := req.Status.Number()
 
-	data, err := s.provider.GetGraphStep(ctx, req.Service, uint(step), uint(stat), req.IsIncludeApprove, req.IsIncludeReject)
+	data, err := s.provider.GetGraphStep(ctx, me.CompanyID, req.Service, uint(step), uint(stat), req.IsIncludeApprove, req.IsIncludeReject)
 	if err != nil {
 		return nil, err
 	}
@@ -1069,7 +1073,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 0
 		}
 
-		taskType := []string{"System", "Account", "Beneficiary Account"}
+		taskType := []string{"System", "Account", "Beneficiary Account", "Company"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
