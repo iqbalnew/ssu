@@ -1,6 +1,9 @@
 
-ARG BUILDER_IMAGE=golang:1.17-buster
-ARG BASE_IMAGE=bitnami/minideb:buster
+# ARG BUILDER_IMAGE=golang:1.17-buster
+# ARG BASE_IMAGE=bitnami/minideb:buster
+
+ARG BUILDER_IMAGE=image-repo.bri.co.id/bricams/golang:1.17.7-buster
+ARG BASE_IMAGE=image-repo.bri.co.id/bricams/bricams-base-bitnami
 
 FROM $BUILDER_IMAGE as builder
 
