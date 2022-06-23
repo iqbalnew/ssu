@@ -533,7 +533,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	taskType := []string{"Swift", "Cash Pooling"}
 
-	if product.IsTransactional && contains(taskType, task.Type) && task.Status != 2 { //skip for difference variable name, revisit later
+	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
 		if req.TransactionAmount == 0 {
 			return nil, status.Errorf(codes.InvalidArgument, "Transaction amount is required")
 		}
