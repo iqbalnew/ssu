@@ -32,12 +32,12 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, servi
 	if service != "" {
 		whereOpt = fmt.Sprintf("type = '%v'", service)
 	}
-	// if idCompany != "" {
-	// 	if whereOpt != "" {
-	// 		whereOpt = whereOpt + " AND "
-	// 	}
-	// 	whereOpt = whereOpt + ` "data" -> 'user'->> 'companyID' = '` + idCompany + `'`
-	// }
+	if idCompany != "" {
+		if whereOpt != "" {
+			whereOpt = whereOpt + " AND "
+		}
+		whereOpt = whereOpt + ` ("data" -> 'user'->> 'companyID' = '` + idCompany + `' OR "data" -> 'companyID' = '` + idCompany + `')`
+	}
 	if !isIncludeApprove {
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
@@ -63,11 +63,11 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, servi
 		whereOpt = fmt.Sprintf("%v step = %v", whereOpt, step)
 	}
 
-	// elemintate deleted task
+	// elemintate deleted task and child
 	if whereOpt != "" {
-		whereOpt = whereOpt + " AND status != 7"
+		whereOpt = whereOpt + " AND status != 7 AND parent_id IS NULL"
 	} else {
-		whereOpt = "status != 7"
+		whereOpt = "status != 7 AND parent_id IS NULL"
 	}
 
 	if whereOpt != "" {
