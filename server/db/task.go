@@ -65,9 +65,9 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, servi
 
 	// elemintate deleted task and child
 	if whereOpt != "" {
-		whereOpt = whereOpt + " AND status != 7 AND parent_id IS NULL"
+		whereOpt = whereOpt + " AND status != 7 AND is_parent_active = false"
 	} else {
-		whereOpt = "status != 7 AND parent_id IS NULL"
+		whereOpt = "status != 7 AND is_parent_active = false"
 	}
 
 	if whereOpt != "" {
