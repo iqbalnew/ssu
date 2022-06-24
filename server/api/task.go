@@ -357,6 +357,9 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 	}
 	step := req.Step.Number()
 	stat := req.Status.Number()
+	if me.UserType == "ba" {
+		me.CompanyID = ""
+	}
 
 	data, err := s.provider.GetGraphStep(ctx, me.CompanyID, req.Service, uint(step), uint(stat), req.IsIncludeApprove, req.IsIncludeReject)
 	if err != nil {
