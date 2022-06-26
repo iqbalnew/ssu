@@ -1,8 +1,8 @@
 #ARG BUILDER_IMAGE=golang:1.17-buster
 #ARG BASE_IMAGE=bitnami/minideb:buster
 
-ARG BUILDER_IMAGE=image-repo.bri.co.id/bricams/golang:1.17.7-buster
-ARG BASE_IMAGE=image-repo.bri.co.id/bricams/bricams-base-bitnami
+ARG BUILDER_IMAGE=default-route-openshift-image-registry.apps.ocp-dev.bri.co.id/bricams/node/golang:1.17.7-buster
+ARG BASE_IMAGE=default-route-openshift-image-registry.apps.ocp-dev.bri.co.id/bricams/bitnami-minideb:buster
 
 FROM $BUILDER_IMAGE as builder
 COPY . /root/go/src/app/
