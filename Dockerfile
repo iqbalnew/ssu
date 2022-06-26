@@ -5,9 +5,10 @@ ARG BUILDER_IMAGE=default-route-openshift-image-registry.apps.ocp-dev.bri.co.id/
 ARG BASE_IMAGE=default-route-openshift-image-registry.apps.ocp-dev.bri.co.id/bricams/bitnami-minideb:buster
 
 FROM $BUILDER_IMAGE as builder
+
 COPY . /root/go/src/app/
 
-ARG BUILD_VERSION
+ARG BUILD_VERSION=0.1.0
 ARG GOPROXY
 ARG GOSUMDB=sum.golang.org
 
@@ -19,17 +20,20 @@ ENV GOPROXY=$GOPROXY
 ENV GOSUMDB=$GOSUMDB
 
 RUN go mod vendor
-# RUN go mod tidy
 
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux go build -a -v -ldflags "-X main.version=$(BUILD_VERSION)" -installsuffix cgo -o app ./server
 
 FROM $BASE_IMAGE
+# ENV http_proxy 'http://172.18.104.20:1707'
+# ENV https_proxy 'http://172.18.104.20:1707'
 
 # RUN install_packages ca-certificates
 
-ENV http_proxy=
-ENV https_proxy=
+# RUN install_packages curl
+
+# ENV http_proxy=
+# ENV https_proxy=
 
 WORKDIR /usr/app
 
