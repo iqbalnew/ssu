@@ -1811,12 +1811,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			logrus.Println(res)
 
 			// update task billing status
-			dataUpdate, err := json.Marshal(data.Data)
-			if err != nil {
-				logrus.Errorln("Failed to marshal data: %v", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-			task.Data = string(dataUpdate)
 			task.FeatureID = res.Data.BeneficiaryAccountID
 			reUpdate = true
 		}
