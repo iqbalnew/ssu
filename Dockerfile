@@ -1,15 +1,10 @@
-
-# ARG BUILDER_IMAGE=golang:1.17-buster
-# ARG BASE_IMAGE=bitnami/minideb:buster
+#ARG BUILDER_IMAGE=golang:1.17-buster
+#ARG BASE_IMAGE=bitnami/minideb:buster
 
 ARG BUILDER_IMAGE=image-repo.bri.co.id/bricams/golang:1.17.7-buster
 ARG BASE_IMAGE=image-repo.bri.co.id/bricams/bricams-base-bitnami
 
 FROM $BUILDER_IMAGE as builder
-
-ENV http_proxy http://proxy4.bri.co.id:1707
-ENV https_proxy http://proxy4.bri.co.id:1707
-
 COPY . /root/go/src/app/
 
 ARG BUILD_VERSION
