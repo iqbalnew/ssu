@@ -143,6 +143,49 @@ func (l *Logger) InfoUser(text string, userID string, companyID string, action s
 	}
 }
 
+type UserData struct {
+	UserID    string `json:"userID"`
+	UserName  string `json:"userName"`
+	CompanyID string `json:"companyID"`
+	Action    string `json:"action"`
+}
+
+func (l *Logger) InfoUserWithData(text string, user UserData, x interface{}, logID string) {
+	data := map[string]interface{}{
+		"level": "info",
+		"logID": logID,
+		"info":  text,
+		"user":  user,
+		"data":  x,
+	}
+	if getEnv("ENV", "DEV") != "LOCAL" {
+		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
+		if err != nil {
+			logrus.Errorln("Error on Send Log to Fluentd: ", err)
+		}
+	} else {
+		// logrus.Infoln(data)
+	}
+}
+
+func (l *Logger) ErrorUserWithData(text string, user UserData, x interface{}, logID string) {
+	data := map[string]interface{}{
+		"level": "error",
+		"logID": logID,
+		"info":  text,
+		"user":  user,
+		"data":  x,
+	}
+	if getEnv("ENV", "DEV") != "LOCAL" {
+		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
+		if err != nil {
+			logrus.Errorln("Error on Send Log to Fluentd: ", err)
+		}
+	} else {
+		// logrus.Infoln(data)
+	}
+}
+
 func (l *Logger) Debug(text string) {
 	data := map[string]string{
 		"level": "debug",
