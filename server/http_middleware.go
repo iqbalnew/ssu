@@ -28,11 +28,15 @@ func setHeaderHandler(h http.Handler, sid *shortid.Shortid) http.Handler {
 			if err != nil {
 				logrus.Errorln("Failed to generate refCode")
 			}
-			refCode := fmt.Sprintf("HTTP%s", code)
+			refCode := fmt.Sprintf("HTTP%s%s", timeCode, code)
 
 			w.Header().Set("App-Time-Code", timeCode)
 			w.Header().Set("App-Reference-Code", refCode)
 			w.Header().Set("App-Entry-Code", config.ServiceName)
+
+			logrus.Println(w.Header().Get("App-Time-Code"))
+			logrus.Println(w.Header().Get("App-Reference-Code"))
+			logrus.Println(w.Header().Get("App-Entry-Code"))
 
 		}
 		if r.Method == "OPTIONS" {
@@ -79,8 +83,8 @@ func logRequestHandler(h http.Handler, logger *addonsLogger.Logger) http.Handler
 		ri.code = m.Code
 		ri.size = m.Written
 		ri.duration = m.Duration
-		ri.refCode = r.Header.Get("App-Reference-Code")
-		ri.entryCode = r.Header.Get("App-Entry-Code")
+		ri.refCode = w.Header().Get("App-Reference-Code")
+		ri.entryCode = w.Header().Get("App-Entry-Code")
 
 		data := map[string]interface{}{
 			"method":    ri.method,
