@@ -18,7 +18,7 @@ type generatedCode struct {
 	entryCode string
 }
 
-func setHeaderHandler(h http.Handler, sid *shortid.Shortid, codes *generatedCode) http.Handler {
+func setHeaderHandler(h http.Handler, sid *shortid.Shortid) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Strict-Transport-Security", "max-age=31536000")
 
@@ -41,11 +41,6 @@ func setHeaderHandler(h http.Handler, sid *shortid.Shortid, codes *generatedCode
 			logrus.Println(w.Header().Get("App-Time-Code"))
 			logrus.Println(w.Header().Get("App-Reference-Code"))
 			logrus.Println(w.Header().Get("App-Entry-Code"))
-
-			codes = &generatedCode{
-				refCode:   refCode,
-				entryCode: config.ServiceName,
-			}
 
 		}
 		if r.Method == "OPTIONS" {
@@ -74,7 +69,7 @@ type HTTPReqInfo struct {
 	entryCode string
 }
 
-func logRequestHandler(h http.Handler, logger *addonsLogger.Logger, codes *generatedCode) http.Handler {
+func logRequestHandler(h http.Handler, logger *addonsLogger.Logger) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		ri := &HTTPReqInfo{
 			method:    r.Method,
@@ -82,8 +77,6 @@ func logRequestHandler(h http.Handler, logger *addonsLogger.Logger, codes *gener
 			referer:   r.Header.Get("Referer"),
 			userAgent: r.Header.Get("User-Agent"),
 		}
-
-		logrus.Println("===>", codes)
 
 		ri.ipaddr = requestGetRemoteAddress(r)
 
@@ -94,8 +87,8 @@ func logRequestHandler(h http.Handler, logger *addonsLogger.Logger, codes *gener
 		ri.code = m.Code
 		ri.size = m.Written
 		ri.duration = m.Duration
-		ri.refCode = codes.refCode
-		ri.entryCode = codes.entryCode
+		ri.refCode = w.Header().Get("App-Reference-Code")
+		ri.entryCode = w.Header().Get("App-Entry-Code")
 
 		data := map[string]interface{}{
 			"method":    ri.method,

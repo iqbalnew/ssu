@@ -286,9 +286,9 @@ func httpGatewayServer(port int, grpcEndpoint string, sid *shortid.Shortid, logg
 	logrus.Printf("Starting JSON Gateway server on port %d...", port)
 
 	var handler http.Handler = mux
-	var codes *generatedCode
-	handler = setHeaderHandler(handler, sid, codes)
-	handler = logRequestHandler(handler, logger, codes)
+
+	handler = setHeaderHandler(handler, sid)
+	handler = logRequestHandler(handler, logger)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
