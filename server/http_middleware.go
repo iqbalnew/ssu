@@ -83,6 +83,8 @@ func logRequestHandler(h http.Handler, logger *addonsLogger.Logger, codes *gener
 			userAgent: r.Header.Get("User-Agent"),
 		}
 
+		logrus.Println("----->", codes)
+
 		ri.ipaddr = requestGetRemoteAddress(r)
 
 		// this runs handler h and captures information about
