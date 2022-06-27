@@ -62,7 +62,7 @@ type HTTPReqInfo struct {
 
 func logRequestHandler(h http.Handler, logger *addonsLogger.Logger) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		ri := &HTTPReqInfo{
+		ri := HTTPReqInfo{
 			method:    r.Method,
 			uri:       r.URL.String(),
 			referer:   r.Header.Get("Referer"),
