@@ -29,11 +29,13 @@ require (
 
 require (
 	github.com/elliotchance/sshtunnel v1.3.1
+	github.com/felixge/httpsnoop v1.0.3
 	github.com/fluent/fluent-logger-golang v1.9.0
 	github.com/go-bongo/bongo v0.10.4
 	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/speps/go-hashids v2.0.0+incompatible
 	github.com/spf13/viper v1.11.0
+	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
 	github.com/xuri/excelize/v2 v2.6.0
 	go.mongodb.org/mongo-driver v1.9.1
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22

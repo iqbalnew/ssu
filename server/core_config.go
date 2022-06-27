@@ -15,7 +15,8 @@ type Config struct {
 	// Listen address is an array so that this service can listen to many interfaces at once.
 	// You can use this value for example: []string{"192.168.1.12:80", "25.49.25.73:80"} to listen to
 	// listen to interfaces with IP address of 192.168.1.12 and 25.49.25.73, both on port 80.
-	Env string `json:"env"`
+	Env         string `json:"env"`
+	ServiceName string `json:"SERVICE_NAME"`
 
 	ListenAddress string `config:"LISTEN_ADDRESS"`
 
@@ -51,6 +52,7 @@ func initConfig() {
 
 	config = &Config{
 		Env:                 getEnv("ENV", "DEV"),
+		ServiceName:         getEnv("SERVICE_NAME", "Task"),
 		ListenAddress:       fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")),
 		CorsAllowedHeaders:  []string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Content-Disposition", "Origin", "Content-Length", "Authorization", "ResponseType", "X-Requested-With", "X-Forwarded-For"},
 		CorsAllowedMethods:  []string{"GET", "POST", "PATCH", "DELETE", "PUT"},

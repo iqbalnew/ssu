@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
-	"strings"
 
 	"google.golang.org/grpc"
 
@@ -21,6 +20,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/sirupsen/logrus"
+	"github.com/teris-io/shortid"
 
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
@@ -72,8 +72,20 @@ func grpcServerCmd() cli.Command {
 
 			startDBConnection()
 
+			sid, err := shortid.New(1, shortid.DefaultABC, 2342)
+			if err != nil {
+				panic(err)
+			}
+
+			var logger *addonsLogger.Logger
+			if getEnv("ENV", "LOCAL") != "LOCAL" {
+				logrus.Println("[stating utility] Connecting to Fluentd ")
+				logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
+				defer logger.Close()
+			}
+
 			go func() {
-				if err := grpcServer(port); err != nil {
+				if err := grpcServer(port, sid, logger); err != nil {
 					logrus.Fatalf("failed RPC serve: %v", err)
 				}
 			}()
@@ -112,8 +124,20 @@ func gatewayServerCmd() cli.Command {
 		Action: func(c *cli.Context) error {
 			port, grpcEndpoint := c.Int("port"), c.String("grpc-endpoint")
 
+			sid, err := shortid.New(1, shortid.DefaultABC, 2342)
+			if err != nil {
+				panic(err)
+			}
+
+			var logger *addonsLogger.Logger
+			if getEnv("ENV", "LOCAL") != "LOCAL" {
+				logrus.Println("[stating utility] Connecting to Fluentd ")
+				logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
+				defer logger.Close()
+			}
+
 			go func() {
-				if err := httpGatewayServer(port, grpcEndpoint); err != nil {
+				if err := httpGatewayServer(port, grpcEndpoint, sid, logger); err != nil {
 					logrus.Fatalf("failed JSON Gateway serve: %v", err)
 				}
 			}()
@@ -155,14 +179,26 @@ func grpcGatewayServerCmd() cli.Command {
 
 			startDBConnection()
 
+			sid, err := shortid.New(1, shortid.DefaultABC, 2342)
+			if err != nil {
+				panic(err)
+			}
+
+			var logger *addonsLogger.Logger
+			if getEnv("ENV", "LOCAL") != "LOCAL" {
+				logrus.Println("[stating utility] Connecting to Fluentd ")
+				logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
+				defer logger.Close()
+			}
+
 			go func() {
-				if err := grpcServer(rpcPort); err != nil {
+				if err := grpcServer(rpcPort, sid, logger); err != nil {
 					logrus.Fatalf("failed RPC serve: %v", err)
 				}
 			}()
 
 			go func() {
-				if err := httpGatewayServer(httpPort, grpcEndpoint); err != nil {
+				if err := httpGatewayServer(httpPort, grpcEndpoint, sid, logger); err != nil {
 					logrus.Fatalf("failed JSON Gateway serve: %v", err)
 				}
 			}()
@@ -185,7 +221,7 @@ func grpcGatewayServerCmd() cli.Command {
 	}
 }
 
-func grpcServer(port int) error {
+func grpcServer(port int, sid *shortid.Shortid, logger *addonsLogger.Logger) error {
 	// RPC
 	logrus.Printf("Starting %s Service ................", serviceName)
 	logrus.Printf("Starting RPC server on port %d...", port)
@@ -195,19 +231,13 @@ func grpcServer(port int) error {
 	}
 
 	var mongodbClient *mongoClient.MongoDB
-	var logger *addonsLogger.Logger
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
 		logrus.Println("[starting utilit] Connecting to Mongo ")
 		mongodbClient = mongoClient.NewCLient(config.MongoURI, config.MongoDB, "logs")
 		defer mongodbClient.Close()
-
-		logrus.Println("[stating utility] Connecting to Fluentd ")
-		logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
-		defer logger.Close()
-
 	}
 
-	apiServer := api.New(db_main, announcementConn, mongodbClient, logger)
+	apiServer := api.New(db_main, sid, announcementConn, mongodbClient, logger)
 	authInterceptor := api.NewAuthInterceptor(apiServer.GetManager())
 
 	unaryInterceptorOpt := grpc.UnaryInterceptor(api.UnaryInterceptors(authInterceptor))
@@ -220,7 +250,7 @@ func grpcServer(port int) error {
 	return s.Serve(list)
 }
 
-func httpGatewayServer(port int, grpcEndpoint string) error {
+func httpGatewayServer(port int, grpcEndpoint string, sid *shortid.Shortid, logger *addonsLogger.Logger) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -255,7 +285,19 @@ func httpGatewayServer(port int, grpcEndpoint string) error {
 	// Start
 	logrus.Printf("Starting JSON Gateway server on port %d...", port)
 
-	return http.ListenAndServe(fmt.Sprintf(":%d", port), setHeaders(mux))
+	var handler http.Handler = mux
+	handler = setHeaderHandler(handler, sid)
+	handler = logRequestHandler(handler, logger)
+
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%d", port),
+		Handler: handler,
+		// ReadTimeout:  120 * time.Second,
+		// WriteTimeout: 120 * time.Second,
+		// IdleTimeout:  120 * time.Second, // introduced in Go 1.8
+	}
+
+	return srv.ListenAndServe()
 }
 
 func serveSwagger(w http.ResponseWriter, r *http.Request) {
@@ -270,21 +312,4 @@ func allowedOrigin(origin string) bool {
 		return true
 	}
 	return false
-}
-
-func setHeaders(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Strict-Transport-Security", "max-age=31536000")
-
-		if allowedOrigin(r.Header.Get("Origin")) {
-			// w.Header().Set("Content-Security-Policy", "default-src 'self'")
-			w.Header().Set("Access-Control-Allow-Origin", strings.Join(config.CorsAllowedOrigins, ", "))
-			w.Header().Set("Access-Control-Allow-Methods", strings.Join(config.CorsAllowedMethods, ", "))
-			w.Header().Set("Access-Control-Allow-Headers", strings.Join(config.CorsAllowedHeaders, ", "))
-		}
-		if r.Method == "OPTIONS" {
-			return
-		}
-		h.ServeHTTP(w, r)
-	})
 }

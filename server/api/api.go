@@ -17,6 +17,7 @@ import (
 	mongoClient "bitbucket.bri.co.id/scm/addons/addons-task-service/server/mongodb"
 
 	"github.com/sirupsen/logrus"
+	"github.com/teris-io/shortid"
 )
 
 const TaskServicePath string = "/task.service.v1.TaskService/"
@@ -33,11 +34,14 @@ type Server struct {
 	announcementConn *grpc.ClientConn
 	logger           *addonsLogger.Logger
 
+	sid *shortid.Shortid
+
 	pb.TaskServiceServer
 }
 
 func New(
 	db01 *gorm.DB,
+	sid *shortid.Shortid,
 	conn01 *grpc.ClientConn,
 	mongo01 *mongoClient.MongoDB,
 	logger *addonsLogger.Logger,
@@ -53,6 +57,8 @@ func New(
 		announcementConn: conn01,
 		manager:          manager.NewJWTManager(secret, tokenDuration),
 		logger:           logger,
+
+		sid: sid,
 
 		TaskServiceServer: nil,
 	}
