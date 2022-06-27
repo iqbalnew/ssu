@@ -13,7 +13,12 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-func setHeaderHandler(h http.Handler, sid *shortid.Shortid) http.Handler {
+type generatedCode struct {
+	refCode   string
+	entryCode string
+}
+
+func setHeaderHandler(h http.Handler, sid *shortid.Shortid, codes *generatedCode) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Strict-Transport-Security", "max-age=31536000")
 
@@ -30,13 +35,17 @@ func setHeaderHandler(h http.Handler, sid *shortid.Shortid) http.Handler {
 			}
 			refCode := fmt.Sprintf("HTTP%s%s", timeCode, code)
 
-			w.Header().Set("App-Time-Code", timeCode)
 			w.Header().Set("App-Reference-Code", refCode)
 			w.Header().Set("App-Entry-Code", config.ServiceName)
 
 			logrus.Println(w.Header().Get("App-Time-Code"))
 			logrus.Println(w.Header().Get("App-Reference-Code"))
 			logrus.Println(w.Header().Get("App-Entry-Code"))
+
+			codes = &generatedCode{
+				refCode:   refCode,
+				entryCode: config.ServiceName,
+			}
 
 		}
 		if r.Method == "OPTIONS" {
@@ -65,7 +74,7 @@ type HTTPReqInfo struct {
 	entryCode string
 }
 
-func logRequestHandler(h http.Handler, logger *addonsLogger.Logger) http.Handler {
+func logRequestHandler(h http.Handler, logger *addonsLogger.Logger, codes *generatedCode) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		ri := &HTTPReqInfo{
 			method:    r.Method,
@@ -83,8 +92,8 @@ func logRequestHandler(h http.Handler, logger *addonsLogger.Logger) http.Handler
 		ri.code = m.Code
 		ri.size = m.Written
 		ri.duration = m.Duration
-		ri.refCode = w.Header().Get("App-Reference-Code")
-		ri.entryCode = w.Header().Get("App-Entry-Code")
+		ri.refCode = codes.refCode
+		ri.entryCode = codes.entryCode
 
 		data := map[string]interface{}{
 			"method":    ri.method,
