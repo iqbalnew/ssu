@@ -83,7 +83,7 @@ func logRequestHandler(h http.Handler, logger *addonsLogger.Logger) http.Handler
 
 		logrus.Println("Httplog", ri)
 
-		logger.InfoWithData("Httplog", &ri)
+		logger.InfoWithData("Httplog", ri)
 	}
 	return http.HandlerFunc(fn)
 }
