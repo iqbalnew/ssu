@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -81,8 +82,8 @@ func logRequestHandler(h http.Handler, logger *addonsLogger.Logger) http.Handler
 		ri.refCode = r.Header.Get("App-Reference-Code")
 		ri.entryCode = r.Header.Get("App-Entry-Code")
 
-		data := map[string]string{}{
-			"method":    ri.method,	
+		data := map[string]string{
+			"method":    ri.method,
 			"uri":       ri.uri,
 			"referer":   ri.referer,
 			"ipaddr":    ri.ipaddr,
