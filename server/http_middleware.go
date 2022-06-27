@@ -62,7 +62,7 @@ type HTTPReqInfo struct {
 
 func logRequestHandler(h http.Handler, logger *addonsLogger.Logger) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		ri := HTTPReqInfo{
+		ri := &HTTPReqInfo{
 			method:    r.Method,
 			uri:       r.URL.String(),
 			referer:   r.Header.Get("Referer"),
@@ -81,9 +81,20 @@ func logRequestHandler(h http.Handler, logger *addonsLogger.Logger) http.Handler
 		ri.refCode = r.Header.Get("App-Reference-Code")
 		ri.entryCode = r.Header.Get("App-Entry-Code")
 
-		logrus.Println("Httplog", ri)
+		data := map[string]string{}{
+			"method":    ri.method,	
+			"uri":       ri.uri,
+			"referer":   ri.referer,
+			"ipaddr":    ri.ipaddr,
+			"code":      strconv.Itoa(ri.code),
+			"size":      strconv.FormatInt(ri.size, 10),
+			"duration":  ri.duration.String(),
+			"userAgent": ri.userAgent,
+			"refCode":   ri.refCode,
+			"entryCode": ri.entryCode,
+		}
 
-		logger.InfoWithData("Httplog", ri)
+		logger.InfoWithData("Httplog", data)
 	}
 	return http.HandlerFunc(fn)
 }
