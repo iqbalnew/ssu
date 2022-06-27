@@ -115,6 +115,7 @@ func (l *Logger) InfoWithData(text string, x interface{}) {
 		"info":  text,
 		"data":  x,
 	}
+	logrus.Println("HttpLog logger ver", data)
 	if getEnv("ENV", "DEV") != "LOCAL" {
 		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
 		if err != nil {
