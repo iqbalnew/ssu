@@ -264,7 +264,6 @@ func (manager *JWTManager) GetMeFromAuthService(ctx context.Context, accessToken
 }
 
 func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
-	logrus.Printf("<@@ result @@>11 %s", ctx)
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		if len(md["user-userid"]) > 0 {
@@ -274,23 +273,19 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 
 	}
-
-	logrus.Printf("<@@ result @@>12 %s", md)
 	// Make RPC using the context with the metadata.
 	var trailer metadata.MD
 
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-	logrus.Printf("<@@ result @@>13")
 	authConn, err := grpc.Dial(getEnv("AUTH_SERVICE", ":9105"), opts...)
 	if err != nil {
-		logrus.Errorln("Failed connect to Task Service: %v", err)
+		logrus.Errorln("Failed connect to Auth Service: %v", err)
 		return nil, status.Errorf(codes.Internal, "Error Internal")
 	}
 	defer authConn.Close()
 
-	logrus.Printf("<@@ result @@>14")
 	authClient := authPb.NewApiServiceClient(authConn)
 
 	result, err := authClient.SetMe(ctx, &authPb.VerifyTokenReq{}, grpc.Trailer(&trailer))
@@ -298,11 +293,8 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 		logrus.Errorf("<@@ result @@> %v", result)
 		return nil, err
 	}
-	logrus.Printf("<@@ result @@>15.0 %s", result)
-	logrus.Printf("<@@ result @@>15.1 %s", md)
 
 	md = metadata.Join(md, trailer)
-	logrus.Printf("<@@ result @@>16 %s", md)
 
 	return md, nil
 }

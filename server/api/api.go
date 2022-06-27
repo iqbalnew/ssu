@@ -2,8 +2,6 @@ package api
 
 import (
 	"context"
-	"os"
-	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -41,21 +39,16 @@ type Server struct {
 
 func New(
 	db01 *gorm.DB,
+	authManager *manager.JWTManager,
 	sid *shortid.Shortid,
 	conn01 *grpc.ClientConn,
 	mongo01 *mongoClient.MongoDB,
 	logger *addonsLogger.Logger,
 ) *Server {
-	secret := os.Getenv("JWT_SECRET")
-	tokenDuration, err := time.ParseDuration(os.Getenv("JWT_DURATION"))
-	if err != nil {
-		logrus.Panic(err)
-	}
-
 	server := &Server{
 		provider:         db.NewProvider(db01, mongo01),
 		announcementConn: conn01,
-		manager:          manager.NewJWTManager(secret, tokenDuration),
+		manager:          authManager,
 		logger:           logger,
 
 		sid: sid,

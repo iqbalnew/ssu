@@ -6,12 +6,14 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"time"
 
 	"google.golang.org/grpc"
 
 	"fmt"
 	"net"
 
+	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	addonsLogger "bitbucket.bri.co.id/scm/addons/addons-task-service/server/logger"
 	mongoClient "bitbucket.bri.co.id/scm/addons/addons-task-service/server/mongodb"
@@ -77,6 +79,13 @@ func grpcServerCmd() cli.Command {
 				panic(err)
 			}
 
+			secret := os.Getenv("JWT_SECRET")
+			tokenDuration, err := time.ParseDuration(os.Getenv("JWT_DURATION"))
+			if err != nil {
+				logrus.Panic(err)
+			}
+			authManager := manager.NewJWTManager(secret, tokenDuration)
+
 			var logger *addonsLogger.Logger
 			if getEnv("ENV", "LOCAL") != "LOCAL" {
 				logrus.Println("[stating utility] Connecting to Fluentd ")
@@ -85,7 +94,7 @@ func grpcServerCmd() cli.Command {
 			}
 
 			go func() {
-				if err := grpcServer(port, sid, logger); err != nil {
+				if err := grpcServer(port, authManager, sid, logger); err != nil {
 					logrus.Fatalf("failed RPC serve: %v", err)
 				}
 			}()
@@ -129,6 +138,13 @@ func gatewayServerCmd() cli.Command {
 				panic(err)
 			}
 
+			secret := os.Getenv("JWT_SECRET")
+			tokenDuration, err := time.ParseDuration(os.Getenv("JWT_DURATION"))
+			if err != nil {
+				logrus.Panic(err)
+			}
+			authManager := manager.NewJWTManager(secret, tokenDuration)
+
 			var logger *addonsLogger.Logger
 			if getEnv("ENV", "LOCAL") != "LOCAL" {
 				logrus.Println("[stating utility] Connecting to Fluentd ")
@@ -137,7 +153,7 @@ func gatewayServerCmd() cli.Command {
 			}
 
 			go func() {
-				if err := httpGatewayServer(port, grpcEndpoint, sid, logger); err != nil {
+				if err := httpGatewayServer(port, grpcEndpoint, authManager, sid, logger); err != nil {
 					logrus.Fatalf("failed JSON Gateway serve: %v", err)
 				}
 			}()
@@ -184,6 +200,13 @@ func grpcGatewayServerCmd() cli.Command {
 				panic(err)
 			}
 
+			secret := os.Getenv("JWT_SECRET")
+			tokenDuration, err := time.ParseDuration(os.Getenv("JWT_DURATION"))
+			if err != nil {
+				logrus.Panic(err)
+			}
+			authManager := manager.NewJWTManager(secret, tokenDuration)
+
 			var logger *addonsLogger.Logger
 			if getEnv("ENV", "LOCAL") != "LOCAL" {
 				logrus.Println("[stating utility] Connecting to Fluentd ")
@@ -192,13 +215,13 @@ func grpcGatewayServerCmd() cli.Command {
 			}
 
 			go func() {
-				if err := grpcServer(rpcPort, sid, logger); err != nil {
+				if err := grpcServer(rpcPort, authManager, sid, logger); err != nil {
 					logrus.Fatalf("failed RPC serve: %v", err)
 				}
 			}()
 
 			go func() {
-				if err := httpGatewayServer(httpPort, grpcEndpoint, sid, logger); err != nil {
+				if err := httpGatewayServer(httpPort, grpcEndpoint, authManager, sid, logger); err != nil {
 					logrus.Fatalf("failed JSON Gateway serve: %v", err)
 				}
 			}()
@@ -221,7 +244,7 @@ func grpcGatewayServerCmd() cli.Command {
 	}
 }
 
-func grpcServer(port int, sid *shortid.Shortid, logger *addonsLogger.Logger) error {
+func grpcServer(port int, authManager *manager.JWTManager, sid *shortid.Shortid, logger *addonsLogger.Logger) error {
 	// RPC
 	logrus.Printf("Starting %s Service ................", serviceName)
 	logrus.Printf("Starting RPC server on port %d...", port)
@@ -237,7 +260,7 @@ func grpcServer(port int, sid *shortid.Shortid, logger *addonsLogger.Logger) err
 		defer mongodbClient.Close()
 	}
 
-	apiServer := api.New(db_main, sid, announcementConn, mongodbClient, logger)
+	apiServer := api.New(db_main, authManager, sid, announcementConn, mongodbClient, logger)
 	authInterceptor := api.NewAuthInterceptor(apiServer.GetManager())
 
 	unaryInterceptorOpt := grpc.UnaryInterceptor(api.UnaryInterceptors(authInterceptor))
@@ -250,13 +273,19 @@ func grpcServer(port int, sid *shortid.Shortid, logger *addonsLogger.Logger) err
 	return s.Serve(list)
 }
 
-func httpGatewayServer(port int, grpcEndpoint string, sid *shortid.Shortid, logger *addonsLogger.Logger) error {
+func httpGatewayServer(port int, grpcEndpoint string, authManager *manager.JWTManager, sid *shortid.Shortid, logger *addonsLogger.Logger) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
+	clientInterceptor := NewClientInterceptor()
 	// Connect to the GRPC server
-	conn, err := grpc.Dial(grpcEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(
+		grpcEndpoint,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(clientInterceptor.UnaryIntercetoprSetUserData(authManager)),
+		grpc.WithStreamInterceptor(clientInterceptor.StreamIntercetoprSetUserData(authManager)),
+	)
 	if err != nil {
 		return err
 	}
