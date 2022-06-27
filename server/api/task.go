@@ -14,6 +14,7 @@ import (
 	abonnement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/abonnement_service"
 	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
+	beneficiary_account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/beneficiary_account_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
@@ -357,6 +358,9 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 	}
 	step := req.Step.Number()
 	stat := req.Status.Number()
+	if me.UserType == "ba" {
+		me.CompanyID = ""
+	}
 
 	data, err := s.provider.GetGraphStep(ctx, me.CompanyID, req.Service, uint(step), uint(stat), req.IsIncludeApprove, req.IsIncludeReject)
 	if err != nil {
@@ -1780,6 +1784,34 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 			task.Data = string(dataUpdate)
 			task.FeatureID = res.Data.Id
+			reUpdate = true
+
+		case "Beneficiary Account":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			beneficiaryAccountConn, err := grpc.Dial(getEnv("BENEFICIARY_ACCOUNT_SERVICE", ":9093"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Account Service: %v", err)
+				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Account Service: %v", err))
+
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer beneficiaryAccountConn.Close()
+
+			beneficiaryAccountClient := beneficiary_account_pb.NewApiServiceClient(beneficiaryAccountConn)
+
+			data := beneficiary_account_pb.CreateBeneficiaryAccountRequest{}
+			json.Unmarshal([]byte(task.Data), &data.Data)
+			data.TaskID = task.TaskID
+			res, err := beneficiaryAccountClient.CreateBeneficiaryAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
+
+			// update task billing status
+			task.FeatureID = res.Data.BeneficiaryAccountID
 			reUpdate = true
 		}
 	}

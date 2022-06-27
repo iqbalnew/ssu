@@ -1,18 +1,14 @@
+#ARG BUILDER_IMAGE=golang:1.17-buster
+#ARG BASE_IMAGE=bitnami/minideb:buster
 
-# ARG BUILDER_IMAGE=golang:1.17-buster
-# ARG BASE_IMAGE=bitnami/minideb:buster
-
-ARG BUILDER_IMAGE=image-repo.bri.co.id/bricams/golang:1.17.7-buster
-ARG BASE_IMAGE=image-repo.bri.co.id/bricams/bricams-base-bitnami
+ARG BUILDER_IMAGE=default-route-openshift-image-registry.apps.ocp-dev.bri.co.id/bricams/golang:1.17.1-buster
+ARG BASE_IMAGE=default-route-openshift-image-registry.apps.ocp-dev.bri.co.id/bricams/bitnami-minideb:buster
 
 FROM $BUILDER_IMAGE as builder
 
-ENV http_proxy http://proxy4.bri.co.id:1707
-ENV https_proxy http://proxy4.bri.co.id:1707
-
 COPY . /root/go/src/app/
 
-ARG BUILD_VERSION
+ARG BUILD_VERSION=0.1.0
 ARG GOPROXY
 ARG GOSUMDB=sum.golang.org
 
@@ -24,17 +20,20 @@ ENV GOPROXY=$GOPROXY
 ENV GOSUMDB=$GOSUMDB
 
 RUN go mod vendor
-# RUN go mod tidy
 
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux go build -a -v -ldflags "-X main.version=$(BUILD_VERSION)" -installsuffix cgo -o app ./server
 
 FROM $BASE_IMAGE
+# ENV http_proxy 'http://172.18.104.20:1707'
+# ENV https_proxy 'http://172.18.104.20:1707'
 
 # RUN install_packages ca-certificates
 
-ENV http_proxy=
-ENV https_proxy=
+# RUN install_packages curl
+
+# ENV http_proxy=
+# ENV https_proxy=
 
 WORKDIR /usr/app
 
