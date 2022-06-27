@@ -126,6 +126,26 @@ func (l *Logger) InfoWithData(text string, x interface{}) {
 	}
 }
 
+func (l *Logger) InfoWithDataMap(text string, x map[string]interface{}) {
+	data := map[string]interface{}{
+		"level": "info",
+		"info":  text,
+	}
+	for k, v := range x {
+		data[k] = v
+	}
+
+	logrus.Println("HttpLog logger ver", data)
+	if getEnv("ENV", "DEV") != "LOCAL" {
+		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
+		if err != nil {
+			logrus.Errorln("Error on Send Log to Fluentd: ", err)
+		}
+	} else {
+		logrus.Infoln(data)
+	}
+}
+
 func (l *Logger) InfoUser(text string, userID string, companyID string, action string) {
 	data := map[string]string{
 		"level":     "info",

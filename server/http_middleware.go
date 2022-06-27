@@ -82,7 +82,7 @@ func logRequestHandler(h http.Handler, logger *addonsLogger.Logger) http.Handler
 		ri.refCode = r.Header.Get("App-Reference-Code")
 		ri.entryCode = r.Header.Get("App-Entry-Code")
 
-		data := map[string]string{
+		data := map[string]interface{}{
 			"method":    ri.method,
 			"uri":       ri.uri,
 			"referer":   ri.referer,
@@ -95,7 +95,7 @@ func logRequestHandler(h http.Handler, logger *addonsLogger.Logger) http.Handler
 			"entryCode": ri.entryCode,
 		}
 
-		logger.InfoWithData("Httplog", data)
+		logger.InfoWithDataMap("Httplog", data)
 	}
 	return http.HandlerFunc(fn)
 }
