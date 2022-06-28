@@ -489,7 +489,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		// 	}
 		// }
 	}
-	var header metadata.MD
+	var trailer metadata.MD
 
 	task.Step = 3
 	task.Status = 1
@@ -557,7 +557,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 			ProductID:           product.ProductID,
 			CompanyID:           currentUser.CompanyID,
 			TransactionalNumber: uint64(req.TransactionAmount),
-		}, grpc.Header(&header), grpc.Trailer(&userMD))
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 		if err != nil {
 			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
 			return nil, err
