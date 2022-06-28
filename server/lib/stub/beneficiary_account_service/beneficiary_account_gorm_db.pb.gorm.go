@@ -119,13 +119,17 @@ type BeneficiaryAccountORM struct {
 	AccountNumber        string     `gorm:"column:AccountNumber;not null"`
 	AccountType          string     `gorm:"column:AccountType;not null"`
 	BeneficiaryAccountID uint64     `gorm:"column:BeneficiaryAccountID;primary_key;not null;auto_increment"`
+	Bic                  string     `gorm:"column:Bic"`
 	CompanyID            uint64     `gorm:"column:CompanyID;not null"`
+	CompanyName          string     `gorm:"column:CompanyName;not null"`
+	Country              string     `gorm:"column:Country"`
 	CreatedAt            *time.Time `gorm:"column:CreatedAt"`
 	CreatedByID          uint64     `gorm:"column:CreatedByID;not null"`
 	DeletedAt            *time.Time `gorm:"column:DeletedAt"`
 	DeletedByID          uint64     `gorm:"column:DeletedByID"`
 	IsOwnedByCompany     string     `gorm:"column:IsOwnedByCompany;not null"`
 	MasterBankID         string     `gorm:"column:MasterBankID;not null"`
+	MasterBankName       string     `gorm:"column:MasterBankName;not null"`
 	UpdatedAt            *time.Time `gorm:"column:UpdatedAt"`
 	UpdatedByID          uint64     `gorm:"column:UpdatedByID;not null"`
 }
@@ -147,6 +151,8 @@ func (m *BeneficiaryAccount) ToORM(ctx context.Context) (BeneficiaryAccountORM, 
 	}
 	to.BeneficiaryAccountID = m.BeneficiaryAccountID
 	to.CompanyID = m.CompanyID
+	to.Country = m.Country
+	to.Bic = m.Bic
 	to.MasterBankID = m.MasterBankID
 	to.AccountNumber = m.AccountNumber
 	to.AccountAlias = m.AccountAlias
@@ -158,6 +164,8 @@ func (m *BeneficiaryAccount) ToORM(ctx context.Context) (BeneficiaryAccountORM, 
 	to.CreatedByID = m.CreatedByID
 	to.UpdatedByID = m.UpdatedByID
 	to.DeletedByID = m.DeletedByID
+	to.CompanyName = m.CompanyName
+	to.MasterBankName = m.MasterBankName
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -188,6 +196,8 @@ func (m *BeneficiaryAccountORM) ToPB(ctx context.Context) (BeneficiaryAccount, e
 	}
 	to.BeneficiaryAccountID = m.BeneficiaryAccountID
 	to.CompanyID = m.CompanyID
+	to.Country = m.Country
+	to.Bic = m.Bic
 	to.MasterBankID = m.MasterBankID
 	to.AccountNumber = m.AccountNumber
 	to.AccountAlias = m.AccountAlias
@@ -199,6 +209,8 @@ func (m *BeneficiaryAccountORM) ToPB(ctx context.Context) (BeneficiaryAccount, e
 	to.CreatedByID = m.CreatedByID
 	to.UpdatedByID = m.UpdatedByID
 	to.DeletedByID = m.DeletedByID
+	to.CompanyName = m.CompanyName
+	to.MasterBankName = m.MasterBankName
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -238,10 +250,11 @@ type BeneficiaryAccountWithAfterToPB interface {
 }
 
 type BeneficiaryBankORM struct {
-	BankCode          string     `gorm:"column:BankCode;not null"`
+	BankCode          string     `gorm:"column:BankCode"`
 	BankDesc          string     `gorm:"column:BankDesc;not null"`
 	BankName          string     `gorm:"column:BankName;not null"`
 	BeneficiaryBankID uint64     `gorm:"column:BeneficiaryBankID;primary_key;not null;auto_increment"`
+	Country           string     `gorm:"column:Country"`
 	CreatedAt         *time.Time `gorm:"column:CreatedAt"`
 	CreatedByID       uint64     `gorm:"column:CreatedByID;not null"`
 	UpdatedAt         *time.Time `gorm:"column:UpdatedAt"`
@@ -267,6 +280,7 @@ func (m *BeneficiaryBank) ToORM(ctx context.Context) (BeneficiaryBankORM, error)
 	to.BankCode = m.BankCode
 	to.BankName = m.BankName
 	to.BankDesc = m.BankDesc
+	to.Country = m.Country
 	to.CreatedByID = m.CreatedByID
 	to.UpdatedByID = m.UpdatedByID
 	if m.CreatedAt != nil {
@@ -297,6 +311,7 @@ func (m *BeneficiaryBankORM) ToPB(ctx context.Context) (BeneficiaryBank, error) 
 	to.BankCode = m.BankCode
 	to.BankName = m.BankName
 	to.BankDesc = m.BankDesc
+	to.Country = m.Country
 	to.CreatedByID = m.CreatedByID
 	to.UpdatedByID = m.UpdatedByID
 	if m.CreatedAt != nil {
@@ -1048,6 +1063,14 @@ func DefaultApplyFieldMaskBeneficiaryAccount(ctx context.Context, patchee *Benef
 			patchee.CompanyID = patcher.CompanyID
 			continue
 		}
+		if f == prefix+"Country" {
+			patchee.Country = patcher.Country
+			continue
+		}
+		if f == prefix+"Bic" {
+			patchee.Bic = patcher.Bic
+			continue
+		}
 		if f == prefix+"MasterBankID" {
 			patchee.MasterBankID = patcher.MasterBankID
 			continue
@@ -1090,6 +1113,14 @@ func DefaultApplyFieldMaskBeneficiaryAccount(ctx context.Context, patchee *Benef
 		}
 		if f == prefix+"DeletedByID" {
 			patchee.DeletedByID = patcher.DeletedByID
+			continue
+		}
+		if f == prefix+"CompanyName" {
+			patchee.CompanyName = patcher.CompanyName
+			continue
+		}
+		if f == prefix+"MasterBankName" {
+			patchee.MasterBankName = patcher.MasterBankName
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {
@@ -1512,6 +1543,10 @@ func DefaultApplyFieldMaskBeneficiaryBank(ctx context.Context, patchee *Benefici
 		}
 		if f == prefix+"BankDesc" {
 			patchee.BankDesc = patcher.BankDesc
+			continue
+		}
+		if f == prefix+"Country" {
+			patchee.Country = patcher.Country
 			continue
 		}
 		if f == prefix+"CreatedByID" {

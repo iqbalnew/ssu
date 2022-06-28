@@ -68,6 +68,29 @@ func (this *LiquiditySchemes) Validate() error {
 			}
 		}
 	}
+	return nil
+}
+func (this *LiquidityCashflow) Validate() error {
+	if this.Liquidity != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Liquidity); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Liquidity", err)
+		}
+	}
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	if this.DeletedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
+		}
+	}
 	for _, item := range this.Source {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
@@ -85,9 +108,9 @@ func (this *LiquiditySchemes) Validate() error {
 	return nil
 }
 func (this *LiquiditySources) Validate() error {
-	if this.Liquidity != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Liquidity); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Liquidity", err)
+	if this.Caashflow != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Caashflow); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Caashflow", err)
 		}
 	}
 	if this.CreatedAt != nil {
@@ -108,32 +131,9 @@ func (this *LiquiditySources) Validate() error {
 	return nil
 }
 func (this *LiquidityBeneficiaries) Validate() error {
-	if this.Liquidity != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Liquidity); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Liquidity", err)
-		}
-	}
-	if this.CreatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
-		}
-	}
-	if this.UpdatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	if this.DeletedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
-		}
-	}
-	return nil
-}
-func (this *LiquidityCashflow) Validate() error {
-	if this.Liquidity != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Liquidity); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Liquidity", err)
+	if this.Caashflow != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Caashflow); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Caashflow", err)
 		}
 	}
 	if this.CreatedAt != nil {

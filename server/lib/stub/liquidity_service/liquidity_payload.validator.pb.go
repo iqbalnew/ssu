@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/mwitkow/go-proto-validators"
-	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "github.com/mwitkow/go-proto-validators"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -26,6 +26,9 @@ func (this *LoginResponse) Validate() error {
 	return nil
 }
 func (this *HealthCheckResponse) Validate() error {
+	return nil
+}
+func (this *ArrayString) Validate() error {
 	return nil
 }
 func (this *Empty) Validate() error {
@@ -97,20 +100,6 @@ func (this *ListTaskLiquidityRes) Validate() error {
 			}
 		}
 	}
-	for _, item := range this.Source {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Source", err)
-			}
-		}
-	}
-	for _, item := range this.Beneficiary {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Beneficiary", err)
-			}
-		}
-	}
 	if this.Task != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
@@ -128,6 +117,20 @@ func (this *CurrencyListTask) Validate() error {
 	return nil
 }
 func (this *CashflowsListTask) Validate() error {
+	for _, item := range this.Source {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Source", err)
+			}
+		}
+	}
+	for _, item := range this.Beneficiary {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Beneficiary", err)
+			}
+		}
+	}
 	return nil
 }
 func (this *TaskListTask) Validate() error {
@@ -177,20 +180,6 @@ func (this *DetailTaskLiquidityRes) Validate() error {
 			}
 		}
 	}
-	for _, item := range this.Source {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Source", err)
-			}
-		}
-	}
-	for _, item := range this.Beneficiary {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Beneficiary", err)
-			}
-		}
-	}
 	if this.Task != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
@@ -208,6 +197,20 @@ func (this *CurrencyDetailTask) Validate() error {
 	return nil
 }
 func (this *CashflowsDetailTask) Validate() error {
+	for _, item := range this.Source {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Source", err)
+			}
+		}
+	}
+	for _, item := range this.Beneficiary {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Beneficiary", err)
+			}
+		}
+	}
 	return nil
 }
 func (this *CreateLiquidityRequest) Validate() error {
@@ -232,20 +235,6 @@ func (this *CreateTaskLiquidityRequest) Validate() error {
 	if this.Currency != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Currency); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Currency", err)
-		}
-	}
-	for _, item := range this.Source {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Source", err)
-			}
-		}
-	}
-	for _, item := range this.Beneficiary {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Beneficiary", err)
-			}
 		}
 	}
 	for _, item := range this.Cashflow {
@@ -289,6 +278,20 @@ func (this *PriorityUpdatesCreateTask) Validate() error {
 	return nil
 }
 func (this *CashflowsCreateTask) Validate() error {
+	for _, item := range this.Source {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Source", err)
+			}
+		}
+	}
+	for _, item := range this.Beneficiary {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Beneficiary", err)
+			}
+		}
+	}
 	return nil
 }
 func (this *CreateTaskLiquidityResponse) Validate() error {
@@ -351,5 +354,30 @@ func (this *ListTBAValueResponse) Validate() error {
 			}
 		}
 	}
+	return nil
+}
+func (this *RunLiquidityTaskRequest) Validate() error {
+	return nil
+}
+func (this *RunLiquidityTaskResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *ValidateDateRequest) Validate() error {
+	return nil
+}
+func (this *ValidateDateResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *AvailableTime) Validate() error {
 	return nil
 }
