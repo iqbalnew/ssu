@@ -167,6 +167,10 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		dataorm, _ = req.Task.ToORM(ctx)
 	}
 
+	if dataorm.Type != "User" {
+		me.TaskFilter = "data.companyID:"
+	}
+
 	result := pb.ListTaskResponse{
 		Error:   false,
 		Code:    200,

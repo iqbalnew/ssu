@@ -134,7 +134,7 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 		return nil, status.Errorf(codes.Unauthenticated, "Session expired")
 	}
 
-	logrus.Println(userClaims.ProductRoles)
+	// logrus.Println(userClaims.ProductRoles)
 	for _, v := range userClaims.ProductRoles {
 		if v.ProductName == "User" {
 			for _, j := range v.Authorities {
@@ -146,7 +146,7 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 			}
 		}
 	}
-	logrus.Println(userClaims.Authorities)
+	// logrus.Println(userClaims.Authorities)
 
 	currentUser := &CurrentUser{
 		UserClaims: *userClaims,
@@ -314,7 +314,6 @@ type UserData struct {
 }
 
 func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md metadata.MD, err error) {
-	logrus.Printf("<@@ result @@>1 %s", ctx)
 	md, err = manager.GetUserMD(ctx)
 	if err != nil {
 		return nil, nil, err
@@ -333,7 +332,6 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
 	}
 
-	logrus.Printf("<@@ result @@>3 %s", user)
 	user.Username = md["user-username"][0]
 	user.CompanyName = md["user-companyname"][0]
 	user.UserType = md["user-usertype"][0]
