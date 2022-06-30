@@ -154,18 +154,24 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
 	// logrus.Println("After %v", pb)
 
-	var dataorm pb.TaskORM
+	module := ""
 	if req.Task != nil {
-		dataorm, _ = req.Task.ToORM(ctx)
+		if len(req.Task.Type) > 0 {
+			module = req.Task.Type
+		}
 	}
-
-	me, err := s.manager.GetMeFromJWT(ctx, "", dataorm.Type)
+	me, err := s.manager.GetMeFromJWT(ctx, "", module)
 	if err != nil {
 		return nil, err
 	}
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	}
+
+	var dataorm pb.TaskORM
+	if req.Task != nil {
+		dataorm, _ = req.Task.ToORM(ctx)
 	}
 
 	result := pb.ListTaskResponse{
