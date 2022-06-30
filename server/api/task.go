@@ -364,7 +364,7 @@ func (s *Server) GraphStatusColumnType(ctx context.Context, req *pb.GraphStatusC
 }
 
 func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest) (*pb.GraphStepResponse, error) {
-	me, err := s.manager.GetMeFromJWT(ctx, "")
+	me, err := s.manager.GetMeFromJWT(ctx, "", "")
 	if err != nil {
 		return nil, err
 	}
