@@ -160,19 +160,24 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 			module = req.Task.Type
 		}
 	}
+	logrus.Printf("<==== result =======>> %s", module)
 	me, err := s.manager.GetMeFromJWT(ctx, "", module)
 	if err != nil {
 		return nil, err
 	}
+	logrus.Printf("<==== result =======>> %s", me)
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
 
+	logrus.Printf("<==== result =======>> %s", ctx)
 	var dataorm pb.TaskORM
 	if req.Task != nil {
 		dataorm, _ = req.Task.ToORM(ctx)
 	}
+	logrus.Printf("<==== result =======>> %s", dataorm)
+	logrus.Printf("<==== result =======>> %s", me.TaskFilter)
 
 	result := pb.ListTaskResponse{
 		Error:   false,
@@ -832,13 +837,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		// }
 	}
 
-	logrus.Printf("<@@ result @@>2 %s", req)
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
 	var header, trailer metadata.MD
-	logrus.Printf("<@@ result @@>3 %s", req)
 
 	task, err := s.provider.FindTaskById(ctx, req.TaskID)
 	if err != nil {
@@ -848,8 +851,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	// if task.Type == "Menu:License" {
 	// 	logrus.Println("Menu License Child length 101 : ", len(task.Childs))
 	// }
-	logrus.Printf("<==== result =======>> %s", req)
-	logrus.Printf("<==== result =======>>> %s", task.Type)
 
 	if task.Type != "System" && task.Type != "Menu:License" {
 
