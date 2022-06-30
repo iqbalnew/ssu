@@ -101,7 +101,7 @@ func (manager *JWTManager) Verify(accessToken string) (*UserClaims, error) {
 	return claims, nil
 }
 
-func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string) (*CurrentUser, error) {
+func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string, module string) (*CurrentUser, error) {
 
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
@@ -175,7 +175,11 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 
 	currentUser.TaskFilter = ""
 	if currentUser.UserType == "ca" || currentUser.UserType == "cu" {
-		currentUser.TaskFilter = "data.user.companyID:"
+		if module == "User" {
+			currentUser.TaskFilter = "data.user.companyID:"
+		} else {
+			currentUser.TaskFilter = "data.companyID:"
+		}
 
 		decrypted, err := aes.Decrypt(userClaims.EncryptedCompanyIDs)
 		if err != nil {
