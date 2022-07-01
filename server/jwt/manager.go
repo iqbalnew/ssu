@@ -322,9 +322,10 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 	if err != nil {
 		return nil, nil, err
 	}
+	logrus.Printf("<@@ result @@>2 %s", md)
 
 	user = &UserData{}
-	logrus.Printf("<@@ result @@>2 %s", user)
+	logrus.Printf("<@@ result @@>3 %s", md["user-userid"])
 	user.UserID, err = strconv.ParseUint(md["user-userid"][0], 10, 64)
 	if err != nil {
 		logrus.Errorln("Failed to parse userID: %v", err)
