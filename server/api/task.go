@@ -478,15 +478,11 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 
-	md, ok := metadata.FromIncomingContext(ctx)
-	if ok {
-		ctx = metadata.NewOutgoingContext(context.Background(), md)
-	}
-
 	currentUser, userMD, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		return nil, err
 	} else {
+		ctx = metadata.NewOutgoingContext(context.Background(), userMD)
 		// me, err := s.manager.GetMeFromJWT(ctx, "")
 
 		// if err == nil {
@@ -510,6 +506,9 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task.LastRejectedByID = 0
 	task.LastRejectedByName = ""
 	task.DataBak = "{}"
+	if task.CompanyID < 1 {
+		task.CompanyID = currentUser.CompanyID
+	}
 
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
