@@ -307,6 +307,7 @@ type UserData struct {
 	UserID         uint64   `json:"userID"`
 	Username       string   `json:"username"`
 	CompanyID      uint64   `json:"companyID"`
+	HoldingID      uint64   `json:"holdingID"`
 	CompanyName    string   `json:"companyName"`
 	UserType       string   `json:"userType"`
 	Authorities    []string `json:"authorities"`
@@ -334,6 +335,11 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 	user.CompanyID, err = strconv.ParseUint(md["user-companyid"][0], 10, 64)
 	if err != nil {
 		logrus.Errorln("Failed to parse companyID: %v", err)
+		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+	}
+	user.HoldingID, err = strconv.ParseUint(md["user-holdingid"][0], 10, 64)
+	if err != nil {
+		logrus.Errorln("Failed to parse holdingID: %v", err)
 		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
 	}
 

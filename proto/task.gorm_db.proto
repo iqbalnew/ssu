@@ -88,6 +88,7 @@ message Task {
 
     string workflowDoc = 21 [(gorm.field).tag = { type: "jsonb" default: "{}" }];
     uint64 companyID = 22 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {type: INTEGER}];
+    uint64 holdingID = 23 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {type: INTEGER}];
 
     google.protobuf.Timestamp createdAt = 101;
     google.protobuf.Timestamp updatedAt = 102;

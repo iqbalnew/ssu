@@ -506,8 +506,17 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task.LastRejectedByID = 0
 	task.LastRejectedByName = ""
 	task.DataBak = "{}"
+
 	if task.CompanyID < 1 {
 		task.CompanyID = currentUser.CompanyID
+	}
+	if task.HoldingID < 1 {
+		task.HoldingID = currentUser.HoldingID
+	}
+
+	if currentUser.UserType != "ba" {
+		task.CompanyID = currentUser.CompanyID
+		task.HoldingID = currentUser.HoldingID
 	}
 
 	var opts []grpc.DialOption
