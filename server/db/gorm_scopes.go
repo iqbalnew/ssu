@@ -15,6 +15,7 @@ type QueryBuilder struct {
 	FilterOr      string
 	CollectiveAnd string
 	In            string
+	MeFilterIn    string
 	Distinct      string
 	CustomOrder   string
 	Sort          *pb.Sort

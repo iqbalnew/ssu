@@ -195,7 +195,8 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		Filter:        req.GetFilter(),
 		FilterOr:      req.GetFilterOr(),
 		CollectiveAnd: req.GetQuery(),
-		In:            me.TaskFilter,
+		In:            req.GetIn(),
+		MeFilterIn:    me.TaskFilter,
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 	}
