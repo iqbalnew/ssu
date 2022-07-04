@@ -139,6 +139,7 @@ func QueryScoop(v string) func(db *gorm.DB) *gorm.DB {
 func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 	// Example of v: "key:val1,val2,val3"
 	return func(db *gorm.DB) *gorm.DB {
+		logrus.Println("WhereInScoop: ", v)
 		if v == "" {
 			return db
 		}
@@ -153,6 +154,7 @@ func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 		if len(query) > 2 {
 			values = strings.Join(query[1:], ":")
 		}
+		logrus.Println("WhereInScoop: ", column, values)
 
 		not := false
 		if string(query[1][0:1]) == "!" {
@@ -162,6 +164,7 @@ func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 		}
 
 		inVals := strings.Split(values, ",")
+		logrus.Println("WhereInScoop invals: ", column, inVals)
 
 		if not {
 			db = db.Where(column+" NOT IN (?)", inVals)
