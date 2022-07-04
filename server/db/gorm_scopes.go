@@ -254,6 +254,13 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 					} else {
 						db = reviewedByHandler(value, "ILIKE", db)
 					}
+				} else if expression == "!%" {
+					value := "%" + string(keyword[2:len(filter[1])]) + "%"
+					if column != "\"reviewed_by\"" {
+						db = db.Where(fmt.Sprintf("%s NOT LIKE ?", column), value)
+					} else {
+						db = reviewedByHandler(value, "NOT LIKE", db)
+					}
 				} else if expression == "@>" {
 					value := string(keyword[2:])
 					column := columnNameBuilder(filter[0], true)
