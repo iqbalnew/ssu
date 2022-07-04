@@ -150,6 +150,9 @@ func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 
 		column := columnNameBuilder(query[0], false)
 		values := query[1]
+		if len(query) > 2 {
+			values = strings.Join(query[1:], ":")
+		}
 
 		not := false
 		if string(query[1][0:1]) == "!" {
