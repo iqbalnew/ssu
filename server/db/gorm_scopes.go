@@ -15,6 +15,7 @@ type QueryBuilder struct {
 	FilterOr      string
 	CollectiveAnd string
 	In            string
+	MeFilterIn    string
 	Distinct      string
 	CustomOrder   string
 	Sort          *pb.Sort
@@ -139,6 +140,7 @@ func QueryScoop(v string) func(db *gorm.DB) *gorm.DB {
 func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 	// Example of v: "key:val1,val2,val3"
 	return func(db *gorm.DB) *gorm.DB {
+		logrus.Println("WhereInScoop: ", v)
 		if v == "" {
 			return db
 		}
@@ -150,6 +152,10 @@ func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 
 		column := columnNameBuilder(query[0], false)
 		values := query[1]
+		if len(query) > 2 {
+			values = strings.Join(query[1:], ":")
+		}
+		logrus.Println("WhereInScoop: ", column, values)
 
 		not := false
 		if string(query[1][0:1]) == "!" {
@@ -159,6 +165,7 @@ func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 		}
 
 		inVals := strings.Split(values, ",")
+		logrus.Println("WhereInScoop invals: ", column, inVals)
 
 		if not {
 			db = db.Where(column+" NOT IN (?)", inVals)
@@ -253,6 +260,13 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 						db = db.Where(fmt.Sprintf("%s ILIKE ?", column), value)
 					} else {
 						db = reviewedByHandler(value, "ILIKE", db)
+					}
+				} else if expression == "!%" {
+					value := "%" + string(keyword[2:len(filter[1])]) + "%"
+					if column != "\"reviewed_by\"" {
+						db = db.Where(fmt.Sprintf("%s NOT LIKE ?", column), value)
+					} else {
+						db = reviewedByHandler(value, "NOT LIKE", db)
 					}
 				} else if expression == "@>" {
 					value := string(keyword[2:])

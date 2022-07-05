@@ -257,3 +257,9 @@ func (this *GetTaskByIDRes) Validate() error {
 	}
 	return nil
 }
+func (this *UpdateTaskDataReq) Validate() error {
+	return nil
+}
+func (this *UpdateTaskDataRes) Validate() error {
+	return nil
+}
