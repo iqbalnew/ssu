@@ -759,6 +759,20 @@
             "type": "string"
           },
           {
+            "name": "task.companyID",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "uint64"
+          },
+          {
+            "name": "task.holdingID",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "uint64"
+          },
+          {
             "name": "task.createdAt",
             "in": "query",
             "required": false,
@@ -1565,6 +1579,14 @@
         },
         "workflowDoc": {
           "type": "string"
+        },
+        "companyID": {
+          "type": "integer",
+          "format": "uint64"
+        },
+        "holdingID": {
+          "type": "integer",
+          "format": "uint64"
         },
         "createdAt": {
           "type": "string",

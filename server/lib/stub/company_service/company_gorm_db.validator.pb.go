@@ -121,3 +121,6 @@ func (this *Currency) Validate() error {
 	}
 	return nil
 }
+func (this *GroupIDStore) Validate() error {
+	return nil
+}

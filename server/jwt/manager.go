@@ -101,7 +101,7 @@ func (manager *JWTManager) Verify(accessToken string) (*UserClaims, error) {
 	return claims, nil
 }
 
-func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string) (*CurrentUser, error) {
+func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string, module string) (*CurrentUser, error) {
 
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
@@ -134,7 +134,7 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 		return nil, status.Errorf(codes.Unauthenticated, "Session expired")
 	}
 
-	logrus.Println(userClaims.ProductRoles)
+	// logrus.Println(userClaims.ProductRoles)
 	for _, v := range userClaims.ProductRoles {
 		if v.ProductName == "User" {
 			for _, j := range v.Authorities {
@@ -146,7 +146,7 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 			}
 		}
 	}
-	logrus.Println(userClaims.Authorities)
+	// logrus.Println(userClaims.Authorities)
 
 	currentUser := &CurrentUser{
 		UserClaims: *userClaims,
@@ -175,7 +175,11 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string)
 
 	currentUser.TaskFilter = ""
 	if currentUser.UserType == "ca" || currentUser.UserType == "cu" {
-		currentUser.TaskFilter = "data.user.companyID:"
+		if module == "User" {
+			currentUser.TaskFilter = "data.user.companyID:"
+		} else {
+			currentUser.TaskFilter = "data.companyID:"
+		}
 
 		decrypted, err := aes.Decrypt(userClaims.EncryptedCompanyIDs)
 		if err != nil {
@@ -303,6 +307,7 @@ type UserData struct {
 	UserID         uint64   `json:"userID"`
 	Username       string   `json:"username"`
 	CompanyID      uint64   `json:"companyID"`
+	HoldingID      uint64   `json:"holdingID"`
 	CompanyName    string   `json:"companyName"`
 	UserType       string   `json:"userType"`
 	Authorities    []string `json:"authorities"`
@@ -314,14 +319,14 @@ type UserData struct {
 }
 
 func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md metadata.MD, err error) {
-	logrus.Printf("<@@ result @@>1 %s", ctx)
 	md, err = manager.GetUserMD(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
+	logrus.Printf("<@@ result @@>2 %s", md)
 
 	user = &UserData{}
-	logrus.Printf("<@@ result @@>2 %s", user)
+	logrus.Printf("<@@ result @@>3 %s", md["user-userid"])
 	user.UserID, err = strconv.ParseUint(md["user-userid"][0], 10, 64)
 	if err != nil {
 		logrus.Errorln("Failed to parse userID: %v", err)
@@ -332,8 +337,12 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 		logrus.Errorln("Failed to parse companyID: %v", err)
 		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
 	}
+	user.HoldingID, err = strconv.ParseUint(md["user-holdingid"][0], 10, 64)
+	if err != nil {
+		logrus.Errorln("Failed to parse holdingID: %v", err)
+		return nil, nil, status.Errorf(codes.Internal, "Error Internal")
+	}
 
-	logrus.Printf("<@@ result @@>3 %s", user)
 	user.Username = md["user-username"][0]
 	user.CompanyName = md["user-companyname"][0]
 	user.UserType = md["user-usertype"][0]

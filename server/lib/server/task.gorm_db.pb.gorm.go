@@ -115,6 +115,7 @@ type TaskORM struct {
 	ChildBak           string     `gorm:"type:jsonb;default:[]"`
 	Childs             []*TaskORM `gorm:"foreignkey:ParentID;association_foreignkey:TaskID;append:true"`
 	Comment            string     `gorm:"type:text"`
+	CompanyID          uint64
 	CreatedAt          *time.Time
 	CreatedByID        uint64 `gorm:"not null"`
 	CreatedByName      string
@@ -122,6 +123,7 @@ type TaskORM struct {
 	DataBak            string `gorm:"type:jsonb"`
 	DeletedAt          *time.Time
 	FeatureID          uint64
+	HoldingID          uint64
 	IsParentActive     bool `gorm:"default:false"`
 	LastApprovedByID   uint64
 	LastApprovedByName string
@@ -185,6 +187,8 @@ func (m *Task) ToORM(ctx context.Context) (TaskORM, error) {
 	to.DataBak = m.DataBak
 	to.ChildBak = m.ChildBak
 	to.WorkflowDoc = m.WorkflowDoc
+	to.CompanyID = m.CompanyID
+	to.HoldingID = m.HoldingID
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -244,6 +248,8 @@ func (m *TaskORM) ToPB(ctx context.Context) (Task, error) {
 	to.DataBak = m.DataBak
 	to.ChildBak = m.ChildBak
 	to.WorkflowDoc = m.WorkflowDoc
+	to.CompanyID = m.CompanyID
+	to.HoldingID = m.HoldingID
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -1386,6 +1392,14 @@ func DefaultApplyFieldMaskTask(ctx context.Context, patchee *Task, patcher *Task
 		}
 		if f == prefix+"WorkflowDoc" {
 			patchee.WorkflowDoc = patcher.WorkflowDoc
+			continue
+		}
+		if f == prefix+"CompanyID" {
+			patchee.CompanyID = patcher.CompanyID
+			continue
+		}
+		if f == prefix+"HoldingID" {
+			patchee.HoldingID = patcher.HoldingID
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {

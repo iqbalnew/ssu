@@ -112,12 +112,13 @@ type UserWithAfterToPB interface {
 }
 
 type BeneficiaryAccountORM struct {
-	AccessLevel          string     `gorm:"column:AccessLevel;not null"`
+	AccessLevel          string     `gorm:"column:AccessLevel"`
 	AccountAlias         string     `gorm:"column:AccountAlias;not null"`
-	AccountCurrency      string     `gorm:"column:AccountCurrency;not null"`
-	AccountName          string     `gorm:"column:AccountName;not null"`
+	AccountCurrency      string     `gorm:"column:AccountCurrency"`
+	AccountName          string     `gorm:"column:AccountName"`
 	AccountNumber        string     `gorm:"column:AccountNumber;not null"`
-	AccountType          string     `gorm:"column:AccountType;not null"`
+	AccountStatus        string     `gorm:"column:AccountStatus"`
+	AccountType          string     `gorm:"column:AccountType"`
 	BeneficiaryAccountID uint64     `gorm:"column:BeneficiaryAccountID;primary_key;not null;auto_increment"`
 	Bic                  string     `gorm:"column:Bic"`
 	CompanyID            uint64     `gorm:"column:CompanyID;not null"`
@@ -127,9 +128,9 @@ type BeneficiaryAccountORM struct {
 	CreatedByID          uint64     `gorm:"column:CreatedByID;not null"`
 	DeletedAt            *time.Time `gorm:"column:DeletedAt"`
 	DeletedByID          uint64     `gorm:"column:DeletedByID"`
-	IsOwnedByCompany     string     `gorm:"column:IsOwnedByCompany;not null"`
-	MasterBankID         string     `gorm:"column:MasterBankID;not null"`
-	MasterBankName       string     `gorm:"column:MasterBankName;not null"`
+	IsOwnedByCompany     string     `gorm:"column:IsOwnedByCompany"`
+	MasterBankID         string     `gorm:"column:MasterBankID"`
+	MasterBankName       string     `gorm:"column:MasterBankName"`
 	UpdatedAt            *time.Time `gorm:"column:UpdatedAt"`
 	UpdatedByID          uint64     `gorm:"column:UpdatedByID;not null"`
 }
@@ -158,6 +159,7 @@ func (m *BeneficiaryAccount) ToORM(ctx context.Context) (BeneficiaryAccountORM, 
 	to.AccountAlias = m.AccountAlias
 	to.AccountName = m.AccountName
 	to.AccountType = m.AccountType
+	to.AccountStatus = m.AccountStatus
 	to.AccountCurrency = m.AccountCurrency
 	to.AccessLevel = m.AccessLevel
 	to.IsOwnedByCompany = m.IsOwnedByCompany
@@ -203,6 +205,7 @@ func (m *BeneficiaryAccountORM) ToPB(ctx context.Context) (BeneficiaryAccount, e
 	to.AccountAlias = m.AccountAlias
 	to.AccountName = m.AccountName
 	to.AccountType = m.AccountType
+	to.AccountStatus = m.AccountStatus
 	to.AccountCurrency = m.AccountCurrency
 	to.AccessLevel = m.AccessLevel
 	to.IsOwnedByCompany = m.IsOwnedByCompany
@@ -1089,6 +1092,10 @@ func DefaultApplyFieldMaskBeneficiaryAccount(ctx context.Context, patchee *Benef
 		}
 		if f == prefix+"AccountType" {
 			patchee.AccountType = patcher.AccountType
+			continue
+		}
+		if f == prefix+"AccountStatus" {
+			patchee.AccountStatus = patcher.AccountStatus
 			continue
 		}
 		if f == prefix+"AccountCurrency" {

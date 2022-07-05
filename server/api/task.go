@@ -153,19 +153,31 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 
 func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
 	// logrus.Println("After %v", pb)
-	me, err := s.manager.GetMeFromJWT(ctx, "")
+
+	module := ""
+	if req.Task != nil {
+		if len(req.Task.Type) > 0 {
+			module = req.Task.Type
+		}
+	}
+	logrus.Printf("<==== result =======>> %s", module)
+	me, err := s.manager.GetMeFromJWT(ctx, "", module)
 	if err != nil {
 		return nil, err
 	}
+	logrus.Printf("<==== result =======>> %s", me)
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
 
+	logrus.Printf("<==== result =======>> %s", ctx)
 	var dataorm pb.TaskORM
 	if req.Task != nil {
 		dataorm, _ = req.Task.ToORM(ctx)
 	}
+	logrus.Printf("<==== result =======>> %s", dataorm)
+	logrus.Printf("<==== result =======>> %s", me.TaskFilter)
 
 	result := pb.ListTaskResponse{
 		Error:   false,
@@ -352,7 +364,7 @@ func (s *Server) GraphStatusColumnType(ctx context.Context, req *pb.GraphStatusC
 }
 
 func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest) (*pb.GraphStepResponse, error) {
-	me, err := s.manager.GetMeFromJWT(ctx, "")
+	me, err := s.manager.GetMeFromJWT(ctx, "", "")
 	if err != nil {
 		return nil, err
 	}
@@ -466,15 +478,11 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 
-	md, ok := metadata.FromIncomingContext(ctx)
-	if ok {
-		ctx = metadata.NewOutgoingContext(context.Background(), md)
-	}
-
 	currentUser, userMD, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		return nil, err
 	} else {
+		ctx = metadata.NewOutgoingContext(context.Background(), userMD)
 		// me, err := s.manager.GetMeFromJWT(ctx, "")
 
 		// if err == nil {
@@ -498,6 +506,18 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task.LastRejectedByID = 0
 	task.LastRejectedByName = ""
 	task.DataBak = "{}"
+
+	if task.CompanyID < 1 {
+		task.CompanyID = currentUser.CompanyID
+	}
+	if task.HoldingID < 1 {
+		task.HoldingID = currentUser.HoldingID
+	}
+
+	if currentUser.UserType != "ba" {
+		task.CompanyID = currentUser.CompanyID
+		task.HoldingID = currentUser.HoldingID
+	}
 
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
@@ -825,13 +845,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		// }
 	}
 
-	logrus.Printf("<@@ result @@>2 %s", req)
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
 	var header, trailer metadata.MD
-	logrus.Printf("<@@ result @@>3 %s", req)
 
 	task, err := s.provider.FindTaskById(ctx, req.TaskID)
 	if err != nil {
@@ -841,8 +859,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	// if task.Type == "Menu:License" {
 	// 	logrus.Println("Menu License Child length 101 : ", len(task.Childs))
 	// }
-	logrus.Printf("<==== result =======>> %s", req)
-	logrus.Printf("<==== result =======>>> %s", task.Type)
 
 	if task.Type != "System" && task.Type != "Menu:License" {
 
