@@ -45,6 +45,7 @@ type TaskServiceClient interface {
 	GetActivityLogs(ctx context.Context, in *GetActivityLogsReq, opts ...grpc.CallOption) (*GetActivityLogsRes, error)
 	DownloadActivityLogs(ctx context.Context, in *DownloadActivityLogsReq, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	TestLogger(ctx context.Context, in *LoggerTestReq, opts ...grpc.CallOption) (*LoggerTestRes, error)
+	UpdateTaskData(ctx context.Context, in *UpdateTaskDataReq, opts ...grpc.CallOption) (*UpdateTaskDataRes, error)
 }
 
 type taskServiceClient struct {
@@ -253,6 +254,15 @@ func (c *taskServiceClient) TestLogger(ctx context.Context, in *LoggerTestReq, o
 	return out, nil
 }
 
+func (c *taskServiceClient) UpdateTaskData(ctx context.Context, in *UpdateTaskDataReq, opts ...grpc.CallOption) (*UpdateTaskDataRes, error) {
+	out := new(UpdateTaskDataRes)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/UpdateTaskData", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TaskServiceServer is the server API for TaskService service.
 // All implementations must embed UnimplementedTaskServiceServer
 // for forward compatibility
@@ -279,6 +289,7 @@ type TaskServiceServer interface {
 	GetActivityLogs(context.Context, *GetActivityLogsReq) (*GetActivityLogsRes, error)
 	DownloadActivityLogs(context.Context, *DownloadActivityLogsReq) (*httpbody.HttpBody, error)
 	TestLogger(context.Context, *LoggerTestReq) (*LoggerTestRes, error)
+	UpdateTaskData(context.Context, *UpdateTaskDataReq) (*UpdateTaskDataRes, error)
 	mustEmbedUnimplementedTaskServiceServer()
 }
 
@@ -351,6 +362,9 @@ func (UnimplementedTaskServiceServer) DownloadActivityLogs(context.Context, *Dow
 }
 func (UnimplementedTaskServiceServer) TestLogger(context.Context, *LoggerTestReq) (*LoggerTestRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestLogger not implemented")
+}
+func (UnimplementedTaskServiceServer) UpdateTaskData(context.Context, *UpdateTaskDataReq) (*UpdateTaskDataRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTaskData not implemented")
 }
 func (UnimplementedTaskServiceServer) mustEmbedUnimplementedTaskServiceServer() {}
 
@@ -761,6 +775,24 @@ func _TaskService_TestLogger_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskService_UpdateTaskData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTaskDataReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).UpdateTaskData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/UpdateTaskData",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).UpdateTaskData(ctx, req.(*UpdateTaskDataReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TaskService_ServiceDesc is the grpc.ServiceDesc for TaskService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -855,6 +887,10 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TestLogger",
 			Handler:    _TaskService_TestLogger_Handler,
+		},
+		{
+			MethodName: "UpdateTaskData",
+			Handler:    _TaskService_UpdateTaskData_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
