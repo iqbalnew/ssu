@@ -1927,3 +1927,27 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 
 	return res, nil
 }
+
+func (s *Server) UpdateTaskData(ctx context.Context, req *pb.UpdateTaskDataReq) (*pb.UpdateTaskDataRes, error) {
+	res := &pb.UpdateTaskDataRes{
+		Success: false,
+	}
+
+	task, err := s.provider.FindTaskById(ctx, req.TaskID)
+	if err != nil {
+		return nil, err
+	}
+
+	if task.Type != req.Type {
+		return res, nil
+	}
+
+	task.Data = req.Data
+	_, err = s.provider.UpdateTask(ctx, task, false)
+	if err != nil {
+		return nil, err
+	}
+
+	res.Success = true
+	return res, nil
+}

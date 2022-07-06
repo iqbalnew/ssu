@@ -1680,6 +1680,14 @@
         }
       }
     },
+    "v1UpdateTaskDataRes": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
     "v1statuses": {
       "type": "string",
       "enum": [

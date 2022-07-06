@@ -357,3 +357,14 @@ message RejectBySystemRes {
      bool found = 1;
      Task data = 2;
  }
+
+ message UpdateTaskDataReq {
+    string type = 1;
+    uint64 taskID = 2;
+    string data = 3;
+ }
+
+ message UpdateTaskDataRes {
+    bool success = 1;
+ }
+
