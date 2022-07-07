@@ -15,6 +15,7 @@ import (
 	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
 	beneficiary_account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/beneficiary_account_service"
+	bg_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/bg_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
@@ -1831,6 +1832,26 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			// update task billing status
 			task.FeatureID = res.Data.BeneficiaryAccountID
 			reUpdate = true
+		case "BG":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to BG Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer bgConn.Close()
+
+			bgClient := bg_pb.NewApiServiceClient(bgConn)
+
+			data := bg_pb.CreateTransactionRequest{}
+			json.Unmarshal([]byte(task.Data), &data.Data)
+			res, err := bgClient.CreateTransaction(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			if err != nil {
+				return nil, err
+			}
+			logrus.Println(res)
 		}
 	}
 
