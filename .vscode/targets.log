@@ -6,9 +6,8 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
- 
 
-# Make data base, printed on Thu Jul  7 10:25:18 2022
+# Make data base, printed on Thu Jul  7 20:50:47 2022
 
 # Variables
 
@@ -25,7 +24,6 @@ VSCODE_LOG_NATIVE = false
 # automatic
 @F = $(notdir $@)
 # makefile
- 
 CURDIR := /Users/farizrachmanyusuf/Codes/addons-task-service
 # makefile
 SHELL = /bin/sh
@@ -48,7 +46,7 @@ __CFBundleIdentifier = com.microsoft.VSCode
 # environment
 P9K_SSH = 0
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/jh/skt_b4rx5fdflcy1mkmh_6nr0000gn/T/vscode-ipc-3c5e1265-f8cb-45e2-90b6-a9f2ee3ed35a.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/jh/skt_b4rx5fdflcy1mkmh_6nr0000gn/T/vscode-ipc-b0c8ade3-3ccc-4296-ae08-afd0ebe42997.sock
 # environment
 VSCODE_CWD = /
 # environment
@@ -164,14 +162,13 @@ MAKELEVEL := 0
 # environment
 LANG = C
 # environment
-VSCODE_PID = 31523
+VSCODE_PID = 65133
 # variable set hash-table stats:
 # Load=76/1024=7%, Rehash=0, Collisions=1/108=1%
 
 # Pattern-specific Variable Values
 
 # No pattern-specific variable values.
- 
 
 # Directories
 
@@ -311,10 +308,10 @@ depend:
 
 migrate-db:
 #  Implicit rule search has not been done.
+ 
 #  Modification time never checked.
 #  File has not been updated.
 #  commands to execute (from `Makefile', line 52):
- 
 	go run ./server/ db-migrate
 	
 
@@ -378,6 +375,6 @@ install: depend build
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Thu Jul  7 10:25:18 2022
+# Finished Make data base on Thu Jul  7 20:50:47 2022
 
  

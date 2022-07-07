@@ -1832,7 +1832,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			// update task billing status
 			task.FeatureID = res.Data.BeneficiaryAccountID
 			reUpdate = true
-		case "BG":
+		case "BG Mapping":
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
