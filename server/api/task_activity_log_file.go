@@ -116,7 +116,7 @@ func (file *ActivityLogFile) ToCsv(ctx context.Context) (*httpbody.HttpBody, err
 
 		createdAt := ""
 		if v.CreatedAt != nil {
-			createdAt = v.CreatedAt.AsTime().Format("02/01/2006 15:04:05")
+			createdAt = v.CreatedAt.AsTime().Local().Format("02/01/2006 15:04:05")
 		}
 
 		description := ""
@@ -205,7 +205,7 @@ func (file *ActivityLogFile) ToXlsx(ctx context.Context) (*httpbody.HttpBody, er
 
 		createdAt := ""
 		if v.CreatedAt != nil {
-			createdAt = v.CreatedAt.AsTime().Format("02/01/2006 15:04:05")
+			createdAt = v.CreatedAt.AsTime().Local().Format("02/01/2006 15:04:05")
 		}
 
 		description := ""
@@ -293,7 +293,7 @@ func (file *ActivityLogFile) ToXls(ctx context.Context) (*httpbody.HttpBody, err
 
 		createdAt := ""
 		if v.CreatedAt != nil {
-			createdAt = v.CreatedAt.AsTime().Format("02/01/2006 15:04:05")
+			createdAt = v.CreatedAt.AsTime().Local().Format("02/01/2006 15:04:05")
 		}
 
 		description := ""
@@ -409,7 +409,7 @@ func (file *ActivityLogFile) ToPDFv2(ctx context.Context) (*httpbody.HttpBody, e
 
 		createdAt := ""
 		if v.CreatedAt != nil {
-			createdAt = v.CreatedAt.AsTime().Format("02/01/2006 15:04:05")
+			createdAt = v.CreatedAt.AsTime().Local().Format("02/01/2006 15:04:05")
 		}
 
 		description := ""
