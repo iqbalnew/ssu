@@ -1972,3 +1972,176 @@ func (s *Server) UpdateTaskData(ctx context.Context, req *pb.UpdateTaskDataReq) 
 	res.Success = true
 	return res, nil
 }
+
+func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
+	task, _ := req.Task.ToORM(ctx)
+	var err error
+
+	// if len(task.Childs) > 0 {
+	// 	for i, v := range task.Childs {
+	// 	}
+	// }
+
+	task.Step = 3
+	task.Status = 1
+	task.LastApprovedByID = 0
+	task.LastApprovedByName = ""
+	task.LastRejectedByID = 0
+	task.LastRejectedByName = ""
+	task.DataBak = "{}"
+
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithInsecure())
+
+	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9097"), opts...)
+	if err != nil {
+		logrus.Errorln("Failed connect to Product Service: %v", err)
+		// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Announcement Service: %v", err))
+
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	defer productConn.Close()
+
+	productClient := product_pb.NewApiServiceClient(productConn)
+	productData, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
+		Limit: 1,
+		Page:  1,
+		Product: &product_pb.Product{
+			Name: task.Type,
+		},
+	})
+	if err != nil {
+		logrus.Errorln("[api][func: SaveTaskWithData] Failed to get product data: %v", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+
+	errorProduct := status.Errorf(codes.NotFound, "This task type product, not found")
+	if len(productData.Data) < 1 {
+		return nil, errorProduct
+	} else {
+		if productData.Data[0].Name != task.Type {
+			return nil, errorProduct
+		}
+	}
+
+	product := productData.Data[0]
+
+	taskType := []string{"Swift", "Cash Pooling"}
+
+	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
+		if req.TransactionAmount == 0 {
+			return nil, status.Errorf(codes.InvalidArgument, "Transaction amount is required")
+		}
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
+		if err != nil {
+			logrus.Errorln("Failed connect to Workflow Service: %v", err)
+			// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer workflowConn.Close()
+
+		client := workflow_pb.NewApiServiceClient(workflowConn)
+		getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
+			ProductID:           product.ProductID,
+			TransactionalNumber: uint64(req.TransactionAmount),
+		})
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
+			return nil, err
+		}
+
+		if getWorkflow.Data == nil {
+			return nil, status.Errorf(codes.NotFound, "workflow for this task type not found")
+		}
+
+		workflow, err := json.Marshal(getWorkflow.Data)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed to marshal workflow: %v", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		task.WorkflowDoc = string(workflow)
+	}
+
+	if req.TaskID > 0 {
+		findTask, err := s.provider.FindTaskById(ctx, req.TaskID)
+		if err != nil {
+			return nil, err
+		}
+		if findTask.DataBak != "{}" || findTask.Data != "" {
+			task.DataBak = findTask.DataBak
+		}
+	}
+
+	if task.DataBak == "" {
+		task.DataBak = "{}"
+	}
+
+	if len(task.Childs) > 0 {
+		for i := range task.Childs {
+			if task.Childs[i].DataBak == "" {
+				task.Childs[i].DataBak = "{}"
+			}
+		}
+	}
+
+	// if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu:Appearance" || req.Task.Type == "Menu:License" {
+	// 	task.Step = 3
+	// }
+
+	if req.IsDraft {
+		task.Step = 1
+		task.Status = 2
+	}
+
+	command := "Create"
+
+	logrus.Println("Task save ==> Task Type: ", task.Type)
+	logrus.Println("Task save ==> Task ID: ", task.TaskID)
+
+	if req.TaskID > 0 {
+		command = "Update"
+		task.TaskID = req.TaskID
+
+		_, err = s.provider.UpdateTask(ctx, &task, true)
+	} else {
+
+		_, err = s.provider.CreateTask(ctx, &task)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	res := &pb.SaveTaskResponse{
+		Success: true,
+		Data: &pb.Task{
+			TaskID: task.TaskID,
+		},
+	}
+
+	logrus.Println("Save LOG task, type: ", task.Type)
+	// Save activity Log
+	if getEnv("ENV", "LOCAL") != "LOCAL" {
+		action := "save"
+		if req.IsDraft {
+			action = "draft"
+		}
+		logrus.Println("Set to save log")
+		err = s.provider.SaveLog(ctx, &db.ActivityLog{
+			TaskID:      task.TaskID,
+			Command:     command,
+			Type:        task.Type,
+			Action:      action,
+			Description: task.Reasons,
+			Data:        &task,
+		})
+		if err != nil {
+			logrus.Errorln("Error SaveActivityLog: ", err)
+		}
+	}
+
+	return res, nil
+}
