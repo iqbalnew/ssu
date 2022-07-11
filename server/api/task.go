@@ -1647,7 +1647,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				UpdatedAt:             &timestamppb.Timestamp{},
 				IsCreatedInputAccount: workflowTask.Workflow.IsCreatedInputAccount,
 				IsCustomInputAccount:  workflowTask.Workflow.IsCustomInputAccount,
-				Logics:                []*workflow_pb.WorkflowLogic{},
+				Logics:                workflowTask.Workflow.Logics,
 			}
 			data.TaskID = task.TaskID
 
