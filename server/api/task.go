@@ -1770,7 +1770,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
 			data.Data.Id = task.FeatureID
-			data.Data.BillingStatus = "Waiting Schedule"
+			if data.Data.BillingStatus == "-" {
+				data.Data.BillingStatus = "Waiting Schedule"
+			}
 			res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
@@ -1827,16 +1829,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-			dataList := []*bg_pb.Transaction{}
+			dataList := []*bg_pb.TransactionTaskData{}
 			json.Unmarshal([]byte(task.Data), &dataList)
 
 			for _, v := range dataList {
-				data := bg_pb.CreateTransactionRequest{
-					Data: v,
-				}
-				_, err := bgClient.CreateTransaction(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-				if err != nil {
-					return nil, status.Errorf(codes.Internal, "Internal Error")
+				for _, d := range v.Transaction {
+					data := bg_pb.CreateTransactionRequest{
+						Data: d,
+					}
+					_, err := bgClient.CreateTransaction(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+					if err != nil {
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
 				}
 			}
 		}
