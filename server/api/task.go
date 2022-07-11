@@ -1845,13 +1845,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-			data := bg_pb.CreateTransactionRequest{}
-			json.Unmarshal([]byte(task.Data), &data.Data)
-			res, err := bgClient.CreateTransaction(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
+			dataList := []*bg_pb.Transaction{}
+			json.Unmarshal([]byte(task.Data), &dataList)
+
+			for _, v := range dataList {
+				data := bg_pb.CreateTransactionRequest{
+					Data: v,
+				}
+				_, err := bgClient.CreateTransaction(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 			}
-			logrus.Println(res)
 		}
 	}
 
