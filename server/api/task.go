@@ -781,7 +781,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account"}
+	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account", "BG Mapping"}
 
 	for _, v := range skipProduct {
 		if v == taskType {
@@ -1648,7 +1648,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				UpdatedAt:             &timestamppb.Timestamp{},
 				IsCreatedInputAccount: workflowTask.Workflow.IsCreatedInputAccount,
 				IsCustomInputAccount:  workflowTask.Workflow.IsCustomInputAccount,
-				Logics:                []*workflow_pb.WorkflowLogic{},
+				Logics:                workflowTask.Workflow.Logics,
 			}
 			data.TaskID = task.TaskID
 
@@ -1847,16 +1847,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-			dataList := []*bg_pb.Transaction{}
+			dataList := []*bg_pb.TransactionTaskData{}
 			json.Unmarshal([]byte(task.Data), &dataList)
 
 			for _, v := range dataList {
-				data := bg_pb.CreateTransactionRequest{
-					Data: v,
-				}
-				_, err := bgClient.CreateTransaction(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-				if err != nil {
-					return nil, status.Errorf(codes.Internal, "Internal Error")
+				for _, d := range v.Transaction {
+					data := bg_pb.CreateTransactionRequest{
+						Data: d,
+					}
+					_, err := bgClient.CreateTransaction(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+					if err != nil {
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
 				}
 			}
 		}
