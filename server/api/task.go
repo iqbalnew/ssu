@@ -1652,7 +1652,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 			data.TaskID = task.TaskID
 
-			res, err := client.CreateWorkflow(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			res, err := client.CreateWorkflow(ctx, &workflowTask, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
@@ -1866,6 +1866,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 				_, err := bgClient.CreateTransaction(ctx, data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("Failed connect to create transaction: %v", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
 			}
