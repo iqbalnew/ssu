@@ -8,7 +8,6 @@ package pb
 
 import (
 	context "context"
-
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +31,7 @@ type ApiServiceClient interface {
 	CreateBeneficiaryAccountTaskMultipleNoParrent(ctx context.Context, in *CreateBeneficiaryAccountTaskBulkRequest, opts ...grpc.CallOption) (*CreateBeneficiaryAccountTaskMultipleResponse, error)
 	ListBeneficiaryAccountTask(ctx context.Context, in *ListBeneficiaryAccountTaskRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountTaskResponse, error)
 	GetBeneficiaryAccountTaskByID(ctx context.Context, in *GetBeneficiaryAccountTaskByIDRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountTaskResponse, error)
+	DeleteBeneficiaryAccount(ctx context.Context, in *CreateBeneficiaryAccountRequest, opts ...grpc.CallOption) (*DeleteBeneficiaryRes, error)
 	RequestDeleteBeneficiaryAccountTask(ctx context.Context, in *GetBeneficiaryAccountTaskByIDRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountTaskResponse, error)
 	ValidateBeneficiaryAccount(ctx context.Context, in *ValidateBeneficiaryAccountRequest, opts ...grpc.CallOption) (*ValidateBeneficiaryAccountResponse, error)
 	BeneficiaryAccountDetail(ctx context.Context, in *BeneficiaryAccountDetailRequest, opts ...grpc.CallOption) (*BeneficiaryAccountDetailResponse, error)
@@ -117,6 +117,15 @@ func (c *apiServiceClient) ListBeneficiaryAccountTask(ctx context.Context, in *L
 func (c *apiServiceClient) GetBeneficiaryAccountTaskByID(ctx context.Context, in *GetBeneficiaryAccountTaskByIDRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountTaskResponse, error) {
 	out := new(ListBeneficiaryAccountTaskResponse)
 	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/GetBeneficiaryAccountTaskByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) DeleteBeneficiaryAccount(ctx context.Context, in *CreateBeneficiaryAccountRequest, opts ...grpc.CallOption) (*DeleteBeneficiaryRes, error) {
+	out := new(DeleteBeneficiaryRes)
+	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/DeleteBeneficiaryAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -216,6 +225,7 @@ type ApiServiceServer interface {
 	CreateBeneficiaryAccountTaskMultipleNoParrent(context.Context, *CreateBeneficiaryAccountTaskBulkRequest) (*CreateBeneficiaryAccountTaskMultipleResponse, error)
 	ListBeneficiaryAccountTask(context.Context, *ListBeneficiaryAccountTaskRequest) (*ListBeneficiaryAccountTaskResponse, error)
 	GetBeneficiaryAccountTaskByID(context.Context, *GetBeneficiaryAccountTaskByIDRequest) (*ListBeneficiaryAccountTaskResponse, error)
+	DeleteBeneficiaryAccount(context.Context, *CreateBeneficiaryAccountRequest) (*DeleteBeneficiaryRes, error)
 	RequestDeleteBeneficiaryAccountTask(context.Context, *GetBeneficiaryAccountTaskByIDRequest) (*ListBeneficiaryAccountTaskResponse, error)
 	ValidateBeneficiaryAccount(context.Context, *ValidateBeneficiaryAccountRequest) (*ValidateBeneficiaryAccountResponse, error)
 	BeneficiaryAccountDetail(context.Context, *BeneficiaryAccountDetailRequest) (*BeneficiaryAccountDetailResponse, error)
@@ -255,6 +265,9 @@ func (UnimplementedApiServiceServer) ListBeneficiaryAccountTask(context.Context,
 }
 func (UnimplementedApiServiceServer) GetBeneficiaryAccountTaskByID(context.Context, *GetBeneficiaryAccountTaskByIDRequest) (*ListBeneficiaryAccountTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBeneficiaryAccountTaskByID not implemented")
+}
+func (UnimplementedApiServiceServer) DeleteBeneficiaryAccount(context.Context, *CreateBeneficiaryAccountRequest) (*DeleteBeneficiaryRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteBeneficiaryAccount not implemented")
 }
 func (UnimplementedApiServiceServer) RequestDeleteBeneficiaryAccountTask(context.Context, *GetBeneficiaryAccountTaskByIDRequest) (*ListBeneficiaryAccountTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestDeleteBeneficiaryAccountTask not implemented")
@@ -436,6 +449,24 @@ func _ApiService_GetBeneficiaryAccountTaskByID_Handler(srv interface{}, ctx cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).GetBeneficiaryAccountTaskByID(ctx, req.(*GetBeneficiaryAccountTaskByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_DeleteBeneficiaryAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateBeneficiaryAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DeleteBeneficiaryAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/beneficiary.account.service.v1.ApiService/DeleteBeneficiaryAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DeleteBeneficiaryAccount(ctx, req.(*CreateBeneficiaryAccountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -640,6 +671,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetBeneficiaryAccountTaskByID",
 			Handler:    _ApiService_GetBeneficiaryAccountTaskByID_Handler,
+		},
+		{
+			MethodName: "DeleteBeneficiaryAccount",
+			Handler:    _ApiService_DeleteBeneficiaryAccount_Handler,
 		},
 		{
 			MethodName: "RequestDeleteBeneficiaryAccountTask",

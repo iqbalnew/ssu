@@ -3649,6 +3649,53 @@ func (x *BankDetailResponse) GetData() *BeneficiaryBank {
 	return nil
 }
 
+type DeleteBeneficiaryRes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+}
+
+func (x *DeleteBeneficiaryRes) Reset() {
+	*x = DeleteBeneficiaryRes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_beneficiary_account_payload_proto_msgTypes[40]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteBeneficiaryRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteBeneficiaryRes) ProtoMessage() {}
+
+func (x *DeleteBeneficiaryRes) ProtoReflect() protoreflect.Message {
+	mi := &file_beneficiary_account_payload_proto_msgTypes[40]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteBeneficiaryRes.ProtoReflect.Descriptor instead.
+func (*DeleteBeneficiaryRes) Descriptor() ([]byte, []int) {
+	return file_beneficiary_account_payload_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *DeleteBeneficiaryRes) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
 var File_beneficiary_account_payload_proto protoreflect.FileDescriptor
 
 var file_beneficiary_account_payload_proto_rawDesc = []byte{
@@ -4505,8 +4552,11 @@ var file_beneficiary_account_payload_proto_rawDesc = []byte{
 	0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x62, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69, 0x61, 0x72, 0x79,
 	0x2e, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
 	0x2e, 0x76, 0x31, 0x2e, 0x42, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69, 0x61, 0x72, 0x79, 0x42,
-	0x61, 0x6e, 0x6b, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70,
-	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x61, 0x6e, 0x6b, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x30, 0x0a, 0x14, 0x44, 0x65, 0x6c,
+	0x65, 0x74, 0x65, 0x42, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69, 0x61, 0x72, 0x79, 0x52, 0x65,
+	0x73, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x42, 0x06, 0x5a, 0x04, 0x2e,
+	0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -4522,7 +4572,7 @@ func file_beneficiary_account_payload_proto_rawDescGZIP() []byte {
 }
 
 var file_beneficiary_account_payload_proto_enumTypes = make([]protoimpl.EnumInfo, 10)
-var file_beneficiary_account_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 40)
+var file_beneficiary_account_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 41)
 var file_beneficiary_account_payload_proto_goTypes = []interface{}{
 	(ListBeneficiaryAccountRequestDirection)(0),          // 0: beneficiary.account.service.v1.ListBeneficiaryAccountRequest.direction
 	(ListBeneficiaryAccountTaskRequestStatuses)(0),       // 1: beneficiary.account.service.v1.ListBeneficiaryAccountTaskRequest.statuses
@@ -4574,31 +4624,32 @@ var file_beneficiary_account_payload_proto_goTypes = []interface{}{
 	(*ListBankRes)(nil),                                  // 47: beneficiary.account.service.v1.ListBankRes
 	(*BankDetailRequest)(nil),                            // 48: beneficiary.account.service.v1.BankDetailRequest
 	(*BankDetailResponse)(nil),                           // 49: beneficiary.account.service.v1.BankDetailResponse
-	(*BeneficiaryAccount)(nil),                           // 50: beneficiary.account.service.v1.BeneficiaryAccount
-	(*timestamppb.Timestamp)(nil),                        // 51: google.protobuf.Timestamp
-	(*BeneficiaryBank)(nil),                              // 52: beneficiary.account.service.v1.BeneficiaryBank
+	(*DeleteBeneficiaryRes)(nil),                         // 50: beneficiary.account.service.v1.DeleteBeneficiaryRes
+	(*BeneficiaryAccount)(nil),                           // 51: beneficiary.account.service.v1.BeneficiaryAccount
+	(*timestamppb.Timestamp)(nil),                        // 52: google.protobuf.Timestamp
+	(*BeneficiaryBank)(nil),                              // 53: beneficiary.account.service.v1.BeneficiaryBank
 }
 var file_beneficiary_account_payload_proto_depIdxs = []int32{
-	50, // 0: beneficiary.account.service.v1.ListBeneficiaryAccountRequest.beneficiaryAccount:type_name -> beneficiary.account.service.v1.BeneficiaryAccount
+	51, // 0: beneficiary.account.service.v1.ListBeneficiaryAccountRequest.beneficiaryAccount:type_name -> beneficiary.account.service.v1.BeneficiaryAccount
 	0,  // 1: beneficiary.account.service.v1.ListBeneficiaryAccountRequest.dir:type_name -> beneficiary.account.service.v1.ListBeneficiaryAccountRequest.direction
-	50, // 2: beneficiary.account.service.v1.ListBeneficiaryAccountResponse.data:type_name -> beneficiary.account.service.v1.BeneficiaryAccount
+	51, // 2: beneficiary.account.service.v1.ListBeneficiaryAccountResponse.data:type_name -> beneficiary.account.service.v1.BeneficiaryAccount
 	34, // 3: beneficiary.account.service.v1.ListBeneficiaryAccountResponse.pagination:type_name -> beneficiary.account.service.v1.PaginationResponse
-	50, // 4: beneficiary.account.service.v1.ListBeneficiaryAccountActiveResponse.data:type_name -> beneficiary.account.service.v1.BeneficiaryAccount
-	50, // 5: beneficiary.account.service.v1.CreateBeneficiaryAccountRequest.data:type_name -> beneficiary.account.service.v1.BeneficiaryAccount
+	51, // 4: beneficiary.account.service.v1.ListBeneficiaryAccountActiveResponse.data:type_name -> beneficiary.account.service.v1.BeneficiaryAccount
+	51, // 5: beneficiary.account.service.v1.CreateBeneficiaryAccountRequest.data:type_name -> beneficiary.account.service.v1.BeneficiaryAccount
 	23, // 6: beneficiary.account.service.v1.CreateBeneficiaryAccountTaskRequest.data:type_name -> beneficiary.account.service.v1.BeneficiaryAccountWrite
-	51, // 7: beneficiary.account.service.v1.BeneficiaryAccountWrite.createdAt:type_name -> google.protobuf.Timestamp
-	51, // 8: beneficiary.account.service.v1.BeneficiaryAccountWrite.updatedAt:type_name -> google.protobuf.Timestamp
-	51, // 9: beneficiary.account.service.v1.BeneficiaryAccountWrite.deletedAt:type_name -> google.protobuf.Timestamp
+	52, // 7: beneficiary.account.service.v1.BeneficiaryAccountWrite.createdAt:type_name -> google.protobuf.Timestamp
+	52, // 8: beneficiary.account.service.v1.BeneficiaryAccountWrite.updatedAt:type_name -> google.protobuf.Timestamp
+	52, // 9: beneficiary.account.service.v1.BeneficiaryAccountWrite.deletedAt:type_name -> google.protobuf.Timestamp
 	23, // 10: beneficiary.account.service.v1.CreateBeneficiaryAccountTaskBulkRequest.beneficiaryAccounts:type_name -> beneficiary.account.service.v1.BeneficiaryAccountWrite
-	50, // 11: beneficiary.account.service.v1.CreateBeneficiaryAccountResponse.data:type_name -> beneficiary.account.service.v1.BeneficiaryAccount
-	51, // 12: beneficiary.account.service.v1.Task.createdAt:type_name -> google.protobuf.Timestamp
-	51, // 13: beneficiary.account.service.v1.Task.updatedAt:type_name -> google.protobuf.Timestamp
-	51, // 14: beneficiary.account.service.v1.BeneficiaryAccountTaskData.createdAt:type_name -> google.protobuf.Timestamp
-	51, // 15: beneficiary.account.service.v1.BeneficiaryAccountTaskData.updatedAt:type_name -> google.protobuf.Timestamp
-	51, // 16: beneficiary.account.service.v1.BeneficiaryAccountTaskData.deletedAt:type_name -> google.protobuf.Timestamp
-	51, // 17: beneficiary.account.service.v1.BeneficiaryAccountTaskDataString.createdAt:type_name -> google.protobuf.Timestamp
-	51, // 18: beneficiary.account.service.v1.BeneficiaryAccountTaskDataString.updatedAt:type_name -> google.protobuf.Timestamp
-	51, // 19: beneficiary.account.service.v1.BeneficiaryAccountTaskDataString.deletedAt:type_name -> google.protobuf.Timestamp
+	51, // 11: beneficiary.account.service.v1.CreateBeneficiaryAccountResponse.data:type_name -> beneficiary.account.service.v1.BeneficiaryAccount
+	52, // 12: beneficiary.account.service.v1.Task.createdAt:type_name -> google.protobuf.Timestamp
+	52, // 13: beneficiary.account.service.v1.Task.updatedAt:type_name -> google.protobuf.Timestamp
+	52, // 14: beneficiary.account.service.v1.BeneficiaryAccountTaskData.createdAt:type_name -> google.protobuf.Timestamp
+	52, // 15: beneficiary.account.service.v1.BeneficiaryAccountTaskData.updatedAt:type_name -> google.protobuf.Timestamp
+	52, // 16: beneficiary.account.service.v1.BeneficiaryAccountTaskData.deletedAt:type_name -> google.protobuf.Timestamp
+	52, // 17: beneficiary.account.service.v1.BeneficiaryAccountTaskDataString.createdAt:type_name -> google.protobuf.Timestamp
+	52, // 18: beneficiary.account.service.v1.BeneficiaryAccountTaskDataString.updatedAt:type_name -> google.protobuf.Timestamp
+	52, // 19: beneficiary.account.service.v1.BeneficiaryAccountTaskDataString.deletedAt:type_name -> google.protobuf.Timestamp
 	28, // 20: beneficiary.account.service.v1.BeneficiaryAccountTask.beneficiaryAccount:type_name -> beneficiary.account.service.v1.BeneficiaryAccountTaskData
 	27, // 21: beneficiary.account.service.v1.BeneficiaryAccountTask.task:type_name -> beneficiary.account.service.v1.Task
 	28, // 22: beneficiary.account.service.v1.BeneficiaryAccountTask.beneficiaryAccounts:type_name -> beneficiary.account.service.v1.BeneficiaryAccountTaskData
@@ -4607,17 +4658,17 @@ var file_beneficiary_account_payload_proto_depIdxs = []int32{
 	3,  // 25: beneficiary.account.service.v1.ListBeneficiaryAccountTaskRequest.dir:type_name -> beneficiary.account.service.v1.ListBeneficiaryAccountTaskRequest.direction
 	30, // 26: beneficiary.account.service.v1.ListBeneficiaryAccountTaskResponse.data:type_name -> beneficiary.account.service.v1.BeneficiaryAccountTask
 	34, // 27: beneficiary.account.service.v1.ListBeneficiaryAccountTaskResponse.pagination:type_name -> beneficiary.account.service.v1.PaginationResponse
-	50, // 28: beneficiary.account.service.v1.BeneficiaryAccountDetailResponse.data:type_name -> beneficiary.account.service.v1.BeneficiaryAccount
+	51, // 28: beneficiary.account.service.v1.BeneficiaryAccountDetailResponse.data:type_name -> beneficiary.account.service.v1.BeneficiaryAccount
 	4,  // 29: beneficiary.account.service.v1.FileListTemplateRequest.fileFormat:type_name -> beneficiary.account.service.v1.FileListTemplateRequest.FormatTemplates
 	5,  // 30: beneficiary.account.service.v1.FileListBeneficiaryAccountTaskRequest.fileFormat:type_name -> beneficiary.account.service.v1.FileListBeneficiaryAccountTaskRequest.Formats
 	6,  // 31: beneficiary.account.service.v1.FileListBeneficiaryAccountTaskRequest.status:type_name -> beneficiary.account.service.v1.FileListBeneficiaryAccountTaskRequest.statuses
 	7,  // 32: beneficiary.account.service.v1.FileListBeneficiaryAccountTaskRequest.step:type_name -> beneficiary.account.service.v1.FileListBeneficiaryAccountTaskRequest.steps
 	8,  // 33: beneficiary.account.service.v1.FileListBeneficiaryAccountTaskRequest.dir:type_name -> beneficiary.account.service.v1.FileListBeneficiaryAccountTaskRequest.direction
-	52, // 34: beneficiary.account.service.v1.ListBankReq.beneficiaryBank:type_name -> beneficiary.account.service.v1.BeneficiaryBank
+	53, // 34: beneficiary.account.service.v1.ListBankReq.beneficiaryBank:type_name -> beneficiary.account.service.v1.BeneficiaryBank
 	9,  // 35: beneficiary.account.service.v1.ListBankReq.dir:type_name -> beneficiary.account.service.v1.ListBankReq.direction
-	52, // 36: beneficiary.account.service.v1.ListBankRes.data:type_name -> beneficiary.account.service.v1.BeneficiaryBank
+	53, // 36: beneficiary.account.service.v1.ListBankRes.data:type_name -> beneficiary.account.service.v1.BeneficiaryBank
 	34, // 37: beneficiary.account.service.v1.ListBankRes.pagination:type_name -> beneficiary.account.service.v1.PaginationResponse
-	52, // 38: beneficiary.account.service.v1.BankDetailResponse.data:type_name -> beneficiary.account.service.v1.BeneficiaryBank
+	53, // 38: beneficiary.account.service.v1.BankDetailResponse.data:type_name -> beneficiary.account.service.v1.BeneficiaryBank
 	39, // [39:39] is the sub-list for method output_type
 	39, // [39:39] is the sub-list for method input_type
 	39, // [39:39] is the sub-list for extension type_name
@@ -5112,6 +5163,18 @@ func file_beneficiary_account_payload_proto_init() {
 				return nil
 			}
 		}
+		file_beneficiary_account_payload_proto_msgTypes[40].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteBeneficiaryRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -5119,7 +5182,7 @@ func file_beneficiary_account_payload_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_beneficiary_account_payload_proto_rawDesc,
 			NumEnums:      10,
-			NumMessages:   40,
+			NumMessages:   41,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -1825,15 +1825,28 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data := beneficiary_account_pb.CreateBeneficiaryAccountRequest{}
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
-			res, err := beneficiaryAccountClient.CreateBeneficiaryAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
-			}
-			logrus.Println(res)
 
-			// update task billing status
-			task.FeatureID = res.Data.BeneficiaryAccountID
-			reUpdate = true
+			if task.Status == 7 {
+				// deleteReq := data.
+
+				res, err := beneficiaryAccountClient.DeleteBeneficiaryAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
+				logrus.Printf("[Delete Bneficiary] data : %v", res)
+			} else {
+
+				res, err := beneficiaryAccountClient.CreateBeneficiaryAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
+				// update task billing status
+				task.FeatureID = res.Data.BeneficiaryAccountID
+				reUpdate = true
+			}
+
 		case "BG Mapping":
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
@@ -1847,18 +1860,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-			dataList := []*bg_pb.TransactionTaskData{}
+			dataList := []*bg_pb.Transaction{}
 			json.Unmarshal([]byte(task.Data), &dataList)
 
 			for _, v := range dataList {
-				for _, d := range v.Transaction {
-					data := bg_pb.CreateTransactionRequest{
-						Data: d,
-					}
-					_, err := bgClient.CreateTransaction(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-					if err != nil {
-						return nil, status.Errorf(codes.Internal, "Internal Error")
-					}
+				data := bg_pb.CreateTransactionRequest{
+					Data: v,
+				}
+				_, err := bgClient.CreateTransaction(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
 			}
 		}

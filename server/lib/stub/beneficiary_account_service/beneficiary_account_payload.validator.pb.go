@@ -295,3 +295,6 @@ func (this *BankDetailResponse) Validate() error {
 	}
 	return nil
 }
+func (this *DeleteBeneficiaryRes) Validate() error {
+	return nil
+}
