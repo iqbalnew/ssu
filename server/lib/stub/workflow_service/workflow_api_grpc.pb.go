@@ -25,7 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ApiServiceClient interface {
 	HealthCheck(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	ListWorkflow(ctx context.Context, in *ListWorkflowRequest, opts ...grpc.CallOption) (*ListWorkflowResponse, error)
-	CreateWorkflow(ctx context.Context, in *CreateWorkflowRequest, opts ...grpc.CallOption) (*CreateWorkflowResponse, error)
+	CreateWorkflow(ctx context.Context, in *WorkflowTask, opts ...grpc.CallOption) (*CreateWorkflowResponse, error)
 	CreateWorkflowTask(ctx context.Context, in *CreateWorkflowTaskRequest, opts ...grpc.CallOption) (*CreateWorkflowTaskResponse, error)
 	ListWorkflowTask(ctx context.Context, in *ListWorkflowTaskRequest, opts ...grpc.CallOption) (*ListWorkflowTaskResponse, error)
 	GetWorkflowTask(ctx context.Context, in *GetWorkflowTaskRequest, opts ...grpc.CallOption) (*GetWorkflowTaskResponse, error)
@@ -65,7 +65,7 @@ func (c *apiServiceClient) ListWorkflow(ctx context.Context, in *ListWorkflowReq
 	return out, nil
 }
 
-func (c *apiServiceClient) CreateWorkflow(ctx context.Context, in *CreateWorkflowRequest, opts ...grpc.CallOption) (*CreateWorkflowResponse, error) {
+func (c *apiServiceClient) CreateWorkflow(ctx context.Context, in *WorkflowTask, opts ...grpc.CallOption) (*CreateWorkflowResponse, error) {
 	out := new(CreateWorkflowResponse)
 	err := c.cc.Invoke(ctx, "/workflow.service.v1.ApiService/CreateWorkflow", in, out, opts...)
 	if err != nil {
@@ -179,7 +179,7 @@ func (c *apiServiceClient) CreateCompanyWorkflow(ctx context.Context, in *Create
 type ApiServiceServer interface {
 	HealthCheck(context.Context, *Empty) (*HealthCheckResponse, error)
 	ListWorkflow(context.Context, *ListWorkflowRequest) (*ListWorkflowResponse, error)
-	CreateWorkflow(context.Context, *CreateWorkflowRequest) (*CreateWorkflowResponse, error)
+	CreateWorkflow(context.Context, *WorkflowTask) (*CreateWorkflowResponse, error)
 	CreateWorkflowTask(context.Context, *CreateWorkflowTaskRequest) (*CreateWorkflowTaskResponse, error)
 	ListWorkflowTask(context.Context, *ListWorkflowTaskRequest) (*ListWorkflowTaskResponse, error)
 	GetWorkflowTask(context.Context, *GetWorkflowTaskRequest) (*GetWorkflowTaskResponse, error)
@@ -204,7 +204,7 @@ func (UnimplementedApiServiceServer) HealthCheck(context.Context, *Empty) (*Heal
 func (UnimplementedApiServiceServer) ListWorkflow(context.Context, *ListWorkflowRequest) (*ListWorkflowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListWorkflow not implemented")
 }
-func (UnimplementedApiServiceServer) CreateWorkflow(context.Context, *CreateWorkflowRequest) (*CreateWorkflowResponse, error) {
+func (UnimplementedApiServiceServer) CreateWorkflow(context.Context, *WorkflowTask) (*CreateWorkflowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateWorkflow not implemented")
 }
 func (UnimplementedApiServiceServer) CreateWorkflowTask(context.Context, *CreateWorkflowTaskRequest) (*CreateWorkflowTaskResponse, error) {
@@ -290,7 +290,7 @@ func _ApiService_ListWorkflow_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _ApiService_CreateWorkflow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateWorkflowRequest)
+	in := new(WorkflowTask)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -302,7 +302,7 @@ func _ApiService_CreateWorkflow_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/workflow.service.v1.ApiService/CreateWorkflow",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CreateWorkflow(ctx, req.(*CreateWorkflowRequest))
+		return srv.(ApiServiceServer).CreateWorkflow(ctx, req.(*WorkflowTask))
 	}
 	return interceptor(ctx, in, info, handler)
 }

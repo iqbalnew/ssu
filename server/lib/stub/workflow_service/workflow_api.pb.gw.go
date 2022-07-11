@@ -86,7 +86,7 @@ func local_request_ApiService_ListWorkflow_0(ctx context.Context, marshaler runt
 }
 
 func request_ApiService_CreateWorkflow_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CreateWorkflowRequest
+	var protoReq WorkflowTask
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -103,7 +103,7 @@ func request_ApiService_CreateWorkflow_0(ctx context.Context, marshaler runtime.
 }
 
 func local_request_ApiService_CreateWorkflow_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CreateWorkflowRequest
+	var protoReq WorkflowTask
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
