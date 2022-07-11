@@ -31,6 +31,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func setPagination(v *pb.ListTaskRequest) *pb.PaginationResponse {
@@ -1629,12 +1630,29 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			client := workflow_pb.NewApiServiceClient(workflowConn)
 
+			data := workflow_pb.CreateWorkflowRequest{}
 			workflowTask := workflow_pb.WorkflowTask{}
 			json.Unmarshal([]byte(task.Data), &workflowTask)
 
-			workflowTask.Task.TaskID = task.TaskID
+			data.Data = &workflow_pb.Workflow{
+				WorkflowID:            workflowTask.Workflow.WorkflowID,
+				ModuleID:              workflowTask.Workflow.ModuleID[0],
+				CompanyID:             workflowTask.Workflow.CompanyID,
+				CurrencyID:            workflowTask.Workflow.CurrencyID,
+				CreatedByID:           currentUser.UserID,
+				UpdatedByID:           currentUser.UserID,
+				CurrencyName:          workflowTask.Workflow.CurrencyName,
+				WorkflowCode:          workflowTask.Workflow.WorkflowCode,
+				Description:           workflowTask.Workflow.Description,
+				CreatedAt:             &timestamppb.Timestamp{},
+				UpdatedAt:             &timestamppb.Timestamp{},
+				IsCreatedInputAccount: workflowTask.Workflow.IsCreatedInputAccount,
+				IsCustomInputAccount:  workflowTask.Workflow.IsCustomInputAccount,
+				Logics:                []*workflow_pb.WorkflowLogic{},
+			}
+			data.TaskID = task.TaskID
 
-			res, err := client.CreateWorkflow(ctx, &workflowTask, grpc.Header(&header), grpc.Trailer(&trailer))
+			res, err := client.CreateWorkflow(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
@@ -1770,9 +1788,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
 			data.Data.Id = task.FeatureID
-			if data.Data.BillingStatus == "-" {
-				data.Data.BillingStatus = "Waiting Schedule"
-			}
+			data.Data.BillingStatus = "Waiting Schedule"
 			res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
@@ -1807,28 +1823,15 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data := beneficiary_account_pb.CreateBeneficiaryAccountRequest{}
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
-
-			if task.Status == 7 {
-				// deleteReq := data.
-
-				res, err := beneficiaryAccountClient.DeleteBeneficiaryAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-				if err != nil {
-					return nil, err
-				}
-				logrus.Println(res)
-				logrus.Printf("[Delete Bneficiary] data : %v", res)
-			} else {
-
-				res, err := beneficiaryAccountClient.CreateBeneficiaryAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-				if err != nil {
-					return nil, err
-				}
-				logrus.Println(res)
-				// update task billing status
-				task.FeatureID = res.Data.BeneficiaryAccountID
-				reUpdate = true
+			res, err := beneficiaryAccountClient.CreateBeneficiaryAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			if err != nil {
+				return nil, err
 			}
+			logrus.Println(res)
 
+			// update task billing status
+			task.FeatureID = res.Data.BeneficiaryAccountID
+			reUpdate = true
 		case "BG Mapping":
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
@@ -1842,14 +1845,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-			dataList := []*bg_pb.Transaction{}
+			dataList := []*bg_pb.TransactionTaskData{}
 			json.Unmarshal([]byte(task.Data), &dataList)
 
 			for _, v := range dataList {
-				data := bg_pb.CreateTransactionRequest{
-					Data: v,
+				data := &bg_pb.CreateTransactionRequest{
+					Data: v.Transaction,
 				}
-				_, err := bgClient.CreateTransaction(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				_, err := bgClient.CreateTransaction(ctx, data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
@@ -2045,7 +2048,6 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 		}
 		defer workflowConn.Close()
 
-		logrus.Println("Transaction amount: ", req.TransactionAmount)
 		client := workflow_pb.NewApiServiceClient(workflowConn)
 		getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
 			ProductID:           product.ProductID,

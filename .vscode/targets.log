@@ -6,8 +6,9 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
+ 
 
-# Make data base, printed on Mon Jul 11 09:39:41 2022
+# Make data base, printed on Mon Jul 11 16:04:44 2022
 
 # Variables
 
@@ -26,6 +27,7 @@ CURDIR := /Users/farizrachmanyusuf/Codes/addons-task-service
 # makefile
 SHELL = /bin/sh
 # makefile (from `Makefile', line 8)
+ 
 BUILD_DATE = $(shell date -u +'%Y-%m-%dT00:00:00Z')
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
@@ -58,7 +60,7 @@ ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.dTziNsbTOO/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.1cgTTjElT1/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -119,6 +121,7 @@ TOPDIR = $(PWD)
 *F = $(notdir $*)
 # environment
 VSCODE_IPC_HOOK = /Users/farizrachmanyusuf/Library/Application Support/Code/1.69.0-main.sock
+ 
 # environment
 MallocNanoZone = 0
 # makefile
@@ -160,7 +163,7 @@ MAKELEVEL := 0
 # environment
 LANG = C
 # environment
-VSCODE_PID = 23394
+VSCODE_PID = 1915
 # variable set hash-table stats:
 # Load=75/1024=7%, Rehash=0, Collisions=2/107=2%
 
@@ -218,7 +221,7 @@ docker-build:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-07-07 06:29:54
+#  Last modified 2022-07-11 09:49:45
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
@@ -308,7 +311,6 @@ migrate-db:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
- 
 #  commands to execute (from `Makefile', line 52):
 	go run ./server/ db-migrate
 	
@@ -335,7 +337,7 @@ run:
 #  Modification time never checked.
 #  File has not been updated.
 #  commands to execute (from `Makefile', line 49):
-	go run ./server/ grpc-gw-server
+	go run ./server/ grpc-gw-server --port1 9090 --port2 3000 --grpc-endpoint 9090
 	
 
 clean:
@@ -373,6 +375,6 @@ install: depend build
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Mon Jul 11 09:39:41 2022
+# Finished Make data base on Mon Jul 11 16:04:44 2022
 
  
