@@ -2034,6 +2034,7 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 		}
 		defer workflowConn.Close()
 
+		logrus.Println("Transaction amount: ", req.TransactionAmount)
 		client := workflow_pb.NewApiServiceClient(workflowConn)
 		getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
 			ProductID:           product.ProductID,
