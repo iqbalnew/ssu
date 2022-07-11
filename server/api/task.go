@@ -15,6 +15,7 @@ import (
 	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
 	beneficiary_account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/beneficiary_account_service"
+	bg_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/bg_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
@@ -780,7 +781,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account"}
+	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account", "BG Mapping"}
 
 	for _, v := range skipProduct {
 		if v == taskType {
@@ -1093,7 +1094,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 0
 		}
 
-		taskType := []string{"System", "Account", "Beneficiary Account", "Company"}
+		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User", "Role", "Workflow"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
@@ -1786,6 +1787,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data := abonnement_pb.CreateAbonnementRequest{}
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
+			data.Data.Id = task.FeatureID
 			data.Data.BillingStatus = "Waiting Schedule"
 			res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
@@ -1830,6 +1832,31 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			// update task billing status
 			task.FeatureID = res.Data.BeneficiaryAccountID
 			reUpdate = true
+		case "BG Mapping":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to BG Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer bgConn.Close()
+
+			bgClient := bg_pb.NewApiServiceClient(bgConn)
+
+			dataList := []*bg_pb.Transaction{}
+			json.Unmarshal([]byte(task.Data), &dataList)
+
+			for _, v := range dataList {
+				data := bg_pb.CreateTransactionRequest{
+					Data: v,
+				}
+				_, err := bgClient.CreateTransaction(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+			}
 		}
 	}
 
@@ -1948,5 +1975,178 @@ func (s *Server) UpdateTaskData(ctx context.Context, req *pb.UpdateTaskDataReq) 
 	}
 
 	res.Success = true
+	return res, nil
+}
+
+func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
+	task, _ := req.Task.ToORM(ctx)
+	var err error
+
+	// if len(task.Childs) > 0 {
+	// 	for i, v := range task.Childs {
+	// 	}
+	// }
+
+	task.Step = 3
+	task.Status = 1
+	task.LastApprovedByID = 0
+	task.LastApprovedByName = ""
+	task.LastRejectedByID = 0
+	task.LastRejectedByName = ""
+	task.DataBak = "{}"
+
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithInsecure())
+
+	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9097"), opts...)
+	if err != nil {
+		logrus.Errorln("Failed connect to Product Service: %v", err)
+		// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Announcement Service: %v", err))
+
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	defer productConn.Close()
+
+	productClient := product_pb.NewApiServiceClient(productConn)
+	productData, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
+		Limit: 1,
+		Page:  1,
+		Product: &product_pb.Product{
+			Name: task.Type,
+		},
+	})
+	if err != nil {
+		logrus.Errorln("[api][func: SaveTaskWithData] Failed to get product data: %v", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+
+	errorProduct := status.Errorf(codes.NotFound, "This task type product, not found")
+	if len(productData.Data) < 1 {
+		return nil, errorProduct
+	} else {
+		if productData.Data[0].Name != task.Type {
+			return nil, errorProduct
+		}
+	}
+
+	product := productData.Data[0]
+
+	taskType := []string{"Swift", "Cash Pooling"}
+
+	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
+		if req.TransactionAmount == 0 {
+			return nil, status.Errorf(codes.InvalidArgument, "Transaction amount is required")
+		}
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
+		if err != nil {
+			logrus.Errorln("Failed connect to Workflow Service: %v", err)
+			// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer workflowConn.Close()
+
+		client := workflow_pb.NewApiServiceClient(workflowConn)
+		getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
+			ProductID:           product.ProductID,
+			TransactionalNumber: uint64(req.TransactionAmount),
+		})
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
+			return nil, err
+		}
+
+		if getWorkflow.Data == nil {
+			return nil, status.Errorf(codes.NotFound, "workflow for this task type not found")
+		}
+
+		workflow, err := json.Marshal(getWorkflow.Data)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed to marshal workflow: %v", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		task.WorkflowDoc = string(workflow)
+	}
+
+	if req.TaskID > 0 {
+		findTask, err := s.provider.FindTaskById(ctx, req.TaskID)
+		if err != nil {
+			return nil, err
+		}
+		if findTask.DataBak != "{}" || findTask.Data != "" {
+			task.DataBak = findTask.DataBak
+		}
+	}
+
+	if task.DataBak == "" {
+		task.DataBak = "{}"
+	}
+
+	if len(task.Childs) > 0 {
+		for i := range task.Childs {
+			if task.Childs[i].DataBak == "" {
+				task.Childs[i].DataBak = "{}"
+			}
+		}
+	}
+
+	// if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu:Appearance" || req.Task.Type == "Menu:License" {
+	// 	task.Step = 3
+	// }
+
+	if req.IsDraft {
+		task.Step = 1
+		task.Status = 2
+	}
+
+	command := "Create"
+
+	logrus.Println("Task save ==> Task Type: ", task.Type)
+	logrus.Println("Task save ==> Task ID: ", task.TaskID)
+
+	if req.TaskID > 0 {
+		command = "Update"
+		task.TaskID = req.TaskID
+
+		_, err = s.provider.UpdateTask(ctx, &task, true)
+	} else {
+
+		_, err = s.provider.CreateTask(ctx, &task)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	res := &pb.SaveTaskResponse{
+		Success: true,
+		Data: &pb.Task{
+			TaskID: task.TaskID,
+		},
+	}
+
+	logrus.Println("Save LOG task, type: ", task.Type)
+	// Save activity Log
+	if getEnv("ENV", "LOCAL") != "LOCAL" {
+		action := "save"
+		if req.IsDraft {
+			action = "draft"
+		}
+		logrus.Println("Set to save log")
+		err = s.provider.SaveLog(ctx, &db.ActivityLog{
+			TaskID:      task.TaskID,
+			Command:     command,
+			Type:        task.Type,
+			Action:      action,
+			Description: task.Reasons,
+			Data:        &task,
+		})
+		if err != nil {
+			logrus.Errorln("Error SaveActivityLog: ", err)
+		}
+	}
+
 	return res, nil
 }

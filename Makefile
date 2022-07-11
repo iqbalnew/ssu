@@ -46,7 +46,7 @@ generate:
 	go generate ./...
 
 run:
-	go run ./server/ grpc-gw-server
+	go run ./server/ grpc-gw-server --port1 9090 --port2 3000 --grpc-endpoint 9090
 
 migrate-db:
 	go run ./server/ db-migrate
