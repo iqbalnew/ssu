@@ -31,7 +31,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func setPagination(v *pb.ListTaskRequest) *pb.PaginationResponse {
@@ -1630,29 +1629,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			client := workflow_pb.NewApiServiceClient(workflowConn)
 
-			data := workflow_pb.CreateWorkflowRequest{}
 			workflowTask := workflow_pb.WorkflowTask{}
 			json.Unmarshal([]byte(task.Data), &workflowTask)
 
-			data.Data = &workflow_pb.Workflow{
-				WorkflowID:            workflowTask.Workflow.WorkflowID,
-				ModuleID:              workflowTask.Workflow.ModuleID[0],
-				CompanyID:             workflowTask.Workflow.CompanyID,
-				CurrencyID:            workflowTask.Workflow.CurrencyID,
-				CreatedByID:           currentUser.UserID,
-				UpdatedByID:           currentUser.UserID,
-				CurrencyName:          workflowTask.Workflow.CurrencyName,
-				WorkflowCode:          workflowTask.Workflow.WorkflowCode,
-				Description:           workflowTask.Workflow.Description,
-				CreatedAt:             &timestamppb.Timestamp{},
-				UpdatedAt:             &timestamppb.Timestamp{},
-				IsCreatedInputAccount: workflowTask.Workflow.IsCreatedInputAccount,
-				IsCustomInputAccount:  workflowTask.Workflow.IsCustomInputAccount,
-				Logics:                workflowTask.Workflow.Logics,
-			}
-			data.TaskID = task.TaskID
+			workflowTask.Task.TaskID = task.TaskID
 
-			res, err := client.CreateWorkflow(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			res, err := client.CreateWorkflow(ctx, &workflowTask, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
