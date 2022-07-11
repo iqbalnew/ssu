@@ -1788,7 +1788,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
 			data.Data.Id = task.FeatureID
-			data.Data.BillingStatus = "Waiting Schedule"
+			if data.Data.BillingStatus == "-" {
+				data.Data.BillingStatus = "Waiting Schedule"
+			}
 			res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
