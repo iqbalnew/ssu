@@ -1879,7 +1879,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			return nil, err
 		}
 	}
-
+	if updatedTask.Reasons != "" && req.Action == "approve" {
+		updatedTask.Reasons = ""
+	}
 	logrus.Println("Save LOG task 'update', type: ", task.Type)
 	// Save activity Log
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
