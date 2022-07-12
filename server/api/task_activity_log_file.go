@@ -74,7 +74,7 @@ func GetFileGenerator(v *pb.GetActivityLogsRes) *ActivityLogFile {
 }
 
 func (file *ActivityLogFile) ToCsv(ctx context.Context) (*httpbody.HttpBody, error) {
-	location := time.FixedZone("Asia/Jakarta", int((7*time.Hour).Seconds()))
+	location := time.FixedZone("Asia/Jakarta", int((7 * time.Hour).Seconds()))
 	var buf bytes.Buffer
 
 	w := csv.NewWriter(&buf)
@@ -117,7 +117,7 @@ func (file *ActivityLogFile) ToCsv(ctx context.Context) (*httpbody.HttpBody, err
 
 		createdAt := ""
 		if v.CreatedAt != nil {
-			createdAt = v.CreatedAt.AsTime().In(location).Format("02/01/2006 15:04:05")
+			createdAt = v.CreatedAt.AsTime().In(location).Format("01/02/2006 15:04:05PM")
 		}
 
 		description := ""
@@ -160,7 +160,7 @@ func (file *ActivityLogFile) ToCsv(ctx context.Context) (*httpbody.HttpBody, err
 }
 
 func (file *ActivityLogFile) ToXlsx(ctx context.Context) (*httpbody.HttpBody, error) {
-	location := time.FixedZone("Asia/Jakarta", int((7*time.Hour).Seconds()))
+	location := time.FixedZone("Asia/Jakarta", int((7 * time.Hour).Seconds()))
 	f := excelize.NewFile()
 	sheet := f.NewSheet("Sheet1")
 
@@ -207,7 +207,7 @@ func (file *ActivityLogFile) ToXlsx(ctx context.Context) (*httpbody.HttpBody, er
 
 		createdAt := ""
 		if v.CreatedAt != nil {
-			createdAt = v.CreatedAt.AsTime().In(location).Format("02/01/2006 15:04:05")
+			createdAt = v.CreatedAt.AsTime().In(location).Format("01/02/2006 15:04:05PM")
 		}
 
 		description := ""
@@ -249,7 +249,7 @@ func (file *ActivityLogFile) ToXlsx(ctx context.Context) (*httpbody.HttpBody, er
 }
 
 func (file *ActivityLogFile) ToXls(ctx context.Context) (*httpbody.HttpBody, error) {
-	location := time.FixedZone("Asia/Jakarta", int((7*time.Hour).Seconds()))
+	location := time.FixedZone("Asia/Jakarta", int((7 * time.Hour).Seconds()))
 	f := excelize.NewFile()
 	sheet := f.NewSheet("Sheet1")
 
@@ -296,7 +296,7 @@ func (file *ActivityLogFile) ToXls(ctx context.Context) (*httpbody.HttpBody, err
 
 		createdAt := ""
 		if v.CreatedAt != nil {
-			createdAt = v.CreatedAt.AsTime().In(location).Format("02/01/2006 15:04:05")
+			createdAt = v.CreatedAt.AsTime().In(location).Format("01/02/2006 15:04:05PM")
 		}
 
 		description := ""
@@ -338,7 +338,7 @@ func (file *ActivityLogFile) ToXls(ctx context.Context) (*httpbody.HttpBody, err
 }
 
 func (file *ActivityLogFile) ToPDFv2(ctx context.Context) (*httpbody.HttpBody, error) {
-	location := time.FixedZone("Asia/Jakarta", int((7*time.Hour).Seconds()))
+	location := time.FixedZone("Asia/Jakarta", int((7 * time.Hour).Seconds()))
 	const (
 		colCount = 3
 		colWd    = 60.0
@@ -413,7 +413,7 @@ func (file *ActivityLogFile) ToPDFv2(ctx context.Context) (*httpbody.HttpBody, e
 
 		createdAt := ""
 		if v.CreatedAt != nil {
-			createdAt = v.CreatedAt.AsTime().In(location).Format("02/01/2006 15:04:05")
+			createdAt = v.CreatedAt.AsTime().In(location).Format("01/02/2006 15:04:05PM")
 		}
 
 		description := ""
