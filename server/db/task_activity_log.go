@@ -96,6 +96,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 			return nil, status.Errorf(codes.InvalidArgument, "invalid dateFrom")
 		}
 		dateTo, err := time.Parse(dateLayout, req.DateTo)
+		dateTo = dateTo.AddDate(0, 0, 1)
 		if err != nil {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.InvalidArgument, "invalid dateTo")
