@@ -967,6 +967,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					task.Status = currentStatus
 				}
 			}
+
 			if currentStep == 3 {
 				task.Status = 1
 				// task.Step = 4
@@ -976,12 +977,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				sendTask = true
 				if currentStatus == 6 {
 					task.Status = 7
+					if task.Type == "BG Mapping" {
+						task.Status = 5
+					}
 				}
 				// }
 				// if currentStatus == 6 {
 				// 	task.Status = currentStatus
 				// }
 			}
+
 			if currentStep == 4 {
 
 				sendTask = true
@@ -1094,7 +1099,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 0
 		}
 
-		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User", "Role", "Workflow"}
+		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User", "Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
@@ -1105,12 +1110,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 		if task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
-			if task.DataBak != "" && task.DataBak != "{}" {
-				task.Status = 4
-				task.Step = 3
-				task.Data = task.DataBak
-			}
-
 			if task.ChildBak != "" && task.ChildBak != "[]" {
 				taskChilds := []*pb.TaskORM{}
 				err := json.Unmarshal([]byte(task.ChildBak), &taskChilds)
