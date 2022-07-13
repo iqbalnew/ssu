@@ -319,7 +319,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
-			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+			return nil, status.Errorf(codes.Internal, "Internal Server Error")
+
 		}
 	}
 	return tasks, nil
