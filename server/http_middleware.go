@@ -22,6 +22,9 @@ func setHeaderHandler(h http.Handler, sid *shortid.Shortid) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Strict-Transport-Security", "max-age=31536000")
 
+		// add content security policy
+		w.Header().Set("Content-Security-Policy", "script-src 'self'")
+
 		if allowedOrigin(r.Header.Get("Origin")) {
 			// w.Header().Set("Content-Security-Policy", "default-src 'self'")
 			w.Header().Set("Access-Control-Allow-Origin", strings.Join(config.CorsAllowedOrigins, ", "))
