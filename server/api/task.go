@@ -1632,6 +1632,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data := workflow_pb.CreateWorkflowRequest{}
 			workflowTask := workflow_pb.WorkflowTask{}
 			json.Unmarshal([]byte(task.Data), &workflowTask)
+			workflowTask.Task = &workflow_pb.Task{
+				TaskID: task.TaskID,
+			}
 
 			data.Data = &workflow_pb.Workflow{
 				WorkflowID:            workflowTask.Workflow.WorkflowID,
