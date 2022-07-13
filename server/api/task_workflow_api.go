@@ -63,7 +63,9 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 		Data:    &pb.Task{},
 	}
 
+	logrus.Println("[api][SaveTaskWithWorkflow] isSave: ", isSave)
 	if isSave {
+		logrus.Println("[api][SaveTaskWithWorkflow] task will be save to database")
 		taskORM, err := task.ToORM(ctx)
 		if err != nil {
 			logrus.Errorln("[api][func:SaveTaskWithWorkflow] Error ToORM: ", err)
