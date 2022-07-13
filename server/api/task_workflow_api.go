@@ -73,6 +73,8 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 			logrus.Errorln("[api][func:SaveTaskWithWorkflow] Error ToORM: ", err)
 			return nil, status.Error(codes.Internal, "Server Error")
 		}
+		logrus.Println("[api][func:SaveTaskWithWorkflow] taskORM ID: ", taskORM)
+		logrus.Println("[api][func:SaveTaskWithWorkflow] taskORM Workflow: ", taskORM.WorkflowDoc)
 		saved, err := s.provider.SaveTask(ctx, &taskORM)
 		if err != nil {
 			logrus.Errorln("[api][func:SaveTaskWithWorkflow] Error SaveTask: ", err)
