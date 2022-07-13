@@ -50,7 +50,7 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 			isSave = true
 			task.Status = pb.Statuses_Approved
 		}
-	case "pending":
+	default:
 		if task.Status != pb.Statuses_Pending {
 			// process to pending
 			isSave = true
