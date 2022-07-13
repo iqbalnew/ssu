@@ -40,6 +40,8 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 
 	isSave := false
 
+	logrus.Println("[api][SaveTaskWithWorkflow] workflow current step: ", workflow.Workflow.CurrentStep)
+
 	// TODO: set task status basse on next step dari workflow
 	switch workflow.Workflow.CurrentStep {
 	case "approve":
