@@ -108,10 +108,6 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 	key := getEnv("AES_KEY", "Odj12345*12345678901234567890123")
 	aes := customAES.NewCustomAES(key)
 
-	logrus.Println("DEBUGAES ===>")
-	logrus.Println(req.Task)
-	logrus.Println("DEBUGAES ===>")
-	logrus.Println(aes)
 	taskPB, err := taskEVtoPB(req.Task, aes)
 	if err != nil {
 		return nil, err
@@ -304,10 +300,6 @@ func (s *Server) GetListTaskPluck(ctx context.Context, req *pb.ListTaskPluckRequ
 		In:            req.GetIn(),
 		Distinct:      req.GetDistinctKey(),
 	}
-
-	logrus.Println("")
-	logrus.Println("Pluck Data ===>")
-	logrus.Println("")
 
 	list, err := s.provider.GetListTaskPluck(ctx, req.GetPluckKey(), &dataorm, sqlBuilder)
 	if err != nil {
@@ -2060,7 +2052,7 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 		},
 	})
 	if err != nil {
-		logrus.Errorln("[api][func: SaveTaskWithData] Failed to get product data: %v", err)
+		logrus.Errorln("[api][func: UpdateTaskPlain] Failed to get product data: %v", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 
@@ -2098,7 +2090,7 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 			TransactionalNumber: uint64(req.TransactionAmount),
 		})
 		if err != nil {
-			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
+			logrus.Errorln("[api][func: UpdateTaskPlain] Failed to generate workflow: %v", err)
 			return nil, err
 		}
 
@@ -2108,7 +2100,7 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 
 		workflow, err := json.Marshal(getWorkflow.Data)
 		if err != nil {
-			logrus.Errorln("[api][func: SaveTaskWithData] Failed to marshal workflow: %v", err)
+			logrus.Errorln("[api][func: UpdateTaskPlain] Failed to marshal workflow: %v", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 		task.WorkflowDoc = string(workflow)
