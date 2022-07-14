@@ -24,8 +24,7 @@ func setHeaderHandler(h http.Handler, sid *shortid.Shortid) http.Handler {
 
 		if allowedOrigin(r.Header.Get("Origin")) {
 			// w.Header().Set("Content-Security-Policy", "default-src 'self'")
-			w.Header().Set("Strict-Transport-Security", "max-age=31536000")
-			w.Header().Set("Content-Security-Policy", "script-src 'self'")
+			// w.Header().Set("Content-Security-Policy", "script-src 'self'")
 			w.Header().Set("X-Content-Type-Options", "nosniff")
 			w.Header().Set("X-Frame-Options", "DENY")
 			w.Header().Set("X-Permitted-Cross-Domain-Policies", "none")
