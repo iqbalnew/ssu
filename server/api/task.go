@@ -1130,6 +1130,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Status = 6
 		task.Step = 3
 
+		if task.Type == "BG Mapping" {
+			if currentStatus == 2 {
+				task.Status = 7
+				task.Step = 1
+			}
+		}
+
 	}
 
 	logrus.Println("Input Comment" + req.Comment)
