@@ -993,6 +993,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Status = 4
 				if currentStatus == 6 {
 					task.Status = 7
+					if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
+						task.Status = 4
+					}
 				}
 
 				if task.Type == "Company" {
@@ -1099,7 +1102,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 0
 		}
 
-		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User", "Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping"}
+		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User", "Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping", "BG Mapping Digital"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
@@ -1129,14 +1132,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		task.Status = 6
 		task.Step = 3
-
-		if task.Type == "BG Mapping" {
-			if currentStatus == 2 {
-				task.Status = 7
-				task.Step = 1
-			}
-		}
-
 	}
 
 	logrus.Println("Input Comment" + req.Comment)
