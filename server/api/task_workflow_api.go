@@ -55,10 +55,9 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 	case "maker":
 		isSave = true
 		task.Step = pb.Steps_Maker
-		task.Status = pb.Statuses_Draft
 		if workflow.NextStatus == "rejected" {
 			task.Status = pb.Statuses_Rejected
-		} else {
+		} else if workflow.NextStatus == "returned" {
 			task.Status = pb.Statuses_Returned
 		}
 	default:
