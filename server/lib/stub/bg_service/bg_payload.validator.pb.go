@@ -7,8 +7,9 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -43,7 +44,7 @@ func (this *Company) Validate() error {
 	}
 	return nil
 }
-func (this *TransactionTask) Validate() error {
+func (this *TaskMappingData) Validate() error {
 	if this.Task != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
@@ -63,19 +64,30 @@ func (this *TransactionTask) Validate() error {
 	}
 	return nil
 }
-func (this *TransactionTaskData) Validate() error {
-	if this.ThirdParty != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ThirdParty); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ThirdParty", err)
+func (this *MappingData) Validate() error {
+	return nil
+}
+func (this *TaskMappingDigitalData) Validate() error {
+	if this.Task != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
 		}
 	}
-	for _, item := range this.Transaction {
+	if this.Company != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Company); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Company", err)
+		}
+	}
+	for _, item := range this.Data {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Transaction", err)
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 			}
 		}
 	}
+	return nil
+}
+func (this *MappingDigitalData) Validate() error {
 	return nil
 }
 func (this *ApiPaginationResponse) Validate() error {
@@ -98,6 +110,38 @@ func (this *GenerateThirdPartyResponse) Validate() error {
 	}
 	return nil
 }
+func (this *BeneficiaryName) Validate() error {
+	return nil
+}
+func (this *GetBeneficiaryNameRequest) Validate() error {
+	return nil
+}
+func (this *GetBeneficiaryNameResponse) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *ApplicantName) Validate() error {
+	return nil
+}
+func (this *GetApplicantNameRequest) Validate() error {
+	return nil
+}
+func (this *GetApplicantNameResponse) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	return nil
+}
 func (this *GetThirdPartyRequest) Validate() error {
 	return nil
 }
@@ -111,10 +155,16 @@ func (this *GetThirdPartyResponse) Validate() error {
 	}
 	return nil
 }
-func (this *GetTransactionTaskRequest) Validate() error {
+func (this *GetTaskMappingFileRequest) Validate() error {
 	return nil
 }
-func (this *GetTransactionTaskResponse) Validate() error {
+func (this *GetTaskMappingFileResponse) Validate() error {
+	return nil
+}
+func (this *GetTaskMappingRequest) Validate() error {
+	return nil
+}
+func (this *GetTaskMappingResponse) Validate() error {
 	for _, item := range this.Data {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
@@ -129,10 +179,10 @@ func (this *GetTransactionTaskResponse) Validate() error {
 	}
 	return nil
 }
-func (this *GetTransactionTaskDetailRequest) Validate() error {
+func (this *GetTaskMappingDetailRequest) Validate() error {
 	return nil
 }
-func (this *GetTransactionTaskDetailResponse) Validate() error {
+func (this *GetTaskMappingDetailResponse) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
@@ -140,20 +190,57 @@ func (this *GetTransactionTaskDetailResponse) Validate() error {
 	}
 	return nil
 }
-func (this *CreateTransactionTaskThirdParty) Validate() error {
-	return nil
-}
-func (this *CreateTransactionTaskRequest) Validate() error {
-	for _, item := range this.ThirdParty {
+func (this *CreateTaskMappingRequest) Validate() error {
+	for _, item := range this.Data {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("ThirdParty", err)
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 			}
 		}
 	}
 	return nil
 }
-func (this *CreateTransactionTaskResponse) Validate() error {
+func (this *CreateTaskMappingResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *GetMappingDigitalRequest) Validate() error {
+	return nil
+}
+func (this *GetMappingDigitalResponse) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
+func (this *GetMappingDigitalDetailRequest) Validate() error {
+	return nil
+}
+func (this *GetMappingDigitalDetailResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *CreateMappingDigitalRequest) Validate() error {
+	return nil
+}
+func (this *CreateMappingDigitalResponse) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
@@ -196,13 +283,6 @@ func (this *GetTransactionDetailResponse) Validate() error {
 	return nil
 }
 func (this *CreateTransactionRequest) Validate() error {
-	for _, item := range this.Data {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
-			}
-		}
-	}
 	return nil
 }
 func (this *CreateTransactionResponse) Validate() error {

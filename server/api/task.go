@@ -781,7 +781,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account", "BG Mapping"}
+	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account", "BG Mapping", "BG Mapping Digital"}
 
 	for _, v := range skipProduct {
 		if v == taskType {
@@ -977,7 +977,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				sendTask = true
 				if currentStatus == 6 {
 					task.Status = 7
-					if task.Type == "BG Mapping" {
+					if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
 						task.Status = 5
 					}
 				}
@@ -1862,20 +1862,37 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-			dataList := []*bg_pb.TransactionTaskData{}
-			json.Unmarshal([]byte(task.Data), &dataList)
+			data := &bg_pb.CreateTransactionRequest{
+				TaskID: task.TaskID,
+			}
+			_, err = bgClient.CreateTransaction(ctx, data, grpc.Header(&header), grpc.Trailer(&trailer))
+			if err != nil {
+				logrus.Errorln("Failed connect to create transaction: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+		case "BG Mapping Digital":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
 
-			for _, v := range dataList {
-				data := &bg_pb.CreateTransactionRequest{
-					Data: v.Transaction,
-				}
-				_, err := bgClient.CreateTransaction(ctx, data, grpc.Header(&header), grpc.Trailer(&trailer))
-				if err != nil {
-					logrus.Errorln("Failed connect to create transaction: %v", err)
-					return nil, status.Errorf(codes.Internal, "Internal Error")
-				}
+			bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to BG Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer bgConn.Close()
+
+			bgClient := bg_pb.NewApiServiceClient(bgConn)
+
+			data := &bg_pb.CreateTransactionRequest{
+				TaskID: task.TaskID,
+			}
+			_, err = bgClient.CreateTransaction(ctx, data, grpc.Header(&header), grpc.Trailer(&trailer))
+			if err != nil {
+				logrus.Errorln("Failed connect to create transaction: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 		}
+
 	}
 
 	if reUpdate {
