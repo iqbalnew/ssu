@@ -78,6 +78,7 @@ func (c *ClientInterceptor) StreamIntercetoprSetUserData(authManager *manager.JW
 			userMd, err := authManager.GetUserMD(ctx)
 			if err != nil {
 				logrus.Errorln("Failed to get user metadata")
+				logrus.Errorln("Error: ", err)
 				return nil, err
 			}
 			ctx = metadata.NewOutgoingContext(ctx, metadata.Join(md, userMd))
