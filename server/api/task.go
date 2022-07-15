@@ -1841,7 +1841,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
 			data.Data.Id = task.FeatureID
-			if len(data.Data.BillingStatus) > 1 {
+			if len(data.Data.BillingStatus) < 1 {
 				data.Data.BillingStatus = "Waiting Schedule"
 			}
 
