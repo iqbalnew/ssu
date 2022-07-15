@@ -1014,6 +1014,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Status = 4
 				if currentStatus == 6 {
 					task.Status = 7
+					if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
+						task.Status = 4
+					}
 				}
 
 				if task.Type == "Company" {
@@ -1120,7 +1123,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 0
 		}
 
-		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User", "Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping"}
+		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User", "Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping", "BG Mapping Digital"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
@@ -1150,14 +1153,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		task.Status = 6
 		task.Step = 3
-
-		if task.Type == "BG Mapping" {
-			if currentStatus == 2 {
-				task.Status = 7
-				task.Step = 1
-			}
-		}
-
 	}
 
 	logrus.Println("Input Comment" + req.Comment)
@@ -1657,12 +1652,40 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			client := workflow_pb.NewApiServiceClient(workflowConn)
 
+			type TaskData struct {
+				Workflow *workflow_pb.WorkflowWrite
+				Company  *company_pb.Company
+				Currency *company_pb.Currency
+				Module   []*product_pb.Product
+			}
+
+			TaskDatas := TaskData{}
+			json.Unmarshal([]byte(task.Data), &TaskDatas)
+
 			data := workflow_pb.CreateWorkflowRequest{}
 			workflowTask := workflow_pb.WorkflowTask{}
 			json.Unmarshal([]byte(task.Data), &workflowTask)
+			workflowTask.Company.CompanyID = fmt.Sprint(TaskDatas.Company.CompanyID)
+			Subsidiary, _ := json.Marshal(TaskDatas.Company.SubsidiaryCompanies)
+			workflowTask.Company.Subsidiaries = string(Subsidiary)
 			workflowTask.Task = &workflow_pb.Task{
 				TaskID: task.TaskID,
 			}
+			workflowTask.Currency = &workflow_pb.Currency{
+				CurrencyID:   TaskDatas.Workflow.CompanyID,
+				CurrencyName: TaskDatas.Currency.Name,
+				CurrencyCode: TaskDatas.Currency.Code,
+			}
+			// if len(TaskDatas.Module) > 0 {
+			// 	for _, v := range TaskDatas.Module {
+			// 		workflowTask.Module = append(workflowTask.Module, &workflow_pb.Product{
+			// 			ProductID:       v.ProductID,
+			// 			Name:            v.Name,
+			// 			Is3RdParty:      v.Is3RdParty,
+			// 			IsTransactional: v.IsTransactional,
+			// 		})
+			// 	}
+			// }
 
 			data.Data = &workflow_pb.Workflow{
 				WorkflowID:            workflowTask.Workflow.WorkflowID,
