@@ -1659,9 +1659,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				TaskID: task.TaskID,
 			}
 
+			modul := uint64(0)
+			if len(workflowTask.Workflow.ModuleID) > 0 {
+				modul = workflowTask.Workflow.ModuleID[0]
+			}
+
 			data.Data = &workflow_pb.Workflow{
 				WorkflowID:            workflowTask.Workflow.WorkflowID,
-				ModuleID:              workflowTask.Workflow.ModuleID[0],
+				ModuleID:              modul,
 				CompanyID:             workflowTask.Workflow.CompanyID,
 				CurrencyID:            workflowTask.Workflow.CurrencyID,
 				CreatedByID:           currentUser.UserID,
