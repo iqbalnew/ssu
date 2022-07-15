@@ -1652,40 +1652,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			client := workflow_pb.NewApiServiceClient(workflowConn)
 
-			type TaskData struct {
-				Workflow *workflow_pb.WorkflowWrite
-				Company  *company_pb.Company
-				Currency *company_pb.Currency
-				Module   []*product_pb.Product
-			}
-
-			TaskDatas := TaskData{}
-			json.Unmarshal([]byte(task.Data), &TaskDatas)
-
 			data := workflow_pb.CreateWorkflowRequest{}
 			workflowTask := workflow_pb.WorkflowTask{}
 			json.Unmarshal([]byte(task.Data), &workflowTask)
-			workflowTask.Company.CompanyID = fmt.Sprint(TaskDatas.Company.CompanyID)
-			Subsidiary, _ := json.Marshal(TaskDatas.Company.SubsidiaryCompanies)
-			workflowTask.Company.Subsidiaries = string(Subsidiary)
 			workflowTask.Task = &workflow_pb.Task{
 				TaskID: task.TaskID,
 			}
-			workflowTask.Currency = &workflow_pb.Currency{
-				CurrencyID:   TaskDatas.Workflow.CompanyID,
-				CurrencyName: TaskDatas.Currency.Name,
-				CurrencyCode: TaskDatas.Currency.Code,
-			}
-			// if len(TaskDatas.Module) > 0 {
-			// 	for _, v := range TaskDatas.Module {
-			// 		workflowTask.Module = append(workflowTask.Module, &workflow_pb.Product{
-			// 			ProductID:       v.ProductID,
-			// 			Name:            v.Name,
-			// 			Is3RdParty:      v.Is3RdParty,
-			// 			IsTransactional: v.IsTransactional,
-			// 		})
-			// 	}
-			// }
 
 			data.Data = &workflow_pb.Workflow{
 				WorkflowID:            workflowTask.Workflow.WorkflowID,
