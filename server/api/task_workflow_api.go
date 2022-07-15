@@ -50,6 +50,15 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 			// process to approve
 			isSave = true
 			task.Status = pb.Statuses_Approved
+			task.Step = pb.Steps_Releaser
+		}
+	case "maker":
+		isSave = true
+		task.Step = pb.Steps_Maker
+		if workflow.NextStatus == "rejected" {
+			task.Status = pb.Statuses_Rejected
+		} else if workflow.NextStatus == "returned" {
+			task.Status = pb.Statuses_Returned
 		}
 	default:
 		if task.Status != pb.Statuses_Pending {
@@ -65,16 +74,16 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 		Data:    &pb.Task{},
 	}
 
-	logrus.Println("[api][SaveTaskWithWorkflow] isSave: ", isSave)
+	// logrus.Println("[api][SaveTaskWithWorkflow] isSave: ", isSave)
 	if isSave {
-		logrus.Println("[api][SaveTaskWithWorkflow] task will be save to database")
+		// logrus.Println("[api][SaveTaskWithWorkflow] task will be save to database")
 		taskORM, err := task.ToORM(ctx)
 		if err != nil {
 			logrus.Errorln("[api][func:SaveTaskWithWorkflow] Error ToORM: ", err)
 			return nil, status.Error(codes.Internal, "Server Error")
 		}
-		logrus.Println("[api][func:SaveTaskWithWorkflow] taskORM ID: ", taskORM)
-		logrus.Println("[api][func:SaveTaskWithWorkflow] taskORM Workflow: ", taskORM.WorkflowDoc)
+		// logrus.Println("[api][func:SaveTaskWithWorkflow] taskORM ID: ", taskORM)
+		// logrus.Println("[api][func:SaveTaskWithWorkflow] taskORM Workflow: ", taskORM.WorkflowDoc)
 		saved, err := s.provider.SaveTask(ctx, &taskORM)
 		if err != nil {
 			logrus.Errorln("[api][func:SaveTaskWithWorkflow] Error SaveTask: ", err)
