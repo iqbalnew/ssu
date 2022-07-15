@@ -848,24 +848,14 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 }
 
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
+	var err error
 	currentUser, userMd, err := s.manager.GetMeFromMD(ctx)
+	// currentUser, userMd, err := manager.UserData{
+	// 	UserID: 6,
+	// }, metadata.MD{}, err
 	logrus.Printf("<@@ result @@>1 %s", req)
 	if err != nil {
 		return nil, err
-	} else {
-		// me, err := s.manager.GetMeFromJWT(ctx, "")
-
-		// if err == nil {
-		// 	if getEnv("ENV", "DEV") != "LOCAL" {
-		// 		logrus.Println("Send Log to fluentd")
-		// 		s.logger.InfoUser(
-		// 			"task-action",
-		// 			me.UserID,
-		// 			me.CompanyID,
-		// 			fmt.Sprintf("SetTask taskID: %d, action: %s", req.TaskID, req.Action),
-		// 		)
-		// 	}
-		// }
 	}
 
 	md, ok := metadata.FromIncomingContext(ctx)
@@ -1153,6 +1143,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		task.Status = 6
 		task.Step = 3
+
+		if currentStatus == 2 {
+			if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
+				if !(task.DataBak == "" || task.DataBak == "{}") {
+					task.Status = 4
+					task.Step = 1
+					task.Data = task.DataBak
+				}
+			}
+		}
 	}
 
 	logrus.Println("Input Comment" + req.Comment)
@@ -1813,7 +1813,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
 			data.Data.Id = task.FeatureID
-			if len(data.Data.BillingStatus) > 1 {
+			if len(data.Data.BillingStatus) < 1 {
 				data.Data.BillingStatus = "Waiting Schedule"
 			}
 
