@@ -323,10 +323,8 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 	if err != nil {
 		return nil, nil, err
 	}
-	logrus.Printf("<@@ result @@>2 %s", md)
 
 	user = &UserData{}
-	logrus.Printf("<@@ result @@>3 %s", md["user-userid"])
 	user.UserID, err = strconv.ParseUint(md["user-userid"][0], 10, 64)
 	if err != nil {
 		logrus.Errorln("Failed to parse userID: %v", err)
@@ -350,7 +348,6 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 	user.Authorities = strings.Split(md["user-authorities"][0], ",")
 
 	ids := strings.Split(md["user-groupids"][0], ",")
-	logrus.Printf("<@@ result @@>4 %s", user)
 	for _, v := range ids {
 		if len(v) > 0 {
 			id, err := strconv.ParseUint(v, 10, 64)
@@ -369,7 +366,6 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 			id, err := strconv.ParseUint(v, 10, 64)
 			if err != nil {
 				logrus.Errorln("Failed to parse roleID: %v", err)
-				logrus.Println("RoleIDs: ", ids)
 				return nil, nil, status.Errorf(codes.Internal, "Error Internal")
 			}
 			user.RoleIDs = append(user.RoleIDs, id)
