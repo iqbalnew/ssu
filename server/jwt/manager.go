@@ -294,7 +294,8 @@ func (manager *JWTManager) GetUserMD(ctx context.Context) (metadata.MD, error) {
 
 	result, err := authClient.SetMe(ctx, &authPb.VerifyTokenReq{}, grpc.Trailer(&trailer))
 	if err != nil {
-		logrus.Errorf("<@@ result @@> %v", result)
+		logrus.Errorln("<@@ result @@> ", result)
+		logrus.Errorln("<@@ err @@> ", err)
 		return nil, err
 	}
 
