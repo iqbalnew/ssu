@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/db"
-	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
 	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	abonnement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/abonnement_service"
@@ -850,10 +849,10 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
 	var err error
-	// currentUser, userMd, err := s.manager.GetMeFromMD(ctx)
-	currentUser, userMd, err := manager.UserData{
-		UserID: 6,
-	}, metadata.MD{}, err
+	currentUser, userMd, err := s.manager.GetMeFromMD(ctx)
+	// currentUser, userMd, err := manager.UserData{
+	// 	UserID: 6,
+	// }, metadata.MD{}, err
 	logrus.Printf("<@@ result @@>1 %s", req)
 	if err != nil {
 		return nil, err
