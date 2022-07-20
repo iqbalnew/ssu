@@ -23,12 +23,12 @@ func setHeaderHandler(h http.Handler, sid *shortid.Shortid) http.Handler {
 		w.Header().Set("Strict-Transport-Security", "max-age=31536000")
 
 		if allowedOrigin(r.Header.Get("Origin")) {
-			// w.Header().Set("Content-Security-Policy", "default-src 'self'")
-			// w.Header().Set("Content-Security-Policy", "script-src 'self'")
+			w.Header().Set("Content-Security-Policy", "object-src 'none'; child-src 'none'; script-src 'unsafe-inline' https: http: ")
 			w.Header().Set("X-Content-Type-Options", "nosniff")
 			w.Header().Set("X-Frame-Options", "DENY")
 			w.Header().Set("X-Permitted-Cross-Domain-Policies", "none")
-			// w.Header().Set("Permissions-Policy", "default-src 'self'")
+			w.Header().Set("X-XSS-Protection", "1; mode=block")
+			w.Header().Set("Permissions-Policy", "geolocation=()")
 			w.Header().Set("Referrer-Policy", "no-referrer")
 
 			w.Header().Set("Access-Control-Allow-Origin", strings.Join(config.CorsAllowedOrigins, ", "))
