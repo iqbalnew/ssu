@@ -108,10 +108,6 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 	key := getEnv("AES_KEY", "Odj12345*12345678901234567890123")
 	aes := customAES.NewCustomAES(key)
 
-	logrus.Println("DEBUGAES ===>")
-	logrus.Println(req.Task)
-	logrus.Println("DEBUGAES ===>")
-	logrus.Println(aes)
 	taskPB, err := taskEVtoPB(req.Task, aes)
 	if err != nil {
 		return nil, err
@@ -305,10 +301,6 @@ func (s *Server) GetListTaskPluck(ctx context.Context, req *pb.ListTaskPluckRequ
 		Distinct:      req.GetDistinctKey(),
 	}
 
-	logrus.Println("")
-	logrus.Println("Pluck Data ===>")
-	logrus.Println("")
-
 	list, err := s.provider.GetListTaskPluck(ctx, req.GetPluckKey(), &dataorm, sqlBuilder)
 	if err != nil {
 		return nil, err
@@ -468,17 +460,20 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 }
 
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
+	if req.Task.Type == "Swift" {
+		logrus.Println("SaveTaskWithData =================> 1")
+	}
 	task, _ := req.Task.ToORM(ctx)
 	var err error
 
-	logrus.Println("==> 01: ", task.Type)
-	logrus.Println("==> taskID: ", task.TaskID)
-	if len(task.Childs) > 0 {
-		for i, v := range task.Childs {
-			logrus.Println("==> 01: ", i, ": ", v.Type)
-			logrus.Println("ParentID: ", v.ParentID)
-		}
-	}
+	// logrus.Println("==> 01: ", task.Type)
+	// logrus.Println("==> taskID: ", task.TaskID)
+	// if len(task.Childs) > 0 {
+	// 	for i, v := range task.Childs {
+	// 		logrus.Println("==> 01: ", i, ": ", v.Type)
+	// 		logrus.Println("ParentID: ", v.ParentID)
+	// 	}
+	// }
 
 	currentUser, userMD, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
@@ -508,6 +503,10 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task.LastRejectedByID = 0
 	task.LastRejectedByName = ""
 	task.DataBak = "{}"
+
+	if req.Task.Type == "Swift" {
+		logrus.Println("SaveTaskWithData =================> 2")
+	}
 
 	if task.CompanyID < 1 {
 		task.CompanyID = currentUser.CompanyID
@@ -546,6 +545,10 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 
+	if req.Task.Type == "Swift" {
+		logrus.Println("SaveTaskWithData =================> 3")
+	}
+
 	errorProduct := status.Errorf(codes.NotFound, "This task type product, not found")
 	if len(productData.Data) < 1 {
 		return nil, errorProduct
@@ -560,6 +563,9 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	taskType := []string{"Swift", "Cash Pooling"}
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
+		if req.Task.Type == "Swift" {
+			logrus.Println("SaveTaskWithData =================> 4")
+		}
 		if req.TransactionAmount == 0 {
 			return nil, status.Errorf(codes.InvalidArgument, "Transaction amount is required")
 		}
@@ -595,6 +601,9 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 		task.WorkflowDoc = string(workflow)
+		if req.Task.Type == "Swift" {
+			logrus.Println("SaveTaskWithData =================> 5")
+		}
 	}
 
 	if req.TaskID > 0 {
@@ -617,6 +626,10 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 				task.Childs[i].DataBak = "{}"
 			}
 		}
+	}
+
+	if req.Task.Type == "Swift" {
+		logrus.Println("SaveTaskWithData =================> 6")
 	}
 
 	// if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu:Appearance" || req.Task.Type == "Menu:License" {
@@ -660,6 +673,10 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		},
 	}
 
+	if req.Task.Type == "Swift" {
+		logrus.Println("SaveTaskWithData =================> 7")
+	}
+
 	logrus.Println("Save LOG task, type: ", task.Type)
 	// Save activity Log
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
@@ -684,6 +701,10 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		if err != nil {
 			logrus.Errorln("Error SaveActivityLog: ", err)
 		}
+	}
+
+	if req.Task.Type == "Swift" {
+		logrus.Println("SaveTaskWithData =================> 8")
 	}
 
 	return res, nil
@@ -827,24 +848,14 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 }
 
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
+	var err error
 	currentUser, userMd, err := s.manager.GetMeFromMD(ctx)
+	// currentUser, userMd, err := manager.UserData{
+	// 	UserID: 6,
+	// }, metadata.MD{}, err
 	logrus.Printf("<@@ result @@>1 %s", req)
 	if err != nil {
 		return nil, err
-	} else {
-		// me, err := s.manager.GetMeFromJWT(ctx, "")
-
-		// if err == nil {
-		// 	if getEnv("ENV", "DEV") != "LOCAL" {
-		// 		logrus.Println("Send Log to fluentd")
-		// 		s.logger.InfoUser(
-		// 			"task-action",
-		// 			me.UserID,
-		// 			me.CompanyID,
-		// 			fmt.Sprintf("SetTask taskID: %d, action: %s", req.TaskID, req.Action),
-		// 		)
-		// 	}
-		// }
 	}
 
 	md, ok := metadata.FromIncomingContext(ctx)
@@ -993,6 +1004,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Status = 4
 				if currentStatus == 6 {
 					task.Status = 7
+					if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
+						task.Status = 4
+					}
 				}
 
 				if task.Type == "Company" {
@@ -1099,7 +1113,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 0
 		}
 
-		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User", "Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping"}
+		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User", "Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping", "BG Mapping Digital"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
@@ -1130,13 +1144,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Status = 6
 		task.Step = 3
 
-		if task.Type == "BG Mapping" {
-			if currentStatus == 2 {
-				task.Status = 7
-				task.Step = 1
+		if currentStatus == 2 {
+			if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
+				if !(task.DataBak == "" || task.DataBak == "{}") {
+					task.Status = 4
+					task.Step = 1
+					task.Data = task.DataBak
+				} else {
+					task.Status = 7
+					task.Step = 1
+				}
 			}
 		}
-
 	}
 
 	logrus.Println("Input Comment" + req.Comment)
@@ -1639,13 +1658,19 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data := workflow_pb.CreateWorkflowRequest{}
 			workflowTask := workflow_pb.WorkflowTask{}
 			json.Unmarshal([]byte(task.Data), &workflowTask)
+			workflowTask.Workflow.WorkflowID = task.FeatureID
 			workflowTask.Task = &workflow_pb.Task{
 				TaskID: task.TaskID,
 			}
 
+			modul := uint64(0)
+			if len(workflowTask.Workflow.ModuleID) > 0 {
+				modul = workflowTask.Workflow.ModuleID[0]
+			}
+
 			data.Data = &workflow_pb.Workflow{
 				WorkflowID:            workflowTask.Workflow.WorkflowID,
-				ModuleID:              workflowTask.Workflow.ModuleID[0],
+				ModuleID:              modul,
 				CompanyID:             workflowTask.Workflow.CompanyID,
 				CurrencyID:            workflowTask.Workflow.CurrencyID,
 				CreatedByID:           currentUser.UserID,
@@ -1797,7 +1822,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
 			data.Data.Id = task.FeatureID
-			if len(data.Data.BillingStatus) > 1 {
+			if len(data.Data.BillingStatus) < 1 {
 				data.Data.BillingStatus = "Waiting Schedule"
 			}
 
@@ -2060,7 +2085,7 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 		},
 	})
 	if err != nil {
-		logrus.Errorln("[api][func: SaveTaskWithData] Failed to get product data: %v", err)
+		logrus.Errorln("[api][func: UpdateTaskPlain] Failed to get product data: %v", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 
@@ -2098,7 +2123,7 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 			TransactionalNumber: uint64(req.TransactionAmount),
 		})
 		if err != nil {
-			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
+			logrus.Errorln("[api][func: UpdateTaskPlain] Failed to generate workflow: %v", err)
 			return nil, err
 		}
 
@@ -2108,7 +2133,7 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 
 		workflow, err := json.Marshal(getWorkflow.Data)
 		if err != nil {
-			logrus.Errorln("[api][func: SaveTaskWithData] Failed to marshal workflow: %v", err)
+			logrus.Errorln("[api][func: UpdateTaskPlain] Failed to marshal workflow: %v", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 		task.WorkflowDoc = string(workflow)

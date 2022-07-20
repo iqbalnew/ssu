@@ -81,6 +81,20 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 
 	var logs []*ActivityLog
 
+	if p.mongo == nil {
+		logrus.Println("Mongo Connection is nil")
+		return &ActivityLogFindRes{
+			Logs: logs,
+			Paginate: &bongo.PaginationInfo{
+				Current:       0,
+				TotalPages:    0,
+				PerPage:       0,
+				TotalRecords:  0,
+				RecordsOnPage: 0,
+			},
+		}, nil
+	}
+
 	req.TaskType = strings.Replace(req.TaskType, ":", "_", -1)
 	req.TaskType = strings.ToLower(req.TaskType)
 
