@@ -1006,9 +1006,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				sendTask = true
 				if currentStatus == 6 {
 					task.Status = 7
-					if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
-						task.Status = 5
-					}
 				}
 				// }
 				// if currentStatus == 6 {
@@ -1022,9 +1019,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Status = 4
 				if currentStatus == 6 {
 					task.Status = 7
-					if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
-						task.Status = 4
-					}
 				}
 
 				if task.Type == "Company" {
@@ -1205,6 +1199,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					task.Status = 4
 					task.Step = 1
 					task.Data = task.DataBak
+				} else {
+					task.Status = 7
+					task.Step = 1
 				}
 			}
 		}

@@ -7,8 +7,8 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/infobloxopen/protoc-gen-gorm/options"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
+	_ "github.com/infobloxopen/protoc-gen-gorm/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -85,6 +85,11 @@ func (this *AbonnementRetry) Validate() error {
 	if this.Abonnement != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Abonnement); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Abonnement", err)
+		}
+	}
+	if this.AbonnementInvoice != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.AbonnementInvoice); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("AbonnementInvoice", err)
 		}
 	}
 	if this.RetryDate != nil {

@@ -43,6 +43,7 @@ type ApiServiceClient interface {
 	GenerateBulkInvoice(ctx context.Context, in *GenerateBulkInvoiceReq, opts ...grpc.CallOption) (*GenerateBulkInvoiceRes, error)
 	GetTasksCreatedBy(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ArrayString, error)
 	GetTasksApprovedBy(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ArrayString, error)
+	CompanyStatus(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*CekAvaibilityRes, error)
 }
 
 type apiServiceClient struct {
@@ -233,6 +234,15 @@ func (c *apiServiceClient) GetTasksApprovedBy(ctx context.Context, in *Empty, op
 	return out, nil
 }
 
+func (c *apiServiceClient) CompanyStatus(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*CekAvaibilityRes, error) {
+	out := new(CekAvaibilityRes)
+	err := c.cc.Invoke(ctx, "/abonnement.service.v1.ApiService/CompanyStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
@@ -257,6 +267,7 @@ type ApiServiceServer interface {
 	GenerateBulkInvoice(context.Context, *GenerateBulkInvoiceReq) (*GenerateBulkInvoiceRes, error)
 	GetTasksCreatedBy(context.Context, *Empty) (*ArrayString, error)
 	GetTasksApprovedBy(context.Context, *Empty) (*ArrayString, error)
+	CompanyStatus(context.Context, *Empty) (*CekAvaibilityRes, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -323,6 +334,9 @@ func (UnimplementedApiServiceServer) GetTasksCreatedBy(context.Context, *Empty) 
 }
 func (UnimplementedApiServiceServer) GetTasksApprovedBy(context.Context, *Empty) (*ArrayString, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTasksApprovedBy not implemented")
+}
+func (UnimplementedApiServiceServer) CompanyStatus(context.Context, *Empty) (*CekAvaibilityRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CompanyStatus not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -697,6 +711,24 @@ func _ApiService_GetTasksApprovedBy_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_CompanyStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CompanyStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/abonnement.service.v1.ApiService/CompanyStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CompanyStatus(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -783,6 +815,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTasksApprovedBy",
 			Handler:    _ApiService_GetTasksApprovedBy_Handler,
+		},
+		{
+			MethodName: "CompanyStatus",
+			Handler:    _ApiService_CompanyStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
