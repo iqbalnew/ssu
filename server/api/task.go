@@ -910,6 +910,43 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	currentStatus := task.Status
 	switch strings.ToLower(req.Action) {
 	case "rework":
+		taskPb, _ := task.ToPB(ctx)
+		if currentStatus == 3 {
+			return &pb.SetTaskResponse{
+				Error:   false,
+				Code:    200,
+				Message: "Task Status Already Returned",
+				Data:    &taskPb,
+			}, nil
+		}
+
+		if currentStatus == 4 {
+			return &pb.SetTaskResponse{
+				Error:   false,
+				Code:    200,
+				Message: "Task Status Already Approved",
+				Data:    &taskPb,
+			}, nil
+		}
+
+		if currentStatus == 5 {
+			return &pb.SetTaskResponse{
+				Error:   false,
+				Code:    200,
+				Message: "Task Status Already Rejected",
+				Data:    &taskPb,
+			}, nil
+		}
+
+		if currentStatus == 7 {
+			return &pb.SetTaskResponse{
+				Error:   false,
+				Code:    200,
+				Message: "Task Already Deleted",
+				Data:    &taskPb,
+			}, nil
+		}
+
 		task.LastApprovedByID = 0
 		task.LastApprovedByName = ""
 		task.LastRejectedByID = currentUser.UserID
@@ -1185,6 +1222,43 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 	case "delete":
+		taskPb, _ := task.ToPB(ctx)
+		if currentStatus == 3 {
+			return &pb.SetTaskResponse{
+				Error:   false,
+				Code:    200,
+				Message: "Task Status Already Returned",
+				Data:    &taskPb,
+			}, nil
+		}
+
+		if currentStatus == 4 {
+			return &pb.SetTaskResponse{
+				Error:   false,
+				Code:    200,
+				Message: "Task Status Already Approved",
+				Data:    &taskPb,
+			}, nil
+		}
+
+		if currentStatus == 5 {
+			return &pb.SetTaskResponse{
+				Error:   false,
+				Code:    200,
+				Message: "Task Status Already Rejected",
+				Data:    &taskPb,
+			}, nil
+		}
+
+		if currentStatus == 7 {
+			return &pb.SetTaskResponse{
+				Error:   false,
+				Code:    200,
+				Message: "Task Already Deleted",
+				Data:    &taskPb,
+			}, nil
+		}
+
 		task.LastApprovedByID = 0
 		task.LastApprovedByName = ""
 		task.LastRejectedByID = 0
