@@ -1749,8 +1749,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data.Data)
 
 			data.TaskID = task.TaskID
+			data.Data.RoleID = task.FeatureID
+
 			if task.Status == 7 {
-				data.Data.RoleID = task.FeatureID
 				res, err := client.DeleteRole(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
@@ -1761,7 +1762,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				if err != nil {
 					return nil, err
 				}
-				logrus.Println(res)
+				task.FeatureID = res.Data.RoleID
+				Role, _ := json.Marshal(res.Data)
+				task.Data = string(Role)
+				logrus.Println(task.Data, "hasil Data")
+				logrus.Println(res, "hasil res")
+				reUpdate = true
 			}
 
 		case "Workflow":
@@ -2051,6 +2057,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if reUpdate {
+		// logrus.Println(task.Data)
 		updatedTask, err = s.provider.UpdateTask(ctx, task, false)
 		if err != nil {
 			return nil, err
