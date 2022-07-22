@@ -178,6 +178,10 @@ func (p *GormProvider) CreateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 			Columns:   []clause.Column{{Name: "task_id"}},
 			UpdateAll: true,
 		}).Create(&childs).Error; err != nil {
+			if !errors.Is(err, gorm.ErrModelValueRequired) {
+				logrus.Errorln(err)
+				return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
+			}
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				logrus.Errorln(err)
 				return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
@@ -244,6 +248,10 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 		childs := task.Childs
 		task.Childs = []*pb.TaskORM{}
 		if err := query.Model(&taskModel).Updates(&task).Error; err != nil {
+			if !errors.Is(err, gorm.ErrModelValueRequired) {
+				logrus.Errorln(err)
+				return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
+			}
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				logrus.Errorln(err)
 				return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
@@ -275,6 +283,10 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 				Columns:   []clause.Column{{Name: "task_id"}},
 				UpdateAll: true,
 			}).Create(&childs).Error; err != nil {
+				if !errors.Is(err, gorm.ErrModelValueRequired) {
+					logrus.Errorln(err)
+					return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
+				}
 				if !errors.Is(err, gorm.ErrRecordNotFound) {
 					logrus.Errorln(err)
 					return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
@@ -298,6 +310,10 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM, error) {
 	task := &pb.TaskORM{TaskID: id}
 	if err := p.db_main.Preload(clause.Associations).First(&task).Error; err != nil {
+		if !errors.Is(err, gorm.ErrModelValueRequired) {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
+		}
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
@@ -317,6 +333,10 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
 	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
+		if !errors.Is(err, gorm.ErrModelValueRequired) {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
+		}
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "Internal Server Error")
@@ -336,6 +356,10 @@ func (p *GormProvider) GetListTaskPluck(ctx context.Context, key string, filter 
 	query = query.Scopes(FilterScoope(sql.Filter), FilterOrScoope(sql.FilterOr), QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In))
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	if err := query.Pluck(columnNameBuilder(key, false), &data).Error; err != nil {
+		if !errors.Is(err, gorm.ErrModelValueRequired) {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
+		}
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
@@ -348,6 +372,10 @@ func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskO
 	res := p.db_main.Where(&task).Scopes(Paginate(tasks, pagination, p.db_main), Sort(sort))
 	err = res.Find(&tasks).Error
 	if err != nil {
+		if !errors.Is(err, gorm.ErrModelValueRequired) {
+			logrus.Errorln(err)
+			return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
+		}
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "DB Internal Error")
