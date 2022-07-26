@@ -1232,12 +1232,15 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 		if currentStatus == 4 {
-			return &pb.SetTaskResponse{
-				Error:   false,
-				Code:    200,
-				Message: "Task Status Already Approved",
-				Data:    &taskPb,
-			}, nil
+			taskType := []string{"BG Mapping", "BG Mapping Digital"}
+			if !contains(taskType, task.Type) {
+				return &pb.SetTaskResponse{
+					Error:   false,
+					Code:    200,
+					Message: "Task Status Already Approved",
+					Data:    &taskPb,
+				}, nil
+			}
 		}
 
 		if currentStatus == 5 {
