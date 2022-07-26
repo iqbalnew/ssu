@@ -850,7 +850,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
 	var err error
 	currentUser, userMd, err := s.manager.GetMeFromMD(ctx)
-	// currentUser, userMd, err := manager.UserData{
+	// currentUser, userMd, err := &UserData{
 	// 	UserID: 6,
 	// }, metadata.MD{}, err
 	logrus.Printf("<@@ result @@>1 %s", req)
@@ -1223,40 +1223,46 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	case "delete":
 		taskPb, _ := task.ToPB(ctx)
-		if currentStatus == 3 {
-			return &pb.SetTaskResponse{
-				Error:   false,
-				Code:    200,
-				Message: "Task Status Already Returned",
-				Data:    &taskPb,
-			}, nil
-		}
+		if currentStatus == 6 {
+			if currentStatus == 3 {
+				return &pb.SetTaskResponse{
+					Error:   false,
+					Code:    200,
+					Message: "Task Status Already Returned",
+					Data:    &taskPb,
+				}, nil
+			}
 
-		if currentStatus == 4 {
-			return &pb.SetTaskResponse{
-				Error:   false,
-				Code:    200,
-				Message: "Task Status Already Approved",
-				Data:    &taskPb,
-			}, nil
-		}
+			taskType := []string{"BG Mapping", "BG Mapping Digital"}
 
-		if currentStatus == 5 {
-			return &pb.SetTaskResponse{
-				Error:   false,
-				Code:    200,
-				Message: "Task Status Already Rejected",
-				Data:    &taskPb,
-			}, nil
-		}
+			if currentStatus == 4 {
+				if !contains(taskType, task.Type) {
+					return &pb.SetTaskResponse{
+						Error:   false,
+						Code:    200,
+						Message: "Task Status Already Approved",
+						Data:    &taskPb,
+					}, nil
+				}
+			}
 
-		if currentStatus == 7 {
-			return &pb.SetTaskResponse{
-				Error:   false,
-				Code:    200,
-				Message: "Task Already Deleted",
-				Data:    &taskPb,
-			}, nil
+			if currentStatus == 5 {
+				return &pb.SetTaskResponse{
+					Error:   false,
+					Code:    200,
+					Message: "Task Status Already Rejected",
+					Data:    &taskPb,
+				}, nil
+			}
+
+			if currentStatus == 7 {
+				return &pb.SetTaskResponse{
+					Error:   false,
+					Code:    200,
+					Message: "Task Already Deleted",
+					Data:    &taskPb,
+				}, nil
+			}
 		}
 
 		task.LastApprovedByID = 0
@@ -1268,15 +1274,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Step = 3
 
 		if currentStatus == 2 {
-			if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
-				if !(task.DataBak == "" || task.DataBak == "{}") {
-					task.Status = 4
-					task.Step = 1
-					task.Data = task.DataBak
-				} else {
-					task.Status = 7
-					task.Step = 1
-				}
+			if !(task.DataBak == "" || task.DataBak == "{}") {
+				task.Status = 4
+				task.Step = 1
+				task.Data = task.DataBak
+			} else {
+				task.Status = 7
+				task.Step = 1
 			}
 		}
 	}
