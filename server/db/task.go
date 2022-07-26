@@ -41,11 +41,11 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, servi
 		whereOpt = whereOpt + ` ("data" -> 'user'->> 'companyID' = '` + idCompany + `' OR "data" -> 'companyID' = '` + idCompany + `' OR company_id = '` + idCompany + `')`
 	}
 
-	if service == "Role" && idCompany != "" {
+	if userType == "ca" {
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
 		}
-		whereOpt = whereOpt + ` ("data" -> 'userTypeID' = '4')`
+		whereOpt = whereOpt + ` ("data"->'userTypeID' = '4' OR type != 'Role') AND (data->'user'->>'userTypeName' = 'Customer User' OR type != 'User') `
 	}
 
 	if !isIncludeApprove {
@@ -90,66 +90,6 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, servi
 		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
-
-	//add user get
-	selectOptUser := fmt.Sprintf("step as name, type, count(*) as total")
-	queryUser := p.db_main.Model(&pb.TaskORM{}).Select(selectOptUser)
-	whereOptUser := ""
-	if service != "" {
-		whereOptUser = fmt.Sprintf("type = 'User'")
-		if userType == "ca" {
-			whereOptUser = whereOptUser + " AND (data->'user'->>'userTypeName' = 'Customer User')"
-		}
-	}
-	if idCompany != "" {
-		if whereOptUser != "" {
-			whereOptUser = whereOptUser + " AND "
-		}
-		whereOptUser = whereOptUser + ` ("data" -> 'user'->> 'companyID' = '` + idCompany + `' OR "data" -> 'companyID' = '` + idCompany + `' OR company_id = '` + idCompany + `')`
-	}
-	if !isIncludeApprove {
-		if whereOptUser != "" {
-			whereOptUser = whereOptUser + " AND "
-		}
-		whereOptUser = whereOptUser + "status != 4"
-	}
-	if !isIncludeReject {
-		if whereOptUser != "" {
-			whereOptUser = whereOptUser + " AND "
-		}
-		whereOptUser = whereOptUser + "status != 5"
-	}
-	if stat > 0 {
-		if whereOptUser != "" {
-			whereOptUser = whereOptUser + " AND "
-		}
-		whereOptUser = fmt.Sprintf("%v status = %v", whereOptUser, stat)
-	}
-	if step > 0 {
-		if whereOptUser != "" {
-			whereOptUser = whereOptUser + " AND "
-		}
-		whereOptUser = fmt.Sprintf("%v step = %v", whereOptUser, step)
-	}
-
-	// elemintate deleted task and child
-	if whereOptUser != "" {
-		whereOptUser = whereOptUser + " AND status != 7 AND is_parent_active = false"
-	} else {
-		whereOptUser = "status != 7 AND is_parent_active = false"
-	}
-
-	if whereOptUser != "" {
-		queryUser = queryUser.Where(whereOptUser)
-	}
-
-	queryUser = queryUser.Group("step, type")
-	var result2 []*GraphResult
-	if err = queryUser.Find(&result2).Error; err != nil {
-		logrus.Errorln(err)
-		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
-	}
-	result = append(result, result...)
 
 	return result, nil
 }
