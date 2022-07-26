@@ -1272,15 +1272,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Step = 3
 
 		if currentStatus == 2 {
-			if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
-				if !(task.DataBak == "" || task.DataBak == "{}") {
-					task.Status = 4
-					task.Step = 1
-					task.Data = task.DataBak
-				} else {
-					task.Status = 7
-					task.Step = 1
-				}
+			if !(task.DataBak == "" || task.DataBak == "{}") {
+				task.Status = 4
+				task.Step = 1
+				task.Data = task.DataBak
+			} else {
+				task.Status = 7
+				task.Step = 1
 			}
 		}
 	}
