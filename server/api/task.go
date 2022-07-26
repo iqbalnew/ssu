@@ -850,7 +850,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
 	var err error
 	currentUser, userMd, err := s.manager.GetMeFromMD(ctx)
-	// currentUser, userMd, err := manager.UserData{
+	// currentUser, userMd, err := &UserData{
 	// 	UserID: 6,
 	// }, metadata.MD{}, err
 	logrus.Printf("<@@ result @@>1 %s", req)
@@ -1232,13 +1232,17 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}, nil
 		}
 
+		taskType := []string{"BG Mapping", "BG Mapping Digital"}
+
 		if currentStatus == 4 {
-			return &pb.SetTaskResponse{
-				Error:   false,
-				Code:    200,
-				Message: "Task Status Already Approved",
-				Data:    &taskPb,
-			}, nil
+			if !contains(taskType, task.Type) {
+				return &pb.SetTaskResponse{
+					Error:   false,
+					Code:    200,
+					Message: "Task Status Already Approved",
+					Data:    &taskPb,
+				}, nil
+			}
 		}
 
 		if currentStatus == 5 {
