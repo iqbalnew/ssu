@@ -38,6 +38,14 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, servi
 		}
 		whereOpt = whereOpt + ` ("data" -> 'user'->> 'companyID' = '` + idCompany + `' OR "data" -> 'companyID' = '` + idCompany + `' OR company_id = '` + idCompany + `')`
 	}
+
+	if service == "Role" && idCompany != "" {
+		if whereOpt != "" {
+			whereOpt = whereOpt + " AND "
+		}
+		whereOpt = whereOpt + ` ("data" -> 'userTypeID' = '4')`
+	}
+
 	if !isIncludeApprove {
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
