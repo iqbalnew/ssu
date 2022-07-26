@@ -368,7 +368,7 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 		me.CompanyID = ""
 	}
 
-	data, err := s.provider.GetGraphStep(ctx, me.CompanyID, req.Service, uint(step), uint(stat), req.IsIncludeApprove, req.IsIncludeReject)
+	data, err := s.provider.GetGraphStep(ctx, me.CompanyID, req.Service, uint(step), uint(stat), req.IsIncludeApprove, req.IsIncludeReject, me.UserType)
 	if err != nil {
 		return nil, err
 	}
@@ -1223,44 +1223,46 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	case "delete":
 		taskPb, _ := task.ToPB(ctx)
-		if currentStatus == 3 {
-			return &pb.SetTaskResponse{
-				Error:   false,
-				Code:    200,
-				Message: "Task Status Already Returned",
-				Data:    &taskPb,
-			}, nil
-		}
-
-		taskType := []string{"BG Mapping", "BG Mapping Digital"}
-
-		if currentStatus == 4 {
-			if !contains(taskType, task.Type) {
+		if currentStatus == 6 {
+			if currentStatus == 3 {
 				return &pb.SetTaskResponse{
 					Error:   false,
 					Code:    200,
-					Message: "Task Status Already Approved",
+					Message: "Task Status Already Returned",
 					Data:    &taskPb,
 				}, nil
 			}
-		}
 
-		if currentStatus == 5 {
-			return &pb.SetTaskResponse{
-				Error:   false,
-				Code:    200,
-				Message: "Task Status Already Rejected",
-				Data:    &taskPb,
-			}, nil
-		}
+			taskType := []string{"BG Mapping", "BG Mapping Digital"}
 
-		if currentStatus == 7 {
-			return &pb.SetTaskResponse{
-				Error:   false,
-				Code:    200,
-				Message: "Task Already Deleted",
-				Data:    &taskPb,
-			}, nil
+			if currentStatus == 4 {
+				if !contains(taskType, task.Type) {
+					return &pb.SetTaskResponse{
+						Error:   false,
+						Code:    200,
+						Message: "Task Status Already Approved",
+						Data:    &taskPb,
+					}, nil
+				}
+			}
+
+			if currentStatus == 5 {
+				return &pb.SetTaskResponse{
+					Error:   false,
+					Code:    200,
+					Message: "Task Status Already Rejected",
+					Data:    &taskPb,
+				}, nil
+			}
+
+			if currentStatus == 7 {
+				return &pb.SetTaskResponse{
+					Error:   false,
+					Code:    200,
+					Message: "Task Already Deleted",
+					Data:    &taskPb,
+				}, nil
+			}
 		}
 
 		task.LastApprovedByID = 0
