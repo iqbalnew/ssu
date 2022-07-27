@@ -31,8 +31,6 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, servi
 	whereOpt := ""
 	if service != "" {
 		whereOpt = fmt.Sprintf("type = '%v'", service)
-	} else {
-		whereOpt = fmt.Sprintf("type != 'User'")
 	}
 	if idCompany != "" {
 		if whereOpt != "" {
