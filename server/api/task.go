@@ -2197,7 +2197,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
 			client := &http.Client{}
-			if getEnv("ENV", "PRODUCTION") != "PRODUCTION" {
+			if getEnv("ENV", "PRODUCTION") != "DEV" {
 				proxyURL, err := url.Parse("http://localhost:5100")
 				if err != nil {
 					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
