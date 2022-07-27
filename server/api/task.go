@@ -17,6 +17,7 @@ import (
 	beneficiary_account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/beneficiary_account_service"
 	bg_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/bg_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
+	deposito_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/deposito_service"
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
@@ -801,7 +802,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account", "BG Mapping", "BG Mapping Digital"}
+	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account", "BG Mapping", "BG Mapping Digital", "Deposito"}
 
 	for _, v := range skipProduct {
 		if v == taskType {
@@ -1198,7 +1199,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 0
 		}
 
-		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User", "Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping", "BG Mapping Digital"}
+		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User",
+			"Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping", "BG Mapping Digital",
+			"Deposito"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
@@ -1232,12 +1235,15 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 		if currentStatus == 4 {
-			return &pb.SetTaskResponse{
-				Error:   false,
-				Code:    200,
-				Message: "Task Status Already Approved",
-				Data:    &taskPb,
-			}, nil
+			taskType := []string{"BG Mapping", "BG Mapping Digital"}
+			if !contains(taskType, task.Type) {
+				return &pb.SetTaskResponse{
+					Error:   false,
+					Code:    200,
+					Message: "Task Status Already Approved",
+					Data:    &taskPb,
+				}, nil
+			}
 		}
 
 		if currentStatus == 5 {
@@ -1435,6 +1441,44 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 				logrus.Println(res)
 			}
+
+		case "Deposito":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			DepositoConn, err := grpc.Dial(getEnv("DEPOSITO_SERVICE", ":9201"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Company Service: %v", err)
+				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
+
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer DepositoConn.Close()
+			logrus.Println("dicek ini", task.TaskID)
+
+			depositoClient := deposito_pb.NewDepositoServiceClient(DepositoConn)
+
+			data := &deposito_pb.CreateDepositoRequest{}
+			json.Unmarshal([]byte(task.Data), &data.Data)
+			data.Data.Deposito.DepositoID = task.FeatureID
+			data.Data.Task = &deposito_pb.Task{
+				TaskID:             task.TaskID,
+				FeatureID:          task.FeatureID,
+				LastApprovedByName: task.LastApprovedByName,
+				LastRejectedByName: task.LastRejectedByName,
+				CreatedByName:      task.CreatedByName,
+				UpdatedByName:      task.UpdatedByName,
+				Reasons:            task.Reasons,
+				Comment:            task.Comment,
+			}
+
+			logrus.Println(data, "cek data")
+
+			res, err := depositoClient.CreateDeposito(ctx, data, grpc.Header(&header), grpc.Trailer(&trailer))
+			if err != nil {
+				return nil, err
+			}
+			logrus.Printf("[create deposito data] data : %v", res)
 
 		case "Account":
 			// data := &dataPublish{
