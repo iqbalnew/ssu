@@ -6,8 +6,9 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
+ 
 
-# Make data base, printed on Tue Jul 26 18:42:37 2022
+# Make data base, printed on Wed Jul 27 16:45:36 2022
 
 # Variables
 
@@ -78,6 +79,7 @@ VSCODE_CODE_CACHE_PATH = /Users/farizrachmanyusuf/Library/Application Support/Co
 # environment
 LOGNAME = farizrachmanyusuf
 # environment
+ 
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # environment
 ZSH = /Users/farizrachmanyusuf/.oh-my-zsh
@@ -160,7 +162,7 @@ MAKELEVEL := 0
 # environment
 LANG = C
 # environment
-VSCODE_PID = 39688
+VSCODE_PID = 64849
 # variable set hash-table stats:
 # Load=75/1024=7%, Rehash=0, Collisions=2/107=2%
 
@@ -252,6 +254,7 @@ vet:
 	@echo "go vet complete"
 	
 
+ 
 default: depend
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -308,7 +311,6 @@ migrate-db:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
- 
 #  commands to execute (from `Makefile', line 52):
 	go run ./server/ db-migrate
 	
@@ -373,6 +375,6 @@ install: depend build
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Tue Jul 26 18:42:37 2022
+# Finished Make data base on Wed Jul 27 16:45:36 2022
 
  
