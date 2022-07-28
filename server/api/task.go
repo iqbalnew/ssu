@@ -2224,13 +2224,25 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
+			taskData := []*bg_pb.MappingData{}
+			json.Unmarshal([]byte(task.Data), &taskData)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			}
+
+			taskDataBak := []*bg_pb.MappingData{}
+			json.Unmarshal([]byte(task.Data), &taskDataBak)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			}
+
 			if task.Status == 7 {
-				_, err = bgClient.DeleteTransaction(ctx, &bg_pb.DeleteTransactionRequest{TaskID: task.TaskID})
+				_, err = bgClient.DeleteTransaction(ctx, &bg_pb.DeleteTransactionRequest{Type: "BG Mapping", MappingData: taskData, MappingDataBackup: taskDataBak})
 				if err != nil {
 					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 				}
 			} else {
-				_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{TaskID: task.TaskID})
+				_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{Type: "BG Mapping", MappingData: taskData, MappingDataBackup: taskDataBak})
 				if err != nil {
 					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 				}
@@ -2250,13 +2262,25 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
+			taskData := []*bg_pb.MappingDigitalData{}
+			json.Unmarshal([]byte(task.Data), &taskData)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			}
+
+			taskDataBak := []*bg_pb.MappingDigitalData{}
+			json.Unmarshal([]byte(task.Data), &taskDataBak)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			}
+
 			if task.Status == 7 {
-				_, err = bgClient.DeleteTransaction(ctx, &bg_pb.DeleteTransactionRequest{TaskID: task.TaskID})
+				_, err = bgClient.DeleteTransaction(ctx, &bg_pb.DeleteTransactionRequest{Type: "BG Mapping Digital", MappingDigitalData: taskData, MappingDigitalDataBackup: taskDataBak})
 				if err != nil {
 					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 				}
 			} else {
-				_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{TaskID: task.TaskID})
+				_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{Type: "BG Mapping Digital", MappingDigitalData: taskData, MappingDigitalDataBackup: taskDataBak})
 				if err != nil {
 					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 				}
