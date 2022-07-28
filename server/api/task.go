@@ -1151,27 +1151,33 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			// if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
 			if currentStep == 1 {
+
 				task.Status = 1
 				task.Step = 3
+
 				if currentStatus == 6 {
 					task.Status = currentStatus
 				}
+
 			}
 
 			if currentStep == 3 {
-				task.Status = 1
-				// task.Step = 4
-				// if task.Type == "Announcement" {
+
+				sendTask = true
+				// task.Status = 1
 				task.Status = 4
 				task.Step = 3
-				sendTask = true
+
 				if currentStatus == 6 {
+
 					task.Status = 7
+
+					// if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
+
+					// }
+
 				}
-				// }
-				// if currentStatus == 6 {
-				// 	task.Status = currentStatus
-				// }
+
 			}
 
 			if currentStep == 4 {
@@ -1489,6 +1495,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if sendTask {
 		switch task.Type {
 		case "Announcement":
+
 			// data := &dataPublish{
 			// 	DataType: "create-task",
 			// 	Data:     task.Data,
@@ -1513,6 +1520,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			// 	logrus.Errorf("Failed to publish: %s", err)
 			// 	return nil, status.Errorf(codes.Internal, "Failed to publish: %s", err)
 			// }
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1540,6 +1548,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			logrus.Println(res)
 
 		case "Company":
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1574,6 +1583,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 		case "Deposito":
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1612,6 +1622,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			logrus.Printf("[create deposito data] data : %v", res)
 
 		case "Account":
+
 			// data := &dataPublish{
 			// 	DataType: "create-account",
 			// 	Data:     task.Data,
@@ -1707,6 +1718,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 		case "Notification":
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1732,6 +1744,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			logrus.Println(res)
 
 		case "User":
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1766,6 +1779,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 		case "Menu:Appearance":
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1835,6 +1849,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 		case "Menu:License":
+
 			fmt.Println("Menu:License")
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
@@ -1905,6 +1920,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 		case "Role":
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1945,6 +1961,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 		case "Workflow":
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1996,6 +2013,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			logrus.Println(res)
 
 		case "Liquidity":
+
 			logrus.Println("Liquidity")
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
@@ -2024,6 +2042,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			logrus.Println(res)
 
 		case "SSO:User":
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -2053,6 +2072,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 		case "SSO:Company":
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -2081,7 +2101,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 				logrus.Println(res)
 			}
+
 		case "System":
+
 			logrus.Println("System Creataion Triggered ========>")
 			logrus.Println()
 			var opts []grpc.DialOption
@@ -2106,7 +2128,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, err
 			}
 			logrus.Println(res)
+
 		case "Subscription":
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -2146,6 +2170,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			reUpdate = true
 
 		case "Beneficiary Account":
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -2184,6 +2209,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.FeatureID = res.Data.BeneficiaryAccountID
 				reUpdate = true
 			}
+
 		case "BG Mapping":
 
 			var opts []grpc.DialOption
@@ -2198,9 +2224,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-			_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{TaskID: task.TaskID})
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			if task.Status == 7 {
+				_, err = bgClient.DeleteTransaction(ctx, &bg_pb.DeleteTransactionRequest{TaskID: task.TaskID})
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				}
+			} else {
+				_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{TaskID: task.TaskID})
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				}
 			}
 
 		case "BG Mapping Digital":
@@ -2217,9 +2250,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-			_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{TaskID: task.TaskID})
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			if task.Status == 7 {
+				_, err = bgClient.DeleteTransaction(ctx, &bg_pb.DeleteTransactionRequest{TaskID: task.TaskID})
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				}
+			} else {
+				_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{TaskID: task.TaskID})
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				}
 			}
 
 		}
