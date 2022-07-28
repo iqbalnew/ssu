@@ -2231,7 +2231,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 			taskDataBak := []*bg_pb.MappingData{}
-			json.Unmarshal([]byte(task.Data), &taskDataBak)
+			json.Unmarshal([]byte(task.DataBak), &taskDataBak)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
@@ -2269,7 +2269,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 			taskDataBak := []*bg_pb.MappingDigitalData{}
-			json.Unmarshal([]byte(task.Data), &taskDataBak)
+			json.Unmarshal([]byte(task.DataBak), &taskDataBak)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
