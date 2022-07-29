@@ -2306,7 +2306,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
 
-			result, err := bgClient.CreateIssuing(ctx, &bg_pb.CreateIssuingRequest{
+			result, err := bgClient.ApiCreateIssuing(ctx, &bg_pb.ApiCreateIssuingRequest{
 				TaskID: task.TaskID,
 				Data:   &taskData,
 			})
