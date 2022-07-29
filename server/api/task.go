@@ -2287,7 +2287,35 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 				}
 			}
+		case "BG Issuing":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
 
+			bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to BG Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer bgConn.Close()
+
+			bgClient := bg_pb.NewApiServiceClient(bgConn)
+
+			taskData := bg_pb.IssuingData{}
+			json.Unmarshal([]byte(task.Data), &taskData)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			}
+
+			result, err := bgClient.CreateIssuing(ctx, &bg_pb.CreateIssuingRequest{
+				TaskID: task.TaskID,
+				Data:   &taskData,
+			})
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			}
+
+			// Unfinished
+			result.Data.GetRegistrationNo()
 		}
 
 	}
