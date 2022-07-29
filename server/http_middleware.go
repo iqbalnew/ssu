@@ -29,7 +29,6 @@ func setHeaderHandler(h http.Handler, sid *shortid.Shortid) http.Handler {
 			w.Header().Set("X-Permitted-Cross-Domain-Policies", "none")
 			w.Header().Set("X-XSS-Protection", "1; mode=block")
 			w.Header().Set("Permissions-Policy", "geolocation=()")
-			w.Header().Set("Referrer-Policy", "no-referrer")
 
 			w.Header().Set("Access-Control-Allow-Origin", strings.Join(config.CorsAllowedOrigins, ", "))
 			w.Header().Set("Access-Control-Allow-Methods", strings.Join(config.CorsAllowedMethods, ", "))
@@ -44,6 +43,7 @@ func setHeaderHandler(h http.Handler, sid *shortid.Shortid) http.Handler {
 
 			w.Header().Set("App-Reference-Code", refCode)
 			w.Header().Set("App-Entry-Code", config.ServiceName)
+			w.Header().Set("Referrer-Policy", refCode)
 
 			logrus.Println(w.Header().Get("App-Time-Code"))
 			logrus.Println(w.Header().Get("App-Reference-Code"))

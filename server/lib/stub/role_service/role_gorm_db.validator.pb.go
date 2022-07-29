@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/infobloxopen/protoc-gen-gorm/options"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -65,6 +65,13 @@ func (this *Role) Validate() error {
 			}
 		}
 	}
+	for _, item := range this.BeneficiaryAccountID {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("BeneficiaryAccountID", err)
+			}
+		}
+	}
 	for _, item := range this.UserRoles {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
@@ -82,6 +89,9 @@ func (this *Role) Validate() error {
 	return nil
 }
 func (this *AccountID) Validate() error {
+	return nil
+}
+func (this *BeneficiaryAccountID) Validate() error {
 	return nil
 }
 func (this *UserRole) Validate() error {
