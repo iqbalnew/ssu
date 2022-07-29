@@ -1032,6 +1032,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	sendTask := false
 	currentStep := task.Step
 	currentStatus := task.Status
+	currentData := task.Data
+	currentDataBak := task.DataBak
 	switch strings.ToLower(req.Action) {
 	case "rework":
 		taskPb, _ := task.ToPB(ctx)
@@ -2225,13 +2227,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
 			taskData := []*bg_pb.MappingData{}
-			json.Unmarshal([]byte(task.Data), &taskData)
+			json.Unmarshal([]byte(currentData), &taskData)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
 
 			taskDataBak := []*bg_pb.MappingData{}
-			json.Unmarshal([]byte(task.DataBak), &taskDataBak)
+			json.Unmarshal([]byte(currentDataBak), &taskDataBak)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
@@ -2263,13 +2265,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
 			taskData := []*bg_pb.MappingDigitalData{}
-			json.Unmarshal([]byte(task.Data), &taskData)
+			json.Unmarshal([]byte(currentData), &taskData)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
 
 			taskDataBak := []*bg_pb.MappingDigitalData{}
-			json.Unmarshal([]byte(task.DataBak), &taskDataBak)
+			json.Unmarshal([]byte(currentDataBak), &taskDataBak)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
