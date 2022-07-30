@@ -317,7 +317,7 @@ func httpGatewayServer(port int, grpcEndpoint string, authManager *manager.JWTMa
 	var handler http.Handler = mux
 
 	handler = setHeaderHandler(handler, sid)
-	handler = logRequestHandler(handler, logger)
+	//	handler = logRequestHandler(handler, logger)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
