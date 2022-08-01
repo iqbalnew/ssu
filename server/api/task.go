@@ -1416,7 +1416,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		if currentStatus == 2 {
 			if !(task.DataBak == "" || task.DataBak == "{}") {
 				task.Status = 4
-				task.Step = 1
+				task.Step = 3
 				task.Data = task.DataBak
 			} else {
 				task.Status = 7
