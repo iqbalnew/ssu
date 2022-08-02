@@ -341,10 +341,10 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		query = query.Where(&filter)
 	}
 	query = query.Scopes(FilterScoope(sql.Filter))
-	query = query.Scopes(FilterOrScoope(sql.FilterOr))
 	if workflowRoleIDFilter != "" {
-		query = query.Or("workflow_doc->'workflow'->>'workflow_role_id'::int[] && ?::int[]", workflowRoleIDFilter)
+		query = query.Where("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && array(?)", workflowRoleIDFilter)
 	}
+	query = query.Scopes(FilterOrScoope(sql.FilterOr))
 	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn))
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
