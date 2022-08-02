@@ -335,14 +335,14 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowRoleIDFilter string) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowRoleIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
 	query := p.db_main.Select("*", "CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
 	if filter != nil {
 		query = query.Where(&filter)
 	}
 	query = query.Scopes(FilterScoope(sql.Filter))
-	if workflowRoleIDFilter != "" {
-		query = query.Where("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && array(?)", workflowRoleIDFilter)
+	if len(workflowRoleIDFilter) > 0 {
+		query = query.Where("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && ?", workflowRoleIDFilter)
 	}
 	query = query.Scopes(FilterOrScoope(sql.FilterOr))
 	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn))
