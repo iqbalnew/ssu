@@ -35,130 +35,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type ApiPaginationResponse struct {
-	Page        uint64 `json:"page,string"`
-	Limit       uint64 `json:"limit,string"`
-	TotalRecord uint64 `json:"totalRecord,string"`
-	TotalPage   uint32 `json:"totalPage"`
-}
-
-type ApiListTransactionRequest struct {
-	StartDate             string `url:"startDate"`
-	EndDate               string `url:"endDate"`
-	Branch                string `url:"branch"`
-	ApplicantName         string `url:"applicationName"`
-	ClaimPeriod           string `url:"claimPeriod"`
-	Status                string `url:"status"`
-	ReferenceNo           string `url:"referenceNo"`
-	EventPeriod           string `url:"eventPeriod"`
-	BeneficiaryId         string `url:"beneficiaryId,string"`
-	BeneficiaryName       string `url:"beneficiaryName"`
-	ThirdPartyId          uint64 `url:"thirdPartyId,string"`
-	ThirdPartyName        string `url:"thirdPartyName"`
-	ChannelId             uint64 `url:"channel_id"`
-	ChannelName           string `url:"channel_name"`
-	ApplicationCustomerId string `url:"applicant_customer_id"`
-	BeneficiaryCustomerId string `url:"beneficiary_customer_id"`
-	Page                  uint64 `url:"page,string"`
-	Limit                 uint64 `url:"limit,string"`
-}
-
-type ApiListTransactionResponse struct {
-	ResponseCode    string                `json:"responseCode"`
-	ResponseMessage string                `json:"responseMessage"`
-	Pagination      ApiPaginationResponse `json:"pagination"`
-	ResponseData    []*ApiTransaction     `json:"responseData"`
-}
-
-type ApiTransaction struct {
-	TransactionId     uint64  `json:"transactionId,string"`
-	ThirdPartyId      uint64  `json:"thirdPartyId,string"`
-	ThirdPartyName    string  `json:"thirdPartyName"`
-	ReferenceNo       string  `json:"referenceNo"`
-	RegistrationNo    string  `json:"registrationNo"`
-	ApplicantName     string  `json:"applicantName"`
-	BeneficiaryId     uint64  `json:"beneficiaryId,string"`
-	BeneficiaryName   string  `json:"beneficiaryName"`
-	IssueDate         string  `json:"issueDate"`
-	EffectiveDate     string  `json:"effectiveDate"`
-	ExpiryDate        string  `json:"expiryDate"`
-	ClaimPeriod       uint32  `json:"claimPeriod,string"`
-	ClosingDate       string  `json:"closingDate"`
-	Currency          string  `json:"currency"`
-	Amount            float64 `json:"amount,string"`
-	CreatedDate       string  `json:"createdDate"`
-	ModifiedDate      string  `json:"modifiedDate"`
-	Remark            string  `json:"remark"`
-	Status            string  `json:"status"`
-	ChannelId         uint64  `json:"channelId,string"`
-	ChannelName       string  `json:"channelName"`
-	TransactionTypeId uint64  `json:"transactionTypeId,string"`
-	DocumentPath      string  `json:"documentPath"`
-}
-
-type ApiInquiryThirdPartyByIDRequest struct {
-	ThirdPartyID uint64 `json:"thirdPartyId,string"`
-}
-
-type ApiInquiryThirdPartyByIDResponse struct {
-	ResponseCode    string                `json:"responseCode"`
-	ResponseMessage string                `json:"responseMessage"`
-	ResponseData    *ApiInquiryThirdParty `json:"responseData"`
-}
-
-type ApiInquiryThirdParty struct {
-	ThirdPartyID uint64 `json:"thirdPartyId,string"`
-	Cif          string `json:"cif"`
-	FullName     string `json:"fullName"`
-	Status       string `json:"status"`
-}
-
-type ApiInquiryThirdPartyByStatusRequest struct {
-	Status string `json:"status"`
-}
-
-type ApiInquiryThirdPartyByStatusResponse struct {
-	ResponseCode    string                  `json:"responseCode"`
-	ResponseMessage string                  `json:"responseMessage"`
-	ResponseData    []*ApiInquiryThirdParty `json:"responseData"`
-}
-
-type ApiDownloadRequest struct {
-	ReferenceNo string `json:"referenceNo"`
-}
-
-type ApiDownloadResponse struct {
-	ResponseCode    string      `json:"responseCode"`
-	ResponseMessage string      `json:"responseMessage"`
-	ResponseData    []UrlObject `json:"responseData"`
-}
-
-type ApiInquiryBenficiaryRequest struct {
-	Cif          string `url:"cif"`
-	Fullname     string `url:"fullname"`
-	ThirdPartyID uint64 `url:"thirdPartyId"`
-}
-
-type ApiInquiryBenficiaryResponse struct {
-	ResponseCode    string            `json:"responseCode"`
-	ResponseMessage string            `json:"responseMessage"`
-	ResponseData    []*ApiBeneficiary `json:"responseData"`
-}
-
-type ApiBeneficiary struct {
-	BeneficiaryID uint64 `json:"beneficiaryId,string"`
-	ThirdPartyID  uint64 `json:"thirdPartyId,string"`
-	Cif           string `json:"cif"`
-	FullName      string `json:"fullName"`
-	CreatedDate   string `json:"createdDate"`
-	ModifiedDate  string `json:"modifiedDate"`
-	Status        string `json:"status"`
-}
-
-type UrlObject struct {
-	Url string `json:"url"`
-}
-
 func setPagination(v *pb.ListTaskRequest) *pb.PaginationResponse {
 	res := &pb.PaginationResponse{
 		Limit: 10,
@@ -211,7 +87,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder)
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, []uint64{})
 	if err != nil {
 		return nil, err
 	}
@@ -322,7 +198,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 	}
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder)
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, []uint64{})
 	if err != nil {
 		return nil, err
 	}
@@ -369,7 +245,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 	}
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder)
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, []uint64{})
 	if err != nil {
 		return nil, err
 	}
@@ -1155,33 +1031,27 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			// if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
 			if currentStep == 1 {
-
 				task.Status = 1
 				task.Step = 3
-
 				if currentStatus == 6 {
 					task.Status = currentStatus
 				}
-
 			}
 
 			if currentStep == 3 {
-
-				sendTask = true
-				// task.Status = 1
+				task.Status = 1
+				// task.Step = 4
+				// if task.Type == "Announcement" {
 				task.Status = 4
 				task.Step = 3
-
+				sendTask = true
 				if currentStatus == 6 {
-
 					task.Status = 7
-
-					// if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
-
-					// }
-
 				}
-
+				// }
+				// if currentStatus == 6 {
+				// 	task.Status = currentStatus
+				// }
 			}
 
 			if currentStep == 4 {
@@ -1368,17 +1238,17 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}, nil
 		}
 
-		// if currentStatus == 4 {
-		// 	taskType := []string{"BG Mapping", "BG Mapping Digital"}
-		// 	if !contains(taskType, task.Type) {
-		// 		return &pb.SetTaskResponse{
-		// 			Error:   false,
-		// 			Code:    200,
-		// 			Message: "Task Status Already Approved",
-		// 			Data:    &taskPb,
-		// 		}, nil
-		// 	}
-		// }
+		if currentStatus == 4 {
+			taskType := []string{"BG Mapping", "BG Mapping Digital"}
+			if !contains(taskType, task.Type) {
+				return &pb.SetTaskResponse{
+					Error:   false,
+					Code:    200,
+					Message: "Task Status Already Approved",
+					Data:    &taskPb,
+				}, nil
+			}
+		}
 
 		if currentStatus == 5 {
 			return &pb.SetTaskResponse{
@@ -1406,23 +1276,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Status = 6
 		task.Step = 3
 
-		if req.Comment == "delete" {
-			taskType := []string{"BG Mapping", "BG Mapping Digital"}
-			if contains(taskType, task.Type) {
-				task.Status = 7
-				task.Step = 1
-			}
-		}
-
-		// delete draft task if never approve and back to approve if already approve before
 		if currentStatus == 2 {
-			if !(task.DataBak == "" || task.DataBak == "{}") {
-				task.Status = 4
-				task.Step = 3
-				task.Data = task.DataBak
-			} else {
-				task.Status = 7
-				task.Step = 1
+			if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
+				if !(task.DataBak == "" || task.DataBak == "{}") {
+					task.Status = 4
+					task.Step = 1
+					task.Data = task.DataBak
+				} else {
+					task.Status = 7
+					task.Step = 1
+				}
 			}
 		}
 	}
@@ -1524,7 +1387,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			// 	logrus.Errorf("Failed to publish: %s", err)
 			// 	return nil, status.Errorf(codes.Internal, "Failed to publish: %s", err)
 			// }
-
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -1955,6 +1817,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data.TaskID = task.TaskID
 			data.Data.RoleID = task.FeatureID
 
+			logrus.Println("==> 0create role: %s", data)
 			if task.Status == 7 {
 				res, err := client.DeleteRole(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
@@ -2299,7 +2162,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 				}
 			}
+
 		case "BG Issuing":
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
@@ -2429,7 +2294,7 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder)
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, []uint64{})
 	if err != nil {
 		return nil, err
 	}

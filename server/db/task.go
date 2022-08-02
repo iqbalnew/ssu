@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/sirupsen/logrus"
@@ -335,12 +336,28 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowRoleIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
 	query := p.db_main.Select("*", "CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
 	if filter != nil {
 		query = query.Where(&filter)
 	}
-	query = query.Scopes(FilterScoope(sql.Filter), FilterOrScoope(sql.FilterOr), QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn))
+	logrus.Println("[DEBUG] get list task swift: ", sql.Filter)
+	logrus.Println("[DEBUG] get list task swift: ", sql.FilterOr)
+
+	customQuery := ""
+	if len(workflowRoleIDFilter) > 0 {
+		value := strings.ReplaceAll(fmt.Sprint(workflowRoleIDFilter), " ", "','")
+		value = strings.ReplaceAll(value, "[", "'")
+		value = strings.ReplaceAll(value, "]", "'")
+		customQuery = fmt.Sprintf("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && array[%s]", value)
+	}
+
+	logrus.Println("[DEBUG] get list task swift: ", customQuery)
+
+	query = query.Scopes(FilterScoope(sql.Filter))
+	query = query.Scopes(FilterOrScoope(sql.FilterOr, customQuery))
+
+	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn))
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
 	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
@@ -364,7 +381,7 @@ func (p *GormProvider) GetListTaskPluck(ctx context.Context, key string, filter 
 	if filter != nil {
 		query = query.Where(&filter)
 	}
-	query = query.Scopes(FilterScoope(sql.Filter), FilterOrScoope(sql.FilterOr), QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In))
+	query = query.Scopes(FilterScoope(sql.Filter), FilterOrScoope(sql.FilterOr, ""), QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In))
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	if err := query.Pluck(columnNameBuilder(key, false), &data).Error; err != nil {
 		if !errors.Is(err, gorm.ErrModelValueRequired) {

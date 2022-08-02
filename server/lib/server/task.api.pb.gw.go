@@ -555,12 +555,13 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/SetTask", runtime.WithHTTPPathPattern("/api/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/SetTask", runtime.WithHTTPPathPattern("/api/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TaskService_SetTask_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TaskService_SetTask_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -578,12 +579,13 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/SetTaskEV", runtime.WithHTTPPathPattern("/api/task/{taskID}/ev"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/SetTaskEV", runtime.WithHTTPPathPattern("/api/task/{taskID}/ev"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TaskService_SetTaskEV_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TaskService_SetTaskEV_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -601,12 +603,13 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTaskWithToken", runtime.WithHTTPPathPattern("/api/task/normal"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTaskWithToken", runtime.WithHTTPPathPattern("/api/task/normal"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TaskService_GetListTaskWithToken_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TaskService_GetListTaskWithToken_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -624,12 +627,13 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTaskEV", runtime.WithHTTPPathPattern("/api/task"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTaskEV", runtime.WithHTTPPathPattern("/api/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TaskService_GetListTaskEV_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TaskService_GetListTaskEV_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -647,12 +651,13 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetTaskGraphStatus", runtime.WithHTTPPathPattern("/api/task/graph/status"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetTaskGraphStatus", runtime.WithHTTPPathPattern("/api/task/graph/status"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TaskService_GetTaskGraphStatus_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TaskService_GetTaskGraphStatus_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -670,12 +675,13 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GraphStatusColumnType", runtime.WithHTTPPathPattern("/api/task/graph/column-type"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GraphStatusColumnType", runtime.WithHTTPPathPattern("/api/task/graph/column-type"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TaskService_GraphStatusColumnType_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TaskService_GraphStatusColumnType_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -693,12 +699,13 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetTaskGraphStep", runtime.WithHTTPPathPattern("/api/task/graph/steps"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetTaskGraphStep", runtime.WithHTTPPathPattern("/api/task/graph/steps"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TaskService_GetTaskGraphStep_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TaskService_GetTaskGraphStep_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -716,12 +723,13 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetActivityLogs", runtime.WithHTTPPathPattern("/api/task/activity-logs/{type}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/GetActivityLogs", runtime.WithHTTPPathPattern("/api/task/activity-logs/{type}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TaskService_GetActivityLogs_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TaskService_GetActivityLogs_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -739,12 +747,13 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/DownloadActivityLogs", runtime.WithHTTPPathPattern("/api/task/activity-logs/{type}/download/{fileformat}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/DownloadActivityLogs", runtime.WithHTTPPathPattern("/api/task/activity-logs/{type}/download/{fileformat}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TaskService_DownloadActivityLogs_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TaskService_DownloadActivityLogs_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -762,12 +771,13 @@ func RegisterTaskServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/TestLogger", runtime.WithHTTPPathPattern("/api/task/test/logger"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/task.service.v1.TaskService/TestLogger", runtime.WithHTTPPathPattern("/api/task/test/logger"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TaskService_TestLogger_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TaskService_TestLogger_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -824,12 +834,13 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/SetTask", runtime.WithHTTPPathPattern("/api/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/SetTask", runtime.WithHTTPPathPattern("/api/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TaskService_SetTask_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TaskService_SetTask_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -844,12 +855,13 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/SetTaskEV", runtime.WithHTTPPathPattern("/api/task/{taskID}/ev"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/SetTaskEV", runtime.WithHTTPPathPattern("/api/task/{taskID}/ev"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TaskService_SetTaskEV_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TaskService_SetTaskEV_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -864,12 +876,13 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTaskWithToken", runtime.WithHTTPPathPattern("/api/task/normal"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTaskWithToken", runtime.WithHTTPPathPattern("/api/task/normal"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TaskService_GetListTaskWithToken_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TaskService_GetListTaskWithToken_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -884,12 +897,13 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTaskEV", runtime.WithHTTPPathPattern("/api/task"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetListTaskEV", runtime.WithHTTPPathPattern("/api/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TaskService_GetListTaskEV_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TaskService_GetListTaskEV_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -904,12 +918,13 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetTaskGraphStatus", runtime.WithHTTPPathPattern("/api/task/graph/status"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetTaskGraphStatus", runtime.WithHTTPPathPattern("/api/task/graph/status"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TaskService_GetTaskGraphStatus_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TaskService_GetTaskGraphStatus_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -924,12 +939,13 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GraphStatusColumnType", runtime.WithHTTPPathPattern("/api/task/graph/column-type"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GraphStatusColumnType", runtime.WithHTTPPathPattern("/api/task/graph/column-type"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TaskService_GraphStatusColumnType_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TaskService_GraphStatusColumnType_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -944,12 +960,13 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetTaskGraphStep", runtime.WithHTTPPathPattern("/api/task/graph/steps"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetTaskGraphStep", runtime.WithHTTPPathPattern("/api/task/graph/steps"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TaskService_GetTaskGraphStep_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TaskService_GetTaskGraphStep_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -964,12 +981,13 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetActivityLogs", runtime.WithHTTPPathPattern("/api/task/activity-logs/{type}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/GetActivityLogs", runtime.WithHTTPPathPattern("/api/task/activity-logs/{type}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TaskService_GetActivityLogs_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TaskService_GetActivityLogs_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -984,12 +1002,13 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/DownloadActivityLogs", runtime.WithHTTPPathPattern("/api/task/activity-logs/{type}/download/{fileformat}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/DownloadActivityLogs", runtime.WithHTTPPathPattern("/api/task/activity-logs/{type}/download/{fileformat}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TaskService_DownloadActivityLogs_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TaskService_DownloadActivityLogs_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1004,12 +1023,13 @@ func RegisterTaskServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/TestLogger", runtime.WithHTTPPathPattern("/api/task/test/logger"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/task.service.v1.TaskService/TestLogger", runtime.WithHTTPPathPattern("/api/task/test/logger"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TaskService_TestLogger_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TaskService_TestLogger_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
