@@ -129,7 +129,6 @@ type AnnouncementORM struct {
 	IsWaitingApproval bool                      `gorm:"column:IsWaitingApproval"`
 	StartFrom         *time.Time                `gorm:"column:StartFrom;not null"`
 	StatusLevel       string                    `gorm:"column:StatusLevel;type:varchar(255);not null"`
-	Task              *AnnouncementTaskORM      `gorm:"foreignkey:AnnouncementID;association_foreignkey:AnnouncementID"`
 	Title             string                    `gorm:"column:Title;type:varchar(255);not null"`
 	UpdatedAt         *time.Time
 	UpdatedByID       uint64 `gorm:"column:UpdatedByID"`
@@ -190,13 +189,6 @@ func (m *Announcement) ToORM(ctx context.Context) (AnnouncementORM, error) {
 		}
 		to.EventType = &tempEventType
 	}
-	if m.Task != nil {
-		tempTask, err := m.Task.ToORM(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.Task = &tempTask
-	}
 	to.IsWaitingApproval = m.IsWaitingApproval
 	if posthook, ok := interface{}(m).(AnnouncementWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
@@ -248,13 +240,6 @@ func (m *AnnouncementORM) ToPB(ctx context.Context) (Announcement, error) {
 			return to, err
 		}
 		to.EventType = &tempEventType
-	}
-	if m.Task != nil {
-		tempTask, err := m.Task.ToPB(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.Task = &tempTask
 	}
 	to.IsWaitingApproval = m.IsWaitingApproval
 	if posthook, ok := interface{}(m).(AnnouncementWithAfterToPB); ok {
@@ -1168,14 +1153,6 @@ func DefaultStrictUpdateAnnouncement(ctx context.Context, in *Announcement, db *
 			return nil, err
 		}
 	}
-	filterTask := AnnouncementTaskORM{}
-	if ormObj.AnnouncementID == 0 {
-		return nil, errors.EmptyIdError
-	}
-	filterTask.AnnouncementID = ormObj.AnnouncementID
-	if err = db.Where(filterTask).Delete(AnnouncementTaskORM{}).Error; err != nil {
-		return nil, err
-	}
 	if hook, ok := interface{}(&ormObj).(AnnouncementORMWithBeforeStrictUpdateSave); ok {
 		if db, err = hook.BeforeStrictUpdateSave(ctx, db); err != nil {
 			return nil, err
@@ -1289,7 +1266,6 @@ func DefaultApplyFieldMaskAnnouncement(ctx context.Context, patchee *Announcemen
 	var updatedUpdatedAt bool
 	var updatedDeletedAt bool
 	var updatedEventType bool
-	var updatedTask bool
 	for i, f := range updateMask.Paths {
 		if f == prefix+"AnnouncementID" {
 			patchee.AnnouncementID = patcher.AnnouncementID
@@ -1477,27 +1453,6 @@ func DefaultApplyFieldMaskAnnouncement(ctx context.Context, patchee *Announcemen
 		if f == prefix+"EventType" {
 			updatedEventType = true
 			patchee.EventType = patcher.EventType
-			continue
-		}
-		if !updatedTask && strings.HasPrefix(f, prefix+"Task.") {
-			updatedTask = true
-			if patcher.Task == nil {
-				patchee.Task = nil
-				continue
-			}
-			if patchee.Task == nil {
-				patchee.Task = &AnnouncementTask{}
-			}
-			if o, err := DefaultApplyFieldMaskAnnouncementTask(ctx, patchee.Task, patcher.Task, &field_mask.FieldMask{Paths: updateMask.Paths[i:]}, prefix+"Task.", db); err != nil {
-				return nil, err
-			} else {
-				patchee.Task = o
-			}
-			continue
-		}
-		if f == prefix+"Task" {
-			updatedTask = true
-			patchee.Task = patcher.Task
 			continue
 		}
 		if f == prefix+"IsWaitingApproval" {

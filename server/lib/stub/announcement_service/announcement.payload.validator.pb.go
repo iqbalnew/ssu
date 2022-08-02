@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/mwitkow/go-proto-validators"
-	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -151,6 +151,9 @@ func (this *CreateAnnouncementResponse) Validate() error {
 	}
 	return nil
 }
+func (this *DeleteAnnouncementResponse) Validate() error {
+	return nil
+}
 func (this *ListEventTypeResponse) Validate() error {
 	for _, item := range this.Data {
 		if item != nil {
@@ -159,5 +162,40 @@ func (this *ListEventTypeResponse) Validate() error {
 			}
 		}
 	}
+	return nil
+}
+func (this *VerifyTokenRes) Validate() error {
+	for _, item := range this.ProductRoles {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("ProductRoles", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *ProductAuthority) Validate() error {
+	return nil
+}
+func (this *AnnouncementGraph) Validate() error {
+	return nil
+}
+func (this *AnnouncementGraphRes) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *AnnouncementGraphReq) Validate() error {
+	return nil
+}
+func (this *ActivatedResponse) Validate() error {
+	return nil
+}
+func (this *ActivatedRequest) Validate() error {
 	return nil
 }
