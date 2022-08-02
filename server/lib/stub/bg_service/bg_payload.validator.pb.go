@@ -177,6 +177,12 @@ func (this *ProjectData) Validate() error {
 	if !(this.CounterGuaranteeAmount >= 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("CounterGuaranteeAmount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.CounterGuaranteeAmount))
 	}
+	if !(this.HoldAccountAmount >= 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("HoldAccountAmount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.HoldAccountAmount))
+	}
+	if !(this.ConsumerLimitAmount >= 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("ConsumerLimitAmount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.ConsumerLimitAmount))
+	}
 	return nil
 }
 func (this *DocumentData) Validate() error {
@@ -189,6 +195,19 @@ func (this *HealthCheckRequest) Validate() error {
 	return nil
 }
 func (this *HealthCheckResponse) Validate() error {
+	return nil
+}
+func (this *GetBranchRequest) Validate() error {
+	return nil
+}
+func (this *GetBranchResponse) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
 	return nil
 }
 func (this *BeneficiaryName) Validate() error {

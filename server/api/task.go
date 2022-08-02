@@ -2188,6 +2188,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Data:   &taskData,
 			}
 
+			logrus.Println(taskData.String())
+
 			result, err := bgClient.CreateIssuing(ctx, bgGrpcReq, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
