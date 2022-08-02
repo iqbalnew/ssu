@@ -926,7 +926,9 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account", "BG Mapping", "BG Mapping Digital", "Deposito"}
+	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account", "BG Mapping", "BG Mapping Digital", "BG Issuing", "Deposito"}
+
+	logrus.Print(taskType)
 
 	for _, v := range skipProduct {
 		if v == taskType {
@@ -1416,7 +1418,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		if currentStatus == 2 {
 			if !(task.DataBak == "" || task.DataBak == "{}") {
 				task.Status = 4
-				task.Step = 1
+				task.Step = 3
 				task.Data = task.DataBak
 			} else {
 				task.Status = 7
@@ -2296,6 +2298,52 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				if err != nil {
 					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 				}
+			}
+		case "BG Issuing":
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to BG Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer bgConn.Close()
+
+			bgClient := bg_pb.NewApiServiceClient(bgConn)
+
+			taskData := bg_pb.IssuingData{}
+			json.Unmarshal([]byte(task.Data), &taskData)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			}
+
+			bgGrpcReq := &bg_pb.CreateIssuingRequest{
+				TaskID: task.TaskID,
+				Data:   &taskData,
+			}
+
+			result, err := bgClient.CreateIssuing(ctx, bgGrpcReq, grpc.Header(&header), grpc.Trailer(&trailer))
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			}
+
+			// Unfinished
+
+			task, err := s.provider.FindTaskById(ctx, req.TaskID)
+			if err != nil {
+				return nil, err
+			}
+
+			taskData.RegistrationNo = result.Data.GetRegistrationNo()
+			taskData.ReferenceNo = result.Data.GetReferenceNo()
+
+			data, _ := json.Marshal(&taskData)
+			task.Data = string(data)
+
+			updatedTask, err = s.provider.UpdateTask(ctx, task, false)
+			if err != nil {
+				return nil, err
 			}
 
 		}

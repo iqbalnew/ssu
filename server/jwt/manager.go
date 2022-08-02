@@ -174,9 +174,13 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string,
 	aes := customAES.NewCustomAES(key)
 
 	currentUser.TaskFilter = ""
+
 	if currentUser.UserType == "ca" || currentUser.UserType == "cu" {
+		modules := []string{"Workflow", "Cash Pooling"}
 		if module == "User" {
 			currentUser.TaskFilter = "data.user.companyID:"
+		} else if contains(modules, module) {
+			currentUser.TaskFilter = "data.company.companyID:"
 		} else {
 			currentUser.TaskFilter = "data.companyID:"
 		}
@@ -402,4 +406,13 @@ func getEnv(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
