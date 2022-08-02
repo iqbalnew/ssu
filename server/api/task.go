@@ -2306,7 +2306,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
 
-			result, err := bgClient.ApiCreateIssuing(ctx, &bg_pb.ApiCreateIssuingRequest{
+			result, err := bgClient.CreateIssuing(ctx, &bg_pb.CreateIssuingRequest{
 				TaskID: task.TaskID,
 				Data:   &taskData,
 			})
@@ -2315,7 +2315,23 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 			// Unfinished
-			result.Data.GetRegistrationNo()
+
+			task, err := s.provider.FindTaskById(ctx, req.TaskID)
+			if err != nil {
+				return nil, err
+			}
+
+			taskData.RegistrationNo = result.Data.GetRegistrationNo()
+			taskData.ReferenceNo = result.Data.GetReferenceNo()
+
+			data, _ := json.Marshal(&taskData)
+			task.Data = string(data)
+
+			updatedTask, err = s.provider.UpdateTask(ctx, task, false)
+			if err != nil {
+				return nil, err
+			}
+
 		}
 
 	}

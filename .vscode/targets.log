@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Jul 29 15:41:50 2022
+# Make data base, printed on Tue Aug  2 09:16:57 2022
 
 # Variables
 
@@ -145,7 +145,7 @@ DOCKERCMD = docker
 # environment
 _ = /home/septian/.vscode-server/bin/3b889b090b5ad5793f524b5d1d39fda662b96a2a/node
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-c29208b3-3cbd-40ba-89b5-55161d4ede1e.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-325ea9bf-25b3-462c-86ff-dc2f3c333511.sock
 # environment
 NVM_CD_FLAGS = 
 # environment
@@ -276,9 +276,9 @@ unit-test:
 	@echo "Unit test done"
 
 # Not a target:
+ 
 .DEFAULT:
 #  Implicit rule search has not been done.
- 
 #  Modification time never checked.
 #  File has not been updated.
 
@@ -370,6 +370,6 @@ docker-build:
 # strcache performance: lookups = 103 / hit rate = 54%
 # hash-table stats:
 # Load=47/8192=1%, Rehash=0, Collisions=0/103=0%
-# Finished Make data base on Fri Jul 29 15:41:50 2022
+# Finished Make data base on Tue Aug  2 09:16:59 2022
 
  
