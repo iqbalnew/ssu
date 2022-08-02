@@ -2306,10 +2306,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
 
-			result, err := bgClient.CreateIssuing(ctx, &bg_pb.CreateIssuingRequest{
+			bgGrpcReq := &bg_pb.CreateIssuingRequest{
 				TaskID: task.TaskID,
 				Data:   &taskData,
-			})
+			}
+
+			result, err := bgClient.CreateIssuing(ctx, bgGrpcReq, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
