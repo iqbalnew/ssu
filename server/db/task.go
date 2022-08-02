@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	"github.com/sirupsen/logrus"
@@ -340,11 +341,22 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	if filter != nil {
 		query = query.Where(&filter)
 	}
-	query = query.Scopes(FilterScoope(sql.Filter))
-	query = query.Scopes(FilterOrScoope(sql.FilterOr))
+	logrus.Println("[DEBUG] get list task swift: ", sql.Filter)
+	logrus.Println("[DEBUG] get list task swift: ", sql.FilterOr)
+
+	customQuery := ""
 	if len(workflowRoleIDFilter) > 0 {
-		query = query.Or("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && ?", workflowRoleIDFilter)
+		value := strings.ReplaceAll(fmt.Sprint(workflowRoleIDFilter), " ", "','")
+		value = strings.ReplaceAll(value, "[", "'")
+		value = strings.ReplaceAll(value, "]", "'")
+		customQuery = fmt.Sprintf("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && array[%s]", value)
 	}
+
+	logrus.Println("[DEBUG] get list task swift: ", customQuery)
+
+	query = query.Scopes(FilterScoope(sql.Filter))
+	query = query.Scopes(FilterOrScoope(sql.FilterOr, customQuery))
+
 	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn))
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))

@@ -370,7 +370,7 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
+func FilterOrScoope(v string, customOr string) func(db *gorm.DB) *gorm.DB {
 	// Example of v: "key1:val1|key2:val2"
 	return func(db *gorm.DB) *gorm.DB {
 		if v == "" {
@@ -457,6 +457,10 @@ func FilterOrScoope(v string) func(db *gorm.DB) *gorm.DB {
 
 				}
 			}
+		}
+
+		if customOr != "" {
+			dbQuery = dbQuery.Or(customOr)
 		}
 
 		db = db.Where(dbQuery)
