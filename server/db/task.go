@@ -381,7 +381,7 @@ func (p *GormProvider) GetListTaskPluck(ctx context.Context, key string, filter 
 	if filter != nil {
 		query = query.Where(&filter)
 	}
-	query = query.Scopes(FilterScoope(sql.Filter), FilterOrScoope(sql.FilterOr), QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In))
+	query = query.Scopes(FilterScoope(sql.Filter), FilterOrScoope(sql.FilterOr, ""), QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In))
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	if err := query.Pluck(columnNameBuilder(key, false), &data).Error; err != nil {
 		if !errors.Is(err, gorm.ErrModelValueRequired) {
