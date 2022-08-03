@@ -1039,42 +1039,63 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 			if currentStep == 3 {
-				// if task.Status == 1 {
-				// 	if task.Type == "Menu:License" {
+				if task.Status == 1 {
+					if task.Type == "Menu:License" {
+						var opts []grpc.DialOption
+						opts = append(opts, grpc.WithInsecure())
+						companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
+						if err != nil {
+							logrus.Errorln("Failed connect to Company Service: %v", err)
+							// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
 
-				// 		var opts []grpc.DialOption
-				// 		opts = append(opts, grpc.WithInsecure())
-				// 		companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
-				// 		if err != nil {
-				// 			logrus.Errorln("Failed connect to Company Service: %v", err)
-				// 			// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
+						defer companyConn.Close()
 
-				// 			return nil, status.Errorf(codes.Internal, "Internal Error")
-				// 		}
-				// 		defer companyConn.Close()
+						companyClient := company_pb.NewApiServiceClient(companyConn)
 
-				// 		companyClient := company_pb.NewApiServiceClient(companyConn)
+						if strings.Contains(task.Data, `"isParent": true`) {
+							// isParent = true
 
-				// 		data := &menu_pb.MenuLicenseSave{}
-				// 		for i := range task.Childs {
-				// 			if task.Childs[i].IsParentActive {
-				// 				json.Unmarshal([]byte(task.Childs[i].Data), data)
-				// 			}
-				// 		}
-				// 		_, err = companyClient.ListCompanyDataV2(ctx, &company_pb.ListCompanyDataReq{
-				// 			CompanyID: data.CompanyID,
-				// 		})
-				// 		if err != nil {
-				// 			if err.Error() == "rpc error: code = Unknown desc = Company not found" {
-				// 				return nil, status.Errorf(codes.NotFound, "Company not found")
-				// 			}
-				// 			logrus.Errorln("Failed to get company data: %v", err)
-				// 			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+							for i := range task.Childs {
+								menu := menu_pb.MenuLicenseSave{}
+								json.Unmarshal([]byte(task.Childs[i].Data), &menu)
 
-				// 			return nil, status.Errorf(codes.Internal, "Internal Error")
-				// 		}
-				// 	}
-				// }
+								company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+									CompanyID: menu.CompanyID,
+								})
+								if err != nil {
+									logrus.Errorln("Failed to get company data: %v", err)
+									// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+									return nil, status.Errorf(codes.Internal, "Internal Error")
+								}
+								if len(company.Data) == 0 {
+									logrus.Infoln("Company not found")
+									return nil, status.Errorf(codes.NotFound, "Company not found")
+								}
+
+							}
+						} else {
+							menu := menu_pb.MenuLicenseSave{}
+							json.Unmarshal([]byte(task.Data), &menu)
+
+							company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+								CompanyID: menu.CompanyID,
+							})
+							if err != nil {
+								logrus.Errorln("Failed to get company data: %v", err)
+								// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+								return nil, status.Errorf(codes.Internal, "Internal Error")
+							}
+							if len(company.Data) == 0 {
+								return nil, status.Errorf(codes.NotFound, "Company not found")
+							}
+
+						}
+					}
+				}
 
 				task.Status = 1
 				// task.Step = 4
@@ -1785,40 +1806,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			menuClient := menu_pb.NewApiServiceClient(menuConn)
 
-			companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
-			if err != nil {
-				logrus.Errorln("Failed connect to Company Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
-
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-			defer companyConn.Close()
-
-			companyClient := company_pb.NewApiServiceClient(companyConn)
-
 			fmt.Println("result", strings.Contains(task.Data, `"isParent": true`))
 			isDeleted := false
 			if strings.Contains(task.Data, `"isParent": true`) {
-				// isParent = true
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := menu_pb.SaveMenuLicenseReq{}
 						menu := menu_pb.MenuLicenseSave{}
 						json.Unmarshal([]byte(task.Childs[i].Data), &menu)
-
-						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-							CompanyID: menu.CompanyID,
-						})
-						if err != nil {
-							logrus.Errorln("Failed to get company data: %v", err)
-							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
-							return nil, status.Errorf(codes.Internal, "Internal Error")
-						}
-						if len(company.Data) == 0 {
-							return nil, status.Errorf(codes.NotFound, "Company not found")
-						}
-
 						data.Data = &menu
 						data.TaskID = task.Childs[i].TaskID
 						fmt.Println("data ", data.TaskID)
@@ -1844,20 +1839,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				data := menu_pb.SaveMenuLicenseReq{}
 				menu := menu_pb.MenuLicenseSave{}
 				json.Unmarshal([]byte(task.Data), &menu)
-
-				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-					CompanyID: menu.CompanyID,
-				})
-				if err != nil {
-					logrus.Errorln("Failed to get company data: %v", err)
-					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
-					return nil, status.Errorf(codes.Internal, "Internal Error")
-				}
-				if len(company.Data) == 0 {
-					return nil, status.Errorf(codes.NotFound, "Company not found")
-				}
-
 				data.Data = &menu
 				data.TaskID = task.TaskID
 
