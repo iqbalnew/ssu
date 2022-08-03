@@ -87,7 +87,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, nil)
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, []uint64{})
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +198,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 	}
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter)
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, []uint64{})
 	if err != nil {
 		return nil, err
 	}
@@ -245,7 +245,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 	}
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter)
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, []uint64{})
 	if err != nil {
 		return nil, err
 	}
@@ -804,6 +804,8 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
 	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account", "BG Mapping", "BG Mapping Digital", "BG Issuing", "Deposito"}
 
+	logrus.Print(taskType)
+
 	for _, v := range skipProduct {
 		if v == taskType {
 			return true
@@ -1037,64 +1039,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 			if currentStep == 3 {
-				if task.Status == 1 {
-					if task.Type == "Menu:License" {
-						var opts []grpc.DialOption
-						opts = append(opts, grpc.WithInsecure())
-						companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
-						if err != nil {
-							logrus.Errorln("Failed connect to Company Service: %v", err)
-							// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
-
-							return nil, status.Errorf(codes.Internal, "Internal Error")
-						}
-						defer companyConn.Close()
-
-						companyClient := company_pb.NewApiServiceClient(companyConn)
-
-						if strings.Contains(task.Data, `"isParent": true`) {
-							// isParent = true
-
-							for i := range task.Childs {
-								menu := menu_pb.MenuLicenseSave{}
-								json.Unmarshal([]byte(task.Childs[i].Data), &menu)
-
-								company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-									CompanyID: menu.CompanyID,
-								})
-								if err != nil {
-									logrus.Errorln("Failed to get company data: %v", err)
-									// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
-									return nil, status.Errorf(codes.Internal, "Internal Error")
-								}
-								if len(company.Data) == 0 {
-									logrus.Infoln("Company not found")
-									return nil, status.Errorf(codes.NotFound, "Company not found")
-								}
-
-							}
-						} else {
-							menu := menu_pb.MenuLicenseSave{}
-							json.Unmarshal([]byte(task.Data), &menu)
-
-							company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-								CompanyID: menu.CompanyID,
-							})
-							if err != nil {
-								logrus.Errorln("Failed to get company data: %v", err)
-								// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
-								return nil, status.Errorf(codes.Internal, "Internal Error")
-							}
-							if len(company.Data) == 0 {
-								return nil, status.Errorf(codes.NotFound, "Company not found")
-							}
-
-						}
-					}
-				}
-
 				task.Status = 1
 				// task.Step = 4
 				// if task.Type == "Announcement" {
@@ -1104,7 +1048,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				if currentStatus == 6 {
 					task.Status = 7
 				}
-
 				// }
 				// if currentStatus == 6 {
 				// 	task.Status = currentStatus
@@ -1334,17 +1277,17 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}, nil
 		}
 
-		// if currentStatus == 4 {
-		// 	taskType := []string{"BG Mapping", "BG Mapping Digital"}
-		// 	if !contains(taskType, task.Type) {
-		// 		return &pb.SetTaskResponse{
-		// 			Error:   false,
-		// 			Code:    200,
-		// 			Message: "Task Status Already Approved",
-		// 			Data:    &taskPb,
-		// 		}, nil
-		// 	}
-		// }
+		if currentStatus == 4 {
+			taskType := []string{"BG Mapping", "BG Mapping Digital"}
+			if !contains(taskType, task.Type) {
+				return &pb.SetTaskResponse{
+					Error:   false,
+					Code:    200,
+					Message: "Task Status Already Approved",
+					Data:    &taskPb,
+				}, nil
+			}
+		}
 
 		if currentStatus == 5 {
 			return &pb.SetTaskResponse{
@@ -1372,22 +1315,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Status = 6
 		task.Step = 3
 
-		if req.Comment == "delete" {
-			taskType := []string{"BG Mapping", "BG Mapping Digital"}
-			if contains(taskType, task.Type) {
-				task.Status = 7
-				task.Step = 1
-			}
-		}
-
 		if currentStatus == 2 {
-			if !(task.DataBak == "" || task.DataBak == "{}") {
-				task.Status = 4
-				task.Step = 3
-				task.Data = task.DataBak
-			} else {
-				task.Status = 7
-				task.Step = 1
+			if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
+				if !(task.DataBak == "" || task.DataBak == "{}") {
+					task.Status = 4
+					task.Step = 1
+					task.Data = task.DataBak
+				} else {
+					task.Status = 7
+					task.Step = 1
+				}
 			}
 		}
 	}
@@ -1445,6 +1382,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		logrus.Println("Menu License Child length 104 : ", len(task.Childs))
 	}
 
+	logrus.Println("Why do i have to run?")
+
 	updatedTask, err := s.provider.UpdateTask(ctx, task, false)
 	if err != nil {
 		return nil, err
@@ -1462,9 +1401,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if sendTask {
-
 		switch task.Type {
-
 		case "Announcement":
 
 			// data := &dataPublish{
@@ -1511,11 +1448,21 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				TaskID: task.TaskID,
 				Data:   &data,
 			}
-			res, err := announcementClient.CreateAnnouncement(ctx, send, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
+			send.Data.AnnouncementID = task.FeatureID
+
+			if task.Status == 7 {
+				res, err := announcementClient.DeleteAnnouncement(ctx, send, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
+			} else {
+				res, err := announcementClient.CreateAnnouncement(ctx, send, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
 			}
-			logrus.Println(res)
 
 		case "Company":
 
@@ -1838,11 +1785,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			fmt.Println("result", strings.Contains(task.Data, `"isParent": true`))
 			isDeleted := false
 			if strings.Contains(task.Data, `"isParent": true`) {
+				// isParent = true
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := menu_pb.SaveMenuLicenseReq{}
 						menu := menu_pb.MenuLicenseSave{}
 						json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+
 						data.Data = &menu
 						data.TaskID = task.Childs[i].TaskID
 						fmt.Println("data ", data.TaskID)
@@ -1868,6 +1817,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				data := menu_pb.SaveMenuLicenseReq{}
 				menu := menu_pb.MenuLicenseSave{}
 				json.Unmarshal([]byte(task.Data), &menu)
+
 				data.Data = &menu
 				data.TaskID = task.TaskID
 
@@ -2113,33 +2063,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			abonnementClient := abonnement_pb.NewApiServiceClient(abonnementConn)
 
-			companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
-			if err != nil {
-				logrus.Errorln("Failed connect to Company Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
-
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-			defer companyConn.Close()
-
-			companyClient := company_pb.NewApiServiceClient(companyConn)
-
 			data := abonnement_pb.CreateAbonnementRequest{}
 			json.Unmarshal([]byte(task.Data), &data.Data)
-
-			company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-				CompanyID: data.Data.CompanyID,
-			})
-			if err != nil {
-				logrus.Errorln("Failed to get company data: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-			if len(company.Data) == 0 {
-				return nil, status.Errorf(codes.NotFound, "Company not found")
-			}
-
 			data.TaskID = task.TaskID
 			data.Data.Id = task.FeatureID
 			if len(data.Data.BillingStatus) < 1 {
@@ -2279,56 +2204,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 			}
 
-		case "BG Issuing":
-
-			var opts []grpc.DialOption
-			opts = append(opts, grpc.WithInsecure())
-
-			bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
-			if err != nil {
-				logrus.Errorln("Failed connect to BG Service: %v", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-			defer bgConn.Close()
-
-			bgClient := bg_pb.NewApiServiceClient(bgConn)
-
-			taskData := bg_pb.IssuingData{}
-			json.Unmarshal([]byte(task.Data), &taskData)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
-			}
-
-			bgGrpcReq := &bg_pb.CreateIssuingRequest{
-				TaskID: task.TaskID,
-				Data:   &taskData,
-			}
-
-			logrus.Println(taskData.String())
-
-			result, err := bgClient.CreateIssuing(ctx, bgGrpcReq, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
-			}
-
-			// Unfinished
-
-			task, err := s.provider.FindTaskById(ctx, req.TaskID)
-			if err != nil {
-				return nil, err
-			}
-
-			taskData.RegistrationNo = result.Data.GetRegistrationNo()
-			taskData.ReferenceNo = result.Data.GetReferenceNo()
-
-			data, _ := json.Marshal(&taskData)
-			task.Data = string(data)
-
-			updatedTask, err = s.provider.UpdateTask(ctx, task, false)
-			if err != nil {
-				return nil, err
-			}
-
 		}
 
 	}
@@ -2412,7 +2287,7 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, nil)
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, []uint64{})
 	if err != nil {
 		return nil, err
 	}
