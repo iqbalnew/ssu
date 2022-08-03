@@ -1015,12 +1015,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/DownloadListCompanyTasks", runtime.WithHTTPPathPattern("/api/company/task/file/{fileFormat}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/DownloadListCompanyTasks", runtime.WithHTTPPathPattern("/api/company/task/file/{fileFormat}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_DownloadListCompanyTasks_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_DownloadListCompanyTasks_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1038,12 +1039,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyTask", runtime.WithHTTPPathPattern("/api/company/task"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyTask", runtime.WithHTTPPathPattern("/api/company/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_CreateCompanyTask_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_CreateCompanyTask_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1061,12 +1063,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyTask", runtime.WithHTTPPathPattern("/api/company/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyTask", runtime.WithHTTPPathPattern("/api/company/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_CreateCompanyTask_1(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_CreateCompanyTask_1(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1084,12 +1087,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/GetCompanyTaskByHolding", runtime.WithHTTPPathPattern("/api/company/task/holding/{holdingID}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/GetCompanyTaskByHolding", runtime.WithHTTPPathPattern("/api/company/task/holding/{holdingID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetCompanyTaskByHolding_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetCompanyTaskByHolding_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1107,12 +1111,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/DeleteCompanyTask", runtime.WithHTTPPathPattern("/api/company/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/DeleteCompanyTask", runtime.WithHTTPPathPattern("/api/company/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_DeleteCompanyTask_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_DeleteCompanyTask_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1130,12 +1135,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/GetCompanyTaskByID", runtime.WithHTTPPathPattern("/api/company/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/GetCompanyTaskByID", runtime.WithHTTPPathPattern("/api/company/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetCompanyTaskByID_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetCompanyTaskByID_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1153,12 +1159,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListCompanyData", runtime.WithHTTPPathPattern("/api/company/data"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListCompanyData", runtime.WithHTTPPathPattern("/api/company/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_ListCompanyData_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_ListCompanyData_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1176,12 +1183,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListGroupLimit", runtime.WithHTTPPathPattern("/api/company/group-limit"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListGroupLimit", runtime.WithHTTPPathPattern("/api/company/group-limit"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_ListGroupLimit_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_ListGroupLimit_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1199,12 +1207,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListLimit", runtime.WithHTTPPathPattern("/api/company/limit"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListLimit", runtime.WithHTTPPathPattern("/api/company/limit"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_ListLimit_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_ListLimit_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1222,12 +1231,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListCurrency", runtime.WithHTTPPathPattern("/api/company/currency"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/ListCurrency", runtime.WithHTTPPathPattern("/api/company/currency"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_ListCurrency_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_ListCurrency_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1245,12 +1255,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomer", runtime.WithHTTPPathPattern("/api/company/bricams/customer"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomer", runtime.WithHTTPPathPattern("/api/company/bricams/customer"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_BRICaMSgetCustomer_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_BRICaMSgetCustomer_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1268,12 +1279,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByID", runtime.WithHTTPPathPattern("/api/company/bricams/customer/detail/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByID", runtime.WithHTTPPathPattern("/api/company/bricams/customer/detail/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_BRICaMSgetCustomerByID_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_BRICaMSgetCustomerByID_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1291,12 +1303,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByUser", runtime.WithHTTPPathPattern("/api/company/bricams/customer/user/{username}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByUser", runtime.WithHTTPPathPattern("/api/company/bricams/customer/user/{username}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_BRICaMSgetCustomerByUser_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_BRICaMSgetCustomerByUser_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1314,12 +1327,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerV2", runtime.WithHTTPPathPattern("/api/company/bricams-svc/customer"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerV2", runtime.WithHTTPPathPattern("/api/company/bricams-svc/customer"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_BRICaMSgetCustomerV2_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_BRICaMSgetCustomerV2_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1337,12 +1351,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByIDV2", runtime.WithHTTPPathPattern("/api/company/bricams-svc/customer/detail/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByIDV2", runtime.WithHTTPPathPattern("/api/company/bricams-svc/customer/detail/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_BRICaMSgetCustomerByIDV2_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_BRICaMSgetCustomerByIDV2_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1360,12 +1375,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByUserV2", runtime.WithHTTPPathPattern("/api/company/bricams-svc/customer/user/{username}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByUserV2", runtime.WithHTTPPathPattern("/api/company/bricams-svc/customer/user/{username}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_BRICaMSgetCustomerByUserV2_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_BRICaMSgetCustomerByUserV2_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1383,12 +1399,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/CekCompanyIDAvaibility", runtime.WithHTTPPathPattern("/api/company/task/avaibility/{companyID}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/CekCompanyIDAvaibility", runtime.WithHTTPPathPattern("/api/company/task/avaibility/{companyID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_CekCompanyIDAvaibility_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_CekCompanyIDAvaibility_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1406,12 +1423,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSCustomerMapping", runtime.WithHTTPPathPattern("/api/company/data-bricams"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSCustomerMapping", runtime.WithHTTPPathPattern("/api/company/data-bricams"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_BRICaMSCustomerMapping_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_BRICaMSCustomerMapping_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1429,12 +1447,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/CompanySubsidiaryValidation", runtime.WithHTTPPathPattern("/api/company/subsidiary-validation"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/CompanySubsidiaryValidation", runtime.WithHTTPPathPattern("/api/company/subsidiary-validation"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_CompanySubsidiaryValidation_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_CompanySubsidiaryValidation_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1452,12 +1471,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/GetMyTasks", runtime.WithHTTPPathPattern("/api/company/task/me"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/GetMyTasks", runtime.WithHTTPPathPattern("/api/company/task/me"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetMyTasks_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetMyTasks_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1475,12 +1495,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/GetMyTasks", runtime.WithHTTPPathPattern("/api/company/task"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/company.service.v1.ApiService/GetMyTasks", runtime.WithHTTPPathPattern("/api/company/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetMyTasks_1(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetMyTasks_1(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1537,12 +1558,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/DownloadListCompanyTasks", runtime.WithHTTPPathPattern("/api/company/task/file/{fileFormat}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/DownloadListCompanyTasks", runtime.WithHTTPPathPattern("/api/company/task/file/{fileFormat}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_DownloadListCompanyTasks_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_DownloadListCompanyTasks_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1557,12 +1579,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyTask", runtime.WithHTTPPathPattern("/api/company/task"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyTask", runtime.WithHTTPPathPattern("/api/company/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_CreateCompanyTask_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_CreateCompanyTask_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1577,12 +1600,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyTask", runtime.WithHTTPPathPattern("/api/company/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/CreateCompanyTask", runtime.WithHTTPPathPattern("/api/company/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_CreateCompanyTask_1(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_CreateCompanyTask_1(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1597,12 +1621,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/GetCompanyTaskByHolding", runtime.WithHTTPPathPattern("/api/company/task/holding/{holdingID}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/GetCompanyTaskByHolding", runtime.WithHTTPPathPattern("/api/company/task/holding/{holdingID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetCompanyTaskByHolding_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetCompanyTaskByHolding_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1617,12 +1642,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/DeleteCompanyTask", runtime.WithHTTPPathPattern("/api/company/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/DeleteCompanyTask", runtime.WithHTTPPathPattern("/api/company/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_DeleteCompanyTask_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_DeleteCompanyTask_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1637,12 +1663,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/GetCompanyTaskByID", runtime.WithHTTPPathPattern("/api/company/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/GetCompanyTaskByID", runtime.WithHTTPPathPattern("/api/company/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetCompanyTaskByID_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetCompanyTaskByID_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1657,12 +1684,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListCompanyData", runtime.WithHTTPPathPattern("/api/company/data"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListCompanyData", runtime.WithHTTPPathPattern("/api/company/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_ListCompanyData_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_ListCompanyData_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1677,12 +1705,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListGroupLimit", runtime.WithHTTPPathPattern("/api/company/group-limit"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListGroupLimit", runtime.WithHTTPPathPattern("/api/company/group-limit"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_ListGroupLimit_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_ListGroupLimit_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1697,12 +1726,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListLimit", runtime.WithHTTPPathPattern("/api/company/limit"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListLimit", runtime.WithHTTPPathPattern("/api/company/limit"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_ListLimit_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_ListLimit_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1717,12 +1747,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListCurrency", runtime.WithHTTPPathPattern("/api/company/currency"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/ListCurrency", runtime.WithHTTPPathPattern("/api/company/currency"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_ListCurrency_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_ListCurrency_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1737,12 +1768,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomer", runtime.WithHTTPPathPattern("/api/company/bricams/customer"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomer", runtime.WithHTTPPathPattern("/api/company/bricams/customer"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_BRICaMSgetCustomer_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_BRICaMSgetCustomer_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1757,12 +1789,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByID", runtime.WithHTTPPathPattern("/api/company/bricams/customer/detail/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByID", runtime.WithHTTPPathPattern("/api/company/bricams/customer/detail/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_BRICaMSgetCustomerByID_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_BRICaMSgetCustomerByID_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1777,12 +1810,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByUser", runtime.WithHTTPPathPattern("/api/company/bricams/customer/user/{username}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByUser", runtime.WithHTTPPathPattern("/api/company/bricams/customer/user/{username}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_BRICaMSgetCustomerByUser_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_BRICaMSgetCustomerByUser_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1797,12 +1831,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerV2", runtime.WithHTTPPathPattern("/api/company/bricams-svc/customer"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerV2", runtime.WithHTTPPathPattern("/api/company/bricams-svc/customer"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_BRICaMSgetCustomerV2_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_BRICaMSgetCustomerV2_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1817,12 +1852,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByIDV2", runtime.WithHTTPPathPattern("/api/company/bricams-svc/customer/detail/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByIDV2", runtime.WithHTTPPathPattern("/api/company/bricams-svc/customer/detail/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_BRICaMSgetCustomerByIDV2_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_BRICaMSgetCustomerByIDV2_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1837,12 +1873,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByUserV2", runtime.WithHTTPPathPattern("/api/company/bricams-svc/customer/user/{username}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSgetCustomerByUserV2", runtime.WithHTTPPathPattern("/api/company/bricams-svc/customer/user/{username}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_BRICaMSgetCustomerByUserV2_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_BRICaMSgetCustomerByUserV2_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1857,12 +1894,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/CekCompanyIDAvaibility", runtime.WithHTTPPathPattern("/api/company/task/avaibility/{companyID}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/CekCompanyIDAvaibility", runtime.WithHTTPPathPattern("/api/company/task/avaibility/{companyID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_CekCompanyIDAvaibility_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_CekCompanyIDAvaibility_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1877,12 +1915,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSCustomerMapping", runtime.WithHTTPPathPattern("/api/company/data-bricams"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/BRICaMSCustomerMapping", runtime.WithHTTPPathPattern("/api/company/data-bricams"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_BRICaMSCustomerMapping_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_BRICaMSCustomerMapping_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1897,12 +1936,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/CompanySubsidiaryValidation", runtime.WithHTTPPathPattern("/api/company/subsidiary-validation"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/CompanySubsidiaryValidation", runtime.WithHTTPPathPattern("/api/company/subsidiary-validation"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_CompanySubsidiaryValidation_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_CompanySubsidiaryValidation_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1917,12 +1957,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/GetMyTasks", runtime.WithHTTPPathPattern("/api/company/task/me"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/GetMyTasks", runtime.WithHTTPPathPattern("/api/company/task/me"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetMyTasks_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetMyTasks_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1937,12 +1978,13 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/GetMyTasks", runtime.WithHTTPPathPattern("/api/company/task"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/company.service.v1.ApiService/GetMyTasks", runtime.WithHTTPPathPattern("/api/company/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetMyTasks_1(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetMyTasks_1(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
