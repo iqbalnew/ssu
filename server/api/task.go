@@ -1103,6 +1103,45 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					logrus.Println(res)
 
 				}
+
+				if task.Type == "BG Issuing" {
+					var opts []grpc.DialOption
+					opts = append(opts, grpc.WithInsecure())
+
+					bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
+					if err != nil {
+						logrus.Errorln("Failed connect to BG Service: %v", err)
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+					defer bgConn.Close()
+
+					bgClient := bg_pb.NewApiServiceClient(bgConn)
+
+					taskData := bg_pb.IssuingData{}
+					json.Unmarshal([]byte(currentData), &taskData)
+					if err != nil {
+						return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+					}
+
+					bgGrpcReq := &bg_pb.CreateIssuingRequest{
+						TaskID: task.TaskID,
+						Data:   &taskData,
+					}
+
+					// logrus.Println(taskData.String())
+
+					result, err := bgClient.CreateIssuing(ctx, bgGrpcReq, grpc.Header(&header), grpc.Trailer(&trailer))
+					if err != nil {
+						return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+					}
+
+					taskData.RegistrationNo = result.Data.GetRegistrationNo()
+					taskData.ReferenceNo = result.Data.GetReferenceNo()
+
+					data, _ := json.Marshal(&taskData)
+					task.Data = string(data)
+
+				}
 			}
 			// } else {
 			// 	if currentStep >= 3 {
