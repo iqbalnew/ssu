@@ -1276,6 +1276,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Status = 6
 		task.Step = 3
 
+		if req.Comment == "delete" {
+			taskType := []string{"BG Mapping", "BG Mapping Digital"}
+			if contains(taskType, task.Type) {
+				task.Status = 7
+				task.Step = 1
+			}
+		}
+
 		if currentStatus == 2 {
 			if !(task.DataBak == "" || task.DataBak == "{}") {
 				task.Status = 4
