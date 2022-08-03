@@ -894,6 +894,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		return nil, status.Errorf(codes.InvalidArgument, "This is child task with active parent, please refer to parent for change status")
 	}
 
+	if task.Type == "BG Issuing" && task.Step != 4 {
+		return nil, status.Errorf(codes.PermissionDenied, "Internal Error: %v", "BG Issuing task hasn't been approved by Releaser")
+	}
+
 	isParent := false
 	if task.Data == "[]" {
 		isParent = true
@@ -1381,8 +1385,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	if task.Type == "Menu:License" {
 		logrus.Println("Menu License Child length 104 : ", len(task.Childs))
 	}
-
-	logrus.Println("Why do i have to run?")
 
 	updatedTask, err := s.provider.UpdateTask(ctx, task, false)
 	if err != nil {
