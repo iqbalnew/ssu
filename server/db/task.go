@@ -28,7 +28,7 @@ type GraphResultColumnType struct {
 
 func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, service string, step uint, stat uint, isIncludeApprove bool, isIncludeReject bool, userType string) (result []*GraphResult, err error) {
 	selectOpt := fmt.Sprintf("step as name, type, count(*) as total")
-	query := p.db_main.Model(&pb.TaskORM{}).Select(selectOpt)
+	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := ""
 	if service != "" {
 		whereOpt = fmt.Sprintf("type = '%v'", service)

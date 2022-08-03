@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ApiServiceClient interface {
 	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
+	GetBranch(ctx context.Context, in *GetBranchRequest, opts ...grpc.CallOption) (*GetBranchResponse, error)
 	GetBeneficiaryName(ctx context.Context, in *GetBeneficiaryNameRequest, opts ...grpc.CallOption) (*GetBeneficiaryNameResponse, error)
 	GetApplicantName(ctx context.Context, in *GetApplicantNameRequest, opts ...grpc.CallOption) (*GetApplicantNameResponse, error)
 	GetThirdParty(ctx context.Context, in *GetThirdPartyRequest, opts ...grpc.CallOption) (*GetThirdPartyResponse, error)
@@ -45,7 +46,8 @@ type ApiServiceClient interface {
 	GetTaskIssuingDetail(ctx context.Context, in *GetTaskIssuingDetailRequest, opts ...grpc.CallOption) (*GetTaskIssuingDetailResponse, error)
 	GetTaskIssuingFile(ctx context.Context, in *GetTaskIssuingFileRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	CreateTaskIssuing(ctx context.Context, in *CreateTaskIssuingRequest, opts ...grpc.CallOption) (*CreateTaskIssuingResponse, error)
-	ApiCreateIssuing(ctx context.Context, in *ApiCreateIssuingRequest, opts ...grpc.CallOption) (*ApiCreateIssuingResponse, error)
+	CreateIssuing(ctx context.Context, in *CreateIssuingRequest, opts ...grpc.CallOption) (*CreateIssuingResponse, error)
+	CheckIssuingStatus(ctx context.Context, in *CheckIssuingRequest, opts ...grpc.CallOption) (*CheckIssuingResponse, error)
 }
 
 type apiServiceClient struct {
@@ -59,6 +61,15 @@ func NewApiServiceClient(cc grpc.ClientConnInterface) ApiServiceClient {
 func (c *apiServiceClient) HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
 	out := new(HealthCheckResponse)
 	err := c.cc.Invoke(ctx, "/bg.service.v1.ApiService/HealthCheck", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetBranch(ctx context.Context, in *GetBranchRequest, opts ...grpc.CallOption) (*GetBranchResponse, error) {
+	out := new(GetBranchResponse)
+	err := c.cc.Invoke(ctx, "/bg.service.v1.ApiService/GetBranch", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -254,9 +265,18 @@ func (c *apiServiceClient) CreateTaskIssuing(ctx context.Context, in *CreateTask
 	return out, nil
 }
 
-func (c *apiServiceClient) ApiCreateIssuing(ctx context.Context, in *ApiCreateIssuingRequest, opts ...grpc.CallOption) (*ApiCreateIssuingResponse, error) {
-	out := new(ApiCreateIssuingResponse)
-	err := c.cc.Invoke(ctx, "/bg.service.v1.ApiService/ApiCreateIssuing", in, out, opts...)
+func (c *apiServiceClient) CreateIssuing(ctx context.Context, in *CreateIssuingRequest, opts ...grpc.CallOption) (*CreateIssuingResponse, error) {
+	out := new(CreateIssuingResponse)
+	err := c.cc.Invoke(ctx, "/bg.service.v1.ApiService/CreateIssuing", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) CheckIssuingStatus(ctx context.Context, in *CheckIssuingRequest, opts ...grpc.CallOption) (*CheckIssuingResponse, error) {
+	out := new(CheckIssuingResponse)
+	err := c.cc.Invoke(ctx, "/bg.service.v1.ApiService/CheckIssuingStatus", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -268,6 +288,7 @@ func (c *apiServiceClient) ApiCreateIssuing(ctx context.Context, in *ApiCreateIs
 // for forward compatibility
 type ApiServiceServer interface {
 	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
+	GetBranch(context.Context, *GetBranchRequest) (*GetBranchResponse, error)
 	GetBeneficiaryName(context.Context, *GetBeneficiaryNameRequest) (*GetBeneficiaryNameResponse, error)
 	GetApplicantName(context.Context, *GetApplicantNameRequest) (*GetApplicantNameResponse, error)
 	GetThirdParty(context.Context, *GetThirdPartyRequest) (*GetThirdPartyResponse, error)
@@ -289,7 +310,8 @@ type ApiServiceServer interface {
 	GetTaskIssuingDetail(context.Context, *GetTaskIssuingDetailRequest) (*GetTaskIssuingDetailResponse, error)
 	GetTaskIssuingFile(context.Context, *GetTaskIssuingFileRequest) (*httpbody.HttpBody, error)
 	CreateTaskIssuing(context.Context, *CreateTaskIssuingRequest) (*CreateTaskIssuingResponse, error)
-	ApiCreateIssuing(context.Context, *ApiCreateIssuingRequest) (*ApiCreateIssuingResponse, error)
+	CreateIssuing(context.Context, *CreateIssuingRequest) (*CreateIssuingResponse, error)
+	CheckIssuingStatus(context.Context, *CheckIssuingRequest) (*CheckIssuingResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -299,6 +321,9 @@ type UnimplementedApiServiceServer struct {
 
 func (UnimplementedApiServiceServer) HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
+}
+func (UnimplementedApiServiceServer) GetBranch(context.Context, *GetBranchRequest) (*GetBranchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBranch not implemented")
 }
 func (UnimplementedApiServiceServer) GetBeneficiaryName(context.Context, *GetBeneficiaryNameRequest) (*GetBeneficiaryNameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBeneficiaryName not implemented")
@@ -363,8 +388,11 @@ func (UnimplementedApiServiceServer) GetTaskIssuingFile(context.Context, *GetTas
 func (UnimplementedApiServiceServer) CreateTaskIssuing(context.Context, *CreateTaskIssuingRequest) (*CreateTaskIssuingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskIssuing not implemented")
 }
-func (UnimplementedApiServiceServer) ApiCreateIssuing(context.Context, *ApiCreateIssuingRequest) (*ApiCreateIssuingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ApiCreateIssuing not implemented")
+func (UnimplementedApiServiceServer) CreateIssuing(context.Context, *CreateIssuingRequest) (*CreateIssuingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateIssuing not implemented")
+}
+func (UnimplementedApiServiceServer) CheckIssuingStatus(context.Context, *CheckIssuingRequest) (*CheckIssuingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckIssuingStatus not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -393,6 +421,24 @@ func _ApiService_HealthCheck_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).HealthCheck(ctx, req.(*HealthCheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetBranch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBranchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetBranch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/bg.service.v1.ApiService/GetBranch",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetBranch(ctx, req.(*GetBranchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -775,20 +821,38 @@ func _ApiService_CreateTaskIssuing_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_ApiCreateIssuing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ApiCreateIssuingRequest)
+func _ApiService_CreateIssuing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateIssuingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).ApiCreateIssuing(ctx, in)
+		return srv.(ApiServiceServer).CreateIssuing(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/bg.service.v1.ApiService/ApiCreateIssuing",
+		FullMethod: "/bg.service.v1.ApiService/CreateIssuing",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).ApiCreateIssuing(ctx, req.(*ApiCreateIssuingRequest))
+		return srv.(ApiServiceServer).CreateIssuing(ctx, req.(*CreateIssuingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_CheckIssuingStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckIssuingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CheckIssuingStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/bg.service.v1.ApiService/CheckIssuingStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CheckIssuingStatus(ctx, req.(*CheckIssuingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -803,6 +867,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HealthCheck",
 			Handler:    _ApiService_HealthCheck_Handler,
+		},
+		{
+			MethodName: "GetBranch",
+			Handler:    _ApiService_GetBranch_Handler,
 		},
 		{
 			MethodName: "GetBeneficiaryName",
@@ -889,8 +957,12 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_CreateTaskIssuing_Handler,
 		},
 		{
-			MethodName: "ApiCreateIssuing",
-			Handler:    _ApiService_ApiCreateIssuing_Handler,
+			MethodName: "CreateIssuing",
+			Handler:    _ApiService_CreateIssuing_Handler,
+		},
+		{
+			MethodName: "CheckIssuingStatus",
+			Handler:    _ApiService_CheckIssuingStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

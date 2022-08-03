@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
-	_ "github.com/infobloxopen/protoc-gen-gorm/options"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "github.com/infobloxopen/protoc-gen-gorm/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -66,11 +66,6 @@ func (this *Announcement) Validate() error {
 	if this.EventType != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.EventType); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("EventType", err)
-		}
-	}
-	if this.Task != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
 		}
 	}
 	return nil
