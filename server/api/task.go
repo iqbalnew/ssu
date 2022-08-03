@@ -1277,17 +1277,17 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}, nil
 		}
 
-		if currentStatus == 4 {
-			taskType := []string{"BG Mapping", "BG Mapping Digital"}
-			if !contains(taskType, task.Type) {
-				return &pb.SetTaskResponse{
-					Error:   false,
-					Code:    200,
-					Message: "Task Status Already Approved",
-					Data:    &taskPb,
-				}, nil
-			}
-		}
+		// if currentStatus == 4 {
+		// 	taskType := []string{"BG Mapping", "BG Mapping Digital"}
+		// 	if !contains(taskType, task.Type) {
+		// 		return &pb.SetTaskResponse{
+		// 			Error:   false,
+		// 			Code:    200,
+		// 			Message: "Task Status Already Approved",
+		// 			Data:    &taskPb,
+		// 		}, nil
+		// 	}
+		// }
 
 		if currentStatus == 5 {
 			return &pb.SetTaskResponse{
@@ -1315,16 +1315,22 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Status = 6
 		task.Step = 3
 
+		if req.Comment == "delete" {
+			taskType := []string{"BG Mapping", "BG Mapping Digital"}
+			if contains(taskType, task.Type) {
+				task.Status = 7
+				task.Step = 1
+			}
+		}
+
 		if currentStatus == 2 {
-			if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
-				if !(task.DataBak == "" || task.DataBak == "{}") {
-					task.Status = 4
-					task.Step = 1
-					task.Data = task.DataBak
-				} else {
-					task.Status = 7
-					task.Step = 1
-				}
+			if !(task.DataBak == "" || task.DataBak == "{}") {
+				task.Status = 4
+				task.Step = 3
+				task.Data = task.DataBak
+			} else {
+				task.Status = 7
+				task.Step = 1
 			}
 		}
 	}
