@@ -93,3 +93,4 @@ active.en.json
 
 .env
 .vscode/
+.vscode/*
