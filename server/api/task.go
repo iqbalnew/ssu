@@ -894,9 +894,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		return nil, status.Errorf(codes.InvalidArgument, "This is child task with active parent, please refer to parent for change status")
 	}
 
-	if task.Type == "BG Issuing" && task.Step != 4 {
-		return nil, status.Errorf(codes.PermissionDenied, "Internal Error: %v", "BG Issuing task hasn't been approved by Releaser")
-	}
+	// if task.Type == "BG Issuing" && task.Step != 4 {
+	// 	return nil, status.Errorf(codes.PermissionDenied, "Internal Error: %v", "BG Issuing task hasn't been approved by Releaser")
+	// }
 
 	isParent := false
 	if task.Data == "[]" {
@@ -1179,7 +1179,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			// 	}
 			// }
 		}
-
 	case "reject":
 		taskPb, _ := task.ToPB(ctx)
 		if currentStatus == 3 {
@@ -1269,7 +1268,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Childs = taskChilds
 			}
 		}
-
 	case "delete":
 		taskPb, _ := task.ToPB(ctx)
 		if currentStatus == 3 {
@@ -2205,7 +2203,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 				}
 			}
-
 		}
 
 	}
