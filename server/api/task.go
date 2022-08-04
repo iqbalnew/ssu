@@ -1043,6 +1043,102 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 			if currentStep == 3 {
+				if currentStatus == 1 {
+					var opts []grpc.DialOption
+					opts = append(opts, grpc.WithInsecure())
+					companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
+					if err != nil {
+						logrus.Errorln("Failed connect to Company Service: %v", err)
+						// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
+
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+					defer companyConn.Close()
+
+					companyClient := company_pb.NewApiServiceClient(companyConn)
+
+					// Check task types that need company ID
+					if task.Type == "Menu:License" {
+						if strings.Contains(task.Data, `"isParent": true`) {
+							// isParent = true
+
+							for i := range task.Childs {
+								menu := menu_pb.MenuLicenseSave{}
+								json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+
+								company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+									CompanyID: menu.CompanyID,
+								})
+								if err != nil {
+									logrus.Errorln("Failed to get company data: %v", err)
+									// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+									return nil, status.Errorf(codes.Internal, "Internal Error")
+								}
+								if len(company.Data) == 0 {
+									logrus.Infoln("Company does not exist")
+									return nil, status.Errorf(codes.NotFound, "Company does not exist")
+								}
+
+							}
+						} else {
+							menu := menu_pb.MenuLicenseSave{}
+							json.Unmarshal([]byte(task.Data), &menu)
+
+							company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+								CompanyID: menu.CompanyID,
+							})
+							if err != nil {
+								logrus.Errorln("Failed to get company data: %v", err)
+								// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+								return nil, status.Errorf(codes.Internal, "Internal Error")
+							}
+							if len(company.Data) == 0 {
+								logrus.Infoln("Company does not exist")
+								return nil, status.Errorf(codes.NotFound, "Company does not exist")
+							}
+
+						}
+					}
+					if task.Type == "Account" {
+						account := account_pb.AccountWrite{}
+						json.Unmarshal([]byte(task.Data), &account)
+
+						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+							CompanyID: account.CompanyID,
+						})
+						if err != nil {
+							logrus.Errorln("Failed to get company data: %v", err)
+							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
+						if len(company.Data) == 0 {
+							logrus.Infoln("Company does not exist")
+							return nil, status.Errorf(codes.NotFound, "Company does not exist")
+						}
+					}
+					if task.Type == "Subscription" {
+						abon := abonnement_pb.ListTaskAbonnementRes{}
+						json.Unmarshal([]byte(task.Data), &abon)
+
+						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+							CompanyID: abon.CompanyID,
+						})
+						if err != nil {
+							logrus.Errorln("Failed to get company data: %v", err)
+							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
+						if len(company.Data) == 0 {
+							logrus.Infoln("Company does not exist")
+							return nil, status.Errorf(codes.NotFound, "Company does not exist")
+						}
+					}
+
+				}
 				task.Status = 1
 				// task.Step = 4
 				// if task.Type == "Announcement" {
@@ -1279,17 +1375,17 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}, nil
 		}
 
-		if currentStatus == 4 {
-			taskType := []string{"BG Mapping", "BG Mapping Digital"}
-			if !contains(taskType, task.Type) {
-				return &pb.SetTaskResponse{
-					Error:   false,
-					Code:    200,
-					Message: "Task Status Already Approved",
-					Data:    &taskPb,
-				}, nil
-			}
-		}
+		// if currentStatus == 4 {
+		// 	taskType := []string{"BG Mapping", "BG Mapping Digital"}
+		// 	if !contains(taskType, task.Type) {
+		// 		return &pb.SetTaskResponse{
+		// 			Error:   false,
+		// 			Code:    200,
+		// 			Message: "Task Status Already Approved",
+		// 			Data:    &taskPb,
+		// 		}, nil
+		// 	}
+		// }
 
 		if currentStatus == 5 {
 			return &pb.SetTaskResponse{
@@ -1317,16 +1413,22 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Status = 6
 		task.Step = 3
 
+		if req.Comment == "delete" {
+			taskType := []string{"BG Mapping", "BG Mapping Digital"}
+			if contains(taskType, task.Type) {
+				task.Status = 7
+				task.Step = 1
+			}
+		}
+
 		if currentStatus == 2 {
-			if task.Type == "BG Mapping" || task.Type == "BG Mapping Digital" {
-				if !(task.DataBak == "" || task.DataBak == "{}") {
-					task.Status = 4
-					task.Step = 1
-					task.Data = task.DataBak
-				} else {
-					task.Status = 7
-					task.Step = 1
-				}
+			if !(task.DataBak == "" || task.DataBak == "{}") {
+				task.Status = 4
+				task.Step = 3
+				task.Data = task.DataBak
+			} else {
+				task.Status = 7
+				task.Step = 1
 			}
 		}
 	}
