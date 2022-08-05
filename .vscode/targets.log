@@ -5,9 +5,8 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
- 
 
-# Make data base, printed on Thu Aug  4 09:25:02 2022
+# Make data base, printed on Fri Aug  5 10:30:47 2022
 
 # Variables
 
@@ -124,7 +123,7 @@ LS_COLORS = rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:
 # automatic
 +F = $(notdir $+)
 # environment
-WSL_INTEROP = /run/WSL/12_interop
+WSL_INTEROP = /run/WSL/13_interop
 # 'override' directive
 GNUMAKEFLAGS := 
 # makefile (from 'Makefile', line 5)
@@ -146,7 +145,7 @@ DOCKERCMD = docker
 # environment
 _ = /home/septian/.vscode-server/bin/3b889b090b5ad5793f524b5d1d39fda662b96a2a/node
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-07188815-d555-419d-ad2e-9aaebed0d767.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-e3619fdc-fe7b-4124-9ec7-f5c650a6b580.sock
 # environment
 NVM_CD_FLAGS = 
 # environment
@@ -216,7 +215,6 @@ depend:
 # ? := 
 # automatic
 # | := 
- 
 # variable set hash-table stats:
 # Load=8/32=25%, Rehash=0, Collisions=1/11=9%
 #  recipe to execute (from 'Makefile', line 55):
@@ -278,6 +276,7 @@ unit-test:
 	@echo "Unit test done"
 
 # Not a target:
+ 
 .DEFAULT:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -352,7 +351,6 @@ docker-build:
 #  Modification time never checked.
 #  File has not been updated.
 
- 
 .PHONY: build vet unit-test generates depend docker-build solr clean install all .FORCE
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -372,6 +370,6 @@ docker-build:
 # strcache performance: lookups = 103 / hit rate = 54%
 # hash-table stats:
 # Load=47/8192=1%, Rehash=0, Collisions=0/103=0%
-# Finished Make data base on Thu Aug  4 09:25:02 2022
+# Finished Make data base on Fri Aug  5 10:30:47 2022
 
  
