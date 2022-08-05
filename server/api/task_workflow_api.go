@@ -40,13 +40,13 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 
 	isSave := false
 
-	logrus.Println("[api][SaveTaskWithWorkflow] workflow current step: ", workflow.Workflow.CurrentStep)
+	// logrus.Println("[api][SaveTaskWithWorkflow] workflow current step: ", workflow.Workflow.CurrentStep)
 
 	// TODO: set task status basse on next step dari workflow
 	switch workflow.Workflow.CurrentStep {
 	case "complete":
 		if task.Status != pb.Statuses_Approved {
-			logrus.Println("[api][SaveTaskWithWorkflow] set task status to approved")
+			// logrus.Println("[api][SaveTaskWithWorkflow] set task status to approved")
 			// process to approve
 			isSave = true
 			task.Status = pb.Statuses_Approved
@@ -62,7 +62,7 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 		}
 	default:
 		if task.Status != pb.Statuses_Pending {
-			logrus.Println("[api][SaveTaskWithWorkflow] task status is not pending, set to pending")
+			// logrus.Println("[api][SaveTaskWithWorkflow] task status is not pending, set to pending")
 			// process to pending
 			isSave = true
 			task.Status = pb.Statuses_Pending

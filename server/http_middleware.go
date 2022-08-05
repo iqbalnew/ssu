@@ -45,9 +45,9 @@ func setHeaderHandler(h http.Handler, sid *shortid.Shortid) http.Handler {
 			w.Header().Set("App-Entry-Code", config.ServiceName)
 			w.Header().Set("Referrer-Policy", refCode)
 
-			logrus.Println(w.Header().Get("App-Time-Code"))
-			logrus.Println(w.Header().Get("App-Reference-Code"))
-			logrus.Println(w.Header().Get("App-Entry-Code"))
+			// logrus.Println(w.Header().Get("App-Time-Code"))
+			// logrus.Println(w.Header().Get("App-Reference-Code"))
+			// logrus.Println(w.Header().Get("App-Entry-Code"))
 
 		}
 		if r.Method == "OPTIONS" {

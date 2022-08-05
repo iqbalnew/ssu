@@ -14,7 +14,7 @@ var (
 )
 
 func startMongoConnection() {
-	logrus.Printf("Starting Mongo Db Connections...")
+	logrus.Println("Starting Mongo Db Connections...")
 
 	initMongoMain()
 
@@ -25,7 +25,7 @@ func closeMongoConnections() {
 }
 
 func initMongoMain() {
-	logrus.Printf("Mongo Db - Connecting")
+	logrus.Println("Mongo Db - Connecting")
 
 	mongo_client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(config.MongoURI))
 	if err != nil {
@@ -36,11 +36,11 @@ func initMongoMain() {
 		panic(err)
 	}
 
-	logrus.Printf("Mongo Db - Connected")
+	logrus.Println("Mongo Db - Connected")
 }
 
 func closeMongoMain() {
-	logrus.Print("Closing DB Main Connection ... ")
+	logrus.Println("Closing DB Main Connection ... ")
 	if err := mongo_client.Disconnect(context.TODO()); err != nil {
 		logrus.Fatalf("Error on disconnection with DB Main : %v", err)
 	}

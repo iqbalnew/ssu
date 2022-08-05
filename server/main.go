@@ -246,8 +246,8 @@ func grpcGatewayServerCmd() cli.Command {
 
 func grpcServer(port int, authManager *manager.JWTManager, sid *shortid.Shortid, logger *addonsLogger.Logger) error {
 	// RPC
-	logrus.Printf("Starting %s Service ................", serviceName)
-	logrus.Printf("Starting RPC server on port %d...", port)
+	logrus.Println("Starting %s Service ................", serviceName)
+	logrus.Println("Starting RPC server on port %d...", port)
 	list, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		return err
@@ -312,7 +312,7 @@ func httpGatewayServer(port int, grpcEndpoint string, authManager *manager.JWTMa
 	mux.Handle("/api/task/docs/", http.StripPrefix("/api/task/docs/", fs))
 
 	// Start
-	logrus.Printf("Starting JSON Gateway server on port %d...", port)
+	logrus.Println("Starting JSON Gateway server on port %d...", port)
 
 	var handler http.Handler = mux
 

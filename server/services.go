@@ -23,7 +23,7 @@ func initOtherServicesConn() {
 		os.Exit(1)
 		return
 	}
-	logrus.Printf("Announcement Service Connected, on %s", config.AnnouncementService)
+	logrus.Println("Announcement Service Connected, on %s", config.AnnouncementService)
 
 	defer announcementConn.Close()
 }
