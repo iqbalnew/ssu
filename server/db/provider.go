@@ -27,8 +27,12 @@ type GormProvider struct {
 }
 
 func NewProvider(db *gorm.DB, mongo *mongoClient.MongoDB) *GormProvider {
+	db_main := db
+	if getEnv("DEBUG", "false") == "true" {
+		db_main = db_main.Debug()
+	}
 	return &GormProvider{
-		db_main: db.Debug(),
+		db_main: db_main,
 		mongo:   mongo,
 	}
 }
