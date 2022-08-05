@@ -242,7 +242,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 	}
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, []uint64{})
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter)
 	if err != nil {
 		return nil, err
 	}
