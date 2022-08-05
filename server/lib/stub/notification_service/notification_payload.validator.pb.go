@@ -7,11 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "github.com/golang/protobuf/ptypes/struct"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
-	_ "google.golang.org/protobuf/types/known/structpb"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -235,5 +235,35 @@ func (this *SendNotificationRequest) Validate() error {
 	return nil
 }
 func (this *SendNotificationResponse) Validate() error {
+	return nil
+}
+func (this *HistoryNotificationRequest) Validate() error {
+	return nil
+}
+func (this *HistoryNotificationResponse) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
+func (this *PaginationHistory) Validate() error {
+	return nil
+}
+func (this *HistoryNotificationDetail) Validate() error {
+	return nil
+}
+func (this *UpdateLogHistoryNotifiationRequest) Validate() error {
+	return nil
+}
+func (this *UpdateLogHistoryNotifiationResponse) Validate() error {
 	return nil
 }
