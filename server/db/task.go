@@ -349,6 +349,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	logrus.Println("[DEBUG] get list task swift: ", sql.FilterOr)
 
 	customQuery := ""
+	logrus.Println("[DEBUG] WorkflowIDFilter: ", workflowRoleIDFilter)
 	if len(workflowRoleIDFilter) > 0 {
 		value := strings.ReplaceAll(fmt.Sprint(workflowRoleIDFilter), " ", "','")
 		value = strings.ReplaceAll(value, "[", "'")
