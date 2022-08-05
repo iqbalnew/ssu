@@ -1287,6 +1287,22 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 							return nil, status.Errorf(codes.NotFound, "Company does not exist")
 						}
 					}
+
+					if task.Type == "Company" {
+						company := company_pb.CreateCompanyTaskReq{}
+						json.Unmarshal([]byte(task.Data), &company)
+
+						companyBRICaMS, err := companyClient.BRICaMSgetCustomerByIDV2(ctx, &company_pb.BricamsGetCustomerByIdReq{
+							Id: fmt.Sprintf("%v", company.Company.CompanyID),
+						})
+						if err != nil {
+							logrus.Errorln("Failed to get BRICaMS data", err)
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
+						if companyBRICaMS.ResponseCode == "0002" {
+							return nil, status.Errorf(codes.NotFound, "Company Data Not Found From BRICaMS")
+						}
+					}
 				}
 				task.Status = 1
 				// task.Step = 4
