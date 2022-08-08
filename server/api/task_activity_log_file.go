@@ -22,6 +22,7 @@ func (s *Server) DownloadActivityLogs(ctx context.Context, req *pb.DownloadActiv
 
 	reqPb := &pb.GetActivityLogsReq{
 		Type:     req.Type,
+		Key:      req.Key,
 		TaskID:   req.TaskID,
 		Page:     req.Page,
 		Limit:    -1,

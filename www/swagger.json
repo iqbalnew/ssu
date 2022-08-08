@@ -314,6 +314,9 @@
                 },
                 "filter": {
                   "$ref": "#/definitions/v1ActivityLogFilter"
+                },
+                "key": {
+                  "type": "string"
                 }
               }
             }
@@ -396,6 +399,9 @@
                 },
                 "filter": {
                   "$ref": "#/definitions/v1ActivityLogFilter"
+                },
+                "key": {
+                  "type": "string"
                 }
               }
             }

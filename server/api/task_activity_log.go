@@ -39,6 +39,7 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 
 	filter := &db.ActivityLogFindReq{
 		TaskType: req.Type,
+		TaskKey:  req.Key,
 		TaskID:   req.TaskID,
 		Page:     int(req.Page),
 		Limit:    int(req.Limit),
@@ -79,6 +80,7 @@ func (s *Server) GetActivityLogs(ctx context.Context, req *pb.GetActivityLogsReq
 			TaskID:      v.TaskID,
 			Command:     v.Command,
 			Type:        v.Type,
+			Key:         v.Key,
 			Action:      v.Action,
 			Description: v.Description,
 			Username:    v.Username,
