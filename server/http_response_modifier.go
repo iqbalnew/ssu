@@ -22,6 +22,8 @@ func CustomHTTPError(ctx context.Context, _ *runtime.ServeMux, marshaler runtime
 	msg := status.Convert(err).Message()
 	w.WriteHeader(httpErrorCode)
 
+	logrus.Println("[Debug info] Error gateway Original msg: ", msg)
+
 	if grpcErrorCode == codes.InvalidArgument {
 		msg = "Invalid argument"
 	}

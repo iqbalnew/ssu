@@ -42,9 +42,6 @@ func (c *ClientInterceptor) UnaryIntercetoprSetUserData(authManager *manager.JWT
 				return err
 			}
 
-			logrus.Println("Metadata: ", md)
-			logrus.Println("User Metadata: ", userMd)
-
 			ctx = metadata.NewOutgoingContext(ctx, metadata.Join(md, userMd))
 		}
 		// Invoke the original method call

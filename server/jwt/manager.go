@@ -129,7 +129,6 @@ func (manager *JWTManager) GetMeFromJWT(ctx context.Context, accessToken string,
 
 	now := time.Now()
 
-	fmt.Printf("token verify expired: %v|%v|%v", !(now.Unix() <= userClaims.ExpiresAt), now.String(), time.Unix(userClaims.ExpiresAt, 0).String())
 	if !(now.Unix() <= userClaims.ExpiresAt) {
 		return nil, status.Errorf(codes.Unauthenticated, "Session expired")
 	}
@@ -358,7 +357,7 @@ func (manager *JWTManager) GetMeFromMD(ctx context.Context) (user *UserData, md 
 			id, err := strconv.ParseUint(v, 10, 64)
 			if err != nil {
 				logrus.Errorln("Failed to parse groupID: %v", err)
-				logrus.Println("GroupIDs: ", ids)
+				logrus.Errorln("GroupIDs: ", ids)
 				return nil, nil, status.Errorf(codes.Internal, "Error Internal")
 			}
 			user.GroupIDs = append(user.GroupIDs, id)

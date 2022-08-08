@@ -16,7 +16,7 @@ var (
 )
 
 func startDBConnection() {
-	logrus.Printf("Starting Db Connections...")
+	logrus.Println("Starting Db Connections...")
 
 	initDBMain()
 
@@ -27,7 +27,7 @@ func closeDBConnections() {
 }
 
 func initDBMain() {
-	logrus.Printf("Main Db - Connecting")
+	logrus.Println("Main Db - Connecting")
 
 	// if config.Env == "LOCAL" {
 	// 	_ = startSSHTunnel()
@@ -61,7 +61,7 @@ func initDBMain() {
 }
 
 func closeDBMain() {
-	logrus.Print("Closing DB Main Connection ... ")
+	logrus.Println("Closing DB Main Connection ... ")
 	if err := db_main_sql.Close(); err != nil {
 		logrus.Fatalf("Error on disconnection with DB Main : %v", err)
 	}

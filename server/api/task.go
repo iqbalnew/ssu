@@ -158,24 +158,21 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 			module = req.Task.Type
 		}
 	}
-	logrus.Printf("<==== result =======>> %s", module)
+
 	me, err := s.manager.GetMeFromJWT(ctx, "", module)
 	if err != nil {
 		return nil, err
 	}
-	logrus.Printf("<==== result =======>> %s", me)
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
 
-	logrus.Printf("<==== result =======>> %s", ctx)
 	var dataorm pb.TaskORM
 	if req.Task != nil {
 		dataorm, _ = req.Task.ToORM(ctx)
 	}
-	logrus.Printf("<==== result =======>> %s", dataorm)
-	logrus.Printf("<==== result =======>> %s", me.TaskFilter)
 
 	result := pb.ListTaskResponse{
 		Error:   false,
@@ -245,7 +242,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 	}
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, []uint64{})
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter)
 	if err != nil {
 		return nil, err
 	}
@@ -855,7 +852,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	// currentUser, userMd, err := manager.UserData{
 	// 	UserID: 6,
 	// }, metadata.MD{}, err
-	logrus.Printf("<@@ result @@>1 %s", req)
 	if err != nil {
 		return nil, err
 	}
@@ -1291,6 +1287,22 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 							return nil, status.Errorf(codes.NotFound, "Company does not exist")
 						}
 					}
+
+					if task.Type == "Company" {
+						company := company_pb.CreateCompanyTaskReq{}
+						json.Unmarshal([]byte(task.Data), &company)
+
+						companyBRICaMS, err := companyClient.BRICaMSgetCustomerByIDV2(ctx, &company_pb.BricamsGetCustomerByIdReq{
+							Id: fmt.Sprintf("%v", company.Company.CompanyID),
+						})
+						if err != nil {
+							logrus.Errorln("Failed to get BRICaMS data", err)
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
+						if companyBRICaMS.ResponseCode == "0002" {
+							return nil, status.Errorf(codes.NotFound, "Company Data Not Found From BRICaMS")
+						}
+					}
 				}
 				task.Status = 1
 				// task.Step = 4
@@ -1349,11 +1361,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						CreatedByID:              currentUser.UserID,
 					}
 
-					res, err := workflowClient.CreateCompanyWorkflow(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+					_, err = workflowClient.CreateCompanyWorkflow(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 					if err != nil {
 						return nil, err
 					}
-					logrus.Println(res)
 
 				}
 
@@ -1458,7 +1469,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User",
 			"Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping", "BG Mapping Digital",
-			"Deposito"}
+			"Deposito", "Subscription"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
@@ -1548,14 +1559,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 	}
 
-	logrus.Println("Input Comment" + req.Comment)
-	logrus.Println("Input Reasons" + req.Reasons)
-	logrus.Println("End Val Comment" + task.Comment)
-	logrus.Println("End Val Reasons" + task.Reasons)
-
-	if task.Type == "Menu:License" {
-		logrus.Println("Menu License Child length 102 : ", len(task.Childs))
-	}
+	// if task.Type == "Menu:License" {
+	// 	logrus.Println("Menu License Child length 102 : ", len(task.Childs))
+	// }
 
 	for i := range task.Childs {
 		task.Childs[i].LastApprovedByID = task.LastApprovedByID
@@ -1572,9 +1578,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 	}
 
-	if task.Type == "Menu:License" {
-		logrus.Println("Menu License Child length 103 : ", len(task.Childs))
-	}
+	// if task.Type == "Menu:License" {
+	// 	logrus.Println("Menu License Child length 103 : ", len(task.Childs))
+	// }
 
 	if sendTask {
 		if task.Data != "" && task.Data != "{}" {
@@ -1597,9 +1603,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 	}
 
-	if task.Type == "Menu:License" {
-		logrus.Println("Menu License Child length 104 : ", len(task.Childs))
-	}
+	// if task.Type == "Menu:License" {
+	// 	logrus.Println("Menu License Child length 104 : ", len(task.Childs))
+	// }
 
 	updatedTask, err := s.provider.UpdateTask(ctx, task, false)
 	if err != nil {
@@ -1668,17 +1674,15 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			send.Data.AnnouncementID = task.FeatureID
 
 			if task.Status == 7 {
-				res, err := announcementClient.DeleteAnnouncement(ctx, send, grpc.Header(&header), grpc.Trailer(&trailer))
+				_, err = announcementClient.DeleteAnnouncement(ctx, send, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
 				}
-				logrus.Println(res)
 			} else {
-				res, err := announcementClient.CreateAnnouncement(ctx, send, grpc.Header(&header), grpc.Trailer(&trailer))
+				_, err = announcementClient.CreateAnnouncement(ctx, send, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
 				}
-				logrus.Println(res)
 			}
 
 		case "Company":
@@ -1729,7 +1733,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer DepositoConn.Close()
-			logrus.Println("dicek ini", task.TaskID)
 
 			depositoClient := deposito_pb.NewDepositoServiceClient(DepositoConn)
 
@@ -1746,8 +1749,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Reasons:            task.Reasons,
 				Comment:            task.Comment,
 			}
-
-			logrus.Println(data, "cek data")
 
 			res, err := depositoClient.CreateDeposito(ctx, data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
@@ -1927,13 +1928,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			defer menuConn.Close()
 
 			menuClient := menu_pb.NewApiServiceClient(menuConn)
-			logrus.Println("@@@@@@@@> Task Type: ", task.Data)
 
 			if strings.Contains(task.Data, `"isParent": true`) {
 				// isParent = true
 				beforeSave := true
 
-				logrus.Println("@@@@@@@@***> Task Type: ", task.Childs)
 				for i := range task.Childs {
 					if task.Childs[i].IsParentActive {
 						data := menu_pb.SaveMenuAppearanceReq{}
@@ -1953,13 +1952,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 						data.Data = &menu
 						data.TaskID = task.Childs[i].TaskID
-						logrus.Println("@@@@@@@@000> Task Type: ", data)
 
-						res, err := menuClient.SaveMenuAppearance(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+						_, err = menuClient.SaveMenuAppearance(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
 							return nil, err
 						}
-						logrus.Println("@@@@@@@@111> Task Type: ", res)
+
 						// logrus.Println(res)
 
 						// task.Childs[i].IsParentActive = false
@@ -1974,11 +1972,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				data.Data = &menu
 				data.TaskID = task.TaskID
 
-				res, err := menuClient.SaveMenuAppearance(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				_, err = menuClient.SaveMenuAppearance(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
 				}
-				logrus.Println("@@@@@@@@222> Task Type: ", res)
+
 				// logrus.Println(res)
 			}
 
@@ -2024,7 +2022,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 							return nil, err
 						}
 						logrus.Println(res)
-						logrus.Printf("3-3 create =======> %v", "done")
 
 						// task.Childs[i].IsParentActive = false
 						// reUpdate = true

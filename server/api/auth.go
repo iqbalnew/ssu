@@ -2,12 +2,10 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	manager "bitbucket.bri.co.id/scm/addons/addons-task-service/server/jwt"
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -47,9 +45,9 @@ func (s *Server) getCurrentUser(ctx context.Context) (*manager.VerifyTokenRes, e
 		return nil, status.Errorf(codes.Unauthenticated, "metadata is not provided")
 	}
 
-	fmt.Println("===>")
-	logrus.Printf("md: %v", md)
-	fmt.Println("===>")
+	// fmt.Println("===>")
+	// logrus.Printf("md: %v", md)
+	// fmt.Println("===>")
 
 	values := md["authorization"]
 	if len(values) == 0 {
