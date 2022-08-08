@@ -682,19 +682,14 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 			action = "draft"
 		}
 		logrus.Println("Set to save log")
-		err = s.provider.SaveLog(ctx, &db.ActivityLog{
-			TaskID:      task.TaskID,
-			Command:     command,
-			Type:        task.Type,
-			Action:      action,
-			Description: task.Reasons,
-			UserID:      currentUser.UserID,
-			Username:    currentUser.Username,
-			CompanyID:   currentUser.CompanyID,
-			CompanyName: currentUser.CompanyName,
-			RoleIDs:     currentUser.RoleIDs,
-			Data:        &task,
-		})
+
+		activityLog, err := GenerateActivityLog(&task, currentUser, action, command)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate activity log: %v", err)
+			return nil, err
+		}
+
+		err = s.provider.SaveLog(ctx, activityLog)
 		if err != nil {
 			logrus.Errorln("Error SaveActivityLog: ", err)
 		}
@@ -2419,19 +2414,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	// Save activity Log
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
 		logrus.Println("Set to save log")
-		err = s.provider.SaveLog(ctx, &db.ActivityLog{
-			TaskID:      updatedTask.TaskID,
-			Command:     "Update",
-			Type:        updatedTask.Type,
-			Action:      req.Action,
-			Description: updatedTask.Reasons,
-			UserID:      currentUser.UserID,
-			Username:    currentUser.Username,
-			CompanyID:   currentUser.CompanyID,
-			CompanyName: currentUser.CompanyName,
-			RoleIDs:     currentUser.RoleIDs,
-			Data:        updatedTask,
-		})
+		activityLog, err := GenerateActivityLog(task, currentUser, req.Action, "Update")
+		if err != nil {
+			logrus.Errorln("Failed to generate activity log: %v", err)
+			return nil, err
+		}
+		err = s.provider.SaveLog(ctx, activityLog)
 		if err != nil {
 			logrus.Errorln("Error SaveActivityLog: ", err)
 		}
@@ -2683,14 +2671,12 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 			action = "draft"
 		}
 		logrus.Println("Set to save log")
-		err = s.provider.SaveLog(ctx, &db.ActivityLog{
-			TaskID:      task.TaskID,
-			Command:     command,
-			Type:        task.Type,
-			Action:      action,
-			Description: task.Reasons,
-			Data:        &task,
-		})
+		activityLog, err := GenerateActivityLog(&task, nil, action, command)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate activity log: %v", err)
+			return nil, err
+		}
+		err = s.provider.SaveLog(ctx, activityLog)
 		if err != nil {
 			logrus.Errorln("Error SaveActivityLog: ", err)
 		}

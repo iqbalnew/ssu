@@ -1140,6 +1140,9 @@
         "taskID": {
           "type": "string",
           "format": "uint64"
+        },
+        "key": {
+          "type": "string"
         }
       }
     },
