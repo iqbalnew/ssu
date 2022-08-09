@@ -1133,6 +1133,25 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, status.Errorf(codes.NotFound, "Company Data Not Found From BRICaMS")
 				}
 			}
+
+			if task.Type == "Announcement" {
+				announcement := announcement_pb.Announcement{}
+				json.Unmarshal([]byte(task.Data), &announcement)
+
+				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+					CompanyID: announcement.CompanyID,
+				})
+				if err != nil {
+					logrus.Errorln("Failed to get company data: %v", err)
+					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				if len(company.Data) == 0 {
+					logrus.Infoln("Company does not exist")
+					return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				}
+			}
 		}
 	}
 	switch strings.ToLower(req.Action) {
