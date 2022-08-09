@@ -1773,6 +1773,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}, nil
 		}
 
+		if task.Type == "Company" {
+			company := company_pb.CreateCompanyTaskReq{}
+			json.Unmarshal([]byte(task.Data), &company)
+			data, err := s.provider.GetGraphStepAll(ctx, fmt.Sprint(company.Company.CompanyID))
+
+			logrus.Println("graph all --> ", data, data.Total)
+			if err != nil {
+				return nil, err
+			}
+			if data.Total > 0 {
+				return nil, status.Errorf(codes.Canceled, "Cannot delete company, some task on progress")
+			}
+		}
+
 		task.LastApprovedByID = 0
 		task.LastApprovedByName = ""
 		task.LastRejectedByID = 0
