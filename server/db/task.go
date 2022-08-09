@@ -26,6 +26,45 @@ type GraphResultColumnType struct {
 	Total uint64
 }
 
+func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (result *GraphResult, err error) {
+	selectOpt := fmt.Sprintf("count(*) as total")
+	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
+	whereOpt := ""
+	// if service != "" {
+	// 	whereOpt = fmt.Sprintf("type = '%v'", service)
+	// }
+	if idCompany != "" {
+		if whereOpt != "" {
+			whereOpt = whereOpt + " AND "
+		}
+		whereOpt = whereOpt + `( ("data" -> 'user'->> 'companyID' = '` + idCompany + `' OR "data" -> 'companyID' = '` + idCompany + `' OR "data" -> 'company' ->> 'companyID' = '` + idCompany + `'
+		OR  "data" @> '[{"companyID":` + idCompany + `}]') 
+		or ("type" = 'BG Issuing'  AND  company_id = '` + idCompany + `'))`
+	}
+
+	if whereOpt != "" {
+		whereOpt = whereOpt + " AND "
+	}
+	whereOpt = fmt.Sprintf("%v (status = %v   or status = %v)", whereOpt, 1, 3)
+
+	if whereOpt != "" {
+		whereOpt = whereOpt + " AND status != 7 AND is_parent_active = false"
+	} else {
+		whereOpt = "status != 7 AND is_parent_active = false"
+	}
+
+	if whereOpt != "" {
+		query = query.Where(whereOpt)
+	}
+
+	if err = query.Find(&result).Error; err != nil {
+		logrus.Errorln(err)
+		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+	}
+
+	return result, nil
+}
+
 func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, service string, step uint, stat uint, isIncludeApprove bool, isIncludeReject bool, userType string) (result []*GraphResult, err error) {
 	selectOpt := fmt.Sprintf("step as name, type, count(*) as total")
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
