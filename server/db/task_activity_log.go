@@ -212,6 +212,13 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 			RoleIDs:      log.RoleIDs,
 			Data:         log.Data,
 		}
+
+		if log.Key != "" {
+			logrus.Println("===<Mongo Find Filter>===")
+			logrus.Println(log.Type)
+			logrus.Println(log.Key)
+		}
+
 		result.Logs = append(result.Logs, data)
 		logrus.Println(data)
 	}
