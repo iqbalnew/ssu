@@ -18,6 +18,7 @@ type ActivityLog struct {
 	TaskID             uint64      `bson:"taskid" json:"taskID"`
 	Command            string      `bson:"command" json:"command"`
 	Type               string      `bson:"type" json:"type"`
+	Key                string      `bson:"key" json:"key"`
 	Action             string      `bson:"action" json:"action"`
 	Description        string      `bson:"description" json:"description"`
 	UserID             uint64      `bson:"userid" json:"userID"`
@@ -66,6 +67,7 @@ type ActivityLogFindRes struct {
 
 type ActivityLogFindReq struct {
 	TaskType string                `json:"taskType"`
+	TaskKey  string                `json:"key"`
 	TaskID   uint64                `json:"taskID"`
 	Page     int                   `json:"page"`
 	Limit    int                   `json:"limit"`
@@ -116,6 +118,10 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 			return nil, status.Errorf(codes.InvalidArgument, "invalid dateTo")
 		}
 		query["_created"] = bson.M{"$gte": dateFrom, "$lte": dateTo}
+	}
+
+	if req.TaskKey != "" {
+		query["key"] = req.TaskKey
 	}
 
 	if req.TaskID > 0 {

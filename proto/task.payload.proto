@@ -98,6 +98,7 @@ message GetActivityLogsReq{
 	string dateFrom = 7;
 	string dateTo = 8;
 	ActivityLogFilter filter = 9;
+    string key = 10;
 }
 
 message DownloadActivityLogsReq{
@@ -119,6 +120,7 @@ message DownloadActivityLogsReq{
     string dateFrom = 7;
     string dateTo = 8;
     ActivityLogFilter filter = 9;
+    string key = 10;
 }
 
 message ActivityLogFilter{
@@ -139,6 +141,7 @@ message ActivityLog{
     Task task = 7;
     google.protobuf.Timestamp createdAt  = 8;
     uint64 taskID = 9;
+    string key = 10;
 }
 
 message GetActivityLogsRes{
