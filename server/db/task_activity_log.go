@@ -200,6 +200,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 		data := &ActivityLog{
 			DocumentBase: log.DocumentBase,
 			TaskID:       log.TaskID,
+			Key:          log.Key,
 			Command:      log.Command,
 			Type:         log.Type,
 			Action:       log.Action,
