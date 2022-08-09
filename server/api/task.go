@@ -907,6 +907,234 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	currentStatus := task.Status
 	currentData := task.Data
 	currentDataBak := task.DataBak
+
+	if currentStep == 3 {
+		if currentStatus == 1 {
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+			companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Company Service: %v", err)
+				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
+
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer companyConn.Close()
+
+			companyClient := company_pb.NewApiServiceClient(companyConn)
+
+			// Check task types that need company ID
+			if task.Type == "Menu:License" {
+				if strings.Contains(task.Data, `"isParent": true`) {
+					// isParent = true
+
+					for i := range task.Childs {
+						menu := menu_pb.MenuLicenseSave{}
+						json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+
+						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+							CompanyID: menu.CompanyID,
+						})
+						if err != nil {
+							logrus.Errorln("Failed to get company data: %v", err)
+							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
+						if len(company.Data) == 0 {
+							logrus.Infoln("Company does not exist")
+							return nil, status.Errorf(codes.NotFound, "Company does not exist")
+						}
+
+					}
+				} else {
+					menu := menu_pb.MenuLicenseSave{}
+					json.Unmarshal([]byte(task.Data), &menu)
+
+					company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+						CompanyID: menu.CompanyID,
+					})
+					if err != nil {
+						logrus.Errorln("Failed to get company data: %v", err)
+						// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+					if len(company.Data) == 0 {
+						logrus.Infoln("Company does not exist")
+						return nil, status.Errorf(codes.NotFound, "Company does not exist")
+					}
+
+				}
+			}
+			if task.Type == "Account" {
+				if strings.Contains(task.Data, `"isParent": true`) {
+
+					for i := range task.Childs {
+						account := account_pb.Account{}
+						json.Unmarshal([]byte(task.Childs[i].Data), &account)
+
+						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+							CompanyID: account.CompanyID,
+						})
+						if err != nil {
+							logrus.Errorln("Failed to get company data: %v", err)
+							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
+						if len(company.Data) == 0 {
+							logrus.Infoln("Company does not exist")
+							return nil, status.Errorf(codes.NotFound, "Company does not exist")
+						}
+
+					}
+				} else {
+					account := account_pb.Account{}
+					json.Unmarshal([]byte(task.Data), &account)
+
+					company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+						CompanyID: account.CompanyID,
+					})
+					if err != nil {
+						logrus.Errorln("Failed to get company data: %v", err)
+						// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+					if len(company.Data) == 0 {
+						logrus.Infoln("Company does not exist")
+						return nil, status.Errorf(codes.NotFound, "Company does not exist")
+					}
+				}
+			}
+			if task.Type == "Subscription" {
+				abonnement := abonnement_pb.ListTaskAbonnementRes{}
+				json.Unmarshal([]byte(task.Data), &abonnement)
+
+				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+					CompanyID: abonnement.CompanyID,
+				})
+				if err != nil {
+					logrus.Errorln("Failed to get company data: %v", err)
+					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				if len(company.Data) == 0 {
+					logrus.Infoln("Company does not exist")
+					return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				}
+			}
+			if task.Type == "Beneficiary Account" {
+				beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccountWrite{}
+				json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
+
+				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+					CompanyID: beneficiaryAccount.CompanyID,
+				})
+				if err != nil {
+					logrus.Errorln("Failed to get company data: %v", err)
+					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				if len(company.Data) == 0 {
+					logrus.Infoln("Company does not exist")
+					return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				}
+			}
+			if task.Type == "Role" {
+				role := role_pb.Role{}
+				json.Unmarshal([]byte(task.Data), &role)
+
+				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+					CompanyID: role.CompanyID,
+				})
+				if err != nil {
+					logrus.Errorln("Failed to get company data: %v", err)
+					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				if len(company.Data) == 0 {
+					logrus.Infoln("Company does not exist")
+					return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				}
+			}
+			if task.Type == "Workflow" {
+				workflow := workflow_pb.WorkflowTask{}
+				json.Unmarshal([]byte(task.Data), &workflow)
+				companyID, _ := strconv.ParseUint(workflow.Company.CompanyID, 10, 64)
+
+				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+					CompanyID: companyID,
+				})
+				if err != nil {
+					logrus.Errorln("Failed to get company data: %v", err)
+					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				if len(company.Data) == 0 {
+					logrus.Infoln("Company does not exist")
+					return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				}
+			}
+			if task.Type == "User" {
+				users := users_pb.UserTaskData{}
+				json.Unmarshal([]byte(task.Data), &users)
+
+				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+					CompanyID: users.User.CompanyID,
+				})
+				if err != nil {
+					logrus.Errorln("Failed to get company data: %v", err)
+					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				if len(company.Data) == 0 {
+					logrus.Infoln("Company does not exist")
+					return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				}
+			}
+			if task.Type == "Notification" {
+				notification := notification_pb.NotificationCompany{}
+				json.Unmarshal([]byte(task.Data), &notification)
+
+				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+					CompanyID: notification.CompanyID,
+				})
+				if err != nil {
+					logrus.Errorln("Failed to get company data: %v", err)
+					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				if len(company.Data) == 0 {
+					logrus.Infoln("Company does not exist")
+					return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				}
+			}
+
+			if task.Type == "Company" {
+				company := company_pb.CreateCompanyTaskReq{}
+				json.Unmarshal([]byte(task.Data), &company)
+
+				companyBRICaMS, err := companyClient.BRICaMSgetCustomerByIDV2(ctx, &company_pb.BricamsGetCustomerByIdReq{
+					Id: fmt.Sprintf("%v", company.Company.CompanyID),
+				})
+				if err != nil {
+					logrus.Errorln("Failed to get BRICaMS data", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				if companyBRICaMS.ResponseCode == "0002" {
+					return nil, status.Errorf(codes.NotFound, "Company Data Not Found From BRICaMS")
+				}
+			}
+		}
+	}
 	switch strings.ToLower(req.Action) {
 	case "rework":
 		taskPb, _ := task.ToPB(ctx)
@@ -1074,231 +1302,231 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 			if currentStep == 3 {
-				if currentStatus == 1 {
-					var opts []grpc.DialOption
-					opts = append(opts, grpc.WithInsecure())
-					companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
-					if err != nil {
-						logrus.Errorln("Failed connect to Company Service: %v", err)
-						// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
+				// if currentStatus == 1 {
+				// 	var opts []grpc.DialOption
+				// 	opts = append(opts, grpc.WithInsecure())
+				// 	companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
+				// 	if err != nil {
+				// 		logrus.Errorln("Failed connect to Company Service: %v", err)
+				// 		// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
 
-						return nil, status.Errorf(codes.Internal, "Internal Error")
-					}
-					defer companyConn.Close()
+				// 		return nil, status.Errorf(codes.Internal, "Internal Error")
+				// 	}
+				// 	defer companyConn.Close()
 
-					companyClient := company_pb.NewApiServiceClient(companyConn)
+				// 	companyClient := company_pb.NewApiServiceClient(companyConn)
 
-					// Check task types that need company ID
-					if task.Type == "Menu:License" {
-						if strings.Contains(task.Data, `"isParent": true`) {
-							// isParent = true
+				// 	// Check task types that need company ID
+				// 	if task.Type == "Menu:License" {
+				// 		if strings.Contains(task.Data, `"isParent": true`) {
+				// 			// isParent = true
 
-							for i := range task.Childs {
-								menu := menu_pb.MenuLicenseSave{}
-								json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+				// 			for i := range task.Childs {
+				// 				menu := menu_pb.MenuLicenseSave{}
+				// 				json.Unmarshal([]byte(task.Childs[i].Data), &menu)
 
-								company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-									CompanyID: menu.CompanyID,
-								})
-								if err != nil {
-									logrus.Errorln("Failed to get company data: %v", err)
-									// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+				// 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+				// 					CompanyID: menu.CompanyID,
+				// 				})
+				// 				if err != nil {
+				// 					logrus.Errorln("Failed to get company data: %v", err)
+				// 					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
 
-									return nil, status.Errorf(codes.Internal, "Internal Error")
-								}
-								if len(company.Data) == 0 {
-									logrus.Infoln("Company does not exist")
-									return nil, status.Errorf(codes.NotFound, "Company does not exist")
-								}
+				// 					return nil, status.Errorf(codes.Internal, "Internal Error")
+				// 				}
+				// 				if len(company.Data) == 0 {
+				// 					logrus.Infoln("Company does not exist")
+				// 					return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				// 				}
 
-							}
-						} else {
-							menu := menu_pb.MenuLicenseSave{}
-							json.Unmarshal([]byte(task.Data), &menu)
+				// 			}
+				// 		} else {
+				// 			menu := menu_pb.MenuLicenseSave{}
+				// 			json.Unmarshal([]byte(task.Data), &menu)
 
-							company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-								CompanyID: menu.CompanyID,
-							})
-							if err != nil {
-								logrus.Errorln("Failed to get company data: %v", err)
-								// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+				// 			company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+				// 				CompanyID: menu.CompanyID,
+				// 			})
+				// 			if err != nil {
+				// 				logrus.Errorln("Failed to get company data: %v", err)
+				// 				// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
 
-								return nil, status.Errorf(codes.Internal, "Internal Error")
-							}
-							if len(company.Data) == 0 {
-								logrus.Infoln("Company does not exist")
-								return nil, status.Errorf(codes.NotFound, "Company does not exist")
-							}
+				// 				return nil, status.Errorf(codes.Internal, "Internal Error")
+				// 			}
+				// 			if len(company.Data) == 0 {
+				// 				logrus.Infoln("Company does not exist")
+				// 				return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				// 			}
 
-						}
-					}
-					if task.Type == "Account" {
-						if strings.Contains(task.Data, `"isParent": true`) {
+				// 		}
+				// 	}
+				// 	if task.Type == "Account" {
+				// 		if strings.Contains(task.Data, `"isParent": true`) {
 
-							for i := range task.Childs {
-								account := account_pb.Account{}
-								json.Unmarshal([]byte(task.Childs[i].Data), &account)
+				// 			for i := range task.Childs {
+				// 				account := account_pb.Account{}
+				// 				json.Unmarshal([]byte(task.Childs[i].Data), &account)
 
-								company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-									CompanyID: account.CompanyID,
-								})
-								if err != nil {
-									logrus.Errorln("Failed to get company data: %v", err)
-									// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+				// 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+				// 					CompanyID: account.CompanyID,
+				// 				})
+				// 				if err != nil {
+				// 					logrus.Errorln("Failed to get company data: %v", err)
+				// 					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
 
-									return nil, status.Errorf(codes.Internal, "Internal Error")
-								}
-								if len(company.Data) == 0 {
-									logrus.Infoln("Company does not exist")
-									return nil, status.Errorf(codes.NotFound, "Company does not exist")
-								}
+				// 					return nil, status.Errorf(codes.Internal, "Internal Error")
+				// 				}
+				// 				if len(company.Data) == 0 {
+				// 					logrus.Infoln("Company does not exist")
+				// 					return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				// 				}
 
-							}
-						} else {
-							account := account_pb.Account{}
-							json.Unmarshal([]byte(task.Data), &account)
+				// 			}
+				// 		} else {
+				// 			account := account_pb.Account{}
+				// 			json.Unmarshal([]byte(task.Data), &account)
 
-							company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-								CompanyID: account.CompanyID,
-							})
-							if err != nil {
-								logrus.Errorln("Failed to get company data: %v", err)
-								// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+				// 			company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+				// 				CompanyID: account.CompanyID,
+				// 			})
+				// 			if err != nil {
+				// 				logrus.Errorln("Failed to get company data: %v", err)
+				// 				// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
 
-								return nil, status.Errorf(codes.Internal, "Internal Error")
-							}
-							if len(company.Data) == 0 {
-								logrus.Infoln("Company does not exist")
-								return nil, status.Errorf(codes.NotFound, "Company does not exist")
-							}
-						}
-					}
-					if task.Type == "Subscription" {
-						abonnement := abonnement_pb.ListTaskAbonnementRes{}
-						json.Unmarshal([]byte(task.Data), &abonnement)
+				// 				return nil, status.Errorf(codes.Internal, "Internal Error")
+				// 			}
+				// 			if len(company.Data) == 0 {
+				// 				logrus.Infoln("Company does not exist")
+				// 				return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				// 			}
+				// 		}
+				// 	}
+				// 	if task.Type == "Subscription" {
+				// 		abonnement := abonnement_pb.ListTaskAbonnementRes{}
+				// 		json.Unmarshal([]byte(task.Data), &abonnement)
 
-						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-							CompanyID: abonnement.CompanyID,
-						})
-						if err != nil {
-							logrus.Errorln("Failed to get company data: %v", err)
-							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+				// 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+				// 			CompanyID: abonnement.CompanyID,
+				// 		})
+				// 		if err != nil {
+				// 			logrus.Errorln("Failed to get company data: %v", err)
+				// 			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
 
-							return nil, status.Errorf(codes.Internal, "Internal Error")
-						}
-						if len(company.Data) == 0 {
-							logrus.Infoln("Company does not exist")
-							return nil, status.Errorf(codes.NotFound, "Company does not exist")
-						}
-					}
-					if task.Type == "Beneficiary Account" {
-						beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccountWrite{}
-						json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
+				// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+				// 		}
+				// 		if len(company.Data) == 0 {
+				// 			logrus.Infoln("Company does not exist")
+				// 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				// 		}
+				// 	}
+				// 	if task.Type == "Beneficiary Account" {
+				// 		beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccountWrite{}
+				// 		json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
 
-						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-							CompanyID: beneficiaryAccount.CompanyID,
-						})
-						if err != nil {
-							logrus.Errorln("Failed to get company data: %v", err)
-							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+				// 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+				// 			CompanyID: beneficiaryAccount.CompanyID,
+				// 		})
+				// 		if err != nil {
+				// 			logrus.Errorln("Failed to get company data: %v", err)
+				// 			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
 
-							return nil, status.Errorf(codes.Internal, "Internal Error")
-						}
-						if len(company.Data) == 0 {
-							logrus.Infoln("Company does not exist")
-							return nil, status.Errorf(codes.NotFound, "Company does not exist")
-						}
-					}
-					if task.Type == "Role" {
-						role := role_pb.Role{}
-						json.Unmarshal([]byte(task.Data), &role)
+				// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+				// 		}
+				// 		if len(company.Data) == 0 {
+				// 			logrus.Infoln("Company does not exist")
+				// 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				// 		}
+				// 	}
+				// 	if task.Type == "Role" {
+				// 		role := role_pb.Role{}
+				// 		json.Unmarshal([]byte(task.Data), &role)
 
-						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-							CompanyID: role.CompanyID,
-						})
-						if err != nil {
-							logrus.Errorln("Failed to get company data: %v", err)
-							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+				// 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+				// 			CompanyID: role.CompanyID,
+				// 		})
+				// 		if err != nil {
+				// 			logrus.Errorln("Failed to get company data: %v", err)
+				// 			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
 
-							return nil, status.Errorf(codes.Internal, "Internal Error")
-						}
-						if len(company.Data) == 0 {
-							logrus.Infoln("Company does not exist")
-							return nil, status.Errorf(codes.NotFound, "Company does not exist")
-						}
-					}
-					if task.Type == "Workflow" {
-						workflow := workflow_pb.WorkflowTask{}
-						json.Unmarshal([]byte(task.Data), &workflow)
-						companyID, _ := strconv.ParseUint(workflow.Company.CompanyID, 10, 64)
+				// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+				// 		}
+				// 		if len(company.Data) == 0 {
+				// 			logrus.Infoln("Company does not exist")
+				// 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				// 		}
+				// 	}
+				// 	if task.Type == "Workflow" {
+				// 		workflow := workflow_pb.WorkflowTask{}
+				// 		json.Unmarshal([]byte(task.Data), &workflow)
+				// 		companyID, _ := strconv.ParseUint(workflow.Company.CompanyID, 10, 64)
 
-						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-							CompanyID: companyID,
-						})
-						if err != nil {
-							logrus.Errorln("Failed to get company data: %v", err)
-							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+				// 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+				// 			CompanyID: companyID,
+				// 		})
+				// 		if err != nil {
+				// 			logrus.Errorln("Failed to get company data: %v", err)
+				// 			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
 
-							return nil, status.Errorf(codes.Internal, "Internal Error")
-						}
-						if len(company.Data) == 0 {
-							logrus.Infoln("Company does not exist")
-							return nil, status.Errorf(codes.NotFound, "Company does not exist")
-						}
-					}
-					if task.Type == "User" {
-						users := users_pb.UserTaskData{}
-						json.Unmarshal([]byte(task.Data), &users)
+				// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+				// 		}
+				// 		if len(company.Data) == 0 {
+				// 			logrus.Infoln("Company does not exist")
+				// 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				// 		}
+				// 	}
+				// 	if task.Type == "User" {
+				// 		users := users_pb.UserTaskData{}
+				// 		json.Unmarshal([]byte(task.Data), &users)
 
-						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-							CompanyID: users.User.CompanyID,
-						})
-						if err != nil {
-							logrus.Errorln("Failed to get company data: %v", err)
-							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+				// 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+				// 			CompanyID: users.User.CompanyID,
+				// 		})
+				// 		if err != nil {
+				// 			logrus.Errorln("Failed to get company data: %v", err)
+				// 			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
 
-							return nil, status.Errorf(codes.Internal, "Internal Error")
-						}
-						if len(company.Data) == 0 {
-							logrus.Infoln("Company does not exist")
-							return nil, status.Errorf(codes.NotFound, "Company does not exist")
-						}
-					}
-					if task.Type == "Notification" {
-						notification := notification_pb.NotificationCompany{}
-						json.Unmarshal([]byte(task.Data), &notification)
+				// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+				// 		}
+				// 		if len(company.Data) == 0 {
+				// 			logrus.Infoln("Company does not exist")
+				// 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				// 		}
+				// 	}
+				// 	if task.Type == "Notification" {
+				// 		notification := notification_pb.NotificationCompany{}
+				// 		json.Unmarshal([]byte(task.Data), &notification)
 
-						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-							CompanyID: notification.CompanyID,
-						})
-						if err != nil {
-							logrus.Errorln("Failed to get company data: %v", err)
-							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
+				// 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+				// 			CompanyID: notification.CompanyID,
+				// 		})
+				// 		if err != nil {
+				// 			logrus.Errorln("Failed to get company data: %v", err)
+				// 			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
 
-							return nil, status.Errorf(codes.Internal, "Internal Error")
-						}
-						if len(company.Data) == 0 {
-							logrus.Infoln("Company does not exist")
-							return nil, status.Errorf(codes.NotFound, "Company does not exist")
-						}
-					}
+				// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+				// 		}
+				// 		if len(company.Data) == 0 {
+				// 			logrus.Infoln("Company does not exist")
+				// 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
+				// 		}
+				// 	}
 
-					if task.Type == "Company" {
-						company := company_pb.CreateCompanyTaskReq{}
-						json.Unmarshal([]byte(task.Data), &company)
+				// 	if task.Type == "Company" {
+				// 		company := company_pb.CreateCompanyTaskReq{}
+				// 		json.Unmarshal([]byte(task.Data), &company)
 
-						companyBRICaMS, err := companyClient.BRICaMSgetCustomerByIDV2(ctx, &company_pb.BricamsGetCustomerByIdReq{
-							Id: fmt.Sprintf("%v", company.Company.CompanyID),
-						})
-						if err != nil {
-							logrus.Errorln("Failed to get BRICaMS data", err)
-							return nil, status.Errorf(codes.Internal, "Internal Error")
-						}
-						if companyBRICaMS.ResponseCode == "0002" {
-							return nil, status.Errorf(codes.NotFound, "Company Data Not Found From BRICaMS")
-						}
-					}
-				}
+				// 		companyBRICaMS, err := companyClient.BRICaMSgetCustomerByIDV2(ctx, &company_pb.BricamsGetCustomerByIdReq{
+				// 			Id: fmt.Sprintf("%v", company.Company.CompanyID),
+				// 		})
+				// 		if err != nil {
+				// 			logrus.Errorln("Failed to get BRICaMS data", err)
+				// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+				// 		}
+				// 		if companyBRICaMS.ResponseCode == "0002" {
+				// 			return nil, status.Errorf(codes.NotFound, "Company Data Not Found From BRICaMS")
+				// 		}
+				// 	}
+				// }
 				task.Status = 1
 				// task.Step = 4
 				// if task.Type == "Announcement" {
