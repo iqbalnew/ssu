@@ -164,6 +164,8 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		return nil, err
 	}
 
+	logrus.Print(me.TaskFilter)
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
@@ -191,10 +193,14 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		FilterOr:      req.GetFilterOr(),
 		CollectiveAnd: req.GetQuery(),
 		In:            req.GetIn(),
-		MeFilterIn:    me.TaskFilter,
-		CustomOrder:   req.GetCustomOrder(),
-		Sort:          sort,
+		// MeFilterIn:    me.TaskFilter,
+		CustomOrder: req.GetCustomOrder(),
+		Sort:        sort,
+		CompanyID:   me.CompanyID,
 	}
+
+	logrus.Print(sqlBuilder)
+
 	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, []uint64{})
 	if err != nil {
 		return nil, err
