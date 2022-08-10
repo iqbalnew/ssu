@@ -636,7 +636,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 	if task.Type == "Beneficiary Account" {
-		beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccountWrite{}
+		beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
 		json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
 
 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
@@ -1273,7 +1273,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 			}
 			if task.Type == "Beneficiary Account" {
-				beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccountWrite{}
+				beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
 				json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
 
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
@@ -2297,7 +2297,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 			defer accountConn.Close()
 
-			companyClient := account_pb.NewApiServiceClient(accountConn)
+			accountClient := account_pb.NewApiServiceClient(accountConn)
 
 			if isParent {
 				for i := range task.Childs {
@@ -2310,7 +2310,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						data.Data = &account
 						data.TaskID = task.Childs[i].TaskID
 
-						res, err := companyClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+						res, err := accountClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
 							return nil, err
 						}
@@ -2346,12 +2346,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				data.TaskID = task.TaskID
 
 				logrus.Printf("Task Account for save ===>: %v", data)
-
-				res, err := companyClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-				if err != nil {
-					return nil, err
+				if task.Status == 7 {
+					res, err := accountClient.DeleteAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+					if err != nil {
+						return nil, err
+					}
+					logrus.Println(res)
+				} else {
+					res, err := accountClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+					if err != nil {
+						return nil, err
+					}
+					logrus.Println(res)
 				}
-				logrus.Println(res)
+
 			}
 
 		case "Notification":
