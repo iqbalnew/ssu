@@ -205,8 +205,8 @@ func TaskDataSubscriptionToPB(data string) (val *abonnement_pb.ListTaskAbonnemen
 	return &subscription, subscription.GetCompany().GetName(), nil
 }
 
-func TaskDataBeneficiaryAccountToPB(data string) (val *beneficiary_account_pb.BeneficiaryAccountWrite, key string, err error) {
-	beneficiary := beneficiary_account_pb.BeneficiaryAccountWrite{}
+func TaskDataBeneficiaryAccountToPB(data string) (val *beneficiary_account_pb.BeneficiaryAccount, key string, err error) {
+	beneficiary := beneficiary_account_pb.BeneficiaryAccount{}
 	err = json.Unmarshal([]byte(data), &beneficiary)
 	if err != nil {
 		return nil, "", err
