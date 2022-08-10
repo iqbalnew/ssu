@@ -164,6 +164,8 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		return nil, err
 	}
 
+	logrus.Print(me.TaskFilter)
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
@@ -191,10 +193,14 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		FilterOr:      req.GetFilterOr(),
 		CollectiveAnd: req.GetQuery(),
 		In:            req.GetIn(),
-		MeFilterIn:    me.TaskFilter,
-		CustomOrder:   req.GetCustomOrder(),
-		Sort:          sort,
+		// MeFilterIn:    me.TaskFilter,
+		CustomOrder: req.GetCustomOrder(),
+		Sort:        sort,
+		CompanyID:   me.CompanyID,
 	}
+
+	logrus.Print(sqlBuilder)
+
 	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, []uint64{})
 	if err != nil {
 		return nil, err
@@ -636,7 +642,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 	if task.Type == "Beneficiary Account" {
-		beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
+		beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccountWrite{}
 		json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
 
 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
@@ -1273,7 +1279,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 			}
 			if task.Type == "Beneficiary Account" {
-				beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
+				beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccountWrite{}
 				json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
 
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
@@ -2816,7 +2822,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
-			beneficiaryAccountConn, err := grpc.Dial(getEnv("BENEFICIARY_ACCOUNT_SERVICE", ":9093"), opts...)
+			beneficiaryAccountConn, err := grpc.Dial(getEnv("BENEFICIARY_ACCOUNT_SERVICE", ":9107"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to Account Service: %v", err)
 				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Account Service: %v", err))
