@@ -642,7 +642,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 	if task.Type == "Beneficiary Account" {
-		beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccountWrite{}
+		beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
 		json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
 
 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
@@ -1279,7 +1279,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 			}
 			if task.Type == "Beneficiary Account" {
-				beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccountWrite{}
+				beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
 				json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
 
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
