@@ -127,13 +127,13 @@ func TaskDataUserToPB(data string) (val *users_pb.UserTaskData, key string, err 
 	return &user, user.GetUser().GetUsername(), nil
 }
 
-func TaskDataCompanyToPB(data string) (val *company_pb.CreateCompanyReq, key string, err error) {
-	company := company_pb.CreateCompanyReq{}
+func TaskDataCompanyToPB(data string) (val *company_pb.Company, key string, err error) {
+	company := company_pb.Company{}
 	err = json.Unmarshal([]byte(data), &company)
 	if err != nil {
 		return nil, "", err
 	}
-	return &company, company.GetData().GetCompany().GetCompanyName(), nil
+	return &company, company.GetCompanyName(), nil
 }
 
 func TaskDataAnnouncementToPB(data string) (val *announcement_pb.Announcement, key string, err error) {
