@@ -19,7 +19,7 @@ func (s *Server) DeleteCompany(ctx context.Context, dataString string) error {
 
 	// get task with company id
 	listRes, err := s.GetListTask(ctx, &pb.ListTaskRequest{
-		Filter: "step:>=3",
+		// Filter: "step:>=3",
 		FilterOr: fmt.Sprintf("data.companyID:%v|data.company.companyID:%v", companyID,companyID),
 		In: "type:Account,Beneficiary Account,Menu:License,Role,Workflow",
 	})
