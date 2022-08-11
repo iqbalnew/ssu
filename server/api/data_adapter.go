@@ -133,7 +133,7 @@ func TaskDataCompanyToPB(data string) (val *company_pb.CreateCompanyTaskReq, key
 	if err != nil {
 		return nil, "", err
 	}
-	return &company, company.Company.GetCompanyName(), nil
+	return &company, company.Company.GetGroupName(), nil
 }
 
 func TaskDataAnnouncementToPB(data string) (val *announcement_pb.Announcement, key string, err error) {
