@@ -416,10 +416,6 @@ func (file *ActivityLogFile) ToPDFv2(ctx context.Context) (*httpbody.HttpBody, e
 		if v.Type != "" {
 			taskType = v.Type
 		}
-		taskKey := ""
-		if v.Key != "" {
-			taskKey = v.Key
-		}
 
 		username := ""
 		if v.Username != "" {
@@ -460,7 +456,6 @@ func (file *ActivityLogFile) ToPDFv2(ctx context.Context) (*httpbody.HttpBody, e
 		vals := []string{
 			fmt.Sprintf("%d", index+1),
 			taskType,
-			taskKey,
 			username,
 			companyName,
 			key,
