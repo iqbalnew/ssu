@@ -29,6 +29,9 @@ func (this *LoginResponse) Validate() error {
 func (this *HealthCheckResponse) Validate() error {
 	return nil
 }
+func (this *ArrayString) Validate() error {
+	return nil
+}
 func (this *Empty) Validate() error {
 	return nil
 }
