@@ -2,82 +2,61 @@ package api
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 
-	account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/account_service"
-	beneficiary_account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/beneficiary_account_service"
-	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
-	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
-	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
-
+	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
+	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 )
 
-func (s *Server) DeleteCompany(ctx context.Context, companyID uint64) error {
-	var err error
+func (s *Server) DeleteCompany(ctx context.Context, dataString string) error {
 
-	currentUser, userMD, err := s.manager.GetMeFromMD(ctx)
+	taskData := company_pb.CreateCompanyTaskReq{}
+	json.Unmarshal([]byte(dataString), &taskData)
+	companyID := taskData.Company.CompanyID
+
+	// get task with company id
+	listRes, err := s.GetListTask(ctx, &pb.ListTaskRequest{
+		Filter: "step:>=3",
+		FilterOr: fmt.Sprintf("data.companyID:%v|data.company.companyID:%v", companyID,companyID),
+		In: "type:Account,Beneficiary Account,Menu:License,Role,Workflow",
+	})
 	if err != nil {
+		logrus.Errorf("error get list task: %v", err)
 		return err
 	}
+	listTask := listRes.Data
+	listTaskORM := []pb.TaskORM{}
 
-	if currentUser.UserType != "ba" {
-		return status.Error(codes.PermissionDenied, "You are not authorized to delete company")
+	for _, task := range listTask {
+		orm, _ := task.ToORM(ctx)
+		listTaskORM = append(listTaskORM, orm)
 	}
 
-	md, ok := metadata.FromIncomingContext(ctx)
-	if ok {
-		ctx = metadata.NewOutgoingContext(context.Background(), md)
-	}
-	var trailer metadata.MD
-
-	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithInsecure())
-
-	// call service account, beneficiary, role, workflow, menu license
-	accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9093"), opts...)
+	err = s.provider.DeleteCompanyTask(ctx, listTaskORM)
 	if err != nil {
-		logrus.Errorf("fail to dial account service: %v", err)
-		return status.Errorf(codes.Internal, "fail to dial account service: %v", err)
+		logrus.Errorf("error updpate company task: %v", err)
+		return err
 	}
-	defer accountConn.Close()
-	accountClient := account_pb.NewApiServiceClient(accountConn)
+	logrus.Infof("company delete =====> update status to 6")
 
-	beneficiaryConn, err := grpc.Dial(getEnv("BENEFICIARY_ACCOUNT_SERVICE", ":9107"), opts...)
-	if err != nil {
-		logrus.Errorf("fail to dial beneficiary service: %v", err)
-		return status.Errorf(codes.Internal, "fail to dial beneficiary service: %v", err)
+	for _, task := range listTask {
+		// delete task
+		if !task.IsParentActive {
+			_, err = s.SetTask(ctx, &pb.SetTaskRequest{
+				TaskID: task.TaskID,
+				Action: "approve",
+				Comment: "this company is deleted",
+			})
+			if err != nil {
+				logrus.Errorf("error delete task: %v", err)
+				return err
+			}
+			logrus.Infof("company delete =====> delete task: %v", task.TaskID)
+		}
 	}
-	defer beneficiaryConn.Close()
-	beneficiaryClient := beneficiary_account_pb.NewApiServiceClient(beneficiaryConn)
-
-	roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9098"), opts...)
-	if err != nil {
-		logrus.Errorf("fail to dial role service: %v", err)
-		return status.Errorf(codes.Internal, "fail to dial role service: %v", err)
-	}
-	defer roleConn.Close()
-	roleClient := role_pb.NewApiServiceClient(roleConn)
-
-	workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
-	if err != nil {
-		logrus.Errorf("fail to dial workflow service: %v", err)
-		return status.Errorf(codes.Internal, "fail to dial workflow service: %v", err)
-	}
-	defer workflowConn.Close()
-	workflowClient := workflow_pb.NewApiServiceClient(workflowConn)
-
-	menuConn, err := grpc.Dial(getEnv("MENU_SERVICE", ":9096"), opts...)
-	if err != nil {
-		logrus.Errorf("fail to dial menu service: %v", err)
-		return status.Errorf(codes.Internal, "fail to dial menu service: %v", err)
-	}
-	defer menuConn.Close()
-	menuClient := menu_pb.NewApiServiceClient(menuConn)
 
 	return nil
 }

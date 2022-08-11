@@ -490,3 +490,20 @@ func (p *GormProvider) GetAccountTaskById(ctx context.Context, id uint64) (*pb.A
 	}
 	return task, nil
 }
+
+func (p *GormProvider) DeleteCompanyTask(ctx context.Context, listTask []pb.TaskORM) error {
+	updateData := map[string]interface{}{
+		"status": 6,
+		"step":   3,
+	}
+	listID := []uint64{}
+	for _, task := range listTask {
+		listID = append(listID, task.TaskID)
+	}
+
+	if err := p.db_main.Debug().Model(&pb.TaskORM{}).Where("task_id IN ?", listID).Updates(&updateData).Error; err != nil {
+		logrus.Errorln(err)
+		return status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+	}
+	return nil
+}

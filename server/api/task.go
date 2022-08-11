@@ -1097,6 +1097,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		return nil, err
 	}
 
+	originalCtx := ctx
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
@@ -1576,7 +1578,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				if currentStatus == 6 {
 					// function for delete other service coresponding with company here
 					if task.Type == "Company" {
-						
+						err := s.DeleteCompany(originalCtx, task.Data)
+						if err != nil {
+							logrus.Errorln("Failed to delete company: %v", err)
+							return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+						}
 					}
 					task.Status = 7
 				}
@@ -2587,7 +2593,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
-			beneficiaryAccountConn, err := grpc.Dial(getEnv("BENEFICIARY_ACCOUNT_SERVICE", ":9093"), opts...)
+			beneficiaryAccountConn, err := grpc.Dial(getEnv("BENEFICIARY_ACCOUNT_SERVICE", ":9107"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to Account Service: %v", err)
 				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Account Service: %v", err))
