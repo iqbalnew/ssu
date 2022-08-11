@@ -372,11 +372,11 @@ func (file *ActivityLogFile) ToPDFv2(ctx context.Context) (*httpbody.HttpBody, e
 	pdf := gofpdf.New("L", "mm", "Letter", "")
 
 	fields := []string{"No", "Type", "Key", "User", "Company Name", "Command", "Action", "Date", "Description"}
-	widths := []float64{8, 20, 25, 30, 30, 25, 20, 30, 45}
+	widths := []float64{8, 20, 30, 30, 30, 25, 20, 30, 45}
 	align := []string{"TL", "TL", "TL", "TL", "TL", "TL", "TL", "TL", "TL"}
 
 	var (
-		cellList [8]cellType
+		cellList [9]cellType
 		cell     cellType
 	)
 
