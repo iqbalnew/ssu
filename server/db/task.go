@@ -377,7 +377,7 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 
 func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowRoleIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
 	query := p.db_main
-	if filter.Type != "" && filter.Type == "Swift" {
+	if filter.Type != "" {
 		query = query.Debug()
 	}
 	query = query.Select("*", "CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
@@ -402,6 +402,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	query = query.Scopes(FilterOrScoope(sql.FilterOr, customQuery))
 
 	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn))
+	if sql.CompanyID != "" {
+		query = query.Where(`("company_id" = ? OR "data" ->> 'companyID' = ?)`, sql.CompanyID, sql.CompanyID)
+	}
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
 	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {

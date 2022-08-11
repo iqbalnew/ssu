@@ -19,6 +19,7 @@ type QueryBuilder struct {
 	Distinct      string
 	CustomOrder   string
 	Sort          *pb.Sort
+	CompanyID     string
 }
 
 func Paginate(value interface{}, v *pb.PaginationResponse, db *gorm.DB) func(db *gorm.DB) *gorm.DB {

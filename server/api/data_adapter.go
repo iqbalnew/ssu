@@ -127,13 +127,13 @@ func TaskDataUserToPB(data string) (val *users_pb.UserTaskData, key string, err 
 	return &user, user.GetUser().GetUsername(), nil
 }
 
-func TaskDataCompanyToPB(data string) (val *company_pb.CreateCompanyReq, key string, err error) {
-	company := company_pb.CreateCompanyReq{}
+func TaskDataCompanyToPB(data string) (val *company_pb.Company, key string, err error) {
+	company := company_pb.Company{}
 	err = json.Unmarshal([]byte(data), &company)
 	if err != nil {
 		return nil, "", err
 	}
-	return &company, company.GetData().GetCompany().GetGroupName(), nil
+	return &company, company.GetGroupName(), nil
 }
 
 func TaskDataAnnouncementToPB(data string) (val *announcement_pb.Announcement, key string, err error) {
@@ -205,8 +205,8 @@ func TaskDataSubscriptionToPB(data string) (val *abonnement_pb.ListTaskAbonnemen
 	return &subscription, subscription.GetCompany().GetName(), nil
 }
 
-func TaskDataBeneficiaryAccountToPB(data string) (val *beneficiary_account_pb.BeneficiaryAccountWrite, key string, err error) {
-	beneficiary := beneficiary_account_pb.BeneficiaryAccountWrite{}
+func TaskDataBeneficiaryAccountToPB(data string) (val *beneficiary_account_pb.BeneficiaryAccount, key string, err error) {
+	beneficiary := beneficiary_account_pb.BeneficiaryAccount{}
 	err = json.Unmarshal([]byte(data), &beneficiary)
 	if err != nil {
 		return nil, "", err

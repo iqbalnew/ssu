@@ -164,6 +164,8 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		return nil, err
 	}
 
+	logrus.Print(me.TaskFilter)
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
@@ -191,10 +193,14 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		FilterOr:      req.GetFilterOr(),
 		CollectiveAnd: req.GetQuery(),
 		In:            req.GetIn(),
-		MeFilterIn:    me.TaskFilter,
-		CustomOrder:   req.GetCustomOrder(),
-		Sort:          sort,
+		// MeFilterIn:    me.TaskFilter,
+		CustomOrder: req.GetCustomOrder(),
+		Sort:        sort,
+		CompanyID:   me.CompanyID,
 	}
+
+	logrus.Print(sqlBuilder)
+
 	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, []uint64{})
 	if err != nil {
 		return nil, err
@@ -636,7 +642,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 	if task.Type == "Beneficiary Account" {
-		beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccountWrite{}
+		beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
 		json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
 
 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
@@ -1273,7 +1279,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 			}
 			if task.Type == "Beneficiary Account" {
-				beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccountWrite{}
+				beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
 				json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
 
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
@@ -2019,19 +2025,19 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}, nil
 		}
 
-		// if task.Type == "Company" {
-		// 	company := company_pb.CreateCompanyTaskReq{}
-		// 	json.Unmarshal([]byte(task.Data), &company)
-		// 	data, err := s.provider.GetGraphStepAll(ctx, fmt.Sprint(company.Company.CompanyID))
+		if task.Type == "Company" {
+			company := company_pb.CreateCompanyTaskReq{}
+			json.Unmarshal([]byte(task.Data), &company)
+			data, err := s.provider.GetGraphStepAll(ctx, fmt.Sprint(company.Company.CompanyID))
 
-		// 	logrus.Println("graph all --> ", data, data.Total)
-		// 	if err != nil {
-		// 		return nil, err
-		// 	}
-		// 	if data.Total > 0 {
-		// 		return nil, status.Errorf(codes.Canceled, "Cannot delete company, some task on progress")
-		// 	}
-		// }
+			logrus.Println("graph all --> ", data, data.Total)
+			if err != nil {
+				return nil, err
+			}
+			if data.Total > 0 {
+				return nil, status.Errorf(codes.Canceled, "Cannot delete company, some task on progress")
+			}
+		}
 
 		task.LastApprovedByID = 0
 		task.LastApprovedByName = ""
@@ -2297,7 +2303,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 			defer accountConn.Close()
 
-			companyClient := account_pb.NewApiServiceClient(accountConn)
+			accountClient := account_pb.NewApiServiceClient(accountConn)
 
 			if isParent {
 				for i := range task.Childs {
@@ -2310,7 +2316,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						data.Data = &account
 						data.TaskID = task.Childs[i].TaskID
 
-						res, err := companyClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+						res, err := accountClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
 							return nil, err
 						}
@@ -2346,12 +2352,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				data.TaskID = task.TaskID
 
 				logrus.Printf("Task Account for save ===>: %v", data)
-
-				res, err := companyClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-				if err != nil {
-					return nil, err
+				if task.Status == 7 {
+					res, err := accountClient.DeleteAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+					if err != nil {
+						return nil, err
+					}
+					logrus.Println(res)
+				} else {
+					res, err := accountClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+					if err != nil {
+						return nil, err
+					}
+					logrus.Println(res)
 				}
-				logrus.Println(res)
+
 			}
 
 		case "Notification":
@@ -2808,7 +2822,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
-			beneficiaryAccountConn, err := grpc.Dial(getEnv("BENEFICIARY_ACCOUNT_SERVICE", ":9093"), opts...)
+			beneficiaryAccountConn, err := grpc.Dial(getEnv("BENEFICIARY_ACCOUNT_SERVICE", ":9107"), opts...)
 			if err != nil {
 				logrus.Errorln("Failed connect to Account Service: %v", err)
 				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Account Service: %v", err))
