@@ -262,11 +262,12 @@ func TaskDataSSOCompanyToPB(data string) (val *sso_pb.WriteSyncCompanyTask, key 
 		return nil, "", err
 	}
 
-	return &company, fmt.Sprintf("%s:%d", company.GetClient(), company.Company.GetCompanyID()), nil
+	//return &company, fmt.Sprintf("%s:%d", company.GetClient(), company.Company.GetCompanyID()), nil
+	return &company, company.DataCBM.GetCompanyName(), nil
 }
 
-func TaskDataSystemToPB(data string) (val *system_pb.CreateRequest, key string, err error) {
-	system := system_pb.CreateRequest{}
+func TaskDataSystemToPB(data string) (val *system_pb.CreateSystemRequest, key string, err error) {
+	system := system_pb.CreateSystemRequest{}
 	err = json.Unmarshal([]byte(data), &system)
 	if err != nil {
 		return nil, "", err
