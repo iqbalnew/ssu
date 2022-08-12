@@ -80,7 +80,7 @@ func (file *ActivityLogFile) ToCsv(ctx context.Context) (*httpbody.HttpBody, err
 
 	w := csv.NewWriter(&buf)
 
-	fields := []string{"No", "Type", "User", "Company Name", "Command", "Action", "Date", "Description"}
+	fields := []string{"No", "Type", "User", "Company Name", "Key", "Command", "Action", "Date", "Description"}
 
 	_ = w.Write(fields)
 
@@ -94,11 +94,6 @@ func (file *ActivityLogFile) ToCsv(ctx context.Context) (*httpbody.HttpBody, err
 		taskType := ""
 		if v.Type != "" {
 			taskType = v.Type
-		}
-
-		taskKey := ""
-		if v.Key != "" {
-			taskKey = v.Key
 		}
 
 		username := ""
@@ -139,7 +134,6 @@ func (file *ActivityLogFile) ToCsv(ctx context.Context) (*httpbody.HttpBody, err
 		row := []string{
 			fmt.Sprintf("%d", index+1),
 			taskType,
-			taskKey,
 			username,
 			companyName,
 			key,
@@ -181,10 +175,11 @@ func (file *ActivityLogFile) ToXlsx(ctx context.Context) (*httpbody.HttpBody, er
 	_ = f.SetCellValue("Sheet1", "B1", "Type")
 	_ = f.SetCellValue("Sheet1", "C1", "User")
 	_ = f.SetCellValue("Sheet1", "D1", "Company Name")
-	_ = f.SetCellValue("Sheet1", "E1", "Command")
-	_ = f.SetCellValue("Sheet1", "F1", "Action")
-	_ = f.SetCellValue("Sheet1", "G1", "Date")
-	_ = f.SetCellValue("Sheet1", "H1", "Description")
+	_ = f.SetCellValue("Sheet1", "E1", "Key")
+	_ = f.SetCellValue("Sheet1", "F1", "Command")
+	_ = f.SetCellValue("Sheet1", "G1", "Action")
+	_ = f.SetCellValue("Sheet1", "H1", "Date")
+	_ = f.SetCellValue("Sheet1", "I1", "Description")
 	// _ = f.SetCellValue("Sheet1", "I1", "Task ID")
 
 	for k, v := range file.res.Data {

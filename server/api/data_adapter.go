@@ -127,13 +127,13 @@ func TaskDataUserToPB(data string) (val *users_pb.UserTaskData, key string, err 
 	return &user, user.GetUser().GetUsername(), nil
 }
 
-func TaskDataCompanyToPB(data string) (val *company_pb.Company, key string, err error) {
-	company := company_pb.Company{}
+func TaskDataCompanyToPB(data string) (val *company_pb.CreateCompanyTaskReq, key string, err error) {
+	company := company_pb.CreateCompanyTaskReq{}
 	err = json.Unmarshal([]byte(data), &company)
 	if err != nil {
 		return nil, "", err
 	}
-	return &company, company.GetGroupName(), nil
+	return &company, company.Company.GetGroupName(), nil
 }
 
 func TaskDataAnnouncementToPB(data string) (val *announcement_pb.Announcement, key string, err error) {
@@ -165,14 +165,14 @@ func TaskDataMenuAppearanceToPB(data string) (val *menu_pb.MenuAppearance, key s
 	return &menu, menu.GetName(), nil
 }
 
-func TaskDataMenuLicenseToPB(data string) (val *menu_pb.MenuLicenseSave, key string, err error) {
-	menu := menu_pb.MenuLicenseSave{}
+func TaskDataMenuLicenseToPB(data string) (val *menu_pb.MenuParent, key string, err error) {
+	menu := menu_pb.MenuParent{}
 	err = json.Unmarshal([]byte(data), &menu)
 	if err != nil {
 		return nil, "", err
 	}
 
-	return &menu, menu.GetCompany().GetCompanyName(), nil
+	return &menu, menu.GetCompanyName(), nil
 }
 
 func TaskDataLiquidityToPB(data string) (val *liquidity_pb.CreateTaskLiquidityRequest, key string, err error) {
@@ -262,11 +262,11 @@ func TaskDataSSOCompanyToPB(data string) (val *sso_pb.WriteSyncCompanyTask, key 
 		return nil, "", err
 	}
 
-	return &company, fmt.Sprintf("%s:%d", company.GetDataCBM().GetCompanyName(), company.Company.GetCompanyID()), nil
+	return &company, company.GetDataCBM().GetCompanyName(), nil
 }
 
-func TaskDataSystemToPB(data string) (val *system_pb.CreateRequest, key string, err error) {
-	system := system_pb.CreateRequest{}
+func TaskDataSystemToPB(data string) (val *system_pb.CreateSystemRequest, key string, err error) {
+	system := system_pb.CreateSystemRequest{}
 	err = json.Unmarshal([]byte(data), &system)
 	if err != nil {
 		return nil, "", err
