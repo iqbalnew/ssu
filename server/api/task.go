@@ -1592,7 +1592,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					}
 					task.Status = 7
 
-					if contains(["BG Mapping", "BG Mapping Digital"], task.Type) {
+					if contains([]string{"BG Mapping", "BG Mapping Digital"}, task.Type) {
 						task.Status = 4
 						task.Step = 3
 						task.Data = task.DataBak
