@@ -262,7 +262,7 @@ func TaskDataSSOCompanyToPB(data string) (val *sso_pb.WriteSyncCompanyTask, key 
 		return nil, "", err
 	}
 
-	return &company, fmt.Sprintf("%s:%d", company.GetClient(), company.Company.GetCompanyID()), nil
+	return &company, fmt.Sprintf("%s:%d", company.GetDataCBM().GetCompanyName(), company.Company.GetCompanyID()), nil
 }
 
 func TaskDataSystemToPB(data string) (val *system_pb.CreateRequest, key string, err error) {
