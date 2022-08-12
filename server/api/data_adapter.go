@@ -276,22 +276,22 @@ func TaskDataSystemToPB(data string) (val *system_pb.CreateSystemRequest, key st
 	return &system, system.GetData().GetKey(), nil
 }
 
-func TaskDataBGMappingToPB(data string) (val *bg_pb.MappingData, key string, err error) {
-	mapping := bg_pb.MappingData{}
+func TaskDataBGMappingToPB(data string) (val []*bg_pb.MappingData, key string, err error) {
+	mapping := []*bg_pb.MappingData{}
 	err = json.Unmarshal([]byte(data), &mapping)
 	if err != nil {
 		return nil, "", err
 	}
 
-	return &mapping, mapping.GetCompanyName(), nil
+	return mapping, mapping[0].GetCompanyName(), nil
 }
 
-func TaskDataBGMappingDigitalToPB(data string) (val *bg_pb.MappingDigitalData, key string, err error) {
-	mapping := bg_pb.MappingDigitalData{}
+func TaskDataBGMappingDigitalToPB(data string) (val []*bg_pb.MappingDigitalData, key string, err error) {
+	mapping := []*bg_pb.MappingDigitalData{}
 	err = json.Unmarshal([]byte(data), &mapping)
 	if err != nil {
 		return nil, "", err
 	}
 
-	return &mapping, mapping.GetCompanyName(), nil
+	return mapping, mapping[0].GetCompanyName(), nil
 }
