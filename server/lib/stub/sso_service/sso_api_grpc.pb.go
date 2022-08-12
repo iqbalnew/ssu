@@ -8,6 +8,7 @@ package pb
 
 import (
 	context "context"
+	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -27,22 +28,36 @@ type ApiServiceClient interface {
 	CBMSessionValidation(ctx context.Context, in *CBMSessionValidationRequest, opts ...grpc.CallOption) (*CBMSessionValidationResponse, error)
 	SSOGetLoginURL(ctx context.Context, in *SSOGetLoginURLReq, opts ...grpc.CallOption) (*SSOGetLoginURLRes, error)
 	SSOLogout(ctx context.Context, in *SSOGetLoginURLReq, opts ...grpc.CallOption) (*SSOLogoutRes, error)
-	CBMSyncUser(ctx context.Context, in *CBMSyncUserReq, opts ...grpc.CallOption) (*CBMSyncUserRes, error)
-	CBMSyncCompany(ctx context.Context, in *CBMSyncCompanyReq, opts ...grpc.CallOption) (*CBMSyncCompanyRes, error)
 	CreateSyncUserTask(ctx context.Context, in *CreateSyncUserTaskReq, opts ...grpc.CallOption) (*CreateSyncUserTaskRes, error)
 	ListSyncUserTask(ctx context.Context, in *ListTaskReq, opts ...grpc.CallOption) (*ListSyncUserTaskRes, error)
 	GetSyncUserTask(ctx context.Context, in *GetTaskReq, opts ...grpc.CallOption) (*GetSyncUserTaskRes, error)
+	SetSyncUserTask(ctx context.Context, in *SetTaskReq, opts ...grpc.CallOption) (*GetSyncUserTaskRes, error)
+	ApproveSyncUserTask(ctx context.Context, in *GetTaskReq, opts ...grpc.CallOption) (*GetSyncUserTaskRes, error)
 	DeleteSyncUserTask(ctx context.Context, in *GetTaskReq, opts ...grpc.CallOption) (*GetSyncUserTaskRes, error)
 	ListSyncUser(ctx context.Context, in *ListSyncDataReq, opts ...grpc.CallOption) (*ListSyncUserRes, error)
-	SaveSyncUser(ctx context.Context, in *WriteSyncUserTask, opts ...grpc.CallOption) (*SetSyncUserRes, error)
 	DeleteSyncUser(ctx context.Context, in *WriteSyncUserTask, opts ...grpc.CallOption) (*SetSyncUserRes, error)
 	CreateSyncCompanyTask(ctx context.Context, in *CreateSyncCompanyTaskReq, opts ...grpc.CallOption) (*CreateSyncCompanyTaskRes, error)
 	ListSyncCompanyTask(ctx context.Context, in *ListTaskReq, opts ...grpc.CallOption) (*ListSyncCompanyTaskRes, error)
 	GetSyncCompanyTask(ctx context.Context, in *GetTaskReq, opts ...grpc.CallOption) (*GetSyncCompanyTaskRes, error)
+	SetSyncCompanyTask(ctx context.Context, in *SetTaskReq, opts ...grpc.CallOption) (*GetSyncCompanyTaskRes, error)
+	ApproveSyncCompanyTask(ctx context.Context, in *GetTaskReq, opts ...grpc.CallOption) (*GetSyncCompanyTaskRes, error)
 	DeleteSyncCompanyTask(ctx context.Context, in *GetTaskReq, opts ...grpc.CallOption) (*GetSyncCompanyTaskRes, error)
 	ListSyncCompany(ctx context.Context, in *ListSyncDataReq, opts ...grpc.CallOption) (*ListSyncCompanyRes, error)
-	SaveSyncCompany(ctx context.Context, in *WriteSyncCompanyTask, opts ...grpc.CallOption) (*SetSyncCompanyRes, error)
 	DeleteSyncCompany(ctx context.Context, in *WriteSyncCompanyTask, opts ...grpc.CallOption) (*SetSyncCompanyRes, error)
+	CreateSSOClientTask(ctx context.Context, in *CreateSSOClientTaskReq, opts ...grpc.CallOption) (*CreateSSOClientTaskRes, error)
+	ListSSOClientTask(ctx context.Context, in *ListSSOClientTaskReq, opts ...grpc.CallOption) (*ListSSOClientTaskRes, error)
+	GetSSOClientTask(ctx context.Context, in *GetTaskReq, opts ...grpc.CallOption) (*GetSSOClientTaskRes, error)
+	SetSSOClientTask(ctx context.Context, in *SetTaskReq, opts ...grpc.CallOption) (*GetSSOClientTaskRes, error)
+	ListSSOClient(ctx context.Context, in *ListSSOClientReq, opts ...grpc.CallOption) (*ListSSOClientRes, error)
+	GetSSOClientRole(ctx context.Context, in *GetSSOClientRoleReq, opts ...grpc.CallOption) (*GetSSOClientRoleRes, error)
+	GetSyncUser(ctx context.Context, in *GetSyncUserReq, opts ...grpc.CallOption) (*GetSyncUserRes, error)
+	GetSyncUserJoin(ctx context.Context, in *GetSyncUserReq, opts ...grpc.CallOption) (*GetSyncUserRes, error)
+	GetSyncUserDetail(ctx context.Context, in *GetSyncDetailReq, opts ...grpc.CallOption) (*GetSyncUserDetailRes, error)
+	GetSyncCompany(ctx context.Context, in *GetSyncCompanyReq, opts ...grpc.CallOption) (*GetSyncCompanyRes, error)
+	GetSyncCompanyDetail(ctx context.Context, in *GetSyncDetailReq, opts ...grpc.CallOption) (*GetSyncCompanyDetailRes, error)
+	DownloadSyncCompany(ctx context.Context, in *FileGetSyncCompanyReq, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
+	DownloadSyncUser(ctx context.Context, in *FileGetSyncUserReq, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
+	DownloadSyncSSOClientTask(ctx context.Context, in *ListSSOClientFileTaskReq, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 }
 
 type apiServiceClient struct {
@@ -98,24 +113,6 @@ func (c *apiServiceClient) SSOLogout(ctx context.Context, in *SSOGetLoginURLReq,
 	return out, nil
 }
 
-func (c *apiServiceClient) CBMSyncUser(ctx context.Context, in *CBMSyncUserReq, opts ...grpc.CallOption) (*CBMSyncUserRes, error) {
-	out := new(CBMSyncUserRes)
-	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/CBMSyncUser", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) CBMSyncCompany(ctx context.Context, in *CBMSyncCompanyReq, opts ...grpc.CallOption) (*CBMSyncCompanyRes, error) {
-	out := new(CBMSyncCompanyRes)
-	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/CBMSyncCompany", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *apiServiceClient) CreateSyncUserTask(ctx context.Context, in *CreateSyncUserTaskReq, opts ...grpc.CallOption) (*CreateSyncUserTaskRes, error) {
 	out := new(CreateSyncUserTaskRes)
 	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/CreateSyncUserTask", in, out, opts...)
@@ -143,6 +140,24 @@ func (c *apiServiceClient) GetSyncUserTask(ctx context.Context, in *GetTaskReq, 
 	return out, nil
 }
 
+func (c *apiServiceClient) SetSyncUserTask(ctx context.Context, in *SetTaskReq, opts ...grpc.CallOption) (*GetSyncUserTaskRes, error) {
+	out := new(GetSyncUserTaskRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/SetSyncUserTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ApproveSyncUserTask(ctx context.Context, in *GetTaskReq, opts ...grpc.CallOption) (*GetSyncUserTaskRes, error) {
+	out := new(GetSyncUserTaskRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/ApproveSyncUserTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) DeleteSyncUserTask(ctx context.Context, in *GetTaskReq, opts ...grpc.CallOption) (*GetSyncUserTaskRes, error) {
 	out := new(GetSyncUserTaskRes)
 	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/DeleteSyncUserTask", in, out, opts...)
@@ -155,15 +170,6 @@ func (c *apiServiceClient) DeleteSyncUserTask(ctx context.Context, in *GetTaskRe
 func (c *apiServiceClient) ListSyncUser(ctx context.Context, in *ListSyncDataReq, opts ...grpc.CallOption) (*ListSyncUserRes, error) {
 	out := new(ListSyncUserRes)
 	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/ListSyncUser", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) SaveSyncUser(ctx context.Context, in *WriteSyncUserTask, opts ...grpc.CallOption) (*SetSyncUserRes, error) {
-	out := new(SetSyncUserRes)
-	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/SaveSyncUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -206,6 +212,24 @@ func (c *apiServiceClient) GetSyncCompanyTask(ctx context.Context, in *GetTaskRe
 	return out, nil
 }
 
+func (c *apiServiceClient) SetSyncCompanyTask(ctx context.Context, in *SetTaskReq, opts ...grpc.CallOption) (*GetSyncCompanyTaskRes, error) {
+	out := new(GetSyncCompanyTaskRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/SetSyncCompanyTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ApproveSyncCompanyTask(ctx context.Context, in *GetTaskReq, opts ...grpc.CallOption) (*GetSyncCompanyTaskRes, error) {
+	out := new(GetSyncCompanyTaskRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/ApproveSyncCompanyTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) DeleteSyncCompanyTask(ctx context.Context, in *GetTaskReq, opts ...grpc.CallOption) (*GetSyncCompanyTaskRes, error) {
 	out := new(GetSyncCompanyTaskRes)
 	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/DeleteSyncCompanyTask", in, out, opts...)
@@ -224,18 +248,135 @@ func (c *apiServiceClient) ListSyncCompany(ctx context.Context, in *ListSyncData
 	return out, nil
 }
 
-func (c *apiServiceClient) SaveSyncCompany(ctx context.Context, in *WriteSyncCompanyTask, opts ...grpc.CallOption) (*SetSyncCompanyRes, error) {
+func (c *apiServiceClient) DeleteSyncCompany(ctx context.Context, in *WriteSyncCompanyTask, opts ...grpc.CallOption) (*SetSyncCompanyRes, error) {
 	out := new(SetSyncCompanyRes)
-	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/SaveSyncCompany", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/DeleteSyncCompany", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *apiServiceClient) DeleteSyncCompany(ctx context.Context, in *WriteSyncCompanyTask, opts ...grpc.CallOption) (*SetSyncCompanyRes, error) {
-	out := new(SetSyncCompanyRes)
-	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/DeleteSyncCompany", in, out, opts...)
+func (c *apiServiceClient) CreateSSOClientTask(ctx context.Context, in *CreateSSOClientTaskReq, opts ...grpc.CallOption) (*CreateSSOClientTaskRes, error) {
+	out := new(CreateSSOClientTaskRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/CreateSSOClientTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ListSSOClientTask(ctx context.Context, in *ListSSOClientTaskReq, opts ...grpc.CallOption) (*ListSSOClientTaskRes, error) {
+	out := new(ListSSOClientTaskRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/ListSSOClientTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetSSOClientTask(ctx context.Context, in *GetTaskReq, opts ...grpc.CallOption) (*GetSSOClientTaskRes, error) {
+	out := new(GetSSOClientTaskRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/GetSSOClientTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) SetSSOClientTask(ctx context.Context, in *SetTaskReq, opts ...grpc.CallOption) (*GetSSOClientTaskRes, error) {
+	out := new(GetSSOClientTaskRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/SetSSOClientTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ListSSOClient(ctx context.Context, in *ListSSOClientReq, opts ...grpc.CallOption) (*ListSSOClientRes, error) {
+	out := new(ListSSOClientRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/ListSSOClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetSSOClientRole(ctx context.Context, in *GetSSOClientRoleReq, opts ...grpc.CallOption) (*GetSSOClientRoleRes, error) {
+	out := new(GetSSOClientRoleRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/GetSSOClientRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetSyncUser(ctx context.Context, in *GetSyncUserReq, opts ...grpc.CallOption) (*GetSyncUserRes, error) {
+	out := new(GetSyncUserRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/GetSyncUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetSyncUserJoin(ctx context.Context, in *GetSyncUserReq, opts ...grpc.CallOption) (*GetSyncUserRes, error) {
+	out := new(GetSyncUserRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/GetSyncUserJoin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetSyncUserDetail(ctx context.Context, in *GetSyncDetailReq, opts ...grpc.CallOption) (*GetSyncUserDetailRes, error) {
+	out := new(GetSyncUserDetailRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/GetSyncUserDetail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetSyncCompany(ctx context.Context, in *GetSyncCompanyReq, opts ...grpc.CallOption) (*GetSyncCompanyRes, error) {
+	out := new(GetSyncCompanyRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/GetSyncCompany", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetSyncCompanyDetail(ctx context.Context, in *GetSyncDetailReq, opts ...grpc.CallOption) (*GetSyncCompanyDetailRes, error) {
+	out := new(GetSyncCompanyDetailRes)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/GetSyncCompanyDetail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) DownloadSyncCompany(ctx context.Context, in *FileGetSyncCompanyReq, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+	out := new(httpbody.HttpBody)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/DownloadSyncCompany", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) DownloadSyncUser(ctx context.Context, in *FileGetSyncUserReq, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+	out := new(httpbody.HttpBody)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/DownloadSyncUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) DownloadSyncSSOClientTask(ctx context.Context, in *ListSSOClientFileTaskReq, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+	out := new(httpbody.HttpBody)
+	err := c.cc.Invoke(ctx, "/sso.service.v1.ApiService/DownloadSyncSSOClientTask", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -251,22 +392,36 @@ type ApiServiceServer interface {
 	CBMSessionValidation(context.Context, *CBMSessionValidationRequest) (*CBMSessionValidationResponse, error)
 	SSOGetLoginURL(context.Context, *SSOGetLoginURLReq) (*SSOGetLoginURLRes, error)
 	SSOLogout(context.Context, *SSOGetLoginURLReq) (*SSOLogoutRes, error)
-	CBMSyncUser(context.Context, *CBMSyncUserReq) (*CBMSyncUserRes, error)
-	CBMSyncCompany(context.Context, *CBMSyncCompanyReq) (*CBMSyncCompanyRes, error)
 	CreateSyncUserTask(context.Context, *CreateSyncUserTaskReq) (*CreateSyncUserTaskRes, error)
 	ListSyncUserTask(context.Context, *ListTaskReq) (*ListSyncUserTaskRes, error)
 	GetSyncUserTask(context.Context, *GetTaskReq) (*GetSyncUserTaskRes, error)
+	SetSyncUserTask(context.Context, *SetTaskReq) (*GetSyncUserTaskRes, error)
+	ApproveSyncUserTask(context.Context, *GetTaskReq) (*GetSyncUserTaskRes, error)
 	DeleteSyncUserTask(context.Context, *GetTaskReq) (*GetSyncUserTaskRes, error)
 	ListSyncUser(context.Context, *ListSyncDataReq) (*ListSyncUserRes, error)
-	SaveSyncUser(context.Context, *WriteSyncUserTask) (*SetSyncUserRes, error)
 	DeleteSyncUser(context.Context, *WriteSyncUserTask) (*SetSyncUserRes, error)
 	CreateSyncCompanyTask(context.Context, *CreateSyncCompanyTaskReq) (*CreateSyncCompanyTaskRes, error)
 	ListSyncCompanyTask(context.Context, *ListTaskReq) (*ListSyncCompanyTaskRes, error)
 	GetSyncCompanyTask(context.Context, *GetTaskReq) (*GetSyncCompanyTaskRes, error)
+	SetSyncCompanyTask(context.Context, *SetTaskReq) (*GetSyncCompanyTaskRes, error)
+	ApproveSyncCompanyTask(context.Context, *GetTaskReq) (*GetSyncCompanyTaskRes, error)
 	DeleteSyncCompanyTask(context.Context, *GetTaskReq) (*GetSyncCompanyTaskRes, error)
 	ListSyncCompany(context.Context, *ListSyncDataReq) (*ListSyncCompanyRes, error)
-	SaveSyncCompany(context.Context, *WriteSyncCompanyTask) (*SetSyncCompanyRes, error)
 	DeleteSyncCompany(context.Context, *WriteSyncCompanyTask) (*SetSyncCompanyRes, error)
+	CreateSSOClientTask(context.Context, *CreateSSOClientTaskReq) (*CreateSSOClientTaskRes, error)
+	ListSSOClientTask(context.Context, *ListSSOClientTaskReq) (*ListSSOClientTaskRes, error)
+	GetSSOClientTask(context.Context, *GetTaskReq) (*GetSSOClientTaskRes, error)
+	SetSSOClientTask(context.Context, *SetTaskReq) (*GetSSOClientTaskRes, error)
+	ListSSOClient(context.Context, *ListSSOClientReq) (*ListSSOClientRes, error)
+	GetSSOClientRole(context.Context, *GetSSOClientRoleReq) (*GetSSOClientRoleRes, error)
+	GetSyncUser(context.Context, *GetSyncUserReq) (*GetSyncUserRes, error)
+	GetSyncUserJoin(context.Context, *GetSyncUserReq) (*GetSyncUserRes, error)
+	GetSyncUserDetail(context.Context, *GetSyncDetailReq) (*GetSyncUserDetailRes, error)
+	GetSyncCompany(context.Context, *GetSyncCompanyReq) (*GetSyncCompanyRes, error)
+	GetSyncCompanyDetail(context.Context, *GetSyncDetailReq) (*GetSyncCompanyDetailRes, error)
+	DownloadSyncCompany(context.Context, *FileGetSyncCompanyReq) (*httpbody.HttpBody, error)
+	DownloadSyncUser(context.Context, *FileGetSyncUserReq) (*httpbody.HttpBody, error)
+	DownloadSyncSSOClientTask(context.Context, *ListSSOClientFileTaskReq) (*httpbody.HttpBody, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -289,12 +444,6 @@ func (UnimplementedApiServiceServer) SSOGetLoginURL(context.Context, *SSOGetLogi
 func (UnimplementedApiServiceServer) SSOLogout(context.Context, *SSOGetLoginURLReq) (*SSOLogoutRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SSOLogout not implemented")
 }
-func (UnimplementedApiServiceServer) CBMSyncUser(context.Context, *CBMSyncUserReq) (*CBMSyncUserRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CBMSyncUser not implemented")
-}
-func (UnimplementedApiServiceServer) CBMSyncCompany(context.Context, *CBMSyncCompanyReq) (*CBMSyncCompanyRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CBMSyncCompany not implemented")
-}
 func (UnimplementedApiServiceServer) CreateSyncUserTask(context.Context, *CreateSyncUserTaskReq) (*CreateSyncUserTaskRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSyncUserTask not implemented")
 }
@@ -304,14 +453,17 @@ func (UnimplementedApiServiceServer) ListSyncUserTask(context.Context, *ListTask
 func (UnimplementedApiServiceServer) GetSyncUserTask(context.Context, *GetTaskReq) (*GetSyncUserTaskRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSyncUserTask not implemented")
 }
+func (UnimplementedApiServiceServer) SetSyncUserTask(context.Context, *SetTaskReq) (*GetSyncUserTaskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetSyncUserTask not implemented")
+}
+func (UnimplementedApiServiceServer) ApproveSyncUserTask(context.Context, *GetTaskReq) (*GetSyncUserTaskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ApproveSyncUserTask not implemented")
+}
 func (UnimplementedApiServiceServer) DeleteSyncUserTask(context.Context, *GetTaskReq) (*GetSyncUserTaskRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSyncUserTask not implemented")
 }
 func (UnimplementedApiServiceServer) ListSyncUser(context.Context, *ListSyncDataReq) (*ListSyncUserRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListSyncUser not implemented")
-}
-func (UnimplementedApiServiceServer) SaveSyncUser(context.Context, *WriteSyncUserTask) (*SetSyncUserRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaveSyncUser not implemented")
 }
 func (UnimplementedApiServiceServer) DeleteSyncUser(context.Context, *WriteSyncUserTask) (*SetSyncUserRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSyncUser not implemented")
@@ -325,17 +477,62 @@ func (UnimplementedApiServiceServer) ListSyncCompanyTask(context.Context, *ListT
 func (UnimplementedApiServiceServer) GetSyncCompanyTask(context.Context, *GetTaskReq) (*GetSyncCompanyTaskRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSyncCompanyTask not implemented")
 }
+func (UnimplementedApiServiceServer) SetSyncCompanyTask(context.Context, *SetTaskReq) (*GetSyncCompanyTaskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetSyncCompanyTask not implemented")
+}
+func (UnimplementedApiServiceServer) ApproveSyncCompanyTask(context.Context, *GetTaskReq) (*GetSyncCompanyTaskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ApproveSyncCompanyTask not implemented")
+}
 func (UnimplementedApiServiceServer) DeleteSyncCompanyTask(context.Context, *GetTaskReq) (*GetSyncCompanyTaskRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSyncCompanyTask not implemented")
 }
 func (UnimplementedApiServiceServer) ListSyncCompany(context.Context, *ListSyncDataReq) (*ListSyncCompanyRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListSyncCompany not implemented")
 }
-func (UnimplementedApiServiceServer) SaveSyncCompany(context.Context, *WriteSyncCompanyTask) (*SetSyncCompanyRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaveSyncCompany not implemented")
-}
 func (UnimplementedApiServiceServer) DeleteSyncCompany(context.Context, *WriteSyncCompanyTask) (*SetSyncCompanyRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSyncCompany not implemented")
+}
+func (UnimplementedApiServiceServer) CreateSSOClientTask(context.Context, *CreateSSOClientTaskReq) (*CreateSSOClientTaskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSSOClientTask not implemented")
+}
+func (UnimplementedApiServiceServer) ListSSOClientTask(context.Context, *ListSSOClientTaskReq) (*ListSSOClientTaskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSSOClientTask not implemented")
+}
+func (UnimplementedApiServiceServer) GetSSOClientTask(context.Context, *GetTaskReq) (*GetSSOClientTaskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSSOClientTask not implemented")
+}
+func (UnimplementedApiServiceServer) SetSSOClientTask(context.Context, *SetTaskReq) (*GetSSOClientTaskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetSSOClientTask not implemented")
+}
+func (UnimplementedApiServiceServer) ListSSOClient(context.Context, *ListSSOClientReq) (*ListSSOClientRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSSOClient not implemented")
+}
+func (UnimplementedApiServiceServer) GetSSOClientRole(context.Context, *GetSSOClientRoleReq) (*GetSSOClientRoleRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSSOClientRole not implemented")
+}
+func (UnimplementedApiServiceServer) GetSyncUser(context.Context, *GetSyncUserReq) (*GetSyncUserRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSyncUser not implemented")
+}
+func (UnimplementedApiServiceServer) GetSyncUserJoin(context.Context, *GetSyncUserReq) (*GetSyncUserRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSyncUserJoin not implemented")
+}
+func (UnimplementedApiServiceServer) GetSyncUserDetail(context.Context, *GetSyncDetailReq) (*GetSyncUserDetailRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSyncUserDetail not implemented")
+}
+func (UnimplementedApiServiceServer) GetSyncCompany(context.Context, *GetSyncCompanyReq) (*GetSyncCompanyRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSyncCompany not implemented")
+}
+func (UnimplementedApiServiceServer) GetSyncCompanyDetail(context.Context, *GetSyncDetailReq) (*GetSyncCompanyDetailRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSyncCompanyDetail not implemented")
+}
+func (UnimplementedApiServiceServer) DownloadSyncCompany(context.Context, *FileGetSyncCompanyReq) (*httpbody.HttpBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DownloadSyncCompany not implemented")
+}
+func (UnimplementedApiServiceServer) DownloadSyncUser(context.Context, *FileGetSyncUserReq) (*httpbody.HttpBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DownloadSyncUser not implemented")
+}
+func (UnimplementedApiServiceServer) DownloadSyncSSOClientTask(context.Context, *ListSSOClientFileTaskReq) (*httpbody.HttpBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DownloadSyncSSOClientTask not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -440,42 +637,6 @@ func _ApiService_SSOLogout_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_CBMSyncUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CBMSyncUserReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).CBMSyncUser(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/sso.service.v1.ApiService/CBMSyncUser",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CBMSyncUser(ctx, req.(*CBMSyncUserReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_CBMSyncCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CBMSyncCompanyReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).CBMSyncCompany(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/sso.service.v1.ApiService/CBMSyncCompany",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CBMSyncCompany(ctx, req.(*CBMSyncCompanyReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ApiService_CreateSyncUserTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateSyncUserTaskReq)
 	if err := dec(in); err != nil {
@@ -530,6 +691,42 @@ func _ApiService_GetSyncUserTask_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_SetSyncUserTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetTaskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).SetSyncUserTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/SetSyncUserTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).SetSyncUserTask(ctx, req.(*SetTaskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ApproveSyncUserTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTaskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ApproveSyncUserTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/ApproveSyncUserTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ApproveSyncUserTask(ctx, req.(*GetTaskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_DeleteSyncUserTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetTaskReq)
 	if err := dec(in); err != nil {
@@ -562,24 +759,6 @@ func _ApiService_ListSyncUser_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).ListSyncUser(ctx, req.(*ListSyncDataReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_SaveSyncUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(WriteSyncUserTask)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).SaveSyncUser(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/sso.service.v1.ApiService/SaveSyncUser",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).SaveSyncUser(ctx, req.(*WriteSyncUserTask))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -656,6 +835,42 @@ func _ApiService_GetSyncCompanyTask_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_SetSyncCompanyTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetTaskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).SetSyncCompanyTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/SetSyncCompanyTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).SetSyncCompanyTask(ctx, req.(*SetTaskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ApproveSyncCompanyTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTaskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ApproveSyncCompanyTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/ApproveSyncCompanyTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ApproveSyncCompanyTask(ctx, req.(*GetTaskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_DeleteSyncCompanyTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetTaskReq)
 	if err := dec(in); err != nil {
@@ -692,24 +907,6 @@ func _ApiService_ListSyncCompany_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_SaveSyncCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(WriteSyncCompanyTask)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).SaveSyncCompany(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/sso.service.v1.ApiService/SaveSyncCompany",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).SaveSyncCompany(ctx, req.(*WriteSyncCompanyTask))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ApiService_DeleteSyncCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WriteSyncCompanyTask)
 	if err := dec(in); err != nil {
@@ -724,6 +921,258 @@ func _ApiService_DeleteSyncCompany_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).DeleteSyncCompany(ctx, req.(*WriteSyncCompanyTask))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_CreateSSOClientTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSSOClientTaskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CreateSSOClientTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/CreateSSOClientTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CreateSSOClientTask(ctx, req.(*CreateSSOClientTaskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ListSSOClientTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSSOClientTaskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListSSOClientTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/ListSSOClientTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListSSOClientTask(ctx, req.(*ListSSOClientTaskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetSSOClientTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTaskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetSSOClientTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/GetSSOClientTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetSSOClientTask(ctx, req.(*GetTaskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_SetSSOClientTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetTaskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).SetSSOClientTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/SetSSOClientTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).SetSSOClientTask(ctx, req.(*SetTaskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ListSSOClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSSOClientReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListSSOClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/ListSSOClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListSSOClient(ctx, req.(*ListSSOClientReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetSSOClientRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSSOClientRoleReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetSSOClientRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/GetSSOClientRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetSSOClientRole(ctx, req.(*GetSSOClientRoleReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetSyncUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSyncUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetSyncUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/GetSyncUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetSyncUser(ctx, req.(*GetSyncUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetSyncUserJoin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSyncUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetSyncUserJoin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/GetSyncUserJoin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetSyncUserJoin(ctx, req.(*GetSyncUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetSyncUserDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSyncDetailReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetSyncUserDetail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/GetSyncUserDetail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetSyncUserDetail(ctx, req.(*GetSyncDetailReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetSyncCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSyncCompanyReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetSyncCompany(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/GetSyncCompany",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetSyncCompany(ctx, req.(*GetSyncCompanyReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetSyncCompanyDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSyncDetailReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetSyncCompanyDetail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/GetSyncCompanyDetail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetSyncCompanyDetail(ctx, req.(*GetSyncDetailReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_DownloadSyncCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FileGetSyncCompanyReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DownloadSyncCompany(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/DownloadSyncCompany",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DownloadSyncCompany(ctx, req.(*FileGetSyncCompanyReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_DownloadSyncUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FileGetSyncUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DownloadSyncUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/DownloadSyncUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DownloadSyncUser(ctx, req.(*FileGetSyncUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_DownloadSyncSSOClientTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSSOClientFileTaskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DownloadSyncSSOClientTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.service.v1.ApiService/DownloadSyncSSOClientTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DownloadSyncSSOClientTask(ctx, req.(*ListSSOClientFileTaskReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -756,14 +1205,6 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_SSOLogout_Handler,
 		},
 		{
-			MethodName: "CBMSyncUser",
-			Handler:    _ApiService_CBMSyncUser_Handler,
-		},
-		{
-			MethodName: "CBMSyncCompany",
-			Handler:    _ApiService_CBMSyncCompany_Handler,
-		},
-		{
 			MethodName: "CreateSyncUserTask",
 			Handler:    _ApiService_CreateSyncUserTask_Handler,
 		},
@@ -776,16 +1217,20 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_GetSyncUserTask_Handler,
 		},
 		{
+			MethodName: "SetSyncUserTask",
+			Handler:    _ApiService_SetSyncUserTask_Handler,
+		},
+		{
+			MethodName: "ApproveSyncUserTask",
+			Handler:    _ApiService_ApproveSyncUserTask_Handler,
+		},
+		{
 			MethodName: "DeleteSyncUserTask",
 			Handler:    _ApiService_DeleteSyncUserTask_Handler,
 		},
 		{
 			MethodName: "ListSyncUser",
 			Handler:    _ApiService_ListSyncUser_Handler,
-		},
-		{
-			MethodName: "SaveSyncUser",
-			Handler:    _ApiService_SaveSyncUser_Handler,
 		},
 		{
 			MethodName: "DeleteSyncUser",
@@ -804,6 +1249,14 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_GetSyncCompanyTask_Handler,
 		},
 		{
+			MethodName: "SetSyncCompanyTask",
+			Handler:    _ApiService_SetSyncCompanyTask_Handler,
+		},
+		{
+			MethodName: "ApproveSyncCompanyTask",
+			Handler:    _ApiService_ApproveSyncCompanyTask_Handler,
+		},
+		{
 			MethodName: "DeleteSyncCompanyTask",
 			Handler:    _ApiService_DeleteSyncCompanyTask_Handler,
 		},
@@ -812,12 +1265,64 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_ListSyncCompany_Handler,
 		},
 		{
-			MethodName: "SaveSyncCompany",
-			Handler:    _ApiService_SaveSyncCompany_Handler,
-		},
-		{
 			MethodName: "DeleteSyncCompany",
 			Handler:    _ApiService_DeleteSyncCompany_Handler,
+		},
+		{
+			MethodName: "CreateSSOClientTask",
+			Handler:    _ApiService_CreateSSOClientTask_Handler,
+		},
+		{
+			MethodName: "ListSSOClientTask",
+			Handler:    _ApiService_ListSSOClientTask_Handler,
+		},
+		{
+			MethodName: "GetSSOClientTask",
+			Handler:    _ApiService_GetSSOClientTask_Handler,
+		},
+		{
+			MethodName: "SetSSOClientTask",
+			Handler:    _ApiService_SetSSOClientTask_Handler,
+		},
+		{
+			MethodName: "ListSSOClient",
+			Handler:    _ApiService_ListSSOClient_Handler,
+		},
+		{
+			MethodName: "GetSSOClientRole",
+			Handler:    _ApiService_GetSSOClientRole_Handler,
+		},
+		{
+			MethodName: "GetSyncUser",
+			Handler:    _ApiService_GetSyncUser_Handler,
+		},
+		{
+			MethodName: "GetSyncUserJoin",
+			Handler:    _ApiService_GetSyncUserJoin_Handler,
+		},
+		{
+			MethodName: "GetSyncUserDetail",
+			Handler:    _ApiService_GetSyncUserDetail_Handler,
+		},
+		{
+			MethodName: "GetSyncCompany",
+			Handler:    _ApiService_GetSyncCompany_Handler,
+		},
+		{
+			MethodName: "GetSyncCompanyDetail",
+			Handler:    _ApiService_GetSyncCompanyDetail_Handler,
+		},
+		{
+			MethodName: "DownloadSyncCompany",
+			Handler:    _ApiService_DownloadSyncCompany_Handler,
+		},
+		{
+			MethodName: "DownloadSyncUser",
+			Handler:    _ApiService_DownloadSyncUser_Handler,
+		},
+		{
+			MethodName: "DownloadSyncSSOClientTask",
+			Handler:    _ApiService_DownloadSyncSSOClientTask_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
