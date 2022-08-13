@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
@@ -26,11 +27,6 @@ func (this *CreateSyncCompanyTaskReq) Validate() error {
 	return nil
 }
 func (this *WriteSyncCompanyTask) Validate() error {
-	if this.Company != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Company); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Company", err)
-		}
-	}
 	if this.Additionals != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Additionals); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Additionals", err)
@@ -39,6 +35,11 @@ func (this *WriteSyncCompanyTask) Validate() error {
 	if this.DataCBM != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DataCBM); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("DataCBM", err)
+		}
+	}
+	if this.Company != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Company); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Company", err)
 		}
 	}
 	return nil
@@ -116,6 +117,74 @@ func (this *SetSyncCompanyRes) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *GetSyncCompanyReq) Validate() error {
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+		}
+	}
+	return nil
+}
+func (this *GetSyncCompanyFilter) Validate() error {
+	if this.SyncDate != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SyncDate); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SyncDate", err)
+		}
+	}
+	return nil
+}
+func (this *GetSyncCompanyRes) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
+func (this *SyncCompanyData) Validate() error {
+	if this.SyncDate != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SyncDate); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SyncDate", err)
+		}
+	}
+	if this.SyncRequestDate != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SyncRequestDate); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SyncRequestDate", err)
+		}
+	}
+	return nil
+}
+func (this *GetSyncCompanyDetailRes) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	if this.Company != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Company); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Company", err)
+		}
+	}
+	return nil
+}
+func (this *Company) Validate() error {
+	return nil
+}
+func (this *FileGetSyncCompanyReq) Validate() error {
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
 		}
 	}
 	return nil
