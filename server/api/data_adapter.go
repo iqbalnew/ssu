@@ -267,7 +267,7 @@ func TaskDataSSOCompanyToPB(data string) (val *sso_pb.WriteSyncCompanyTask, key 
 
 func TaskDataSystemToPB(data string) (val *system_pb.CreateSystemRequest, key string, err error) {
 	system := system_pb.CreateSystemRequest{}
-	err = json.Unmarshal([]byte(data), &system)
+	err = json.Unmarshal([]byte(data), &system.Data)
 	if err != nil {
 		return nil, "", err
 	}
