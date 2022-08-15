@@ -188,6 +188,9 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		Column:    req.GetSort(),
 		Direction: req.GetDir().Enum().String(),
 	}
+	if me.UserType == "ba" {
+		me.CompanyID = ""
+	}
 	sqlBuilder := &db.QueryBuilder{
 		Filter:        req.GetFilter(),
 		FilterOr:      req.GetFilterOr(),
