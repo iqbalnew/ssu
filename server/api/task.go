@@ -1479,7 +1479,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Data:    &taskPb,
 			}, nil
 		}
-		
+
 		if currentStatus == 4 {
 			return &pb.SetTaskResponse{
 				Error:   false,
@@ -1488,7 +1488,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Data:    &taskPb,
 			}, nil
 		}
-		
+
 		if currentStatus == 5 {
 			return &pb.SetTaskResponse{
 				Error:   false,
@@ -1497,7 +1497,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Data:    &taskPb,
 			}, nil
 		}
-		
+
 		if currentStatus == 7 {
 			return &pb.SetTaskResponse{
 				Error:   false,
@@ -1588,7 +1588,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					// function for delete other service coresponding with company here
 					if task.Type == "Company" {
 						// send notif with delete company event
-						go SendNotification(ctx, task, "Delete request gets approval")
+						_ = SendNotification(ctx, task, "Delete request gets approval")
 						err := s.DeleteCompany(originalCtx, task.Data)
 						if err != nil {
 							logrus.Errorln("Failed to delete company: %v", err)
@@ -2010,7 +2010,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 				logrus.Printf("[Delete Company] data : %v", res)
 				// send notif with delete company event
-				go SendNotification(ctx, task, "Delete request gets approval")
+				_ = SendNotification(ctx, task, "Delete request gets approval")
 			} else {
 				res, err := companyClient.CreateCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
@@ -2018,7 +2018,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 				logrus.Println(res)
 				// send notif with create company event
-				go SendNotification(ctx, task, "Group data created and/or sent for approval")
+				_ = SendNotification(ctx, task, "Group data created and/or sent for approval")
 			}
 
 		case "Deposito":
