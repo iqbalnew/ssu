@@ -1757,7 +1757,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User",
 			"Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping", "BG Mapping Digital",
-			"Deposito", "Subscription"}
+			"Deposito", "Subscription", "Notification", "Announcement", "Liquidity", "Swift", "CBM",
+			"Abonnement"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
