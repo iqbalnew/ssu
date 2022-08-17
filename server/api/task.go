@@ -1592,7 +1592,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					}
 					task.Status = 7
 
-					if contains(["BG Mapping", "BG Mapping Digital"], task.Type) {
+					taskType := []string{"BG Mapping", "BG Mapping Digital"}
+
+					if contains(taskType, task.Type) {
 						task.Status = 4
 						task.Step = 3
 						task.Data = task.DataBak
@@ -1754,7 +1756,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User",
 			"Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping", "BG Mapping Digital",
-			"Deposito", "Subscription"}
+			"Deposito", "Subscription", "Notification", "Announcement", "Liquidity", "Swift", "CBM",
+			"Abonnement"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
