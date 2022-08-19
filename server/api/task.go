@@ -188,6 +188,9 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		Column:    req.GetSort(),
 		Direction: req.GetDir().Enum().String(),
 	}
+	if me.UserType == "ba" {
+		me.CompanyID = ""
+	}
 	sqlBuilder := &db.QueryBuilder{
 		Filter:        req.GetFilter(),
 		FilterOr:      req.GetFilterOr(),
@@ -1592,7 +1595,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					}
 					task.Status = 7
 
-					if contains(["BG Mapping", "BG Mapping Digital"], task.Type) {
+					if contains([]string{"BG Mapping", "BG Mapping Digital"}, task.Type) {
 						task.Status = 4
 						task.Step = 3
 						task.Data = task.DataBak
@@ -1754,7 +1757,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User",
 			"Role", "Workflow", "Menu:Appearance", "Menu:License", "BG Mapping", "BG Mapping Digital",
-			"Deposito", "Subscription"}
+			"Deposito", "Subscription", "Notification", "Announcement", "Liquidity", "Swift", "CBM",
+			"Abonnement"}
 
 		if contains(taskType, task.Type) {
 			if task.DataBak != "" && task.DataBak != "{}" {
@@ -2436,12 +2440,21 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Logics:                []*workflow_pb.WorkflowLogic{},
 			}
 			data.TaskID = task.TaskID
-
-			res, err := client.CreateWorkflow(ctx, &workflowTask, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
+			if task.Status == 7 {
+				res, err := client.DeleteWorkflow(ctx, &workflowTask, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					logrus.Errorln("[failed deleted workflow]")
+					return nil, err
+				}
+				logrus.Println(res)
+			} else {
+				res, err := client.CreateWorkflow(ctx, &workflowTask, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					logrus.Errorln("[failed created workflow]")
+					return nil, err
+				}
+				logrus.Println(res)
 			}
-			logrus.Println(res)
 
 		case "Liquidity":
 

@@ -59,3 +59,60 @@ func (this *SSOSyncCompany) Validate() error {
 	}
 	return nil
 }
+func (this *SSOClient) Validate() error {
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	return nil
+}
+func (this *SSOClientRole) Validate() error {
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	return nil
+}
+func (this *CompanySyncJoin) Validate() error {
+	if this.SyncRequestDate != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SyncRequestDate); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SyncRequestDate", err)
+		}
+	}
+	if this.SyncDate != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SyncDate); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SyncDate", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	return nil
+}
+func (this *UserSyncJoin) Validate() error {
+	if this.SyncRequestDate != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SyncRequestDate); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SyncRequestDate", err)
+		}
+	}
+	if this.SyncDate != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SyncDate); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SyncDate", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	return nil
+}
