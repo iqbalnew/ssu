@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Fri Aug 19 13:11:56 2022
+# Make data base, printed on Fri Aug 19 13:14:33 2022
 
 # Variables
 
@@ -16,10 +16,6 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 <D = $(patsubst %/,%,$(dir $<))
 # automatic
 ?F = $(notdir $?)
-# environment
-ELECTRON_NO_ATTACH_CONSOLE = 1
-# environment
-LC_CTYPE = UTF-8
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # automatic
@@ -49,7 +45,7 @@ __CFBundleIdentifier = com.microsoft.VSCode
 # environment
 P9K_SSH = 0
 # environment
-VSCODE_CWD = /Users/farizrachmanyusuf/Codes/addons-task-service
+VSCODE_CWD = /
 # environment
 GOPROXY = https://proxy.golang.org,direct
 # environment
@@ -65,6 +61,7 @@ ELECTRON_RUN_AS_NODE = 1
 # environment
 SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.jvS0f4UX6G/Listeners
 # automatic
+ 
 %F = $(notdir $%)
 # environment
 PWD = /Users/farizrachmanyusuf/Codes/addons-task-service
@@ -76,8 +73,8 @@ GOMODCACHE = /Users/farizrachmanyusuf/go/pkg/mod
 HOME = /Users/farizrachmanyusuf
 # default
 MAKEFILEPATH := /Applications/Xcode.app/Contents/Developer/Makefiles
-# environment
-VSCODE_CLI = 1
+# makefile (from `Makefile', line 12)
+BINARY = ddons-task-service
 # environment
 VSCODE_CODE_CACHE_PATH = /Users/farizrachmanyusuf/Library/Application Support/Code/CachedData/e4503b30fc78200f846c62cf8091b76ff5547662
 # environment
@@ -97,7 +94,7 @@ MAKE = $(MAKE_COMMAND)
 # default
 MAKECMDGOALS := all
 # environment
-SHLVL = 3
+SHLVL = 1
 # default
 MAKE_VERSION := 3.81
 # environment
@@ -107,8 +104,6 @@ USER = farizrachmanyusuf
 # makefile (from `Makefile', line 4)
 DOCKER_CONTAINER_IMAGE = addons-task-service:latest
 # environment
-TERM_SESSION_ID = 039C7807-7E70-4C4F-8C26-9C8ED11E46C2
-# environment
 LESS = -R
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
@@ -116,8 +111,6 @@ LESS = -R
 MAKE_COMMAND := /Applications/Xcode.app/Contents/Developer/usr/bin/make
 # makefile (from `Makefile', line 5)
 DOCKER_BUILD_ARGS = 
-# environment
-TERM_PROGRAM = Apple_Terminal
 # default
 .VARIABLES := 
 # environment
@@ -137,9 +130,7 @@ MFLAGS = -Rrqp
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
 # environment
-TERM_PROGRAM_VERSION = 445
-# environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.29819524.29819530.EAB717BA-AF2F-450E-BD28-1AAF3C6E7885
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.29819524.29819530
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # makefile (from `Makefile', line 6)
@@ -154,16 +145,12 @@ COMMAND_MODE = unix2003
 MAKEFILES := 
 # automatic
 <F = $(notdir $<)
-# makefile (from `Makefile', line 12)
-BINARY = ddons-task-service
 # environment
 PAGER = less
 # environment
 LC_ALL = C
 # makefile (from `Makefile', line 9)
 BUILD_VERSION = 0.1.0
-# environment
-P9K_TTY = old
 # automatic
 ^F = $(notdir $^)
 # default
@@ -175,13 +162,9 @@ MAKELEVEL := 0
 # environment
 LANG = C
 # environment
-TERM = xterm-256color
-# environment
-_P9K_TTY = /dev/ttys002
-# environment
-VSCODE_PID = 20382
+VSCODE_PID = 20807
 # variable set hash-table stats:
-# Load=84/1024=8%, Rehash=0, Collisions=3/116=3%
+# Load=75/1024=7%, Rehash=0, Collisions=2/107=2%
 
 # Pattern-specific Variable Values
 
@@ -243,6 +226,7 @@ Makefile:
 # variable set hash-table stats:
 # Load=0/32=0%, Rehash=0, Collisions=0/0=0%
 
+ 
 generates:
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
@@ -320,7 +304,6 @@ depend:
 	go mod download
 	go mod verify
 	go mod tidy
- 
 	@echo "You can now run 'make build' to compile all packages"
 	
 
@@ -392,6 +375,6 @@ install: depend build
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Fri Aug 19 13:11:56 2022
+# Finished Make data base on Fri Aug 19 13:14:33 2022
 
  
