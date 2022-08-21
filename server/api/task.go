@@ -1587,6 +1587,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				if currentStatus == 6 {
 					// function for delete other service coresponding with company here
 					if task.Type == "Company" {
+						// send notif with delete company event
+						_ = SendNotification(ctx, task, "Delete request gets approval")
 						err := s.DeleteCompany(originalCtx, task.Data)
 						if err != nil {
 							logrus.Errorln("Failed to delete company: %v", err)
@@ -2007,12 +2009,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, err
 				}
 				logrus.Printf("[Delete Company] data : %v", res)
+				// send notif with delete company event
+				_ = SendNotification(ctx, task, "Delete request gets approval")
 			} else {
 				res, err := companyClient.CreateCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
 				}
 				logrus.Println(res)
+				// send notif with create company event
+				_ = SendNotification(ctx, task, "Group data created and/or sent for approval")
 			}
 
 		case "Deposito":
