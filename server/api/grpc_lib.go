@@ -23,7 +23,7 @@ func initNotifService() (*grpc.ClientConn, error) {
 	return notificationConn, nil
 }
 
-func SendNotification(ctx context.Context, task *pb.TaskORM, eventName string) error {
+func SendNotification(ctx context.Context, task *pb.TaskORM, eventName string) {
 	conn, err := initNotifService()
 	if err != nil {
 		logrus.Errorln("Failed connect to Notification Service: %v", err)
@@ -42,10 +42,9 @@ func SendNotification(ctx context.Context, task *pb.TaskORM, eventName string) e
 	})
 
 	if err != nil {
-		return err
+		logrus.Errorln("Error SendNotification: %v", err)
 	}
 
 	logrus.Info("Send Notif: %v", resp)
 
-	return nil
 }
