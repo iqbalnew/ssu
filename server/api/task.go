@@ -1836,6 +1836,42 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 		}
 
+		if task.Type == "Role" {
+			role := role_pb.Role{}
+			json.Unmarshal([]byte(task.Data), &role)
+			companyID := role.CompanyID
+
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+			workFlowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
+			if err != nil {
+				logrus.Errorln("Error Connecting to Workflow Service: ", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer workFlowConn.Close()
+
+			workflowClient := workflow_pb.NewApiServiceClient(workFlowConn)
+			workFlow, err := workflowClient.ListWorkflow(ctx, &workflow_pb.ListWorkflowRequest{
+				Workflow: &workflow_pb.Workflow{
+					CompanyID: companyID,
+				},
+			})
+			if err != nil {
+				logrus.Errorln("Error Listing Workflow: ", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
+			for _, v := range workFlow.Data {
+				for _, v2 := range v.Logics {
+					for _, v3 := range v2.Requirements {
+						if v3.RoleID == role.RoleID {
+							return nil, status.Errorf(codes.Canceled, "Cannot delete role, some workflow on progress")
+						}
+					}
+				}
+			}
+		}
+
 		task.LastApprovedByID = 0
 		task.LastApprovedByName = ""
 		task.LastRejectedByID = 0
