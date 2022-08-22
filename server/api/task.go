@@ -1836,6 +1836,107 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 		}
 
+		if task.Type == "Role" {
+			logrus.Infoln("Delete role")
+			role := role_pb.Role{}
+			json.Unmarshal([]byte(task.Data), &role)
+			companyID := role.CompanyID
+			logrus.Infoln("companyID -->", companyID)
+			logrus.Infoln("role.RoleID -->", role.RoleID)
+
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+			workFlowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
+			if err != nil {
+				logrus.Errorln("Error Connecting to Workflow Service: ", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer workFlowConn.Close()
+
+			workflowClient := workflow_pb.NewApiServiceClient(workFlowConn)
+			workFlow, err := workflowClient.ListWorkflow(ctx, &workflow_pb.ListWorkflowRequest{
+				Filter: fmt.Sprintf("CompanyID:%d", companyID),
+			}, grpc.Header(&header), grpc.Trailer(&trailer))
+			if err != nil {
+				logrus.Errorln("Error Listing Workflow: ", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
+			logrus.Println("workflow --> ", workFlow)
+			for _, v := range workFlow.Data {
+				for _, v2 := range v.Logics {
+					for _, v3 := range v2.Requirements {
+						if v3.RoleID == role.RoleID {
+							return nil, status.Errorf(codes.Canceled, "Cannot delete, role is used in workflow")
+						}
+					}
+				}
+			}
+		}
+
+		if task.Type == "Account" {
+			logrus.Infoln("Delete account")
+			if strings.Contains(task.Data, `"isParent": true`) {
+				for i := range task.Childs {
+					account := account_pb.Account{}
+					json.Unmarshal([]byte(task.Childs[i].Data), &account)
+					logrus.Infoln("AccountNumber --> ", account.AccountNumber)
+
+					role, err := s.GetListTask(ctx, &pb.ListTaskRequest{
+						Filter: "type:Role",
+					})
+					if err != nil {
+						logrus.Errorln("Error Listing Role: ", err)
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+
+					for _, v := range role.Data {
+						if strings.Contains(v.Data, fmt.Sprintf(`"accountNumber": "%v"`, account.AccountNumber)) {
+							return nil, status.Errorf(codes.Canceled, "Cannot delete, account is used in role")
+						}
+					}
+				}
+			} else {
+				account := account_pb.Account{}
+				json.Unmarshal([]byte(task.Data), &account)
+				logrus.Infoln("AccountNumber --> ", account.AccountNumber)
+
+				role, err := s.GetListTask(ctx, &pb.ListTaskRequest{
+					Filter: "type:Role",
+				})
+				if err != nil {
+					logrus.Errorln("Error Listing Role: ", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+
+				for _, v := range role.Data {
+					if strings.Contains(v.Data, fmt.Sprintf(`"accountNumber": "%v"`, account.AccountNumber)) {
+						return nil, status.Errorf(codes.Canceled, "Cannot delete, account is used in role")
+					}
+				}
+			}
+		}
+
+		if task.Type == "Beneficiary Account" {
+			logrus.Infoln("Delete beneficiary account")
+			beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
+			json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
+
+			role, err := s.GetListTask(ctx, &pb.ListTaskRequest{
+				Filter: "type:Role",
+			})
+			if err != nil {
+				logrus.Errorln("Error Listing Role: ", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
+			for _, v := range role.Data {
+				if strings.Contains(v.Data, fmt.Sprintf(`"accountNumber": "%v"`, beneficiaryAccount.AccountNumber)) {
+					return nil, status.Errorf(codes.Canceled, "Cannot delete, account is used in role")
+				}
+			}
+		}
+
 		task.LastApprovedByID = 0
 		task.LastApprovedByName = ""
 		task.LastRejectedByID = 0
