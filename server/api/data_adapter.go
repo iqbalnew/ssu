@@ -20,6 +20,7 @@ import (
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
 	system_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/system_service"
+	transfer_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/transfer_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
 )
@@ -82,6 +83,10 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 
 	case "BG Mapping Digital":
 		_, key, err = TaskDataBGMappingDigitalToPB(task.Data)
+
+	case "Transfer:InternalSingle":
+		_, key, err = TaskDataInternalSingleToPB(task.Data)
+
 	}
 
 	if err != nil {
@@ -286,11 +291,21 @@ func TaskDataBGMappingToPB(data string) (val []*bg_pb.MappingData, key string, e
 }
 
 func TaskDataBGMappingDigitalToPB(data string) (val []*bg_pb.MappingDigitalData, key string, err error) {
-	mapping := []*bg_pb.MappingDigitalData{}
-	err = json.Unmarshal([]byte(data), &mapping)
+	mappingDigital := []*bg_pb.MappingDigitalData{}
+	err = json.Unmarshal([]byte(data), &mappingDigital)
 	if err != nil {
 		return nil, "", err
 	}
 
-	return mapping, mapping[0].GetCompanyName(), nil
+	return mappingDigital, mappingDigital[0].GetCompanyName(), nil
+}
+
+func TaskDataInternalSingleToPB(data string) (val *transfer_pb.InternalSingleData, key string, err error) {
+	internal := &transfer_pb.InternalSingleData{}
+	err = json.Unmarshal([]byte(data), &internal)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return internal, internal.DealCode, nil
 }
