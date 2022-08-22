@@ -1889,7 +1889,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						logrus.Errorln("Error Listing Role: ", err)
 						return nil, status.Errorf(codes.Internal, "Internal Error")
 					}
-					logrus.Infoln("role --> ", len(role.Data))
 
 					for _, v := range role.Data {
 						if strings.Contains(v.Data, fmt.Sprintf(`"accountNumber": "%v"`, account.AccountNumber)) {
@@ -1909,12 +1908,31 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					logrus.Errorln("Error Listing Role: ", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
-				logrus.Infoln("role --> ", len(role.Data))
 
 				for _, v := range role.Data {
 					if strings.Contains(v.Data, fmt.Sprintf(`"accountNumber": "%v"`, account.AccountNumber)) {
 						return nil, status.Errorf(codes.Canceled, "Cannot delete, account is used in role")
 					}
+				}
+			}
+		}
+
+		if task.Type == "Beneficiary Account" {
+			logrus.Infoln("Delete beneficiary account")
+			beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
+			json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
+
+			role, err := s.GetListTask(ctx, &pb.ListTaskRequest{
+				Filter: "type:Role",
+			})
+			if err != nil {
+				logrus.Errorln("Error Listing Role: ", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
+			for _, v := range role.Data {
+				if strings.Contains(v.Data, fmt.Sprintf(`"accountNumber": "%v"`, beneficiaryAccount.AccountNumber)) {
+					return nil, status.Errorf(codes.Canceled, "Cannot delete, account is used in role")
 				}
 			}
 		}
