@@ -24,10 +24,7 @@ type AbonnementORM struct {
 	CustomAbonnements  []*CustomAbonnementORM `gorm:"foreignkey:abonnement_id;association_foreignkey:Id;preload:true"`
 	DeadlineDate       *time.Time             `gorm:"not null"`
 	Id                 uint64                 `gorm:"primary_key;not null"`
-	MechanismAccountID uint64
-	MechanismType      string
-	MechanismValue     string
-	Period             string `gorm:"not null"`
+	Period             string                 `gorm:"not null"`
 	UpdatedAt          *time.Time
 	UpdatedByID        uint64
 }
@@ -55,9 +52,6 @@ func (m *Abonnement) ToORM(ctx context.Context) (AbonnementORM, error) {
 		to.DeadlineDate = &t
 	}
 	to.Period = m.Period
-	to.MechanismType = m.MechanismType
-	to.MechanismValue = m.MechanismValue
-	to.MechanismAccountID = m.MechanismAccountID
 	to.BillingStatus = m.BillingStatus
 	to.CreatedByID = m.CreatedByID
 	to.UpdatedByID = m.UpdatedByID
@@ -136,9 +130,6 @@ func (m *AbonnementORM) ToPB(ctx context.Context) (Abonnement, error) {
 		to.DeadlineDate = timestamppb.New(*m.DeadlineDate)
 	}
 	to.Period = m.Period
-	to.MechanismType = m.MechanismType
-	to.MechanismValue = m.MechanismValue
-	to.MechanismAccountID = m.MechanismAccountID
 	to.BillingStatus = m.BillingStatus
 	to.CreatedByID = m.CreatedByID
 	to.UpdatedByID = m.UpdatedByID
@@ -490,7 +481,9 @@ type AbonnementInvoiceORM struct {
 	Amount             string
 	CreatedAt          *time.Time
 	CreatedByID        uint64
+	CreditAmount       string
 	DeadlineDate       *time.Time
+	EsbExternalID      string
 	EsbJournalSeq      string
 	EsbResponse        string `gorm:"type:jsonb"`
 	EsbResponseCode    string
@@ -530,6 +523,7 @@ func (m *AbonnementInvoice) ToORM(ctx context.Context) (AbonnementInvoiceORM, er
 	}
 	to.PeriodCode = m.PeriodCode
 	to.Amount = m.Amount
+	to.CreditAmount = m.CreditAmount
 	to.Status = m.Status
 	if m.DeadlineDate != nil {
 		t := m.DeadlineDate.AsTime()
@@ -539,6 +533,7 @@ func (m *AbonnementInvoice) ToORM(ctx context.Context) (AbonnementInvoiceORM, er
 	to.AccountAlias = m.AccountAlias
 	to.AccountNumber = m.AccountNumber
 	to.AccountCurrency = m.AccountCurrency
+	to.EsbExternalID = m.EsbExternalID
 	to.EsbJournalSeq = m.EsbJournalSeq
 	to.EsbResponseCode = m.EsbResponseCode
 	to.EsbResponseMessage = m.EsbResponseMessage
@@ -577,6 +572,7 @@ func (m *AbonnementInvoiceORM) ToPB(ctx context.Context) (AbonnementInvoice, err
 	}
 	to.PeriodCode = m.PeriodCode
 	to.Amount = m.Amount
+	to.CreditAmount = m.CreditAmount
 	to.Status = m.Status
 	if m.DeadlineDate != nil {
 		to.DeadlineDate = timestamppb.New(*m.DeadlineDate)
@@ -585,6 +581,7 @@ func (m *AbonnementInvoiceORM) ToPB(ctx context.Context) (AbonnementInvoice, err
 	to.AccountAlias = m.AccountAlias
 	to.AccountNumber = m.AccountNumber
 	to.AccountCurrency = m.AccountCurrency
+	to.EsbExternalID = m.EsbExternalID
 	to.EsbJournalSeq = m.EsbJournalSeq
 	to.EsbResponseCode = m.EsbResponseCode
 	to.EsbResponseMessage = m.EsbResponseMessage
@@ -1074,18 +1071,6 @@ func DefaultApplyFieldMaskAbonnement(ctx context.Context, patchee *Abonnement, p
 		}
 		if f == prefix+"Period" {
 			patchee.Period = patcher.Period
-			continue
-		}
-		if f == prefix+"MechanismType" {
-			patchee.MechanismType = patcher.MechanismType
-			continue
-		}
-		if f == prefix+"MechanismValue" {
-			patchee.MechanismValue = patcher.MechanismValue
-			continue
-		}
-		if f == prefix+"MechanismAccountID" {
-			patchee.MechanismAccountID = patcher.MechanismAccountID
 			continue
 		}
 		if f == prefix+"BillingStatus" {
@@ -2468,6 +2453,10 @@ func DefaultApplyFieldMaskAbonnementInvoice(ctx context.Context, patchee *Abonne
 			patchee.Amount = patcher.Amount
 			continue
 		}
+		if f == prefix+"CreditAmount" {
+			patchee.CreditAmount = patcher.CreditAmount
+			continue
+		}
 		if f == prefix+"Status" {
 			patchee.Status = patcher.Status
 			continue
@@ -2509,6 +2498,10 @@ func DefaultApplyFieldMaskAbonnementInvoice(ctx context.Context, patchee *Abonne
 		}
 		if f == prefix+"AccountCurrency" {
 			patchee.AccountCurrency = patcher.AccountCurrency
+			continue
+		}
+		if f == prefix+"EsbExternalID" {
+			patchee.EsbExternalID = patcher.EsbExternalID
 			continue
 		}
 		if f == prefix+"EsbJournalSeq" {

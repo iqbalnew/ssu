@@ -566,13 +566,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_CreateAnnouncementTaskEV_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateAnnouncementTaskEV_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/announcement.service.v1.ApiService/CreateAnnouncementTaskEV", runtime.WithHTTPPathPattern("/api/announcement/task/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/announcement.service.v1.ApiService/CreateAnnouncementTaskEV", runtime.WithHTTPPathPattern("/api/announcement/task/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -612,13 +612,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("DELETE", pattern_ApiService_DeleteAnnouncementTaskByIDEV_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_DeleteAnnouncementTaskByIDEV_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/announcement.service.v1.ApiService/DeleteAnnouncementTaskByIDEV", runtime.WithHTTPPathPattern("/api/announcement/task/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/announcement.service.v1.ApiService/DeleteAnnouncementTaskByIDEV", runtime.WithHTTPPathPattern("/api/announcement/task/delete/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -828,11 +828,11 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_CreateAnnouncementTaskEV_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateAnnouncementTaskEV_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/announcement.service.v1.ApiService/CreateAnnouncementTaskEV", runtime.WithHTTPPathPattern("/api/announcement/task/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/announcement.service.v1.ApiService/CreateAnnouncementTaskEV", runtime.WithHTTPPathPattern("/api/announcement/task/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -868,11 +868,11 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("DELETE", pattern_ApiService_DeleteAnnouncementTaskByIDEV_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_DeleteAnnouncementTaskByIDEV_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/announcement.service.v1.ApiService/DeleteAnnouncementTaskByIDEV", runtime.WithHTTPPathPattern("/api/announcement/task/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/announcement.service.v1.ApiService/DeleteAnnouncementTaskByIDEV", runtime.WithHTTPPathPattern("/api/announcement/task/delete/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -978,11 +978,11 @@ var (
 
 	pattern_ApiService_CreateAnnouncementTaskEV_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "announcement", "task"}, ""))
 
-	pattern_ApiService_CreateAnnouncementTaskEV_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "announcement", "task", "taskID"}, ""))
+	pattern_ApiService_CreateAnnouncementTaskEV_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "announcement", "task", "edit", "taskID"}, ""))
 
 	pattern_ApiService_GetAnnouncementTaskByIDEV_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "announcement", "task", "taskID"}, ""))
 
-	pattern_ApiService_DeleteAnnouncementTaskByIDEV_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "announcement", "task", "taskID"}, ""))
+	pattern_ApiService_DeleteAnnouncementTaskByIDEV_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "announcement", "task", "delete", "taskID"}, ""))
 
 	pattern_ApiService_ListAnnouncementEV_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "announcement", "data"}, ""))
 

@@ -849,14 +849,14 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_CreateBeneficiaryAccountTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateBeneficiaryAccountTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/beneficiary.account.service.v1.ApiService/CreateBeneficiaryAccountTask", runtime.WithHTTPPathPattern("/api/beneficiary-account/task/{taskID}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/beneficiary.account.service.v1.ApiService/CreateBeneficiaryAccountTask", runtime.WithHTTPPathPattern("/api/beneficiary-account/task/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -969,14 +969,14 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("DELETE", pattern_ApiService_RequestDeleteBeneficiaryAccountTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_RequestDeleteBeneficiaryAccountTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/beneficiary.account.service.v1.ApiService/RequestDeleteBeneficiaryAccountTask", runtime.WithHTTPPathPattern("/api/beneficiary-account/task/{taskID}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/beneficiary.account.service.v1.ApiService/RequestDeleteBeneficiaryAccountTask", runtime.WithHTTPPathPattern("/api/beneficiary-account/task/delete/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1289,12 +1289,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_CreateBeneficiaryAccountTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateBeneficiaryAccountTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/beneficiary.account.service.v1.ApiService/CreateBeneficiaryAccountTask", runtime.WithHTTPPathPattern("/api/beneficiary-account/task/{taskID}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/beneficiary.account.service.v1.ApiService/CreateBeneficiaryAccountTask", runtime.WithHTTPPathPattern("/api/beneficiary-account/task/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1394,12 +1394,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("DELETE", pattern_ApiService_RequestDeleteBeneficiaryAccountTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_RequestDeleteBeneficiaryAccountTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/beneficiary.account.service.v1.ApiService/RequestDeleteBeneficiaryAccountTask", runtime.WithHTTPPathPattern("/api/beneficiary-account/task/{taskID}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/beneficiary.account.service.v1.ApiService/RequestDeleteBeneficiaryAccountTask", runtime.WithHTTPPathPattern("/api/beneficiary-account/task/delete/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1593,7 +1593,7 @@ var (
 
 	pattern_ApiService_CreateBeneficiaryAccountTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "beneficiary-account", "task"}, ""))
 
-	pattern_ApiService_CreateBeneficiaryAccountTask_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "beneficiary-account", "task", "taskID"}, ""))
+	pattern_ApiService_CreateBeneficiaryAccountTask_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "beneficiary-account", "task", "edit", "taskID"}, ""))
 
 	pattern_ApiService_CreateBeneficiaryAccountTaskMultiple_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "beneficiary-account", "task-bulk"}, ""))
 
@@ -1603,7 +1603,7 @@ var (
 
 	pattern_ApiService_GetBeneficiaryAccountTaskByID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "beneficiary-account", "task", "taskID"}, ""))
 
-	pattern_ApiService_RequestDeleteBeneficiaryAccountTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "beneficiary-account", "task", "taskID"}, ""))
+	pattern_ApiService_RequestDeleteBeneficiaryAccountTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "beneficiary-account", "task", "delete", "taskID"}, ""))
 
 	pattern_ApiService_ValidateBeneficiaryAccount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "beneficiary-account", "validate"}, ""))
 

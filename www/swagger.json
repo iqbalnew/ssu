@@ -922,7 +922,7 @@
       }
     },
     "/api/task/{taskID}": {
-      "put": {
+      "post": {
         "summary": "Set status task by action",
         "description": "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject",
         "operationId": "TaskService_SetTask",
@@ -975,7 +975,7 @@
       }
     },
     "/api/task/{taskID}/ev": {
-      "put": {
+      "post": {
         "summary": "Set status task by action",
         "description": "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject",
         "operationId": "TaskService_SetTaskEV",

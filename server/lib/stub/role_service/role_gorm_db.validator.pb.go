@@ -148,6 +148,29 @@ func (this *RoleAuthority) Validate() error {
 	}
 	return nil
 }
+func (this *ProductAuthority) Validate() error {
+	if this.AuthorityLevel != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.AuthorityLevel); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("AuthorityLevel", err)
+		}
+	}
+	if this.Product != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Product); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Product", err)
+		}
+	}
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	return nil
+}
 func (this *AuthorityLevel) Validate() error {
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {

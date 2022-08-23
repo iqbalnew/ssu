@@ -2089,13 +2089,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_CreateSyncUserTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateSyncUserTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/CreateSyncUserTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/user/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/CreateSyncUserTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/user/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2158,13 +2158,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_SetSyncUserTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_SetSyncUserTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/SetSyncUserTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/user/{taskID}/{action}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/SetSyncUserTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/user/edit/{taskID}/{action}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2181,13 +2181,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("DELETE", pattern_ApiService_DeleteSyncUserTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_DeleteSyncUserTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/DeleteSyncUserTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/user/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/DeleteSyncUserTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/user/delete/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2250,13 +2250,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_CreateSyncCompanyTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateSyncCompanyTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/CreateSyncCompanyTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/company/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/CreateSyncCompanyTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/company/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2319,13 +2319,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_SetSyncCompanyTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_SetSyncCompanyTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/SetSyncCompanyTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/company/{taskID}/{action}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/SetSyncCompanyTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/company/edit/{taskID}/{action}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2342,13 +2342,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("DELETE", pattern_ApiService_DeleteSyncCompanyTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_DeleteSyncCompanyTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/DeleteSyncCompanyTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/company/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/DeleteSyncCompanyTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/company/delete/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2411,13 +2411,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_CreateSSOClientTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateSSOClientTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/CreateSSOClientTask", runtime.WithHTTPPathPattern("/api/sso/client/task/{taskID}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/CreateSSOClientTask", runtime.WithHTTPPathPattern("/api/sso/client/task/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2480,13 +2480,13 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_SetSSOClientTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_SetSSOClientTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/SetSSOClientTask", runtime.WithHTTPPathPattern("/api/sso/client/task/{taskID}/{action}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/sso.service.v1.ApiService/SetSSOClientTask", runtime.WithHTTPPathPattern("/api/sso/client/task/edit/{taskID}/{action}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2894,11 +2894,11 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_CreateSyncUserTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateSyncUserTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/CreateSyncUserTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/user/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/CreateSyncUserTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/user/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2954,11 +2954,11 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_SetSyncUserTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_SetSyncUserTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/SetSyncUserTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/user/{taskID}/{action}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/SetSyncUserTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/user/edit/{taskID}/{action}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2974,11 +2974,11 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("DELETE", pattern_ApiService_DeleteSyncUserTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_DeleteSyncUserTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/DeleteSyncUserTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/user/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/DeleteSyncUserTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/user/delete/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -3034,11 +3034,11 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_CreateSyncCompanyTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateSyncCompanyTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/CreateSyncCompanyTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/company/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/CreateSyncCompanyTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/company/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -3094,11 +3094,11 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_SetSyncCompanyTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_SetSyncCompanyTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/SetSyncCompanyTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/company/{taskID}/{action}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/SetSyncCompanyTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/company/edit/{taskID}/{action}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -3114,11 +3114,11 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("DELETE", pattern_ApiService_DeleteSyncCompanyTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_DeleteSyncCompanyTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/DeleteSyncCompanyTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/company/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/DeleteSyncCompanyTask", runtime.WithHTTPPathPattern("/api/sso/sync/task/company/delete/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -3174,11 +3174,11 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_CreateSSOClientTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateSSOClientTask_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/CreateSSOClientTask", runtime.WithHTTPPathPattern("/api/sso/client/task/{taskID}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/CreateSSOClientTask", runtime.WithHTTPPathPattern("/api/sso/client/task/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -3234,11 +3234,11 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_SetSSOClientTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_SetSSOClientTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/SetSSOClientTask", runtime.WithHTTPPathPattern("/api/sso/client/task/{taskID}/{action}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/sso.service.v1.ApiService/SetSSOClientTask", runtime.WithHTTPPathPattern("/api/sso/client/task/edit/{taskID}/{action}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -3470,41 +3470,41 @@ var (
 
 	pattern_ApiService_CreateSyncUserTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "sso", "sync", "task", "user"}, ""))
 
-	pattern_ApiService_CreateSyncUserTask_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "sso", "sync", "task", "user", "taskID"}, ""))
+	pattern_ApiService_CreateSyncUserTask_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"api", "sso", "sync", "task", "user", "edit", "taskID"}, ""))
 
 	pattern_ApiService_ListSyncUserTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "sso", "sync", "task", "user"}, ""))
 
 	pattern_ApiService_GetSyncUserTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "sso", "sync", "task", "user", "taskID"}, ""))
 
-	pattern_ApiService_SetSyncUserTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"api", "sso", "sync", "task", "user", "taskID", "action"}, ""))
+	pattern_ApiService_SetSyncUserTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 2, 5, 1, 0, 4, 1, 5, 6, 1, 0, 4, 1, 5, 7}, []string{"api", "sso", "sync", "task", "user", "edit", "taskID", "action"}, ""))
 
-	pattern_ApiService_DeleteSyncUserTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "sso", "sync", "task", "user", "taskID"}, ""))
+	pattern_ApiService_DeleteSyncUserTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"api", "sso", "sync", "task", "user", "delete", "taskID"}, ""))
 
 	pattern_ApiService_ListSyncUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "sso", "sync", "data", "user"}, ""))
 
 	pattern_ApiService_CreateSyncCompanyTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "sso", "sync", "task", "company"}, ""))
 
-	pattern_ApiService_CreateSyncCompanyTask_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "sso", "sync", "task", "company", "taskID"}, ""))
+	pattern_ApiService_CreateSyncCompanyTask_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"api", "sso", "sync", "task", "company", "edit", "taskID"}, ""))
 
 	pattern_ApiService_ListSyncCompanyTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "sso", "sync", "task", "company"}, ""))
 
 	pattern_ApiService_GetSyncCompanyTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "sso", "sync", "task", "company", "taskID"}, ""))
 
-	pattern_ApiService_SetSyncCompanyTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"api", "sso", "sync", "task", "company", "taskID", "action"}, ""))
+	pattern_ApiService_SetSyncCompanyTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 2, 5, 1, 0, 4, 1, 5, 6, 1, 0, 4, 1, 5, 7}, []string{"api", "sso", "sync", "task", "company", "edit", "taskID", "action"}, ""))
 
-	pattern_ApiService_DeleteSyncCompanyTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "sso", "sync", "task", "company", "taskID"}, ""))
+	pattern_ApiService_DeleteSyncCompanyTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"api", "sso", "sync", "task", "company", "delete", "taskID"}, ""))
 
 	pattern_ApiService_ListSyncCompany_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "sso", "sync", "data", "company"}, ""))
 
 	pattern_ApiService_CreateSSOClientTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "sso", "client", "task"}, ""))
 
-	pattern_ApiService_CreateSSOClientTask_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "sso", "client", "task", "taskID"}, ""))
+	pattern_ApiService_CreateSSOClientTask_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "sso", "client", "task", "edit", "taskID"}, ""))
 
 	pattern_ApiService_ListSSOClientTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "sso", "client", "task"}, ""))
 
 	pattern_ApiService_GetSSOClientTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "sso", "client", "task", "taskID"}, ""))
 
-	pattern_ApiService_SetSSOClientTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "sso", "client", "task", "taskID", "action"}, ""))
+	pattern_ApiService_SetSSOClientTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"api", "sso", "client", "task", "edit", "taskID", "action"}, ""))
 
 	pattern_ApiService_ListSSOClient_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "sso", "client"}, ""))
 
