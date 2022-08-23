@@ -23,6 +23,7 @@ type UserORM struct {
 	IdNumber     string     `gorm:"column:IdNumber;not null"`
 	IdType       int32      `gorm:"column:IdType;not null"`
 	IsBlocked    bool       `gorm:"column:IsBlocked"`
+	TokenFcm     string     `gorm:"column:TokenFcm"`
 	UpdatedAt    *time.Time `gorm:"not null"`
 	UpdatedByID  uint64     `gorm:"column:UpdatedByID;not null"`
 	UserID       uint64     `gorm:"column:UserID;primary_key;not null;auto_increment"`
@@ -59,6 +60,7 @@ func (m *User) ToORM(ctx context.Context) (UserORM, error) {
 	to.UpdatedByID = m.UpdatedByID
 	to.DeletedByID = m.DeletedByID
 	to.Authority = m.Authority
+	to.TokenFcm = m.TokenFcm
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -100,6 +102,7 @@ func (m *UserORM) ToPB(ctx context.Context) (User, error) {
 	to.UpdatedByID = m.UpdatedByID
 	to.DeletedByID = m.DeletedByID
 	to.Authority = m.Authority
+	to.TokenFcm = m.TokenFcm
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -466,6 +469,10 @@ func DefaultApplyFieldMaskUser(ctx context.Context, patchee *User, patcher *User
 		}
 		if f == prefix+"Authority" {
 			patchee.Authority = patcher.Authority
+			continue
+		}
+		if f == prefix+"TokenFcm" {
+			patchee.TokenFcm = patcher.TokenFcm
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {

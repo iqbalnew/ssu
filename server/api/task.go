@@ -812,7 +812,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	product := productData.Data[0]
 
-	taskType := []string{"Swift", "Cash Pooling"}
+	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Transfer:InternalSingle", "Transfer:InternalMultiple"}
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
 		if req.Task.Type == "Swift" {
@@ -1862,15 +1862,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
-			logrus.Println("workflow --> ", workFlow)
+			used := []string{}
 			for _, v := range workFlow.Data {
 				for _, v2 := range v.Logics {
 					for _, v3 := range v2.Requirements {
 						if v3.RoleID == role.RoleID {
-							return nil, status.Errorf(codes.Canceled, "Cannot delete, role is used in workflow")
+							used = append(used, v.WorkflowCode)
 						}
 					}
 				}
+			}
+			if len(used) > 0 {
+				return nil, status.Errorf(codes.Canceled, "Delete Role Failed: Role mapping to workflow [ %v ]", strings.Join(used, ", "))
 			}
 		}
 
@@ -1882,7 +1885,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					json.Unmarshal([]byte(task.Childs[i].Data), &account)
 					logrus.Infoln("AccountNumber --> ", account.AccountNumber)
 
-					role, err := s.GetListTask(ctx, &pb.ListTaskRequest{
+					roleTask, err := s.GetListTask(ctx, &pb.ListTaskRequest{
 						Filter: "type:Role",
 					})
 					if err != nil {
@@ -1890,10 +1893,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						return nil, status.Errorf(codes.Internal, "Internal Error")
 					}
 
-					for _, v := range role.Data {
+					used := []string{}
+					for _, v := range roleTask.Data {
 						if strings.Contains(v.Data, fmt.Sprintf(`"accountNumber": "%v"`, account.AccountNumber)) {
-							return nil, status.Errorf(codes.Canceled, "Cannot delete, account is used in role")
+							role := role_pb.Role{}
+							json.Unmarshal([]byte(v.Data), &role)
+							used = append(used, role.Name)
 						}
+					}
+					if len(used) > 0 {
+						return nil, status.Errorf(codes.Canceled, "Delete Account Failed: Account mapping to role [ %v ]", strings.Join(used, ", "))
 					}
 				}
 			} else {
@@ -1901,7 +1910,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				json.Unmarshal([]byte(task.Data), &account)
 				logrus.Infoln("AccountNumber --> ", account.AccountNumber)
 
-				role, err := s.GetListTask(ctx, &pb.ListTaskRequest{
+				roleTask, err := s.GetListTask(ctx, &pb.ListTaskRequest{
 					Filter: "type:Role",
 				})
 				if err != nil {
@@ -1909,10 +1918,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
 
-				for _, v := range role.Data {
+				used := []string{}
+				for _, v := range roleTask.Data {
 					if strings.Contains(v.Data, fmt.Sprintf(`"accountNumber": "%v"`, account.AccountNumber)) {
-						return nil, status.Errorf(codes.Canceled, "Cannot delete, account is used in role")
+						role := role_pb.Role{}
+						json.Unmarshal([]byte(v.Data), &role)
+						used = append(used, role.Name)
 					}
+				}
+				if len(used) > 0 {
+					return nil, status.Errorf(codes.Canceled, "Delete Account Failed: Account mapping to role [ %v ]", strings.Join(used, ", "))
 				}
 			}
 		}
@@ -1922,7 +1937,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
 			json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
 
-			role, err := s.GetListTask(ctx, &pb.ListTaskRequest{
+			roleTask, err := s.GetListTask(ctx, &pb.ListTaskRequest{
 				Filter: "type:Role",
 			})
 			if err != nil {
@@ -1930,10 +1945,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
-			for _, v := range role.Data {
+			used := []string{}
+			for _, v := range roleTask.Data {
 				if strings.Contains(v.Data, fmt.Sprintf(`"accountNumber": "%v"`, beneficiaryAccount.AccountNumber)) {
-					return nil, status.Errorf(codes.Canceled, "Cannot delete, account is used in role")
+					role := role_pb.Role{}
+					json.Unmarshal([]byte(v.Data), &role)
+					used = append(used, role.Name)
 				}
+			}
+			if len(used) > 0 {
+				return nil, status.Errorf(codes.Canceled, "Delete Account Failed: Account mapping to role [ %v ]", strings.Join(used, ", "))
 			}
 		}
 

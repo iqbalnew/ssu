@@ -247,6 +247,13 @@ func (this *UpdateBeneficiaryAccountRoleRequest) Validate() error {
 	return nil
 }
 func (this *UpdateBeneficiaryAccountRoleResponse) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
 	return nil
 }
 func (this *FileListTemplateRequest) Validate() error {

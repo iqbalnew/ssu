@@ -1045,14 +1045,14 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_SetTaskMenuAppearance_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_SetTaskMenuAppearance_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/{taskID}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1189,14 +1189,14 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_SetTaskMenuLicense_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_SetTaskMenuLicense_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1213,14 +1213,14 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("DELETE", pattern_ApiService_DeleteTaskMenuLicense_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_DeleteTaskMenuLicense_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/DeleteTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/menu.service.v1.ApiService/DeleteTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/delete/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1656,12 +1656,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_SetTaskMenuAppearance_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_SetTaskMenuAppearance_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/{taskID}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuAppearance", runtime.WithHTTPPathPattern("/api/menu/appearance/task/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1782,12 +1782,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("PUT", pattern_ApiService_SetTaskMenuLicense_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_SetTaskMenuLicense_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/SetTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/edit/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1803,12 +1803,12 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("DELETE", pattern_ApiService_DeleteTaskMenuLicense_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_DeleteTaskMenuLicense_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/DeleteTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/{taskID}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/menu.service.v1.ApiService/DeleteTaskMenuLicense", runtime.WithHTTPPathPattern("/api/menu/license/task/delete/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2126,7 +2126,7 @@ var (
 
 	pattern_ApiService_SetTaskMenuAppearance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "menu", "appearance", "task"}, ""))
 
-	pattern_ApiService_SetTaskMenuAppearance_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "menu", "appearance", "task", "taskID"}, ""))
+	pattern_ApiService_SetTaskMenuAppearance_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "menu", "appearance", "task", "edit", "taskID"}, ""))
 
 	pattern_ApiService_GetTaskMenuAppearance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "menu", "appearance", "task", "taskID"}, ""))
 
@@ -2138,9 +2138,9 @@ var (
 
 	pattern_ApiService_SetTaskMenuLicense_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "menu", "license", "task"}, ""))
 
-	pattern_ApiService_SetTaskMenuLicense_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "menu", "license", "task", "taskID"}, ""))
+	pattern_ApiService_SetTaskMenuLicense_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "menu", "license", "task", "edit", "taskID"}, ""))
 
-	pattern_ApiService_DeleteTaskMenuLicense_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "menu", "license", "task", "taskID"}, ""))
+	pattern_ApiService_DeleteTaskMenuLicense_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "menu", "license", "task", "delete", "taskID"}, ""))
 
 	pattern_ApiService_GetTaskMenuLicense_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "menu", "license", "task", "taskID"}, ""))
 

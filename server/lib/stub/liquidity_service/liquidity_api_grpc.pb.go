@@ -37,6 +37,7 @@ type ApiServiceClient interface {
 	GetListTBAValue(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListTBAValueResponse, error)
 	RunLiquidityScheme(ctx context.Context, in *RunLiquidityTaskRequest, opts ...grpc.CallOption) (*RunLiquidityTaskResponse, error)
 	ValidateDate(ctx context.Context, in *ValidateDateRequest, opts ...grpc.CallOption) (*ValidateDateResponse, error)
+	ListLiquidityAuthorize(ctx context.Context, in *ListTaskLiquidityRequest, opts ...grpc.CallOption) (*ListLiquidityTaskResponse, error)
 }
 
 type apiServiceClient struct {
@@ -173,6 +174,15 @@ func (c *apiServiceClient) ValidateDate(ctx context.Context, in *ValidateDateReq
 	return out, nil
 }
 
+func (c *apiServiceClient) ListLiquidityAuthorize(ctx context.Context, in *ListTaskLiquidityRequest, opts ...grpc.CallOption) (*ListLiquidityTaskResponse, error) {
+	out := new(ListLiquidityTaskResponse)
+	err := c.cc.Invoke(ctx, "/liquidity.service.v1.ApiService/ListLiquidityAuthorize", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
@@ -191,6 +201,7 @@ type ApiServiceServer interface {
 	GetListTBAValue(context.Context, *Empty) (*ListTBAValueResponse, error)
 	RunLiquidityScheme(context.Context, *RunLiquidityTaskRequest) (*RunLiquidityTaskResponse, error)
 	ValidateDate(context.Context, *ValidateDateRequest) (*ValidateDateResponse, error)
+	ListLiquidityAuthorize(context.Context, *ListTaskLiquidityRequest) (*ListLiquidityTaskResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -239,6 +250,9 @@ func (UnimplementedApiServiceServer) RunLiquidityScheme(context.Context, *RunLiq
 }
 func (UnimplementedApiServiceServer) ValidateDate(context.Context, *ValidateDateRequest) (*ValidateDateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateDate not implemented")
+}
+func (UnimplementedApiServiceServer) ListLiquidityAuthorize(context.Context, *ListTaskLiquidityRequest) (*ListLiquidityTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListLiquidityAuthorize not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -505,6 +519,24 @@ func _ApiService_ValidateDate_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_ListLiquidityAuthorize_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTaskLiquidityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListLiquidityAuthorize(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/liquidity.service.v1.ApiService/ListLiquidityAuthorize",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListLiquidityAuthorize(ctx, req.(*ListTaskLiquidityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -567,6 +599,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidateDate",
 			Handler:    _ApiService_ValidateDate_Handler,
+		},
+		{
+			MethodName: "ListLiquidityAuthorize",
+			Handler:    _ApiService_ListLiquidityAuthorize_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

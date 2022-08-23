@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ApiServiceClient interface {
 	HealthCheck(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	ListRole(ctx context.Context, in *ListRoleRequest, opts ...grpc.CallOption) (*ListRoleResponse, error)
+	ListProductAuthority(ctx context.Context, in *ListProductAuthoritiesRequest, opts ...grpc.CallOption) (*ListProductAuthoritiesResponse, error)
 	ListAuthorityLevel(ctx context.Context, in *ListAuthorityLevelRequest, opts ...grpc.CallOption) (*ListAuthorityLevelResponse, error)
 	ListRoleAuthority(ctx context.Context, in *ListRoleAuthorityRequest, opts ...grpc.CallOption) (*ListRoleAuthorityResponse, error)
 	ListUserType(ctx context.Context, in *ListUserTypeRequest, opts ...grpc.CallOption) (*ListUserTypeResponse, error)
@@ -69,6 +70,15 @@ func (c *apiServiceClient) HealthCheck(ctx context.Context, in *Empty, opts ...g
 func (c *apiServiceClient) ListRole(ctx context.Context, in *ListRoleRequest, opts ...grpc.CallOption) (*ListRoleResponse, error) {
 	out := new(ListRoleResponse)
 	err := c.cc.Invoke(ctx, "/role.service.v1.ApiService/ListRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ListProductAuthority(ctx context.Context, in *ListProductAuthoritiesRequest, opts ...grpc.CallOption) (*ListProductAuthoritiesResponse, error) {
+	out := new(ListProductAuthoritiesResponse)
+	err := c.cc.Invoke(ctx, "/role.service.v1.ApiService/ListProductAuthority", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -279,6 +289,7 @@ func (c *apiServiceClient) GetCountUserRole(ctx context.Context, in *CountUserRo
 type ApiServiceServer interface {
 	HealthCheck(context.Context, *Empty) (*HealthCheckResponse, error)
 	ListRole(context.Context, *ListRoleRequest) (*ListRoleResponse, error)
+	ListProductAuthority(context.Context, *ListProductAuthoritiesRequest) (*ListProductAuthoritiesResponse, error)
 	ListAuthorityLevel(context.Context, *ListAuthorityLevelRequest) (*ListAuthorityLevelResponse, error)
 	ListRoleAuthority(context.Context, *ListRoleAuthorityRequest) (*ListRoleAuthorityResponse, error)
 	ListUserType(context.Context, *ListUserTypeRequest) (*ListUserTypeResponse, error)
@@ -313,6 +324,9 @@ func (UnimplementedApiServiceServer) HealthCheck(context.Context, *Empty) (*Heal
 }
 func (UnimplementedApiServiceServer) ListRole(context.Context, *ListRoleRequest) (*ListRoleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRole not implemented")
+}
+func (UnimplementedApiServiceServer) ListProductAuthority(context.Context, *ListProductAuthoritiesRequest) (*ListProductAuthoritiesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListProductAuthority not implemented")
 }
 func (UnimplementedApiServiceServer) ListAuthorityLevel(context.Context, *ListAuthorityLevelRequest) (*ListAuthorityLevelResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAuthorityLevel not implemented")
@@ -425,6 +439,24 @@ func _ApiService_ListRole_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).ListRole(ctx, req.(*ListRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ListProductAuthority_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListProductAuthoritiesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListProductAuthority(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/role.service.v1.ApiService/ListProductAuthority",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListProductAuthority(ctx, req.(*ListProductAuthoritiesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -839,6 +871,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListRole",
 			Handler:    _ApiService_ListRole_Handler,
+		},
+		{
+			MethodName: "ListProductAuthority",
+			Handler:    _ApiService_ListProductAuthority_Handler,
 		},
 		{
 			MethodName: "ListAuthorityLevel",
