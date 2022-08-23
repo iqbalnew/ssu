@@ -7,11 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "github.com/mwitkow/go-proto-validators"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "google.golang.org/protobuf/types/known/structpb"
-	_ "github.com/mwitkow/go-proto-validators"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -489,6 +489,22 @@ func (this *GenerateBulkInvoiceRes) Validate() error {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
 				return github_com_mwitkow_go_proto_validators.FieldError("FailedData", err)
 			}
+		}
+	}
+	return nil
+}
+func (this *GenerateSingleInvoiceReq) Validate() error {
+	return nil
+}
+func (this *GenerateSingleInvoiceRes) Validate() error {
+	if this.SuccessData != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SuccessData); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SuccessData", err)
+		}
+	}
+	if this.FailedData != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.FailedData); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("FailedData", err)
 		}
 	}
 	return nil
