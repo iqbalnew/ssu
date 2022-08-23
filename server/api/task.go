@@ -1887,8 +1887,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			logrus.Infoln("checkuser -->", companyID)
 			used2 := []string{}
 			for _, v := range userTask.Data {
-				logrus.Infoln("checkuser -->", fmt.Sprintf(`"roleID": "%v"`, role.RoleID))
-				if strings.Contains(v.Data, fmt.Sprintf(`"roleID": "%v"`, role.RoleID)) {
+				logrus.Infoln("checkuser -->", fmt.Sprintf(`"roleID": %v`, role.RoleID))
+				if strings.Contains(v.Data, fmt.Sprintf(`"roleID": %v`, role.RoleID)) {
 					userDat := users_pb.User{}
 					json.Unmarshal([]byte(v.Data), &userDat)
 					used2 = append(used2, userDat.Username)
