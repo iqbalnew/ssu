@@ -43,6 +43,10 @@ type ApiServiceClient interface {
 	BRICaMSsvcGetUserList(ctx context.Context, in *BricamsGetAddonsUserReq, opts ...grpc.CallOption) (*BRICaMSSvcUserListRes, error)
 	BRICaMSsvcGetUserByUsername(ctx context.Context, in *BricamsGetAddonsUserByUsernameReq, opts ...grpc.CallOption) (*BRICaMSSvcUserRes, error)
 	CekUsernameAvaibility(ctx context.Context, in *CekUsernameAvaibilityReq, opts ...grpc.CallOption) (*CekUsernameAvaibilityRes, error)
+	GetUserByUserID(ctx context.Context, in *GetUserIDArrayRequest, opts ...grpc.CallOption) (*GetUserIDArrayResponse, error)
+	UpdateUsersTokenFCM(ctx context.Context, in *UpdateUsersTokenFCMRequest, opts ...grpc.CallOption) (*UpdateUsersTokenFCMResponse, error)
+	DetailUsers(ctx context.Context, in *UserParams, opts ...grpc.CallOption) (*DetailUserRes, error)
+	GetUserByCompanyIDAndAuthority(ctx context.Context, in *GetUserByCompanyIDAndAuthorityRequest, opts ...grpc.CallOption) (*GetUserByCompanyIDAndAuthorityResponse, error)
 }
 
 type apiServiceClient struct {
@@ -233,6 +237,42 @@ func (c *apiServiceClient) CekUsernameAvaibility(ctx context.Context, in *CekUse
 	return out, nil
 }
 
+func (c *apiServiceClient) GetUserByUserID(ctx context.Context, in *GetUserIDArrayRequest, opts ...grpc.CallOption) (*GetUserIDArrayResponse, error) {
+	out := new(GetUserIDArrayResponse)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/GetUserByUserID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) UpdateUsersTokenFCM(ctx context.Context, in *UpdateUsersTokenFCMRequest, opts ...grpc.CallOption) (*UpdateUsersTokenFCMResponse, error) {
+	out := new(UpdateUsersTokenFCMResponse)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/UpdateUsersTokenFCM", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) DetailUsers(ctx context.Context, in *UserParams, opts ...grpc.CallOption) (*DetailUserRes, error) {
+	out := new(DetailUserRes)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/DetailUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetUserByCompanyIDAndAuthority(ctx context.Context, in *GetUserByCompanyIDAndAuthorityRequest, opts ...grpc.CallOption) (*GetUserByCompanyIDAndAuthorityResponse, error) {
+	out := new(GetUserByCompanyIDAndAuthorityResponse)
+	err := c.cc.Invoke(ctx, "/user.service.v1.ApiService/GetUserByCompanyIDAndAuthority", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
@@ -257,6 +297,10 @@ type ApiServiceServer interface {
 	BRICaMSsvcGetUserList(context.Context, *BricamsGetAddonsUserReq) (*BRICaMSSvcUserListRes, error)
 	BRICaMSsvcGetUserByUsername(context.Context, *BricamsGetAddonsUserByUsernameReq) (*BRICaMSSvcUserRes, error)
 	CekUsernameAvaibility(context.Context, *CekUsernameAvaibilityReq) (*CekUsernameAvaibilityRes, error)
+	GetUserByUserID(context.Context, *GetUserIDArrayRequest) (*GetUserIDArrayResponse, error)
+	UpdateUsersTokenFCM(context.Context, *UpdateUsersTokenFCMRequest) (*UpdateUsersTokenFCMResponse, error)
+	DetailUsers(context.Context, *UserParams) (*DetailUserRes, error)
+	GetUserByCompanyIDAndAuthority(context.Context, *GetUserByCompanyIDAndAuthorityRequest) (*GetUserByCompanyIDAndAuthorityResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -323,6 +367,18 @@ func (UnimplementedApiServiceServer) BRICaMSsvcGetUserByUsername(context.Context
 }
 func (UnimplementedApiServiceServer) CekUsernameAvaibility(context.Context, *CekUsernameAvaibilityReq) (*CekUsernameAvaibilityRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CekUsernameAvaibility not implemented")
+}
+func (UnimplementedApiServiceServer) GetUserByUserID(context.Context, *GetUserIDArrayRequest) (*GetUserIDArrayResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByUserID not implemented")
+}
+func (UnimplementedApiServiceServer) UpdateUsersTokenFCM(context.Context, *UpdateUsersTokenFCMRequest) (*UpdateUsersTokenFCMResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUsersTokenFCM not implemented")
+}
+func (UnimplementedApiServiceServer) DetailUsers(context.Context, *UserParams) (*DetailUserRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DetailUsers not implemented")
+}
+func (UnimplementedApiServiceServer) GetUserByCompanyIDAndAuthority(context.Context, *GetUserByCompanyIDAndAuthorityRequest) (*GetUserByCompanyIDAndAuthorityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByCompanyIDAndAuthority not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -697,6 +753,78 @@ func _ApiService_CekUsernameAvaibility_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_GetUserByUserID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserIDArrayRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetUserByUserID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.ApiService/GetUserByUserID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetUserByUserID(ctx, req.(*GetUserIDArrayRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_UpdateUsersTokenFCM_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUsersTokenFCMRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).UpdateUsersTokenFCM(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.ApiService/UpdateUsersTokenFCM",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).UpdateUsersTokenFCM(ctx, req.(*UpdateUsersTokenFCMRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_DetailUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DetailUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.ApiService/DetailUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DetailUsers(ctx, req.(*UserParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetUserByCompanyIDAndAuthority_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByCompanyIDAndAuthorityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetUserByCompanyIDAndAuthority(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.ApiService/GetUserByCompanyIDAndAuthority",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetUserByCompanyIDAndAuthority(ctx, req.(*GetUserByCompanyIDAndAuthorityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -783,6 +911,22 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CekUsernameAvaibility",
 			Handler:    _ApiService_CekUsernameAvaibility_Handler,
+		},
+		{
+			MethodName: "GetUserByUserID",
+			Handler:    _ApiService_GetUserByUserID_Handler,
+		},
+		{
+			MethodName: "UpdateUsersTokenFCM",
+			Handler:    _ApiService_UpdateUsersTokenFCM_Handler,
+		},
+		{
+			MethodName: "DetailUsers",
+			Handler:    _ApiService_DetailUsers_Handler,
+		},
+		{
+			MethodName: "GetUserByCompanyIDAndAuthority",
+			Handler:    _ApiService_GetUserByCompanyIDAndAuthority_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

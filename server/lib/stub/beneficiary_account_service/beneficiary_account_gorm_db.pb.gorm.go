@@ -128,9 +128,11 @@ type BeneficiaryAccountORM struct {
 	CreatedByID          uint64     `gorm:"column:CreatedByID;not null"`
 	DeletedAt            *time.Time `gorm:"column:DeletedAt"`
 	DeletedByID          uint64     `gorm:"column:DeletedByID"`
+	Disabled             bool       `gorm:"column:Disabled"`
 	IsOwnedByCompany     string     `gorm:"column:IsOwnedByCompany"`
 	MasterBankID         string     `gorm:"column:MasterBankID"`
 	MasterBankName       string     `gorm:"column:MasterBankName"`
+	RoleID               uint64     `gorm:"column:RoleID"`
 	UpdatedAt            *time.Time `gorm:"column:UpdatedAt"`
 	UpdatedByID          uint64     `gorm:"column:UpdatedByID;not null"`
 }
@@ -168,6 +170,8 @@ func (m *BeneficiaryAccount) ToORM(ctx context.Context) (BeneficiaryAccountORM, 
 	to.DeletedByID = m.DeletedByID
 	to.CompanyName = m.CompanyName
 	to.MasterBankName = m.MasterBankName
+	to.RoleID = m.RoleID
+	to.Disabled = m.Disabled
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -214,6 +218,8 @@ func (m *BeneficiaryAccountORM) ToPB(ctx context.Context) (BeneficiaryAccount, e
 	to.DeletedByID = m.DeletedByID
 	to.CompanyName = m.CompanyName
 	to.MasterBankName = m.MasterBankName
+	to.RoleID = m.RoleID
+	to.Disabled = m.Disabled
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -1128,6 +1134,14 @@ func DefaultApplyFieldMaskBeneficiaryAccount(ctx context.Context, patchee *Benef
 		}
 		if f == prefix+"MasterBankName" {
 			patchee.MasterBankName = patcher.MasterBankName
+			continue
+		}
+		if f == prefix+"RoleID" {
+			patchee.RoleID = patcher.RoleID
+			continue
+		}
+		if f == prefix+"Disabled" {
+			patchee.Disabled = patcher.Disabled
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {
