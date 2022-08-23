@@ -1892,6 +1892,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					used2 = append(used2, userDat.Username)
 				}
 			}
+			if len(used2) > 0 {
+				return nil, status.Errorf(codes.Canceled, "Delete Role Failed: Role mapping to User [ %v ]", strings.Join(used2, ", "))
+			}
 		}
 
 		if task.Type == "Account" {
