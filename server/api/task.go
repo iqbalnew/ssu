@@ -1875,6 +1875,27 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if len(used) > 0 {
 				return nil, status.Errorf(codes.Canceled, "Delete Role Failed: Role mapping to workflow [ %v ]", strings.Join(used, ", "))
 			}
+
+			userTask, err := s.GetListTask(ctx, &pb.ListTaskRequest{
+				Filter: "type:User",
+			})
+			if err != nil {
+				logrus.Errorln("Error Listing User: ", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
+			used2 := []string{}
+			for _, v := range userTask.Data {
+				if strings.Contains(v.Data, fmt.Sprintf(`"roleID": %v`, role.RoleID)) {
+					userDat := users_pb.UserTaskData{}
+					json.Unmarshal([]byte(v.Data), &userDat)
+					logrus.Infoln("checkuser -->", userDat)
+					used2 = append(used2, userDat.User.Username)
+				}
+			}
+			if len(used2) > 0 {
+				return nil, status.Errorf(codes.Canceled, "Delete Role Failed: Role mapping to User [ %v ]", strings.Join(used2, ", "))
+			}
 		}
 
 		if task.Type == "Account" {
