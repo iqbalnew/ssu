@@ -922,7 +922,7 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/account.service.v1.ApiService/RequestDeleteAccountTask", runtime.WithHTTPPathPattern("/api/account/task/{taskID}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/account.service.v1.ApiService/RequestDeleteAccountTask", runtime.WithHTTPPathPattern("/api/account/task/delete/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1321,7 +1321,7 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/account.service.v1.ApiService/RequestDeleteAccountTask", runtime.WithHTTPPathPattern("/api/account/task/{taskID}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/account.service.v1.ApiService/RequestDeleteAccountTask", runtime.WithHTTPPathPattern("/api/account/task/delete/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1504,7 +1504,7 @@ var (
 
 	pattern_ApiService_GetAccountTaskByID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "account", "task", "taskID"}, ""))
 
-	pattern_ApiService_RequestDeleteAccountTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "account", "task", "taskID"}, ""))
+	pattern_ApiService_RequestDeleteAccountTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "account", "task", "delete", "taskID"}, ""))
 
 	pattern_ApiService_ValidateAccount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "account", "validate"}, ""))
 
