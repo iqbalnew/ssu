@@ -60,6 +60,13 @@ func (this *NotificationModule) Validate() error {
 			}
 		}
 	}
+	for _, item := range this.ModuleVariables {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("ModuleVariables", err)
+			}
+		}
+	}
 	return nil
 }
 func (this *ModuleEvent) Validate() error {
@@ -88,6 +95,29 @@ func (this *ModuleEvent) Validate() error {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
 				return github_com_mwitkow_go_proto_validators.FieldError("EventVariables", err)
 			}
+		}
+	}
+	return nil
+}
+func (this *ModuleVariable) Validate() error {
+	if this.Module != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Module); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Module", err)
+		}
+	}
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	if this.DeletedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
 		}
 	}
 	return nil
@@ -154,6 +184,24 @@ func (this *Notification) Validate() error {
 	if this.EndAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.EndAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("EndAt", err)
+		}
+	}
+	return nil
+}
+func (this *NotificationFCM) Validate() error {
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	if this.DeletedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DeletedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("DeletedAt", err)
 		}
 	}
 	return nil
