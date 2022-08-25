@@ -7,11 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
-	_ "github.com/golang/protobuf/ptypes/struct"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "google.golang.org/protobuf/types/known/structpb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -70,6 +70,21 @@ func (this *ListNotificationRes) Validate() error {
 	}
 	return nil
 }
+func (this *ListNotificationFCMRes) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
 func (this *ErrorBodyResponse) Validate() error {
 	return nil
 }
@@ -114,6 +129,9 @@ func (this *CreateNotificationTaskRequest) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 		}
 	}
+	return nil
+}
+func (this *SendPushNotificationRequest) Validate() error {
 	return nil
 }
 func (this *CommonResponse) Validate() error {
@@ -265,5 +283,29 @@ func (this *UpdateLogHistoryNotifiationRequest) Validate() error {
 	return nil
 }
 func (this *UpdateLogHistoryNotifiationResponse) Validate() error {
+	return nil
+}
+func (this *ModuleVarMessage) Validate() error {
+	if this.Module != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Module); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Module", err)
+		}
+	}
+	return nil
+}
+func (this *ModuleVarMessage_Module) Validate() error {
+	return nil
+}
+func (this *ListModuleVariableReq) Validate() error {
+	return nil
+}
+func (this *ListModuleVariableResp) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
 	return nil
 }
