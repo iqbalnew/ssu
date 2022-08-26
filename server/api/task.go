@@ -25,6 +25,7 @@ import (
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
 	system_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/system_service"
+	transfer_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/transfer_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
 	"github.com/sirupsen/logrus"
@@ -812,7 +813,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	product := productData.Data[0]
 
-	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Transfer:InternalSingle", "Transfer:InternalMultiple"}
+	taskType := []string{"Swift", "Cash Pooling", "BG Issuing"}
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
 		if req.Task.Type == "Swift" {
@@ -1049,7 +1050,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account", "BG Mapping", "BG Mapping Digital", "BG Issuing", "Deposito", "Transfer:InternalSingle", "Transfer:InternalMultiple"}
+	skipProduct := []string{}
 
 	logrus.Print(taskType)
 
@@ -2878,6 +2879,35 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 				}
 			}
+
+		case "Transfer:InternalSingle":
+
+			var opts []grpc.DialOption
+			opts = append(opts, grpc.WithInsecure())
+
+			transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
+			if err != nil {
+				logrus.Errorln("Failed connect to Transfer Service: %v", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer transferConn.Close()
+
+			transferClient := transfer_pb.NewApiServiceClient(transferConn)
+
+			taskData := transfer_pb.InternalSingleData{}
+			json.Unmarshal([]byte(currentData), &taskData)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			}
+
+			_, err = transferClient.CreateTransfer(ctx, &transfer_pb.CreateTransferRequest{
+				TaskID: task.TaskID,
+				Data:   &taskData,
+			})
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			}
+
 		}
 
 	}
