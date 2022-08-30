@@ -69,6 +69,8 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 		isSave = true
 	}
 
+	logrus.Println("task ===> ", task)
+
 	result := &pb.SaveTaskResponse{
 		Success: true,
 		Data:    &pb.Task{},
