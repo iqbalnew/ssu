@@ -1075,8 +1075,8 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	// 		break
 	// 	}
 	// }
-
-	logrus.Print(md[productName])
+	logrus.Print(md)
+	logrus.Print(productName)
 	if len(md[productName]) > 0 {
 		result := strings.Split(md[productName][0], ",")
 		logrus.Print("result md %s", result)
