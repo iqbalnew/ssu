@@ -1061,6 +1061,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	}
 
 	productName := strings.Replace(taskType, ":", "_", -1)
+	productName = strings.Replace(taskType, " ", "_", -1)
 	productName = strings.ToLower(productName)
 	productName = fmt.Sprintf("user-product-%s", productName)
 
