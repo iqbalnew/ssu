@@ -6,8 +6,9 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
+ 
 
-# Make data base, printed on Tue Aug 30 07:04:16 2022
+# Make data base, printed on Tue Aug 30 15:32:13 2022
 
 # Variables
 
@@ -55,7 +56,6 @@ LSCOLORS = Gxfxcxdxbxegedabagacad
 GOPATH = /Users/farizrachmanyusuf/go
 # environment
 ELECTRON_RUN_AS_NODE = 1
- 
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
@@ -161,7 +161,7 @@ MAKELEVEL := 0
 # environment
 LANG = C
 # environment
-VSCODE_PID = 71577
+VSCODE_PID = 79680
 # variable set hash-table stats:
 # Load=75/1024=7%, Rehash=0, Collisions=2/107=2%
 
@@ -211,7 +211,6 @@ docker-build:
 #  File has not been updated.
 
 # Not a target:
- 
 .SUFFIXES:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -322,6 +321,7 @@ migrate-db:
 
 unit-test:
 #  Phony target (prerequisite of .PHONY).
+ 
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
@@ -374,6 +374,6 @@ install: depend build
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Tue Aug 30 07:04:16 2022
+# Finished Make data base on Tue Aug 30 15:32:13 2022
 
  
