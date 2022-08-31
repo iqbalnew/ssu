@@ -705,12 +705,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/CreateDepositoTask", runtime.WithHTTPPathPattern("/api/deposito/task"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/CreateDepositoTask", runtime.WithHTTPPathPattern("/api/deposito/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_CreateDepositoTask_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_CreateDepositoTask_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -728,12 +729,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/CreateDepositoTask", runtime.WithHTTPPathPattern("/api/deposito/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/CreateDepositoTask", runtime.WithHTTPPathPattern("/api/deposito/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_CreateDepositoTask_1(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_CreateDepositoTask_1(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -751,12 +753,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/SendForDepositoTask", runtime.WithHTTPPathPattern("/api/deposito/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/SendForDepositoTask", runtime.WithHTTPPathPattern("/api/deposito/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_SendForDepositoTask_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_SendForDepositoTask_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -774,12 +777,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoActionTask", runtime.WithHTTPPathPattern("/api/deposito/task/action"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoActionTask", runtime.WithHTTPPathPattern("/api/deposito/task/action"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_DepositoActionTask_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_DepositoActionTask_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -797,12 +801,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoListTask", runtime.WithHTTPPathPattern("/api/deposito/task"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoListTask", runtime.WithHTTPPathPattern("/api/deposito/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_DepositoListTask_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_DepositoListTask_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -820,12 +825,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/GetDepositoTaskByID", runtime.WithHTTPPathPattern("/api/deposito/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/GetDepositoTaskByID", runtime.WithHTTPPathPattern("/api/deposito/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_GetDepositoTaskByID_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_GetDepositoTaskByID_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -843,12 +849,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/GetDepositoTaskByDepositoID", runtime.WithHTTPPathPattern("/api/deposito/task/deposito/{depositoID}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/GetDepositoTaskByDepositoID", runtime.WithHTTPPathPattern("/api/deposito/task/deposito/{depositoID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_GetDepositoTaskByDepositoID_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_GetDepositoTaskByDepositoID_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -866,12 +873,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DownloadDepositoListTask", runtime.WithHTTPPathPattern("/api/deposito/task/file/{fileFormat}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DownloadDepositoListTask", runtime.WithHTTPPathPattern("/api/deposito/task/file/{fileFormat}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_DownloadDepositoListTask_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_DownloadDepositoListTask_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -889,12 +897,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/ListDeposito", runtime.WithHTTPPathPattern("/api/deposito/data"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/ListDeposito", runtime.WithHTTPPathPattern("/api/deposito/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_ListDeposito_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_ListDeposito_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -912,12 +921,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoDetail", runtime.WithHTTPPathPattern("/api/deposito/data/{depositoID}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoDetail", runtime.WithHTTPPathPattern("/api/deposito/data/{depositoID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_DepositoDetail_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_DepositoDetail_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -935,12 +945,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/CreateDeposito", runtime.WithHTTPPathPattern("/api/deposito/data"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/CreateDeposito", runtime.WithHTTPPathPattern("/api/deposito/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_CreateDeposito_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_CreateDeposito_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -958,12 +969,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositInquiryRate", runtime.WithHTTPPathPattern("/api/deposito/inquiry-rate"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositInquiryRate", runtime.WithHTTPPathPattern("/api/deposito/inquiry-rate"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_DepositInquiryRate_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_DepositInquiryRate_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -981,12 +993,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoMaintanance", runtime.WithHTTPPathPattern("/api/deposito/maintanance"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoMaintanance", runtime.WithHTTPPathPattern("/api/deposito/maintanance"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_DepositoMaintanance_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_DepositoMaintanance_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1004,12 +1017,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoCreateAccount", runtime.WithHTTPPathPattern("/api/deposito/create-account"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoCreateAccount", runtime.WithHTTPPathPattern("/api/deposito/create-account"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_DepositoCreateAccount_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_DepositoCreateAccount_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1027,12 +1041,13 @@ func RegisterDepositoServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoPlacement", runtime.WithHTTPPathPattern("/api/deposito/placement"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoPlacement", runtime.WithHTTPPathPattern("/api/deposito/placement"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DepositoService_DepositoPlacement_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DepositoService_DepositoPlacement_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1089,12 +1104,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/CreateDepositoTask", runtime.WithHTTPPathPattern("/api/deposito/task"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/CreateDepositoTask", runtime.WithHTTPPathPattern("/api/deposito/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_CreateDepositoTask_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_CreateDepositoTask_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1109,12 +1125,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/CreateDepositoTask", runtime.WithHTTPPathPattern("/api/deposito/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/CreateDepositoTask", runtime.WithHTTPPathPattern("/api/deposito/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_CreateDepositoTask_1(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_CreateDepositoTask_1(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1129,12 +1146,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/SendForDepositoTask", runtime.WithHTTPPathPattern("/api/deposito/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/SendForDepositoTask", runtime.WithHTTPPathPattern("/api/deposito/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_SendForDepositoTask_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_SendForDepositoTask_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1149,12 +1167,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoActionTask", runtime.WithHTTPPathPattern("/api/deposito/task/action"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoActionTask", runtime.WithHTTPPathPattern("/api/deposito/task/action"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_DepositoActionTask_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_DepositoActionTask_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1169,12 +1188,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoListTask", runtime.WithHTTPPathPattern("/api/deposito/task"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoListTask", runtime.WithHTTPPathPattern("/api/deposito/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_DepositoListTask_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_DepositoListTask_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1189,12 +1209,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/GetDepositoTaskByID", runtime.WithHTTPPathPattern("/api/deposito/task/{taskID}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/GetDepositoTaskByID", runtime.WithHTTPPathPattern("/api/deposito/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_GetDepositoTaskByID_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_GetDepositoTaskByID_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1209,12 +1230,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/GetDepositoTaskByDepositoID", runtime.WithHTTPPathPattern("/api/deposito/task/deposito/{depositoID}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/GetDepositoTaskByDepositoID", runtime.WithHTTPPathPattern("/api/deposito/task/deposito/{depositoID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_GetDepositoTaskByDepositoID_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_GetDepositoTaskByDepositoID_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1229,12 +1251,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DownloadDepositoListTask", runtime.WithHTTPPathPattern("/api/deposito/task/file/{fileFormat}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DownloadDepositoListTask", runtime.WithHTTPPathPattern("/api/deposito/task/file/{fileFormat}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_DownloadDepositoListTask_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_DownloadDepositoListTask_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1249,12 +1272,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/ListDeposito", runtime.WithHTTPPathPattern("/api/deposito/data"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/ListDeposito", runtime.WithHTTPPathPattern("/api/deposito/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_ListDeposito_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_ListDeposito_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1269,12 +1293,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoDetail", runtime.WithHTTPPathPattern("/api/deposito/data/{depositoID}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoDetail", runtime.WithHTTPPathPattern("/api/deposito/data/{depositoID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_DepositoDetail_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_DepositoDetail_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1289,12 +1314,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/CreateDeposito", runtime.WithHTTPPathPattern("/api/deposito/data"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/CreateDeposito", runtime.WithHTTPPathPattern("/api/deposito/data"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_CreateDeposito_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_CreateDeposito_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1309,12 +1335,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositInquiryRate", runtime.WithHTTPPathPattern("/api/deposito/inquiry-rate"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositInquiryRate", runtime.WithHTTPPathPattern("/api/deposito/inquiry-rate"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_DepositInquiryRate_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_DepositInquiryRate_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1329,12 +1356,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoMaintanance", runtime.WithHTTPPathPattern("/api/deposito/maintanance"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoMaintanance", runtime.WithHTTPPathPattern("/api/deposito/maintanance"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_DepositoMaintanance_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_DepositoMaintanance_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1349,12 +1377,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoCreateAccount", runtime.WithHTTPPathPattern("/api/deposito/create-account"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoCreateAccount", runtime.WithHTTPPathPattern("/api/deposito/create-account"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_DepositoCreateAccount_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_DepositoCreateAccount_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1369,12 +1398,13 @@ func RegisterDepositoServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoPlacement", runtime.WithHTTPPathPattern("/api/deposito/placement"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/deposito.service.v1.DepositoService/DepositoPlacement", runtime.WithHTTPPathPattern("/api/deposito/placement"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DepositoService_DepositoPlacement_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DepositoService_DepositoPlacement_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)

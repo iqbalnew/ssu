@@ -135,6 +135,7 @@ type DepositoDataWithAfterToPB interface {
 
 type DepositoORM struct {
 	AccInterestID  uint64
+	AccNo_Deposito string `gorm:"type:varchar(100)"`
 	AccPrincipalID uint64
 	AccTDID        uint64
 	Amount         string `gorm:"type:varchar(100)"`
@@ -170,6 +171,7 @@ func (m *Deposito) ToORM(ctx context.Context) (DepositoORM, error) {
 	}
 	to.DepositoID = m.DepositoID
 	to.CompanyID = m.CompanyID
+	to.AccNo_Deposito = m.AccNo_Deposito
 	to.AccTDID = m.AccTDID
 	to.AccInterestID = m.AccInterestID
 	to.AccPrincipalID = m.AccPrincipalID
@@ -212,6 +214,7 @@ func (m *DepositoORM) ToPB(ctx context.Context) (Deposito, error) {
 	}
 	to.DepositoID = m.DepositoID
 	to.CompanyID = m.CompanyID
+	to.AccNo_Deposito = m.AccNo_Deposito
 	to.AccTDID = m.AccTDID
 	to.AccInterestID = m.AccInterestID
 	to.AccPrincipalID = m.AccPrincipalID
@@ -985,6 +988,10 @@ func DefaultApplyFieldMaskDeposito(ctx context.Context, patchee *Deposito, patch
 		}
 		if f == prefix+"CompanyID" {
 			patchee.CompanyID = patcher.CompanyID
+			continue
+		}
+		if f == prefix+"AccNo_Deposito" {
+			patchee.AccNo_Deposito = patcher.AccNo_Deposito
 			continue
 		}
 		if f == prefix+"AccTDID" {
