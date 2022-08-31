@@ -59,12 +59,41 @@ func (this *TaskData) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Company", err)
 		}
 	}
+	if this.Account != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Account); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Account", err)
+		}
+	}
+	return nil
+}
+func (this *Account) Validate() error {
+	return nil
+}
+func (this *Accounts) Validate() error {
+	if this.AccTD != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.AccTD); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("AccTD", err)
+		}
+	}
+	if this.AccPrincipal != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.AccPrincipal); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("AccPrincipal", err)
+		}
+	}
+	if this.AccInterest != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.AccInterest); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("AccInterest", err)
+		}
+	}
 	return nil
 }
 func (this *Company) Validate() error {
 	return nil
 }
-func (this *CreateDepositoTaskResponse) Validate() error {
+func (this *TaskActionRequest) Validate() error {
+	return nil
+}
+func (this *TaskActionResponse) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
@@ -72,10 +101,7 @@ func (this *CreateDepositoTaskResponse) Validate() error {
 	}
 	return nil
 }
-func (this *TaskActionRequest) Validate() error {
-	return nil
-}
-func (this *TaskActionResponse) Validate() error {
+func (this *CreateDepositoTaskResponse) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
@@ -115,7 +141,7 @@ func (this *GetDepositoTaskByIDResponse) Validate() error {
 	}
 	return nil
 }
-func (this *DataListRequest) Validate() error {
+func (this *DepositoDataListRequest) Validate() error {
 	if this.Filter != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
@@ -123,10 +149,23 @@ func (this *DataListRequest) Validate() error {
 	}
 	return nil
 }
-func (this *DataListRequest_DataListFilter) Validate() error {
+func (this *DepositoDataListRequest_DataListFilter) Validate() error {
 	return nil
 }
-func (this *DataListResponse) Validate() error {
+func (this *DepositoDataks) Validate() error {
+	if this.Deposito != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Deposito); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Deposito", err)
+		}
+	}
+	if this.Accounts != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Accounts); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Accounts", err)
+		}
+	}
+	return nil
+}
+func (this *DepositoDataListResponse) Validate() error {
 	for _, item := range this.Data {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
@@ -141,10 +180,10 @@ func (this *DataListResponse) Validate() error {
 	}
 	return nil
 }
-func (this *DataDetailRequest) Validate() error {
+func (this *DepositoDataDetailRequest) Validate() error {
 	return nil
 }
-func (this *DataDetailResponse) Validate() error {
+func (this *DepositoDataDetailResponse) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)

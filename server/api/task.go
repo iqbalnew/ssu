@@ -1050,7 +1050,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"BG Issuing", "Transfer:InternalSingle", "Transfer:InternalMultiple"}
+	skipProduct := []string{"BG Issuing", "Transfer:InternalSingle", "Transfer:InternalMultiple", "Deposito"}
 
 	logrus.Print(taskType)
 
@@ -2197,6 +2197,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Reasons:            task.Reasons,
 				Comment:            task.Comment,
 			}
+			logrus.Println("[Test approval Deposito]")
 
 			res, err := depositoClient.CreateDeposito(ctx, data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
