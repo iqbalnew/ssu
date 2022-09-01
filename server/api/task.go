@@ -1050,7 +1050,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"BG Issuing", "Transfer:InternalSingle", "Transfer:InternalMultiple", "Deposito"}
+	skipProduct := []string{"BG Issuing", "Internal Fund Transfer", "Internal Fund Transfer", "Deposito"}
 
 	logrus.Print(taskType)
 
@@ -2884,7 +2884,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 			}
 
-		case "Transfer:InternalSingle":
+		case "Internal Fund Transfer":
 
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
