@@ -1050,17 +1050,18 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"SSO:User", "SSO:Company", "SSO:Client", "Menu:Appearance", "Menu:License", "Cash Pooling", "Liquidity", "Beneficiary Account", "BG Mapping", "BG Mapping Digital", "BG Issuing", "Deposito", "Transfer:InternalSingle", "Transfer:InternalMultiple"}
+	checkProduct := []string{}
 
 	logrus.Print(taskType)
 
-	for _, v := range skipProduct {
-		if v == taskType {
+	for _, v := range checkProduct {
+		if v != taskType {
 			return true
 		}
 	}
 
 	productName := strings.Replace(taskType, ":", "_", -1)
+	productName = strings.Replace(taskType, " ", "_", -1)
 	productName = strings.ToLower(productName)
 	productName = fmt.Sprintf("user-product-%s", productName)
 
@@ -1075,9 +1076,11 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	// 		break
 	// 	}
 	// }
-
+	logrus.Print(md)
+	logrus.Print(productName)
 	if len(md[productName]) > 0 {
 		result := strings.Split(md[productName][0], ",")
+		logrus.Print("result md %s", result)
 		if len(result) > 0 {
 			authorities = result
 		}
@@ -1589,7 +1592,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					// function for delete other service coresponding with company here
 					if task.Type == "Company" {
 						// send notif with delete company event
-						_ = SendNotification(ctx, task, "Delete request gets approval")
+						// SendNotification(ctx, task, "Delete request gets approval")
 						err := s.DeleteCompany(originalCtx, task.Data)
 						if err != nil {
 							logrus.Errorln("Failed to delete company: %v", err)
@@ -2154,7 +2157,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 				logrus.Printf("[Delete Company] data : %v", res)
 				// send notif with delete company event
-				_ = SendNotification(ctx, task, "Delete request gets approval")
+				// SendNotification(ctx, task, "Delete request gets approval")
 			} else {
 				res, err := companyClient.CreateCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
@@ -2162,7 +2165,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 				logrus.Println(res)
 				// send notif with create company event
-				_ = SendNotification(ctx, task, "Group data created and/or sent for approval")
+				// SendNotification(ctx, task, "Group data created and/or sent for approval")
 			}
 
 		case "Deposito":
@@ -2194,6 +2197,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Reasons:            task.Reasons,
 				Comment:            task.Comment,
 			}
+			logrus.Println("[Test approval Deposito]")
 
 			res, err := depositoClient.CreateDeposito(ctx, data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
@@ -2880,7 +2884,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 			}
 
-		case "Transfer:InternalSingle":
+		case "Internal Fund Transfer":
 
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
@@ -2936,6 +2940,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			logrus.Errorln("Error SaveActivityLog: ", err)
 		}
 	}
+
+	go TaskNotification(ctx, task, req.Action, sendTask)
 
 	return result, nil
 }

@@ -64,10 +64,12 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 		if task.Status != pb.Statuses_Pending {
 			// logrus.Println("[api][SaveTaskWithWorkflow] task status is not pending, set to pending")
 			// process to pending
-			isSave = true
 			task.Status = pb.Statuses_Pending
 		}
+		isSave = true
 	}
+
+	logrus.Println("task ===> ", task)
 
 	result := &pb.SaveTaskResponse{
 		Success: true,
