@@ -2943,7 +2943,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 	}
 
-	go TaskNotification(ctx, task, req.Action, sendTask)
+	go TaskNotification(ctx, task, req.Action, sendTask, currentStatus, currentStep)
 
 	return result, nil
 }
