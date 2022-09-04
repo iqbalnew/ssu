@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/common/constant"
 	"context"
 	"strings"
 
@@ -42,4 +43,55 @@ func TaskNotification(ctx context.Context, task *pb.TaskORM, action string, send
 	}
 
 	SendNotification(ctx, task, eventName)
+}
+
+// TaskNotificationCreateOrUpdate is function to send notification when task created or updated
+func TaskNotificationCreateOrUpdate(ctx context.Context, task *pb.TaskORM, action string, currentStatus, currentStep int32) {
+	eventName := ""
+	switch action {
+	case constant.Create:
+		// module company
+		if task.Type == constant.ModuleCompany {
+			eventName = constant.CreateCompanySentApproval
+		}
+
+		// module user
+		if task.Type == constant.ModuleUser {
+			eventName = constant.CreateUserSentApproval
+		}
+
+		// module role
+		if task.Type == constant.ModuleRole {
+			eventName = constant.CreateRoleSentApproval
+		}
+
+		// module beneficiary account
+		if task.Type == constant.ModuleBeneficiaryAccount {
+			eventName = constant.CreateBeneficiaryAccountSentApproval
+		}
+	case constant.Update:
+		// module company
+		if task.Type == constant.ModuleCompany {
+			eventName = constant.UpdateCompanySentApproval
+		}
+
+		// module user
+		if task.Type == constant.ModuleUser {
+			eventName = constant.UpdateUserSentApproval
+		}
+
+		// module role
+		if task.Type == constant.ModuleRole {
+			eventName = constant.UpdateRoleSentApproval
+		}
+
+		// module beneficiary account
+		if task.Type == constant.ModuleBeneficiaryAccount {
+			eventName = constant.UpdateBeneficiaryAccountSentApproval
+		}
+	}
+
+	if eventName != "" {
+		SendNotification(ctx, task, eventName)
+	}
 }

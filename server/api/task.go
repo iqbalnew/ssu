@@ -955,6 +955,8 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		logrus.Println("SaveTaskWithData =================> 8")
 	}
 
+	go TaskNotificationCreateOrUpdate(ctx, &task, command, task.Step, task.Status)
+
 	return res, nil
 }
 
