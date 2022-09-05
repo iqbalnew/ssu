@@ -2751,21 +2751,33 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				data.Data.BillingStatus = "Waiting Schedule"
 			}
 
-			res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
-			}
-			logrus.Println(res)
+			if task.Status == 7 {
+				// deleteReq := data.
 
-			// update task billing status
-			dataUpdate, err := json.Marshal(data.Data)
-			if err != nil {
-				logrus.Errorln("Failed to marshal data: %v", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
+				res, err := abonnementClient.DeleteAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
+				logrus.Printf("[Delete Abonnement] data : %v", res)
+			} else {
+
+				res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
+
+				// update task billing status
+				dataUpdate, err := json.Marshal(data.Data)
+				if err != nil {
+					logrus.Errorln("Failed to marshal data: %v", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				task.Data = string(dataUpdate)
+				task.FeatureID = res.Data.Id
+				reUpdate = true
 			}
-			task.Data = string(dataUpdate)
-			task.FeatureID = res.Data.Id
-			reUpdate = true
 
 		case "Beneficiary Account":
 
