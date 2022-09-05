@@ -98,6 +98,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	}
 
 	req.TaskType = strings.Replace(req.TaskType, ":", "_", -1)
+	req.TaskType = strings.Replace(req.TaskType, " ", "_", -1)
 	req.TaskType = strings.ToLower(req.TaskType)
 
 	query := bson.M{

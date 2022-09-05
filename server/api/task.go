@@ -1050,18 +1050,18 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"BG Issuing", "Transfer:InternalSingle", "Transfer:InternalMultiple", "Deposito"}
+	checkProduct := []string{}
 
 	logrus.Print(taskType)
 
-	for _, v := range skipProduct {
-		if v == taskType {
+	for _, v := range checkProduct {
+		if v != taskType {
 			return true
 		}
 	}
 
 	productName := strings.Replace(taskType, ":", "_", -1)
-	productName = strings.Replace(taskType, " ", "_", -1)
+	productName = strings.Replace(productName, " ", "_", -1)
 	productName = strings.ToLower(productName)
 	productName = fmt.Sprintf("user-product-%s", productName)
 
@@ -1076,8 +1076,8 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	// 		break
 	// 	}
 	// }
-	logrus.Print(md)
-	logrus.Print(productName)
+	// logrus.Println("MD +==============>", md)
+	// logrus.Println("Product +===============>", productName)
 	if len(md[productName]) > 0 {
 		result := strings.Split(md[productName][0], ",")
 		logrus.Print("result md %s", result)
@@ -2751,21 +2751,33 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				data.Data.BillingStatus = "Waiting Schedule"
 			}
 
-			res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
-			}
-			logrus.Println(res)
+			if task.Status == 7 {
+				logrus.Println("[Delete Subscription] data : %v", &data)
 
-			// update task billing status
-			dataUpdate, err := json.Marshal(data.Data)
-			if err != nil {
-				logrus.Errorln("Failed to marshal data: %v", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
+				res, err := abonnementClient.DeleteAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
+				logrus.Printf("[Delete Subscription] data : %v", res)
+			} else {
+
+				res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
+
+				// update task billing status
+				dataUpdate, err := json.Marshal(data.Data)
+				if err != nil {
+					logrus.Errorln("Failed to marshal data: %v", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				task.Data = string(dataUpdate)
+				task.FeatureID = res.Data.Id
+				reUpdate = true
 			}
-			task.Data = string(dataUpdate)
-			task.FeatureID = res.Data.Id
-			reUpdate = true
 
 		case "Beneficiary Account":
 
@@ -2884,7 +2896,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 			}
 
-		case "Transfer:InternalSingle":
+		case "Internal Fund Transfer":
 
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())

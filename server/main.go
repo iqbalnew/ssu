@@ -86,11 +86,11 @@ func grpcServerCmd() cli.Command {
 			}
 			authManager := manager.NewJWTManager(secret, tokenDuration)
 
-			var logger *addonsLogger.Logger
+			var logger *addonsLogger.Logger = nil
 			if getEnv("ENV", "LOCAL") != "LOCAL" {
-				logrus.Println("[stating utility] Connecting to Fluentd ")
-				logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
-				defer logger.Close()
+				// logrus.Println("[stating utility] Connecting to Fluentd ")
+				// logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
+				// defer logger.Close()
 			}
 
 			go func() {

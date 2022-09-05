@@ -84,7 +84,7 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 	case "BG Mapping Digital":
 		_, key, err = TaskDataBGMappingDigitalToPB(task.Data)
 
-	case "Transfer:InternalSingle":
+	case "Internal Fund Transfer":
 		_, key, err = TaskDataInternalSingleToPB(task.Data)
 
 	}

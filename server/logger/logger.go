@@ -65,7 +65,7 @@ func (l *Logger) Error(function string, text string) {
 		"function": function,
 		"error":    text,
 	}
-	if getEnv("ENV", "DEV") != "LOCAL" {
+	if l.fluent != nil {
 		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
@@ -81,7 +81,7 @@ func (l *Logger) ErrorWithData(text string, x interface{}) {
 		"error": text,
 		"data":  x,
 	}
-	if getEnv("ENV", "DEV") != "LOCAL" {
+	if l.fluent != nil {
 		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
@@ -97,7 +97,7 @@ func (l *Logger) Info(text string) {
 		"info":      text,
 		"timestamp": time.Now().String(),
 	}
-	if getEnv("ENV", "DEV") != "LOCAL" {
+	if l.fluent != nil {
 		now := time.Now()
 		logrus.Println("Logger send: ", data)
 		err := l.fluent.PostWithTime(l.tag, now, data)
@@ -116,7 +116,7 @@ func (l *Logger) InfoWithData(text string, x interface{}) {
 		"data":  x,
 	}
 	logrus.Println("HttpLog logger ver", data)
-	if getEnv("ENV", "DEV") != "LOCAL" {
+	if l.fluent != nil {
 		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
@@ -138,7 +138,7 @@ func (l *Logger) InfoWithDataMap(text string, x map[string]interface{}) {
 		data[k] = v
 	}
 
-	if getEnv("ENV", "DEV") != "LOCAL" {
+	if l.fluent != nil {
 		err := l.fluent.PostWithTime(l.tag, now, data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
@@ -156,7 +156,7 @@ func (l *Logger) InfoUser(text string, userID string, companyID string, action s
 		"companyID": companyID,
 		"action":    action,
 	}
-	if getEnv("ENV", "DEV") != "LOCAL" {
+	if l.fluent != nil {
 		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
@@ -181,7 +181,7 @@ func (l *Logger) InfoUserWithData(text string, user UserData, x interface{}, log
 		"user":  user,
 		"data":  x,
 	}
-	if getEnv("ENV", "DEV") != "LOCAL" {
+	if l.fluent != nil {
 		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
@@ -199,7 +199,7 @@ func (l *Logger) ErrorUserWithData(text string, user UserData, x interface{}, lo
 		"user":  user,
 		"data":  x,
 	}
-	if getEnv("ENV", "DEV") != "LOCAL" {
+	if l.fluent != nil {
 		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
@@ -214,7 +214,7 @@ func (l *Logger) Debug(text string) {
 		"level": "debug",
 		"debug": text,
 	}
-	if getEnv("ENV", "DEV") != "LOCAL" {
+	if l.fluent != nil {
 		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
@@ -230,7 +230,7 @@ func (l *Logger) DebugWithData(text string, x interface{}) {
 		"debug": text,
 		"data":  x,
 	}
-	if getEnv("ENV", "DEV") != "LOCAL" {
+	if l.fluent != nil {
 		err := l.fluent.PostWithTime(l.tag, time.Now(), data)
 		if err != nil {
 			logrus.Errorln("Error on Send Log to Fluentd: ", err)
