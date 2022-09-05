@@ -2759,7 +2759,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, err
 				}
 				logrus.Println(res)
-				logrus.Printf("[Delete Abonnement] data : %v", res)
+				logrus.Printf("[Delete Subscription] data : %v", res)
 			} else {
 
 				res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
