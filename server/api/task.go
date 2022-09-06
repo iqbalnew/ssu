@@ -2746,7 +2746,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data := abonnement_pb.CreateAbonnementRequest{}
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
-			data.Data.Id = task.FeatureID
 			if len(data.Data.BillingStatus) < 1 {
 				data.Data.BillingStatus = "Waiting Schedule"
 			}
@@ -2769,6 +2768,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				logrus.Println(res)
 
 				// update task billing status
+				data.Data.Id = res.Data.Id
 				dataUpdate, err := json.Marshal(data.Data)
 				if err != nil {
 					logrus.Errorln("Failed to marshal data: %v", err)
