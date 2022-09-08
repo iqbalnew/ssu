@@ -71,7 +71,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 	}
 
 	selectOpt := `workflow_doc->'workflow'->>'currentStep' as name, "type", count(*) as total`
-	query := p.db_main.Model(&pb.TaskORM{}).Select(selectOpt)
+	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := fmt.Sprintf("workflow_doc != '{}' AND status = '%d'", stat)
 	if service != "" {
 		whereOpt = fmt.Sprintf("%s AND type = '%v'", whereOpt, service)
