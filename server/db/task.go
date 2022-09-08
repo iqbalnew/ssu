@@ -77,7 +77,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 		whereOpt = fmt.Sprintf("%s AND type = '%v'", whereOpt, service)
 	}
 
-	whereOpt = fmt.Sprintf("%s TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%v", whereOpt, roleids)
+	whereOpt = fmt.Sprintf("%s AND TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%v", whereOpt, roleids)
 
 	if whereOpt != "" {
 		query = query.Where(whereOpt)
