@@ -327,11 +327,17 @@ message GetMyPendingTaskWithWorkflowGraphRequest {
         }];
 }
 
+message GraphStepWorkflow {
+    string step = 1;
+    string type = 2;
+    uint64 total = 3;
+}
+
 message GetMyPendingTaskWithWorkflowGraphResponse {
     bool error = 1;
     uint32 code = 2;
     string message = 3;
-    repeated GraphStep data = 4;
+    repeated GraphStepWorkflow data = 4;
 }
 
 message AssignaTypeIDRequest{

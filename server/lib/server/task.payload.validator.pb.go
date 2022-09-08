@@ -226,6 +226,9 @@ func (this *GraphStepResponse) Validate() error {
 func (this *GetMyPendingTaskWithWorkflowGraphRequest) Validate() error {
 	return nil
 }
+func (this *GraphStepWorkflow) Validate() error {
+	return nil
+}
 func (this *GetMyPendingTaskWithWorkflowGraphResponse) Validate() error {
 	for _, item := range this.Data {
 		if item != nil {

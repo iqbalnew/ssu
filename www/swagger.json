@@ -1260,7 +1260,7 @@
         "data": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/v1GraphStep"
+            "$ref": "#/definitions/v1GraphStepWorkflow"
           }
         }
       }
@@ -1392,6 +1392,21 @@
           "items": {
             "$ref": "#/definitions/v1GraphStep"
           }
+        }
+      }
+    },
+    "v1GraphStepWorkflow": {
+      "type": "object",
+      "properties": {
+        "step": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "total": {
+          "type": "string",
+          "format": "uint64"
         }
       }
     },

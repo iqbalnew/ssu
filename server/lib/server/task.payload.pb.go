@@ -2623,21 +2623,84 @@ func (x *GetMyPendingTaskWithWorkflowGraphRequest) GetService() string {
 	return ""
 }
 
+type GraphStepWorkflow struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Step  string `protobuf:"bytes,1,opt,name=step,proto3" json:"step,omitempty"`
+	Type  string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	Total uint64 `protobuf:"varint,3,opt,name=total,proto3" json:"total,omitempty"`
+}
+
+func (x *GraphStepWorkflow) Reset() {
+	*x = GraphStepWorkflow{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_task_payload_proto_msgTypes[36]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GraphStepWorkflow) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GraphStepWorkflow) ProtoMessage() {}
+
+func (x *GraphStepWorkflow) ProtoReflect() protoreflect.Message {
+	mi := &file_task_payload_proto_msgTypes[36]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GraphStepWorkflow.ProtoReflect.Descriptor instead.
+func (*GraphStepWorkflow) Descriptor() ([]byte, []int) {
+	return file_task_payload_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *GraphStepWorkflow) GetStep() string {
+	if x != nil {
+		return x.Step
+	}
+	return ""
+}
+
+func (x *GraphStepWorkflow) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *GraphStepWorkflow) GetTotal() uint64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
 type GetMyPendingTaskWithWorkflowGraphResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Error   bool         `protobuf:"varint,1,opt,name=error,proto3" json:"error,omitempty"`
-	Code    uint32       `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
-	Message string       `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
-	Data    []*GraphStep `protobuf:"bytes,4,rep,name=data,proto3" json:"data,omitempty"`
+	Error   bool                 `protobuf:"varint,1,opt,name=error,proto3" json:"error,omitempty"`
+	Code    uint32               `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
+	Message string               `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Data    []*GraphStepWorkflow `protobuf:"bytes,4,rep,name=data,proto3" json:"data,omitempty"`
 }
 
 func (x *GetMyPendingTaskWithWorkflowGraphResponse) Reset() {
 	*x = GetMyPendingTaskWithWorkflowGraphResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[36]
+		mi := &file_task_payload_proto_msgTypes[37]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2650,7 +2713,7 @@ func (x *GetMyPendingTaskWithWorkflowGraphResponse) String() string {
 func (*GetMyPendingTaskWithWorkflowGraphResponse) ProtoMessage() {}
 
 func (x *GetMyPendingTaskWithWorkflowGraphResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[36]
+	mi := &file_task_payload_proto_msgTypes[37]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2663,7 +2726,7 @@ func (x *GetMyPendingTaskWithWorkflowGraphResponse) ProtoReflect() protoreflect.
 
 // Deprecated: Use GetMyPendingTaskWithWorkflowGraphResponse.ProtoReflect.Descriptor instead.
 func (*GetMyPendingTaskWithWorkflowGraphResponse) Descriptor() ([]byte, []int) {
-	return file_task_payload_proto_rawDescGZIP(), []int{36}
+	return file_task_payload_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *GetMyPendingTaskWithWorkflowGraphResponse) GetError() bool {
@@ -2687,7 +2750,7 @@ func (x *GetMyPendingTaskWithWorkflowGraphResponse) GetMessage() string {
 	return ""
 }
 
-func (x *GetMyPendingTaskWithWorkflowGraphResponse) GetData() []*GraphStep {
+func (x *GetMyPendingTaskWithWorkflowGraphResponse) GetData() []*GraphStepWorkflow {
 	if x != nil {
 		return x.Data
 	}
@@ -2707,7 +2770,7 @@ type AssignaTypeIDRequest struct {
 func (x *AssignaTypeIDRequest) Reset() {
 	*x = AssignaTypeIDRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[37]
+		mi := &file_task_payload_proto_msgTypes[38]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2720,7 +2783,7 @@ func (x *AssignaTypeIDRequest) String() string {
 func (*AssignaTypeIDRequest) ProtoMessage() {}
 
 func (x *AssignaTypeIDRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[37]
+	mi := &file_task_payload_proto_msgTypes[38]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2733,7 +2796,7 @@ func (x *AssignaTypeIDRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssignaTypeIDRequest.ProtoReflect.Descriptor instead.
 func (*AssignaTypeIDRequest) Descriptor() ([]byte, []int) {
-	return file_task_payload_proto_rawDescGZIP(), []int{37}
+	return file_task_payload_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *AssignaTypeIDRequest) GetTaskID() uint64 {
@@ -2770,7 +2833,7 @@ type AssignaTypeIDResponse struct {
 func (x *AssignaTypeIDResponse) Reset() {
 	*x = AssignaTypeIDResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[38]
+		mi := &file_task_payload_proto_msgTypes[39]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2783,7 +2846,7 @@ func (x *AssignaTypeIDResponse) String() string {
 func (*AssignaTypeIDResponse) ProtoMessage() {}
 
 func (x *AssignaTypeIDResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[38]
+	mi := &file_task_payload_proto_msgTypes[39]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2796,7 +2859,7 @@ func (x *AssignaTypeIDResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssignaTypeIDResponse.ProtoReflect.Descriptor instead.
 func (*AssignaTypeIDResponse) Descriptor() ([]byte, []int) {
-	return file_task_payload_proto_rawDescGZIP(), []int{38}
+	return file_task_payload_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *AssignaTypeIDResponse) GetError() bool {
@@ -2832,7 +2895,7 @@ type GetTaskByTypeIDReq struct {
 func (x *GetTaskByTypeIDReq) Reset() {
 	*x = GetTaskByTypeIDReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[39]
+		mi := &file_task_payload_proto_msgTypes[40]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2845,7 +2908,7 @@ func (x *GetTaskByTypeIDReq) String() string {
 func (*GetTaskByTypeIDReq) ProtoMessage() {}
 
 func (x *GetTaskByTypeIDReq) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[39]
+	mi := &file_task_payload_proto_msgTypes[40]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2858,7 +2921,7 @@ func (x *GetTaskByTypeIDReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTaskByTypeIDReq.ProtoReflect.Descriptor instead.
 func (*GetTaskByTypeIDReq) Descriptor() ([]byte, []int) {
-	return file_task_payload_proto_rawDescGZIP(), []int{39}
+	return file_task_payload_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *GetTaskByTypeIDReq) GetType() string {
@@ -2887,7 +2950,7 @@ type GetTaskByTypeIDRes struct {
 func (x *GetTaskByTypeIDRes) Reset() {
 	*x = GetTaskByTypeIDRes{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[40]
+		mi := &file_task_payload_proto_msgTypes[41]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2900,7 +2963,7 @@ func (x *GetTaskByTypeIDRes) String() string {
 func (*GetTaskByTypeIDRes) ProtoMessage() {}
 
 func (x *GetTaskByTypeIDRes) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[40]
+	mi := &file_task_payload_proto_msgTypes[41]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2913,7 +2976,7 @@ func (x *GetTaskByTypeIDRes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTaskByTypeIDRes.ProtoReflect.Descriptor instead.
 func (*GetTaskByTypeIDRes) Descriptor() ([]byte, []int) {
-	return file_task_payload_proto_rawDescGZIP(), []int{40}
+	return file_task_payload_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *GetTaskByTypeIDRes) GetFound() bool {
@@ -2942,7 +3005,7 @@ type RejectBySystemReq struct {
 func (x *RejectBySystemReq) Reset() {
 	*x = RejectBySystemReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[41]
+		mi := &file_task_payload_proto_msgTypes[42]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2955,7 +3018,7 @@ func (x *RejectBySystemReq) String() string {
 func (*RejectBySystemReq) ProtoMessage() {}
 
 func (x *RejectBySystemReq) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[41]
+	mi := &file_task_payload_proto_msgTypes[42]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2968,7 +3031,7 @@ func (x *RejectBySystemReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RejectBySystemReq.ProtoReflect.Descriptor instead.
 func (*RejectBySystemReq) Descriptor() ([]byte, []int) {
-	return file_task_payload_proto_rawDescGZIP(), []int{41}
+	return file_task_payload_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *RejectBySystemReq) GetTaskID() uint64 {
@@ -2997,7 +3060,7 @@ type RejectBySystemRes struct {
 func (x *RejectBySystemRes) Reset() {
 	*x = RejectBySystemRes{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[42]
+		mi := &file_task_payload_proto_msgTypes[43]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3010,7 +3073,7 @@ func (x *RejectBySystemRes) String() string {
 func (*RejectBySystemRes) ProtoMessage() {}
 
 func (x *RejectBySystemRes) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[42]
+	mi := &file_task_payload_proto_msgTypes[43]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3023,7 +3086,7 @@ func (x *RejectBySystemRes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RejectBySystemRes.ProtoReflect.Descriptor instead.
 func (*RejectBySystemRes) Descriptor() ([]byte, []int) {
-	return file_task_payload_proto_rawDescGZIP(), []int{42}
+	return file_task_payload_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *RejectBySystemRes) GetSuccess() bool {
@@ -3052,7 +3115,7 @@ type GetTaskByIDReq struct {
 func (x *GetTaskByIDReq) Reset() {
 	*x = GetTaskByIDReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[43]
+		mi := &file_task_payload_proto_msgTypes[44]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3065,7 +3128,7 @@ func (x *GetTaskByIDReq) String() string {
 func (*GetTaskByIDReq) ProtoMessage() {}
 
 func (x *GetTaskByIDReq) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[43]
+	mi := &file_task_payload_proto_msgTypes[44]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3078,7 +3141,7 @@ func (x *GetTaskByIDReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTaskByIDReq.ProtoReflect.Descriptor instead.
 func (*GetTaskByIDReq) Descriptor() ([]byte, []int) {
-	return file_task_payload_proto_rawDescGZIP(), []int{43}
+	return file_task_payload_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *GetTaskByIDReq) GetType() string {
@@ -3107,7 +3170,7 @@ type GetTaskByIDRes struct {
 func (x *GetTaskByIDRes) Reset() {
 	*x = GetTaskByIDRes{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[44]
+		mi := &file_task_payload_proto_msgTypes[45]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3120,7 +3183,7 @@ func (x *GetTaskByIDRes) String() string {
 func (*GetTaskByIDRes) ProtoMessage() {}
 
 func (x *GetTaskByIDRes) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[44]
+	mi := &file_task_payload_proto_msgTypes[45]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3133,7 +3196,7 @@ func (x *GetTaskByIDRes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTaskByIDRes.ProtoReflect.Descriptor instead.
 func (*GetTaskByIDRes) Descriptor() ([]byte, []int) {
-	return file_task_payload_proto_rawDescGZIP(), []int{44}
+	return file_task_payload_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *GetTaskByIDRes) GetFound() bool {
@@ -3163,7 +3226,7 @@ type UpdateTaskDataReq struct {
 func (x *UpdateTaskDataReq) Reset() {
 	*x = UpdateTaskDataReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[45]
+		mi := &file_task_payload_proto_msgTypes[46]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3176,7 +3239,7 @@ func (x *UpdateTaskDataReq) String() string {
 func (*UpdateTaskDataReq) ProtoMessage() {}
 
 func (x *UpdateTaskDataReq) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[45]
+	mi := &file_task_payload_proto_msgTypes[46]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3189,7 +3252,7 @@ func (x *UpdateTaskDataReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTaskDataReq.ProtoReflect.Descriptor instead.
 func (*UpdateTaskDataReq) Descriptor() ([]byte, []int) {
-	return file_task_payload_proto_rawDescGZIP(), []int{45}
+	return file_task_payload_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *UpdateTaskDataReq) GetType() string {
@@ -3224,7 +3287,7 @@ type UpdateTaskDataRes struct {
 func (x *UpdateTaskDataRes) Reset() {
 	*x = UpdateTaskDataRes{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[46]
+		mi := &file_task_payload_proto_msgTypes[47]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3237,7 +3300,7 @@ func (x *UpdateTaskDataRes) String() string {
 func (*UpdateTaskDataRes) ProtoMessage() {}
 
 func (x *UpdateTaskDataRes) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[46]
+	mi := &file_task_payload_proto_msgTypes[47]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3250,7 +3313,7 @@ func (x *UpdateTaskDataRes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTaskDataRes.ProtoReflect.Descriptor instead.
 func (*UpdateTaskDataRes) Descriptor() ([]byte, []int) {
-	return file_task_payload_proto_rawDescGZIP(), []int{46}
+	return file_task_payload_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *UpdateTaskDataRes) GetSuccess() bool {
@@ -3275,7 +3338,7 @@ type GetActivityLogsRes_ActivityLogPagination struct {
 func (x *GetActivityLogsRes_ActivityLogPagination) Reset() {
 	*x = GetActivityLogsRes_ActivityLogPagination{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[47]
+		mi := &file_task_payload_proto_msgTypes[48]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3288,7 +3351,7 @@ func (x *GetActivityLogsRes_ActivityLogPagination) String() string {
 func (*GetActivityLogsRes_ActivityLogPagination) ProtoMessage() {}
 
 func (x *GetActivityLogsRes_ActivityLogPagination) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[47]
+	mi := &file_task_payload_proto_msgTypes[48]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3834,66 +3897,72 @@ var file_task_payload_proto_rawDesc = []byte{
 	0x65, 0x6d, 0x65, 0x6e, 0x74, 0x27, 0x2c, 0x20, 0x27, 0x43, 0x6f, 0x6d, 0x70, 0x61, 0x6e, 0x79,
 	0x27, 0x2c, 0x20, 0x27, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x27, 0x2c, 0x20, 0x27, 0x4e,
 	0x6f, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x27, 0x52, 0x07, 0x73, 0x65,
-	0x72, 0x76, 0x69, 0x63, 0x65, 0x22, 0x9f, 0x01, 0x0a, 0x29, 0x47, 0x65, 0x74, 0x4d, 0x79, 0x50,
-	0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x54, 0x61, 0x73, 0x6b, 0x57, 0x69, 0x74, 0x68, 0x57, 0x6f,
-	0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x47, 0x72, 0x61, 0x70, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x08, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64,
-	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x18, 0x0a,
-	0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x2e, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18,
-	0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72,
-	0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x53, 0x74, 0x65,
-	0x70, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x60, 0x0a, 0x14, 0x41, 0x73, 0x73, 0x69, 0x67,
-	0x6e, 0x61, 0x54, 0x79, 0x70, 0x65, 0x49, 0x44, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
-	0x16, 0x0a, 0x06, 0x74, 0x61, 0x73, 0x6b, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x06, 0x74, 0x61, 0x73, 0x6b, 0x49, 0x44, 0x12, 0x1c, 0x0a, 0x09, 0x66, 0x65, 0x61, 0x74, 0x75,
-	0x72, 0x65, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x66, 0x65, 0x61, 0x74,
-	0x75, 0x72, 0x65, 0x49, 0x44, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x22, 0x5b, 0x0a, 0x15, 0x41, 0x73, 0x73,
-	0x69, 0x67, 0x6e, 0x61, 0x54, 0x79, 0x70, 0x65, 0x49, 0x44, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x08, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x18, 0x0a, 0x07,
-	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x38, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x54, 0x61, 0x73,
-	0x6b, 0x42, 0x79, 0x54, 0x79, 0x70, 0x65, 0x49, 0x44, 0x52, 0x65, 0x71, 0x12, 0x12, 0x0a, 0x04,
-	0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65,
-	0x12, 0x0e, 0x0a, 0x02, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x49, 0x44,
-	0x22, 0x55, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x54, 0x61, 0x73, 0x6b, 0x42, 0x79, 0x54, 0x79, 0x70,
-	0x65, 0x49, 0x44, 0x52, 0x65, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x66, 0x6f, 0x75, 0x6e, 0x64, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x66, 0x6f, 0x75, 0x6e, 0x64, 0x12, 0x29, 0x0a, 0x04,
-	0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x74, 0x61, 0x73,
-	0x6b, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x61, 0x73,
-	0x6b, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x5e, 0x0a, 0x11, 0x52, 0x65, 0x6a, 0x65, 0x63,
-	0x74, 0x42, 0x79, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x52, 0x65, 0x71, 0x12, 0x16, 0x0a, 0x06,
-	0x74, 0x61, 0x73, 0x6b, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x74, 0x61,
-	0x73, 0x6b, 0x49, 0x44, 0x12, 0x31, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x0e, 0x32, 0x19, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72, 0x76,
-	0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x65, 0x73, 0x52,
-	0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x22, 0x41, 0x0a, 0x11, 0x52, 0x65, 0x6a, 0x65, 0x63,
-	0x74, 0x42, 0x79, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x52, 0x65, 0x73, 0x12, 0x18, 0x0a, 0x07,
-	0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73,
-	0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x22, 0x34, 0x0a, 0x0e, 0x47, 0x65,
-	0x74, 0x54, 0x61, 0x73, 0x6b, 0x42, 0x79, 0x49, 0x44, 0x52, 0x65, 0x71, 0x12, 0x12, 0x0a, 0x04,
-	0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65,
-	0x12, 0x0e, 0x0a, 0x02, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x49, 0x44,
-	0x22, 0x51, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x54, 0x61, 0x73, 0x6b, 0x42, 0x79, 0x49, 0x44, 0x52,
-	0x65, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x66, 0x6f, 0x75, 0x6e, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x08, 0x52, 0x05, 0x66, 0x6f, 0x75, 0x6e, 0x64, 0x12, 0x29, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65,
-	0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x04, 0x64,
-	0x61, 0x74, 0x61, 0x22, 0x53, 0x0a, 0x11, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x54, 0x61, 0x73,
-	0x6b, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x71, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x16, 0x0a, 0x06,
-	0x74, 0x61, 0x73, 0x6b, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x74, 0x61,
-	0x73, 0x6b, 0x49, 0x44, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x2d, 0x0a, 0x11, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x54, 0x61, 0x73, 0x6b, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x12, 0x18, 0x0a,
-	0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07,
-	0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x76, 0x69, 0x63, 0x65, 0x22, 0x51, 0x0a, 0x11, 0x47, 0x72, 0x61, 0x70, 0x68, 0x53, 0x74,
+	0x65, 0x70, 0x57, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x12, 0x12, 0x0a, 0x04, 0x73, 0x74,
+	0x65, 0x70, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x73, 0x74, 0x65, 0x70, 0x12, 0x12,
+	0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79,
+	0x70, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x05, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x22, 0xa7, 0x01, 0x0a, 0x29, 0x47, 0x65, 0x74,
+	0x4d, 0x79, 0x50, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x54, 0x61, 0x73, 0x6b, 0x57, 0x69, 0x74,
+	0x68, 0x57, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x47, 0x72, 0x61, 0x70, 0x68, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x12, 0x0a, 0x04,
+	0x63, 0x6f, 0x64, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65,
+	0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x36, 0x0a, 0x04, 0x64, 0x61,
+	0x74, 0x61, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e,
+	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68,
+	0x53, 0x74, 0x65, 0x70, 0x57, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x52, 0x04, 0x64, 0x61,
+	0x74, 0x61, 0x22, 0x60, 0x0a, 0x14, 0x41, 0x73, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x54, 0x79, 0x70,
+	0x65, 0x49, 0x44, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x74, 0x61,
+	0x73, 0x6b, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x74, 0x61, 0x73, 0x6b,
+	0x49, 0x44, 0x12, 0x1c, 0x0a, 0x09, 0x66, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x49, 0x44, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x66, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x49, 0x44,
+	0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04,
+	0x74, 0x79, 0x70, 0x65, 0x22, 0x5b, 0x0a, 0x15, 0x41, 0x73, 0x73, 0x69, 0x67, 0x6e, 0x61, 0x54,
+	0x79, 0x70, 0x65, 0x49, 0x44, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a,
+	0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x65, 0x72,
+	0x72, 0x6f, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0d, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67,
+	0x65, 0x22, 0x38, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x54, 0x61, 0x73, 0x6b, 0x42, 0x79, 0x54, 0x79,
+	0x70, 0x65, 0x49, 0x44, 0x52, 0x65, 0x71, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x49,
+	0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x49, 0x44, 0x22, 0x55, 0x0a, 0x12, 0x47,
+	0x65, 0x74, 0x54, 0x61, 0x73, 0x6b, 0x42, 0x79, 0x54, 0x79, 0x70, 0x65, 0x49, 0x44, 0x52, 0x65,
+	0x73, 0x12, 0x14, 0x0a, 0x05, 0x66, 0x6f, 0x75, 0x6e, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x05, 0x66, 0x6f, 0x75, 0x6e, 0x64, 0x12, 0x29, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x04, 0x64, 0x61,
+	0x74, 0x61, 0x22, 0x5e, 0x0a, 0x11, 0x52, 0x65, 0x6a, 0x65, 0x63, 0x74, 0x42, 0x79, 0x53, 0x79,
+	0x73, 0x74, 0x65, 0x6d, 0x52, 0x65, 0x71, 0x12, 0x16, 0x0a, 0x06, 0x74, 0x61, 0x73, 0x6b, 0x49,
+	0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x74, 0x61, 0x73, 0x6b, 0x49, 0x44, 0x12,
+	0x31, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32,
+	0x19, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76,
+	0x31, 0x2e, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x65, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74,
+	0x75, 0x73, 0x22, 0x41, 0x0a, 0x11, 0x52, 0x65, 0x6a, 0x65, 0x63, 0x74, 0x42, 0x79, 0x53, 0x79,
+	0x73, 0x74, 0x65, 0x6d, 0x52, 0x65, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65,
+	0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73,
+	0x73, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x04, 0x63, 0x6f, 0x64, 0x65, 0x22, 0x34, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x54, 0x61, 0x73, 0x6b,
+	0x42, 0x79, 0x49, 0x44, 0x52, 0x65, 0x71, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x49,
+	0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x49, 0x44, 0x22, 0x51, 0x0a, 0x0e, 0x47,
+	0x65, 0x74, 0x54, 0x61, 0x73, 0x6b, 0x42, 0x79, 0x49, 0x44, 0x52, 0x65, 0x73, 0x12, 0x14, 0x0a,
+	0x05, 0x66, 0x6f, 0x75, 0x6e, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x66, 0x6f,
+	0x75, 0x6e, 0x64, 0x12, 0x29, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x15, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x2e, 0x76, 0x31, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x53,
+	0x0a, 0x11, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x54, 0x61, 0x73, 0x6b, 0x44, 0x61, 0x74, 0x61,
+	0x52, 0x65, 0x71, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x74, 0x61, 0x73, 0x6b, 0x49,
+	0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x74, 0x61, 0x73, 0x6b, 0x49, 0x44, 0x12,
+	0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x64,
+	0x61, 0x74, 0x61, 0x22, 0x2d, 0x0a, 0x11, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x54, 0x61, 0x73,
+	0x6b, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x63, 0x63,
+	0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65,
+	0x73, 0x73, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -3909,7 +3978,7 @@ func file_task_payload_proto_rawDescGZIP() []byte {
 }
 
 var file_task_payload_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_task_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 48)
+var file_task_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 49)
 var file_task_payload_proto_goTypes = []interface{}{
 	(DownloadActivityLogsReq_Formats)(0),              // 0: task.service.v1.DownloadActivityLogsReq.Formats
 	(ListTaskRequestDirection)(0),                     // 1: task.service.v1.ListTaskRequest.direction
@@ -3949,55 +4018,56 @@ var file_task_payload_proto_goTypes = []interface{}{
 	(*GraphStep)(nil),                                 // 35: task.service.v1.GraphStep
 	(*GraphStepResponse)(nil),                         // 36: task.service.v1.GraphStepResponse
 	(*GetMyPendingTaskWithWorkflowGraphRequest)(nil),  // 37: task.service.v1.GetMyPendingTaskWithWorkflowGraphRequest
-	(*GetMyPendingTaskWithWorkflowGraphResponse)(nil), // 38: task.service.v1.GetMyPendingTaskWithWorkflowGraphResponse
-	(*AssignaTypeIDRequest)(nil),                      // 39: task.service.v1.AssignaTypeIDRequest
-	(*AssignaTypeIDResponse)(nil),                     // 40: task.service.v1.AssignaTypeIDResponse
-	(*GetTaskByTypeIDReq)(nil),                        // 41: task.service.v1.GetTaskByTypeIDReq
-	(*GetTaskByTypeIDRes)(nil),                        // 42: task.service.v1.GetTaskByTypeIDRes
-	(*RejectBySystemReq)(nil),                         // 43: task.service.v1.RejectBySystemReq
-	(*RejectBySystemRes)(nil),                         // 44: task.service.v1.RejectBySystemRes
-	(*GetTaskByIDReq)(nil),                            // 45: task.service.v1.GetTaskByIDReq
-	(*GetTaskByIDRes)(nil),                            // 46: task.service.v1.GetTaskByIDRes
-	(*UpdateTaskDataReq)(nil),                         // 47: task.service.v1.UpdateTaskDataReq
-	(*UpdateTaskDataRes)(nil),                         // 48: task.service.v1.UpdateTaskDataRes
-	(*GetActivityLogsRes_ActivityLogPagination)(nil),  // 49: task.service.v1.GetActivityLogsRes.ActivityLogPagination
-	(*Task)(nil),                                      // 50: task.service.v1.Task
-	(structpb.NullValue)(0),                           // 51: google.protobuf.NullValue
-	(*timestamppb.Timestamp)(nil),                     // 52: google.protobuf.Timestamp
-	(Statuses)(0),                                     // 53: task.service.v1.statuses
-	(Steps)(0),                                        // 54: task.service.v1.steps
+	(*GraphStepWorkflow)(nil),                         // 38: task.service.v1.GraphStepWorkflow
+	(*GetMyPendingTaskWithWorkflowGraphResponse)(nil), // 39: task.service.v1.GetMyPendingTaskWithWorkflowGraphResponse
+	(*AssignaTypeIDRequest)(nil),                      // 40: task.service.v1.AssignaTypeIDRequest
+	(*AssignaTypeIDResponse)(nil),                     // 41: task.service.v1.AssignaTypeIDResponse
+	(*GetTaskByTypeIDReq)(nil),                        // 42: task.service.v1.GetTaskByTypeIDReq
+	(*GetTaskByTypeIDRes)(nil),                        // 43: task.service.v1.GetTaskByTypeIDRes
+	(*RejectBySystemReq)(nil),                         // 44: task.service.v1.RejectBySystemReq
+	(*RejectBySystemRes)(nil),                         // 45: task.service.v1.RejectBySystemRes
+	(*GetTaskByIDReq)(nil),                            // 46: task.service.v1.GetTaskByIDReq
+	(*GetTaskByIDRes)(nil),                            // 47: task.service.v1.GetTaskByIDRes
+	(*UpdateTaskDataReq)(nil),                         // 48: task.service.v1.UpdateTaskDataReq
+	(*UpdateTaskDataRes)(nil),                         // 49: task.service.v1.UpdateTaskDataRes
+	(*GetActivityLogsRes_ActivityLogPagination)(nil),  // 50: task.service.v1.GetActivityLogsRes.ActivityLogPagination
+	(*Task)(nil),                                      // 51: task.service.v1.Task
+	(structpb.NullValue)(0),                           // 52: google.protobuf.NullValue
+	(*timestamppb.Timestamp)(nil),                     // 53: google.protobuf.Timestamp
+	(Statuses)(0),                                     // 54: task.service.v1.statuses
+	(Steps)(0),                                        // 55: task.service.v1.steps
 }
 var file_task_payload_proto_depIdxs = []int32{
-	50, // 0: task.service.v1.GenerateTaskWithWokflowRequest.task:type_name -> task.service.v1.Task
-	50, // 1: task.service.v1.SaveTaskRequest.task:type_name -> task.service.v1.Task
-	50, // 2: task.service.v1.SaveTaskResponse.data:type_name -> task.service.v1.Task
-	51, // 3: task.service.v1.errorBodyResponse.data:type_name -> google.protobuf.NullValue
-	50, // 4: task.service.v1.SetTaskResponse.data:type_name -> task.service.v1.Task
+	51, // 0: task.service.v1.GenerateTaskWithWokflowRequest.task:type_name -> task.service.v1.Task
+	51, // 1: task.service.v1.SaveTaskRequest.task:type_name -> task.service.v1.Task
+	51, // 2: task.service.v1.SaveTaskResponse.data:type_name -> task.service.v1.Task
+	52, // 3: task.service.v1.errorBodyResponse.data:type_name -> google.protobuf.NullValue
+	51, // 4: task.service.v1.SetTaskResponse.data:type_name -> task.service.v1.Task
 	17, // 5: task.service.v1.GetActivityLogsReq.filter:type_name -> task.service.v1.ActivityLogFilter
 	0,  // 6: task.service.v1.DownloadActivityLogsReq.fileformat:type_name -> task.service.v1.DownloadActivityLogsReq.Formats
 	17, // 7: task.service.v1.DownloadActivityLogsReq.filter:type_name -> task.service.v1.ActivityLogFilter
-	50, // 8: task.service.v1.ActivityLog.task:type_name -> task.service.v1.Task
-	52, // 9: task.service.v1.ActivityLog.createdAt:type_name -> google.protobuf.Timestamp
+	51, // 8: task.service.v1.ActivityLog.task:type_name -> task.service.v1.Task
+	53, // 9: task.service.v1.ActivityLog.createdAt:type_name -> google.protobuf.Timestamp
 	18, // 10: task.service.v1.GetActivityLogsRes.data:type_name -> task.service.v1.ActivityLog
-	49, // 11: task.service.v1.GetActivityLogsRes.pagination:type_name -> task.service.v1.GetActivityLogsRes.ActivityLogPagination
-	50, // 12: task.service.v1.ListTaskRequest.task:type_name -> task.service.v1.Task
+	50, // 11: task.service.v1.GetActivityLogsRes.pagination:type_name -> task.service.v1.GetActivityLogsRes.ActivityLogPagination
+	51, // 12: task.service.v1.ListTaskRequest.task:type_name -> task.service.v1.Task
 	1,  // 13: task.service.v1.ListTaskRequest.dir:type_name -> task.service.v1.ListTaskRequest.direction
-	50, // 14: task.service.v1.ListTaskPluckRequest.task:type_name -> task.service.v1.Task
-	50, // 15: task.service.v1.ListTaskResponse.data:type_name -> task.service.v1.Task
+	51, // 14: task.service.v1.ListTaskPluckRequest.task:type_name -> task.service.v1.Task
+	51, // 15: task.service.v1.ListTaskResponse.data:type_name -> task.service.v1.Task
 	24, // 16: task.service.v1.ListTaskResponse.pagination:type_name -> task.service.v1.PaginationResponse
-	53, // 17: task.service.v1.GraphStatusRequest.status:type_name -> task.service.v1.statuses
-	53, // 18: task.service.v1.GraphStatusColumnTypeRequest.status:type_name -> task.service.v1.statuses
+	54, // 17: task.service.v1.GraphStatusRequest.status:type_name -> task.service.v1.statuses
+	54, // 18: task.service.v1.GraphStatusColumnTypeRequest.status:type_name -> task.service.v1.statuses
 	31, // 19: task.service.v1.GraphStatusColumnTypeResponse.data:type_name -> task.service.v1.GraphStatusColumnType
-	53, // 20: task.service.v1.GraphStatus.status:type_name -> task.service.v1.statuses
+	54, // 20: task.service.v1.GraphStatus.status:type_name -> task.service.v1.statuses
 	32, // 21: task.service.v1.GraphStatusResponse.data:type_name -> task.service.v1.GraphStatus
-	54, // 22: task.service.v1.GraphStepRequest.step:type_name -> task.service.v1.steps
-	53, // 23: task.service.v1.GraphStepRequest.status:type_name -> task.service.v1.statuses
-	54, // 24: task.service.v1.GraphStep.step:type_name -> task.service.v1.steps
+	55, // 22: task.service.v1.GraphStepRequest.step:type_name -> task.service.v1.steps
+	54, // 23: task.service.v1.GraphStepRequest.status:type_name -> task.service.v1.statuses
+	55, // 24: task.service.v1.GraphStep.step:type_name -> task.service.v1.steps
 	35, // 25: task.service.v1.GraphStepResponse.data:type_name -> task.service.v1.GraphStep
-	35, // 26: task.service.v1.GetMyPendingTaskWithWorkflowGraphResponse.data:type_name -> task.service.v1.GraphStep
-	50, // 27: task.service.v1.GetTaskByTypeIDRes.data:type_name -> task.service.v1.Task
-	53, // 28: task.service.v1.RejectBySystemReq.status:type_name -> task.service.v1.statuses
-	50, // 29: task.service.v1.GetTaskByIDRes.data:type_name -> task.service.v1.Task
+	38, // 26: task.service.v1.GetMyPendingTaskWithWorkflowGraphResponse.data:type_name -> task.service.v1.GraphStepWorkflow
+	51, // 27: task.service.v1.GetTaskByTypeIDRes.data:type_name -> task.service.v1.Task
+	54, // 28: task.service.v1.RejectBySystemReq.status:type_name -> task.service.v1.statuses
+	51, // 29: task.service.v1.GetTaskByIDRes.data:type_name -> task.service.v1.Task
 	30, // [30:30] is the sub-list for method output_type
 	30, // [30:30] is the sub-list for method input_type
 	30, // [30:30] is the sub-list for extension type_name
@@ -4445,7 +4515,7 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[36].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetMyPendingTaskWithWorkflowGraphResponse); i {
+			switch v := v.(*GraphStepWorkflow); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4457,7 +4527,7 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[37].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AssignaTypeIDRequest); i {
+			switch v := v.(*GetMyPendingTaskWithWorkflowGraphResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4469,7 +4539,7 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[38].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AssignaTypeIDResponse); i {
+			switch v := v.(*AssignaTypeIDRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4481,7 +4551,7 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[39].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetTaskByTypeIDReq); i {
+			switch v := v.(*AssignaTypeIDResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4493,7 +4563,7 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[40].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetTaskByTypeIDRes); i {
+			switch v := v.(*GetTaskByTypeIDReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4505,7 +4575,7 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[41].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RejectBySystemReq); i {
+			switch v := v.(*GetTaskByTypeIDRes); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4517,7 +4587,7 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[42].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RejectBySystemRes); i {
+			switch v := v.(*RejectBySystemReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4529,7 +4599,7 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetTaskByIDReq); i {
+			switch v := v.(*RejectBySystemRes); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4541,7 +4611,7 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetTaskByIDRes); i {
+			switch v := v.(*GetTaskByIDReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4553,7 +4623,7 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[45].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateTaskDataReq); i {
+			switch v := v.(*GetTaskByIDRes); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4565,7 +4635,7 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[46].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateTaskDataRes); i {
+			switch v := v.(*UpdateTaskDataReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4577,6 +4647,18 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[47].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateTaskDataRes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_task_payload_proto_msgTypes[48].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetActivityLogsRes_ActivityLogPagination); i {
 			case 0:
 				return &v.state
@@ -4595,7 +4677,7 @@ func file_task_payload_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_task_payload_proto_rawDesc,
 			NumEnums:      2,
-			NumMessages:   48,
+			NumMessages:   49,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

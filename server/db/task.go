@@ -65,12 +65,12 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 	return result, nil
 }
 
-func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, roleids []uint64, stat int) (result []*GraphResult, err error) {
+func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, roleids []uint64, stat int) (result []*GraphResultColumnType, err error) {
 	if len(roleids) < 1 {
-		return []*GraphResult{}, nil
+		return []*GraphResultColumnType{}, nil
 	}
 
-	selectOpt := `workflow_doc->'workflow'->>'currentStep' as step, "type", count(*) as total`
+	selectOpt := `workflow_doc->'workflow'->>'currentStep' as name, "type", count(*) as total`
 	query := p.db_main.Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := fmt.Sprintf("workflow_doc != '{}' AND status = '%d'", stat)
 	if service != "" {
