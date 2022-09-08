@@ -65,7 +65,7 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 	return result, nil
 }
 
-func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, roleids []uint, stat int) (result []*GraphResult, err error) {
+func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, roleids []uint64, stat int) (result []*GraphResult, err error) {
 	if len(roleids) < 1 {
 		return []*GraphResult{}, nil
 	}

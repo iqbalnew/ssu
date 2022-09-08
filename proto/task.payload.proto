@@ -320,6 +320,20 @@ message GraphStepResponse {
     repeated GraphStep data = 4;
 }
 
+message GetMyPendingTaskWithWorkflowGraphRequest {
+    string service = 1 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          description: "Service: 'Announcement', 'Company', 'Account', 'Notification'"
+        }];
+}
+
+message GetMyPendingTaskWithWorkflowGraphResponse {
+    bool error = 1;
+    uint32 code = 2;
+    string message = 3;
+    repeated GraphStep data = 4;
+}
+
 message AssignaTypeIDRequest{
     uint64 taskID = 1;   
     uint64 featureID = 2;

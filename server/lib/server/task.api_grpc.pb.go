@@ -36,6 +36,7 @@ type TaskServiceClient interface {
 	GetTaskGraphStatus(ctx context.Context, in *GraphStatusRequest, opts ...grpc.CallOption) (*GraphStatusResponse, error)
 	GraphStatusColumnType(ctx context.Context, in *GraphStatusColumnTypeRequest, opts ...grpc.CallOption) (*GraphStatusColumnTypeResponse, error)
 	GetTaskGraphStep(ctx context.Context, in *GraphStepRequest, opts ...grpc.CallOption) (*GraphStepResponse, error)
+	GetMyPendingTaskWithWorkflowGraph(ctx context.Context, in *GetMyPendingTaskWithWorkflowGraphRequest, opts ...grpc.CallOption) (*GetMyPendingTaskWithWorkflowGraphResponse, error)
 	GetListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error)
 	AssignTypeID(ctx context.Context, in *AssignaTypeIDRequest, opts ...grpc.CallOption) (*AssignaTypeIDResponse, error)
 	AssignTypeIDEV(ctx context.Context, in *AssignaTypeIDRequestEV, opts ...grpc.CallOption) (*AssignaTypeIDResponse, error)
@@ -173,6 +174,15 @@ func (c *taskServiceClient) GetTaskGraphStep(ctx context.Context, in *GraphStepR
 	return out, nil
 }
 
+func (c *taskServiceClient) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, in *GetMyPendingTaskWithWorkflowGraphRequest, opts ...grpc.CallOption) (*GetMyPendingTaskWithWorkflowGraphResponse, error) {
+	out := new(GetMyPendingTaskWithWorkflowGraphResponse)
+	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetMyPendingTaskWithWorkflowGraph", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *taskServiceClient) GetListAnnouncement(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListTaskResponse, error) {
 	out := new(ListTaskResponse)
 	err := c.cc.Invoke(ctx, "/task.service.v1.TaskService/GetListAnnouncement", in, out, opts...)
@@ -280,6 +290,7 @@ type TaskServiceServer interface {
 	GetTaskGraphStatus(context.Context, *GraphStatusRequest) (*GraphStatusResponse, error)
 	GraphStatusColumnType(context.Context, *GraphStatusColumnTypeRequest) (*GraphStatusColumnTypeResponse, error)
 	GetTaskGraphStep(context.Context, *GraphStepRequest) (*GraphStepResponse, error)
+	GetMyPendingTaskWithWorkflowGraph(context.Context, *GetMyPendingTaskWithWorkflowGraphRequest) (*GetMyPendingTaskWithWorkflowGraphResponse, error)
 	GetListAnnouncement(context.Context, *ListRequest) (*ListTaskResponse, error)
 	AssignTypeID(context.Context, *AssignaTypeIDRequest) (*AssignaTypeIDResponse, error)
 	AssignTypeIDEV(context.Context, *AssignaTypeIDRequestEV) (*AssignaTypeIDResponse, error)
@@ -335,6 +346,9 @@ func (UnimplementedTaskServiceServer) GraphStatusColumnType(context.Context, *Gr
 }
 func (UnimplementedTaskServiceServer) GetTaskGraphStep(context.Context, *GraphStepRequest) (*GraphStepResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskGraphStep not implemented")
+}
+func (UnimplementedTaskServiceServer) GetMyPendingTaskWithWorkflowGraph(context.Context, *GetMyPendingTaskWithWorkflowGraphRequest) (*GetMyPendingTaskWithWorkflowGraphResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMyPendingTaskWithWorkflowGraph not implemented")
 }
 func (UnimplementedTaskServiceServer) GetListAnnouncement(context.Context, *ListRequest) (*ListTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListAnnouncement not implemented")
@@ -613,6 +627,24 @@ func _TaskService_GetTaskGraphStep_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskService_GetMyPendingTaskWithWorkflowGraph_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMyPendingTaskWithWorkflowGraphRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GetMyPendingTaskWithWorkflowGraph(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/task.service.v1.TaskService/GetMyPendingTaskWithWorkflowGraph",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GetMyPendingTaskWithWorkflowGraph(ctx, req.(*GetMyPendingTaskWithWorkflowGraphRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TaskService_GetListAnnouncement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListRequest)
 	if err := dec(in); err != nil {
@@ -851,6 +883,10 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTaskGraphStep",
 			Handler:    _TaskService_GetTaskGraphStep_Handler,
+		},
+		{
+			MethodName: "GetMyPendingTaskWithWorkflowGraph",
+			Handler:    _TaskService_GetMyPendingTaskWithWorkflowGraph_Handler,
 		},
 		{
 			MethodName: "GetListAnnouncement",

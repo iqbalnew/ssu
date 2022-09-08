@@ -121,6 +121,16 @@ service TaskService {
         };
     };
 
+    rpc GetMyPendingTaskWithWorkflowGraph(GetMyPendingTaskWithWorkflowGraphRequest) returns (GetMyPendingTaskWithWorkflowGraphResponse) {
+        option (google.api.http) = {
+            get: "/api/task/my-graph/workflow"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get my pending task graph "
+            description: "This API is used for get user own pending task graph for task with workflow only"
+        };
+    }
+
     rpc GetListAnnouncement(ListRequest) returns (ListTaskResponse);
     
     rpc AssignTypeID(AssignaTypeIDRequest) returns (AssignaTypeIDResponse);
