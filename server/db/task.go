@@ -117,7 +117,7 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, servi
 		}
 		whereOpt = whereOpt + `( ("data" -> 'user'->> 'companyID' = '` + idCompany + `' OR "data" -> 'companyID' = '` + idCompany + `' OR "data" -> 'company' ->> 'companyID' = '` + idCompany + `'
 		OR  "data" @> '[{"companyID":` + idCompany + `}]') 
-		or ("type" IN ('BG Issuing', 'Swift')  AND  company_id = '` + idCompany + `'))`
+		or ("type" IN ('BG Issuing')  AND  company_id = '` + idCompany + `'))`
 	}
 
 	if userType == "ca" {
