@@ -65,7 +65,7 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 	return result, nil
 }
 
-func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, roleids []uint64, stat int) (result []*GraphResultColumnType, err error) {
+func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, roleids []uint64, stat int, createdByID uint64) (result []*GraphResultColumnType, err error) {
 	if len(roleids) < 1 {
 		return []*GraphResultColumnType{}, nil
 	}
@@ -94,7 +94,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 }
 
 func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, service string, step uint, stat uint, isIncludeApprove bool, isIncludeReject bool, userType string) (result []*GraphResult, err error) {
-	selectOpt := fmt.Sprintf("step as name, type, count(*) as total")
+	selectOpt := "step as name, type, count(*) as total"
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := ""
 	if service != "" {
@@ -106,7 +106,7 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, servi
 		}
 		whereOpt = whereOpt + `( ("data" -> 'user'->> 'companyID' = '` + idCompany + `' OR "data" -> 'companyID' = '` + idCompany + `' OR "data" -> 'company' ->> 'companyID' = '` + idCompany + `'
 		OR  "data" @> '[{"companyID":` + idCompany + `}]') 
-		or ("type" = 'BG Issuing'  AND  company_id = '` + idCompany + `'))`
+		or ("type" IN ('BG Issuing', 'Swift')  AND  company_id = '` + idCompany + `'))`
 	}
 
 	if userType == "ca" {
