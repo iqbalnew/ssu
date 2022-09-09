@@ -77,7 +77,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 		return []*GraphResultWorkflowType{}, nil
 	}
 
-	selectOpt := `workflow_doc->'workflow'->>'currentStep' as name, "type", "status" count(*) as total`
+	selectOpt := `workflow_doc->'workflow'->>'currentStep' as name, "type", "status", count(*) as total`
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := fmt.Sprintf("workflow_doc != '{}' AND status = '%d'", stat)
 	if service != "" {
@@ -85,7 +85,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 	}
 
 	if createdByID > 0 {
-		whereOpt = fmt.Sprintf("%s AND (TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%v OR ( created_by_id = %d AND status IN (1,2,3,5))", whereOpt, roleids, createdByID)
+		whereOpt = fmt.Sprintf("%s AND (TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%v OR ( created_by_id = %d AND status IN (1,2,3,5)))", whereOpt, roleids, createdByID)
 	} else {
 		whereOpt = fmt.Sprintf("%s AND TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%v", whereOpt, roleids)
 	}
