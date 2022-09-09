@@ -599,6 +599,39 @@
         ]
       }
     },
+    "/api/task/my-graph/workflow": {
+      "get": {
+        "summary": "Get my pending task graph ",
+        "description": "This API is used for get user own pending task graph for task with workflow only",
+        "operationId": "TaskService_GetMyPendingTaskWithWorkflowGraph",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetMyPendingTaskWithWorkflowGraphResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "service",
+            "description": "Service: 'Announcement', 'Company', 'Account', 'Notification'",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TaskService"
+        ]
+      }
+    },
     "/api/task/normal": {
       "get": {
         "summary": "Get list data task",
@@ -1211,6 +1244,27 @@
         }
       }
     },
+    "v1GetMyPendingTaskWithWorkflowGraphResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1GraphStepWorkflow"
+          }
+        }
+      }
+    },
     "v1GetTaskByIDRes": {
       "type": "object",
       "properties": {
@@ -1338,6 +1392,24 @@
           "items": {
             "$ref": "#/definitions/v1GraphStep"
           }
+        }
+      }
+    },
+    "v1GraphStepWorkflow": {
+      "type": "object",
+      "properties": {
+        "step": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/v1statuses"
+        },
+        "total": {
+          "type": "string",
+          "format": "uint64"
         }
       }
     },

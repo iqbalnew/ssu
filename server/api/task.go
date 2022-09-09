@@ -397,6 +397,46 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 	return res, nil
 }
 
+func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.GetMyPendingTaskWithWorkflowGraphRequest) (*pb.GetMyPendingTaskWithWorkflowGraphResponse, error) {
+	currentUser, _, err := s.manager.GetMeFromMD(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, 1, currentUser.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &pb.GetMyPendingTaskWithWorkflowGraphResponse{
+		Code:    200,
+		Error:   false,
+		Message: "Graph Data",
+	}
+
+	for _, v := range data {
+		switch v.Name {
+		case "varifier":
+			v.Name = "checker"
+		case "apporover":
+			v.Name = "signer"
+		default:
+
+		}
+		val := &pb.GraphStepWorkflow{
+			Step:   v.Name,
+			Type:   v.Type,
+			Status: pb.Statuses(v.Status),
+			Total:  v.Total,
+		}
+
+		res.Data = append(res.Data, val)
+	}
+
+	return res, nil
+
+}
+
 func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (*pb.ListTaskResponse, error) {
 	result := pb.ListTaskResponse{
 		Error:   false,
@@ -2746,7 +2786,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data := abonnement_pb.CreateAbonnementRequest{}
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
-			data.Data.Id = task.FeatureID
 			if len(data.Data.BillingStatus) < 1 {
 				data.Data.BillingStatus = "Waiting Schedule"
 			}
@@ -2769,6 +2808,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				logrus.Println(res)
 
 				// update task billing status
+				data.Data.Id = res.Data.Id
 				dataUpdate, err := json.Marshal(data.Data)
 				if err != nil {
 					logrus.Errorln("Failed to marshal data: %v", err)

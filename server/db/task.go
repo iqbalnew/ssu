@@ -26,6 +26,13 @@ type GraphResultColumnType struct {
 	Total uint64
 }
 
+type GraphResultWorkflowType struct {
+	Name   string
+	Type   string
+	Status int
+	Total  uint64
+}
+
 func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (result *GraphResult, err error) {
 	selectOpt := fmt.Sprintf("count(*) as total")
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
@@ -65,8 +72,40 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 	return result, nil
 }
 
+func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, roleids []uint64, stat int, createdByID uint64) (result []*GraphResultWorkflowType, err error) {
+	if len(roleids) < 1 {
+		return []*GraphResultWorkflowType{}, nil
+	}
+
+	selectOpt := `workflow_doc->'workflow'->>'currentStep' as name, "type", "status", count(*) as total`
+	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
+	whereOpt := fmt.Sprintf("workflow_doc != '{}' AND status = '%d'", stat)
+	if service != "" {
+		whereOpt = fmt.Sprintf("%s AND type = '%v'", whereOpt, service)
+	}
+
+	if createdByID > 0 {
+		whereOpt = fmt.Sprintf("%s AND (TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%v OR ( created_by_id = %d AND status IN (1,2,3,5)))", whereOpt, roleids, createdByID)
+	} else {
+		whereOpt = fmt.Sprintf("%s AND TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%v", whereOpt, roleids)
+	}
+
+	if whereOpt != "" {
+		query = query.Where(whereOpt)
+	}
+
+	query = query.Group("workflow_doc->'workflow'->>'currentStep', type, status")
+
+	if err = query.Find(&result).Error; err != nil {
+		logrus.Errorln(err)
+		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+	}
+
+	return result, nil
+}
+
 func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, service string, step uint, stat uint, isIncludeApprove bool, isIncludeReject bool, userType string) (result []*GraphResult, err error) {
-	selectOpt := fmt.Sprintf("step as name, type, count(*) as total")
+	selectOpt := "step as name, type, count(*) as total"
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := ""
 	if service != "" {
@@ -78,7 +117,7 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, servi
 		}
 		whereOpt = whereOpt + `( ("data" -> 'user'->> 'companyID' = '` + idCompany + `' OR "data" -> 'companyID' = '` + idCompany + `' OR "data" -> 'company' ->> 'companyID' = '` + idCompany + `'
 		OR  "data" @> '[{"companyID":` + idCompany + `}]') 
-		or ("type" = 'BG Issuing'  AND  company_id = '` + idCompany + `'))`
+		or ("type" IN ('BG Issuing', 'Swift')  AND  company_id = '` + idCompany + `'))`
 	}
 
 	if userType == "ca" {

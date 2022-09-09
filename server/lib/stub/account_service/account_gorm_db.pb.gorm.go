@@ -128,7 +128,9 @@ type AccountORM struct {
 	DeletedByID      uint64     `gorm:"column:DeletedByID;not null"`
 	Disabled         bool       `gorm:"column:Disabled"`
 	IsOwnedByCompany string     `gorm:"column:IsOwnedByCompany;not null"`
+	ProductCode      string     `gorm:"column:ProductCode"`
 	RoleID           uint64     `gorm:"column:RoleID"`
+	StatusCode       string     `gorm:"column:StatusCode"`
 	UpdatedAt        *time.Time `gorm:"column:UpdatedAt"`
 	UpdatedByID      uint64     `gorm:"column:UpdatedByID;not null"`
 }
@@ -164,6 +166,8 @@ func (m *Account) ToORM(ctx context.Context) (AccountORM, error) {
 	to.RoleID = m.RoleID
 	to.Disabled = m.Disabled
 	to.Cif = m.Cif
+	to.ProductCode = m.ProductCode
+	to.StatusCode = m.StatusCode
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -208,6 +212,8 @@ func (m *AccountORM) ToPB(ctx context.Context) (Account, error) {
 	to.RoleID = m.RoleID
 	to.Disabled = m.Disabled
 	to.Cif = m.Cif
+	to.ProductCode = m.ProductCode
+	to.StatusCode = m.StatusCode
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -1014,6 +1020,14 @@ func DefaultApplyFieldMaskAccount(ctx context.Context, patchee *Account, patcher
 		}
 		if f == prefix+"Cif" {
 			patchee.Cif = patcher.Cif
+			continue
+		}
+		if f == prefix+"ProductCode" {
+			patchee.ProductCode = patcher.ProductCode
+			continue
+		}
+		if f == prefix+"StatusCode" {
+			patchee.StatusCode = patcher.StatusCode
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {
