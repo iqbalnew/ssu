@@ -1404,6 +1404,9 @@
         "type": {
           "type": "string"
         },
+        "status": {
+          "$ref": "#/definitions/v1statuses"
+        },
         "total": {
           "type": "string",
           "format": "uint64"
