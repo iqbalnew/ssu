@@ -42,6 +42,7 @@ type ApiServiceClient interface {
 	DownloadListAccountTasks(ctx context.Context, in *FileListAccountTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	DownloadTemplate(ctx context.Context, in *FileListTemplateRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	CekAccountAvaibility(ctx context.Context, in *CekAccountAvaibilityReq, opts ...grpc.CallOption) (*CekAccountAvaibilityRes, error)
+	CekAccountUsed(ctx context.Context, in *CekAccountAvaibilityReq, opts ...grpc.CallOption) (*CekAccountUsedRes, error)
 }
 
 type apiServiceClient struct {
@@ -223,6 +224,15 @@ func (c *apiServiceClient) CekAccountAvaibility(ctx context.Context, in *CekAcco
 	return out, nil
 }
 
+func (c *apiServiceClient) CekAccountUsed(ctx context.Context, in *CekAccountAvaibilityReq, opts ...grpc.CallOption) (*CekAccountUsedRes, error) {
+	out := new(CekAccountUsedRes)
+	err := c.cc.Invoke(ctx, "/account.service.v1.ApiService/CekAccountUsed", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
@@ -246,6 +256,7 @@ type ApiServiceServer interface {
 	DownloadListAccountTasks(context.Context, *FileListAccountTaskRequest) (*httpbody.HttpBody, error)
 	DownloadTemplate(context.Context, *FileListTemplateRequest) (*httpbody.HttpBody, error)
 	CekAccountAvaibility(context.Context, *CekAccountAvaibilityReq) (*CekAccountAvaibilityRes, error)
+	CekAccountUsed(context.Context, *CekAccountAvaibilityReq) (*CekAccountUsedRes, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -309,6 +320,9 @@ func (UnimplementedApiServiceServer) DownloadTemplate(context.Context, *FileList
 }
 func (UnimplementedApiServiceServer) CekAccountAvaibility(context.Context, *CekAccountAvaibilityReq) (*CekAccountAvaibilityRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CekAccountAvaibility not implemented")
+}
+func (UnimplementedApiServiceServer) CekAccountUsed(context.Context, *CekAccountAvaibilityReq) (*CekAccountUsedRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CekAccountUsed not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -665,6 +679,24 @@ func _ApiService_CekAccountAvaibility_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_CekAccountUsed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CekAccountAvaibilityReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CekAccountUsed(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/account.service.v1.ApiService/CekAccountUsed",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CekAccountUsed(ctx, req.(*CekAccountAvaibilityReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -747,6 +779,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CekAccountAvaibility",
 			Handler:    _ApiService_CekAccountAvaibility_Handler,
+		},
+		{
+			MethodName: "CekAccountUsed",
+			Handler:    _ApiService_CekAccountUsed_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
