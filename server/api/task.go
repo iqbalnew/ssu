@@ -420,8 +420,11 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			v.Name = "Checker"
 		case "approver":
 			v.Name = "Signer"
-		default:
-			v.Name = strings.ToUpper(v.Name)
+		case "releaser":
+			v.Name = "Releaser"
+		}
+		if v.Status > 1 {
+			v.Name = "Maker"
 		}
 		val := &pb.GraphStepWorkflow{
 			Step:   v.Name,
