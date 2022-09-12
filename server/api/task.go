@@ -2320,7 +2320,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					CreatedAt:        account.CreatedAt,
 					UpdatedAt:        account.UpdatedAt,
 					DeletedAt:        account.DeletedAt,
+					Cif:              account.Cif,
+					ProductCode:      account.ProductCode,
+					StatusCode:       account.StatusCode,
 				}
+
 				data.TaskID = task.TaskID
 
 				logrus.Printf("Task Account for save ===>: %v", data)
