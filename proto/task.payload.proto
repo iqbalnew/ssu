@@ -330,7 +330,8 @@ message GetMyPendingTaskWithWorkflowGraphRequest {
 message GraphStepWorkflow {
     string step = 1;
     string type = 2;
-    uint64 total = 3;
+    statuses status = 3;
+    uint64 total = 4;
 }
 
 message GetMyPendingTaskWithWorkflowGraphResponse {

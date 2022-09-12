@@ -403,7 +403,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		return nil, err
 	}
 
-	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, 1)
+	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, 1, currentUser.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -415,10 +415,22 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 	}
 
 	for _, v := range data {
+		switch v.Name {
+		case "verifier":
+			v.Name = "Checker"
+		case "approver":
+			v.Name = "Signer"
+		case "releaser":
+			v.Name = "Releaser"
+		}
+		if v.Status > 1 {
+			v.Name = "Maker"
+		}
 		val := &pb.GraphStepWorkflow{
-			Step:  v.Name,
-			Type:  v.Type,
-			Total: v.Total,
+			Step:   v.Name,
+			Type:   v.Type,
+			Status: pb.Statuses(v.Status),
+			Total:  v.Total,
 		}
 
 		res.Data = append(res.Data, val)
