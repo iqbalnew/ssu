@@ -84,10 +84,13 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 		whereOpt = fmt.Sprintf("%s AND type = '%v'", whereOpt, service)
 	}
 
+	whereOpt = fmt.Sprintf("%s AND TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%v", whereOpt, roleids)
 	if createdByID > 0 {
-		whereOpt = fmt.Sprintf("%s AND (TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%v OR ( created_by_id = %d AND status IN (1,2,3,5)))", whereOpt, roleids, createdByID)
-	} else {
-		whereOpt = fmt.Sprintf("%s AND TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%v", whereOpt, roleids)
+		if service != "" {
+			whereOpt = fmt.Sprintf("%s OR ( created_by_id = %d AND status IN (1,2,3,5) AND type = '%v')", whereOpt, createdByID, service)
+		} else {
+			whereOpt = fmt.Sprintf("%s OR ( created_by_id = %d AND status IN (1,2,3,5))", whereOpt, createdByID)
+		}
 	}
 
 	if whereOpt != "" {
@@ -117,7 +120,7 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, servi
 		}
 		whereOpt = whereOpt + `( ("data" -> 'user'->> 'companyID' = '` + idCompany + `' OR "data" -> 'companyID' = '` + idCompany + `' OR "data" -> 'company' ->> 'companyID' = '` + idCompany + `'
 		OR  "data" @> '[{"companyID":` + idCompany + `}]') 
-		or ("type" IN ('BG Issuing', 'Swift')  AND  company_id = '` + idCompany + `'))`
+		or ("type" IN ('BG Issuing')  AND  company_id = '` + idCompany + `'))`
 	}
 
 	if userType == "ca" {

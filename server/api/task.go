@@ -416,12 +416,15 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 	for _, v := range data {
 		switch v.Name {
-		case "varifier":
-			v.Name = "checker"
-		case "apporover":
-			v.Name = "signer"
-		default:
-
+		case "verifier":
+			v.Name = "Checker"
+		case "approver":
+			v.Name = "Signer"
+		case "releaser":
+			v.Name = "Releaser"
+		}
+		if v.Status > 1 {
+			v.Name = "Maker"
 		}
 		val := &pb.GraphStepWorkflow{
 			Step:   v.Name,
@@ -853,7 +856,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	product := productData.Data[0]
 
-	taskType := []string{"Swift", "Cash Pooling", "BG Issuing"}
+	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Deposito"}
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
 		if req.Task.Type == "Swift" {
@@ -2329,7 +2332,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					CreatedAt:        account.CreatedAt,
 					UpdatedAt:        account.UpdatedAt,
 					DeletedAt:        account.DeletedAt,
+					Cif:              account.Cif,
+					ProductCode:      account.ProductCode,
+					StatusCode:       account.StatusCode,
 				}
+
 				data.TaskID = task.TaskID
 
 				logrus.Printf("Task Account for save ===>: %v", data)
