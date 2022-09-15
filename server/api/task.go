@@ -998,6 +998,8 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		logrus.Println("SaveTaskWithData =================> 8")
 	}
 
+	go TaskNotificationCreateOrUpdate(ctx, &task, command, task.Step, task.Status)
+
 	return res, nil
 }
 
@@ -3000,7 +3002,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 	}
 
-	go TaskNotification(ctx, task, req.Action, sendTask)
+	go TaskNotification(ctx, task, req.Action, sendTask, currentStatus, currentStep)
 
 	return result, nil
 }
