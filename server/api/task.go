@@ -856,7 +856,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	product := productData.Data[0]
 
-	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Deposito"}
+	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Import LC"}
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
 		if req.Task.Type == "Swift" {
@@ -997,6 +997,8 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	if req.Task.Type == "Swift" {
 		logrus.Println("SaveTaskWithData =================> 8")
 	}
+
+	go TaskNotificationCreateOrUpdate(ctx, &task, command, task.Step, task.Status)
 
 	return res, nil
 }
@@ -3000,7 +3002,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 	}
 
-	go TaskNotification(ctx, task, req.Action, sendTask)
+	go TaskNotification(ctx, task, req.Action, sendTask, currentStatus, currentStep)
 
 	return result, nil
 }
