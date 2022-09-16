@@ -1646,21 +1646,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					}
 					task.Status = 7
 
-					if contains([]string{"BG Mapping"}, task.Type) {
-
-						mappingDigital, err := s.provider.GetListTask(ctx, &pb.TaskORM{
-							Type:      "BG Mapping Digital",
-							CompanyID: task.CompanyID,
-						}, &pb.PaginationResponse{}, &db.QueryBuilder{}, []uint64{})
-						if err != nil {
-							return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
-						}
-
-						if len(mappingDigital) > 0 {
-							return nil, status.Errorf(codes.InvalidArgument, "Bad Request: Delete BG Mapping Failed: BG Mapping used to Mapping Digital BG [User]")
-						}
-
-					}
 				}
 				// }
 				// if currentStatus == 6 {
@@ -2036,6 +2021,22 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if len(used) > 0 {
 				return nil, status.Errorf(codes.Canceled, "Delete Account Failed: Account mapping to role [ %v ]", strings.Join(used, ", "))
 			}
+		}
+
+		if contains([]string{"BG Mapping"}, task.Type) {
+
+			mappingDigital, err := s.provider.GetListTask(ctx, &pb.TaskORM{
+				Type:      "BG Mapping Digital",
+				CompanyID: task.CompanyID,
+			}, &pb.PaginationResponse{}, &db.QueryBuilder{}, []uint64{})
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			}
+
+			if len(mappingDigital) > 0 {
+				return nil, status.Errorf(codes.InvalidArgument, "Bad Request: Delete BG Mapping Failed: BG Mapping used to Mapping Digital BG [User]")
+			}
+
 		}
 
 		task.LastApprovedByID = 0
