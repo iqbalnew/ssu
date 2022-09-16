@@ -2025,7 +2025,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		if contains([]string{"BG Mapping"}, task.Type) {
 
-			mappingDigital, err := s.provider.GetListTask(ctx, &pb.TaskORM{
+			mappingDigitalTask, err := s.provider.GetListTask(ctx, &pb.TaskORM{
 				Type:      "BG Mapping Digital",
 				CompanyID: task.CompanyID,
 			}, &pb.PaginationResponse{}, &db.QueryBuilder{}, []uint64{})
@@ -2033,8 +2033,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
 
-			if len(mappingDigital) > 0 {
-				return nil, status.Errorf(codes.InvalidArgument, "Bad Request: Delete BG Mapping Failed: BG Mapping used to Mapping Digital BG [User]")
+			used := []string{}
+			for _, v := range mappingDigitalTask {
+				used = append(used, strconv.FormatUint(v.TaskID, 10))
+			}
+			if len(mappingDigitalTask) > 0 {
+				return nil, status.Errorf(codes.Canceled, "Bad Request: Delete BG Mapping Failed: BG Mapping used to Mapping Digital BG [ %v ]", strings.Join(used, ", "))
 			}
 
 		}
