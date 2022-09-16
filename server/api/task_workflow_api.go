@@ -38,7 +38,7 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 		logrus.Errorln()
 	}
 
-	isSave := false
+	// isSave := false
 
 	// logrus.Println("[api][SaveTaskWithWorkflow] workflow current step: ", workflow.Workflow.CurrentStep)
 
@@ -48,12 +48,12 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 		if task.Status != pb.Statuses_Approved {
 			// logrus.Println("[api][SaveTaskWithWorkflow] set task status to approved")
 			// process to approve
-			isSave = true
+			// isSave = true
 			task.Status = pb.Statuses_Approved
 			task.Step = pb.Steps_Releaser
 		}
 	case "maker":
-		isSave = true
+		// isSave = true
 		task.Step = pb.Steps_Maker
 		if workflow.NextStatus == "rejected" {
 			task.Status = pb.Statuses_Rejected
@@ -66,7 +66,7 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 			// process to pending
 			task.Status = pb.Statuses_Pending
 		}
-		isSave = true
+		// isSave = true
 	}
 
 	logrus.Println("task ===> ", task)
@@ -77,30 +77,47 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 	}
 
 	// logrus.Println("[api][SaveTaskWithWorkflow] isSave: ", isSave)
-	if isSave {
-		// logrus.Println("[api][SaveTaskWithWorkflow] task will be save to database")
-		taskORM, err := task.ToORM(ctx)
-		if err != nil {
-			logrus.Errorln("[api][func:SaveTaskWithWorkflow] Error ToORM: ", err)
-			return nil, status.Error(codes.Internal, "Server Error")
-		}
-		// logrus.Println("[api][func:SaveTaskWithWorkflow] taskORM ID: ", taskORM)
-		// logrus.Println("[api][func:SaveTaskWithWorkflow] taskORM Workflow: ", taskORM.WorkflowDoc)
-		saved, err := s.provider.SaveTask(ctx, &taskORM)
-		if err != nil {
-			logrus.Errorln("[api][func:SaveTaskWithWorkflow] Error SaveTask: ", err)
-			return nil, status.Error(codes.Internal, "Server Error")
-		}
+	// if isSave {
+	// logrus.Println("[api][SaveTaskWithWorkflow] task will be save to database")
+	taskORM, err := task.ToORM(ctx)
+	if err != nil {
+		logrus.Errorln("[api][func:SaveTaskWithWorkflow] Error ToORM: ", err)
+		return nil, status.Error(codes.Internal, "Server Error")
+	}
+	// logrus.Println("[api][func:SaveTaskWithWorkflow] taskORM ID: ", taskORM)
+	// logrus.Println("[api][func:SaveTaskWithWorkflow] taskORM Workflow: ", taskORM.WorkflowDoc)
+	saved, err := s.provider.SaveTask(ctx, &taskORM)
+	if err != nil {
+		logrus.Errorln("[api][func:SaveTaskWithWorkflow] Error SaveTask: ", err)
+		return nil, status.Error(codes.Internal, "Server Error")
+	}
 
-		savedTask, err := saved.ToPB(ctx)
-		if err != nil {
-			logrus.Errorln("[api][func:SaveTaskWithWorkflow] Error ToPB: ", err)
-			return nil, status.Error(codes.Internal, "Server Error")
+	savedTask, err := saved.ToPB(ctx)
+	if err != nil {
+		logrus.Errorln("[api][func:SaveTaskWithWorkflow] Error ToPB: ", err)
+		return nil, status.Error(codes.Internal, "Server Error")
+	}
+
+	result.Success = true
+	result.Data = &savedTask
+
+	// }
+
+	if getEnv("ENV", "LOCAL") != "LOCAL" {
+		action := "save"
+		if req.IsDraft {
+			action = "draft"
 		}
-
-		result.Success = true
-		result.Data = &savedTask
-
+		logrus.Println("Set to save log")
+		activityLog, err := GenerateActivityLog(&taskORM, nil, action, "Update")
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate activity log: %v", err)
+			return nil, err
+		}
+		err = s.provider.SaveLog(ctx, activityLog)
+		if err != nil {
+			logrus.Errorln("Error SaveActivityLog: ", err)
+		}
 	}
 
 	return result, nil
