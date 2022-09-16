@@ -1645,7 +1645,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						}
 					}
 					task.Status = 7
-
 				}
 				// }
 				// if currentStatus == 6 {
