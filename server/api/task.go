@@ -2795,7 +2795,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			data := abonnement_pb.CreateAbonnementRequest{}
 			json.Unmarshal([]byte(task.Data), &data.Data)
 			data.TaskID = task.TaskID
+			isFirst := false
 			if len(data.Data.BillingStatus) < 1 {
+				isFirst = true
 				data.Data.BillingStatus = "Waiting Schedule"
 			}
 
@@ -2824,6 +2826,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
 				task.Data = string(dataUpdate)
+				logrus.Println("Abod task======>, %s", task.Data)
+				if isFirst {
+					task.DataBak = task.Data
+					logrus.Println("Abod task======>, %s", task.DataBak)
+				}
+				logrus.Println("Abod task======>, %s", task.DataBak)
 				task.FeatureID = res.Data.Id
 				reUpdate = true
 			}
