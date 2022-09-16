@@ -19,7 +19,7 @@ func NewLogger(port string, host string, tag string) *Logger {
 	logrus.Println("Logger port: ", port)
 	logrus.Println("Logger tag: ", tag)
 
-	if getEnv("ENV", "DEV") != "LOCAL" {
+	if getEnv("FLUENTD", "off") == "on" {
 		portVal, _ := strconv.Atoi(port)
 
 		config := fluent.Config{
@@ -48,7 +48,10 @@ func NewLogger(port string, host string, tag string) *Logger {
 
 		return logger
 	}
-	return nil
+
+	return &Logger{
+		fluent: nil,
+	}
 }
 
 func (l *Logger) Close() {

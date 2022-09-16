@@ -87,11 +87,9 @@ func grpcServerCmd() cli.Command {
 			authManager := manager.NewJWTManager(secret, tokenDuration)
 
 			var logger *addonsLogger.Logger = nil
-			if getEnv("ENV", "LOCAL") != "LOCAL" {
-				// logrus.Println("[stating utility] Connecting to Fluentd ")
-				// logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
-				// defer logger.Close()
-			}
+			logrus.Println("[stating utility] Connecting to Fluentd ")
+			logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
+			defer logger.Close()
 
 			go func() {
 				if err := grpcServer(port, authManager, sid, logger); err != nil {
@@ -146,11 +144,9 @@ func gatewayServerCmd() cli.Command {
 			authManager := manager.NewJWTManager(secret, tokenDuration)
 
 			var logger *addonsLogger.Logger
-			if getEnv("ENV", "LOCAL") != "LOCAL" {
-				logrus.Println("[stating utility] Connecting to Fluentd ")
-				logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
-				defer logger.Close()
-			}
+			logrus.Println("[stating utility] Connecting to Fluentd ")
+			logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
+			defer logger.Close()
 
 			go func() {
 				if err := httpGatewayServer(port, grpcEndpoint, authManager, sid, logger); err != nil {
@@ -208,11 +204,9 @@ func grpcGatewayServerCmd() cli.Command {
 			authManager := manager.NewJWTManager(secret, tokenDuration)
 
 			var logger *addonsLogger.Logger
-			if getEnv("ENV", "LOCAL") != "LOCAL" {
-				logrus.Println("[stating utility] Connecting to Fluentd ")
-				logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
-				defer logger.Close()
-			}
+			logrus.Println("[stating utility] Connecting to Fluentd ")
+			logger = addonsLogger.NewLogger(config.LoggerPort, config.LoggerHost, config.LoggerTag)
+			defer logger.Close()
 
 			go func() {
 				if err := grpcServer(rpcPort, authManager, sid, logger); err != nil {
