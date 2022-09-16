@@ -162,6 +162,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 			bson.M{"description": bson.M{"$regex": req.Search, "$options": "i"}},
 			bson.M{"username": bson.M{"$regex": req.Search, "$options": "i"}},
 			bson.M{"companyname": bson.M{"$regex": req.Search, "$options": "i"}},
+			bson.M{"key": bson.M{"$regex": req.Search, "$options": "i"}},
 		}
 	}
 
