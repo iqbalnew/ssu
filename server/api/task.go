@@ -2826,9 +2826,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
 				task.Data = string(dataUpdate)
+				logrus.Println("Abod task======>, %s", task.Data)
 				if isFirst {
 					task.DataBak = task.Data
+					logrus.Println("Abod task======>, %s", task.DataBak)
 				}
+				logrus.Println("Abod task======>, %s", task.DataBak)
 				task.FeatureID = res.Data.Id
 				reUpdate = true
 			}
