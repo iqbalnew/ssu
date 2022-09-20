@@ -1158,6 +1158,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	originalCtx := ctx
 
+	re := regexp.MustCompile("^[a-zA-Z0-9.!)]")
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
@@ -1505,8 +1507,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByID = currentUser.UserID
 		task.LastRejectedByName = currentUser.Username
 
-		re := regexp.MustCompile("^[a-zA-Z0-9.!)]")
-
 		if req.Comment != "" {
 			if !re.MatchString(req.Comment) {
 				return &pb.SetTaskResponse{
@@ -1790,7 +1790,15 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByName = currentUser.Username
 
 		if req.Comment != "" {
-			task.Comment = req.Comment
+			if !re.MatchString(req.Comment) {
+				return &pb.SetTaskResponse{
+					Error:   true,
+					Code:    400,
+					Message: "Comment must be alphanumeric",
+				}, nil
+			} else {
+				task.Comment = req.Comment
+			}
 		} else {
 			task.Comment = "-"
 		}
