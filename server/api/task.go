@@ -1201,11 +1201,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if req.Comment != "" {
-		task.Comment = req.Comment
+		task.Comment = stripHtmlRegex(req.Comment)
 	}
 
 	if req.Reasons != "" {
-		task.Reasons = stripHtmlRegex(req.Reasons)
+		task.Reasons = req.Reasons
 	}
 
 	sendTask := false
@@ -1505,13 +1505,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByName = currentUser.Username
 
 		if req.Comment != "" {
-			task.Comment = req.Comment
+			task.Comment = stripHtmlRegex(req.Comment)
 		} else {
 			task.Comment = "-"
 		}
 
 		if req.Reasons != "" {
-			task.Reasons = stripHtmlRegex(req.Reasons)
+			task.Reasons = req.Reasons
 		} else {
 			task.Reasons = "-"
 		}
@@ -1778,13 +1778,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByName = currentUser.Username
 
 		if req.Comment != "" {
-			task.Comment = req.Comment
+			task.Comment = stripHtmlRegex(req.Comment)
 		} else {
 			task.Comment = "-"
 		}
 
 		if req.Reasons != "" {
-			task.Reasons = stripHtmlRegex(req.Reasons)
+			task.Reasons = req.Reasons
 		} else {
 			task.Reasons = "-"
 		}
