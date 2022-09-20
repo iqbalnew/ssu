@@ -50,6 +50,7 @@ func (p *GormProvider) SaveLog(ctx context.Context, log *ActivityLog) error {
 	}
 
 	log.Type = strings.Replace(log.Type, ":", "_", -1)
+	log.Type = strings.Replace(log.Type, " ", "_", -1)
 	log.Type = strings.ToLower(log.Type)
 
 	err := p.mongo.Collection.Save(log)

@@ -1201,7 +1201,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if req.Comment != "" {
-		task.Comment = req.Comment
+		task.Comment = stripHtmlRegex(req.Comment)
 	}
 
 	if req.Reasons != "" {
@@ -1505,7 +1505,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByName = currentUser.Username
 
 		if req.Comment != "" {
-			task.Comment = req.Comment
+			task.Comment = stripHtmlRegex(req.Comment)
 		} else {
 			task.Comment = "-"
 		}
@@ -1645,7 +1645,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						}
 					}
 					task.Status = 7
-
 				}
 				// }
 				// if currentStatus == 6 {
@@ -1779,7 +1778,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByName = currentUser.Username
 
 		if req.Comment != "" {
-			task.Comment = req.Comment
+			task.Comment = stripHtmlRegex(req.Comment)
 		} else {
 			task.Comment = "-"
 		}
