@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -1504,8 +1505,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByID = currentUser.UserID
 		task.LastRejectedByName = currentUser.Username
 
+		re := regexp.MustCompile("^[a-zA-Z0-9.!)]")
+
 		if req.Comment != "" {
-			task.Comment = req.Comment
+			if !re.MatchString(req.Comment) {
+				return &pb.SetTaskResponse{
+					Error:   true,
+					Code:    400,
+					Message: "Comment must be alphanumeric",
+				}, nil
+			} else {
+				task.Comment = req.Comment
+			}
 		} else {
 			task.Comment = "-"
 		}
