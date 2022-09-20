@@ -1511,7 +1511,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 
 		if req.Reasons != "" {
-			task.Reasons = req.Reasons
+			task.Reasons = stripHtmlRegex(req.Reasons)
 		} else {
 			task.Reasons = "-"
 		}
