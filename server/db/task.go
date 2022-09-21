@@ -86,7 +86,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 
 	roleidstring := "["
 	for i, roleid := range roleids {
-		if i > 1 {
+		if i > 0 {
 			roleidstring = fmt.Sprintf("%s,%d", roleidstring, roleid)
 		} else {
 			roleidstring = fmt.Sprintf("%s%d", roleidstring, roleid)
