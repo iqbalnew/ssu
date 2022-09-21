@@ -2,7 +2,6 @@ package api
 
 import (
 	"os"
-	"regexp"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -136,12 +135,12 @@ func contains(s []string, e string) bool {
 	return false
 }
 
-func stripHtmlRegex(s string) string {
-	const regex = `<.*?>`
-	match, _ := regexp.MatchString(regex, s)
-	if match {
-		r := regexp.MustCompile(regex)
-		return r.ReplaceAllString(s, "")
-	}
-	return s
-}
+// func stripHtmlRegex(s string) string {
+// 	const regex = `^[a-zA-Z0-9 \\n!@*():;_\\-?/+.,<>]+$`
+// 	match, _ := regexp.MatchString(regex, s)
+// 	if match {
+// 		r := regexp.MustCompile(regex)
+// 		return r.ReplaceAllString(s, "")
+// 	}
+// 	return s
+// }

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -1157,6 +1158,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	originalCtx := ctx
 
+	re := regexp.MustCompile(`(<[a-z,\/]+.*?>)`)
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
@@ -1201,7 +1204,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if req.Comment != "" {
-		task.Comment = stripHtmlRegex(req.Comment)
+		task.Comment = req.Comment
 	}
 
 	if req.Reasons != "" {
@@ -1505,7 +1508,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByName = currentUser.Username
 
 		if req.Comment != "" {
-			task.Comment = stripHtmlRegex(req.Comment)
+			if re.MatchString(req.Comment) {
+				logrus.Errorf(`Error ---> Invalid Rework Comment Characters: %s`, req.Comment)
+				return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
+			} else {
+				task.Comment = req.Comment
+			}
 		} else {
 			task.Comment = "-"
 		}
@@ -1645,6 +1653,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						}
 					}
 					task.Status = 7
+
 				}
 				// }
 				// if currentStatus == 6 {
@@ -1778,7 +1787,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByName = currentUser.Username
 
 		if req.Comment != "" {
-			task.Comment = stripHtmlRegex(req.Comment)
+			if re.MatchString(req.Comment) {
+				logrus.Errorf(`Error ---> Invalid Reject Comment Characters: %s`, req.Comment)
+				return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
+			} else {
+				task.Comment = req.Comment
+			}
 		} else {
 			task.Comment = "-"
 		}
