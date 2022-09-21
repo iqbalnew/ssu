@@ -1158,7 +1158,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	originalCtx := ctx
 
-	re := regexp.MustCompile("^[a-zA-Z0-9.!()?]")
+	re := regexp.MustCompile(`(<[a-z,\/]+.*?>)`)
 
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
@@ -1508,12 +1508,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByName = currentUser.Username
 
 		if req.Comment != "" {
-			if !re.MatchString(req.Comment) {
-				return &pb.SetTaskResponse{
-					Error:   true,
-					Code:    400,
-					Message: "Comment must be alphanumeric (Letter A-Z, Number 0-9 and .!()?)",
-				}, nil
+			if re.MatchString(req.Comment) {
+				logrus.Errorf(`Error ---> Invalid Rework Comment Characters: %s`, req.Comment)
+				return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
 			} else {
 				task.Comment = req.Comment
 			}
@@ -1790,12 +1787,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByName = currentUser.Username
 
 		if req.Comment != "" {
-			if !re.MatchString(req.Comment) {
-				return &pb.SetTaskResponse{
-					Error:   true,
-					Code:    400,
-					Message: "Comment must be alphanumeric (Letter A-Z, Number 0-9 and .!()?)",
-				}, nil
+			if re.MatchString(req.Comment) {
+				logrus.Errorf(`Error ---> Invalid Reject Comment Characters: %s`, req.Comment)
+				return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
 			} else {
 				task.Comment = req.Comment
 			}

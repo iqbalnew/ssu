@@ -134,3 +134,13 @@ func contains(s []string, e string) bool {
 	}
 	return false
 }
+
+// func stripHtmlRegex(s string) string {
+// 	const regex = `^[a-zA-Z0-9 \\n!@*():;_\\-?/+.,<>]+$`
+// 	match, _ := regexp.MatchString(regex, s)
+// 	if match {
+// 		r := regexp.MustCompile(regex)
+// 		return r.ReplaceAllString(s, "")
+// 	}
+// 	return s
+// }
