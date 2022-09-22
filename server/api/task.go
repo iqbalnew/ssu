@@ -1830,7 +1830,23 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if task.DataBak != "" && task.DataBak != "{}" {
 				task.Status = 4
 				task.Step = 3
-				task.Data = task.DataBak
+
+				if task.Type == "Subscription" {
+					taskSubscription := abonnement_pb.Abonnement{}
+
+					json.Unmarshal([]byte(task.Data), &taskSubscription)
+					lastTransStat := taskSubscription.BillingStatus
+					json.Unmarshal([]byte(task.DataBak), &taskSubscription)
+					taskSubscription.BillingStatus = lastTransStat
+					marsData, err := json.Marshal(&taskSubscription)
+					if err != nil {
+						logrus.Println("Error Marshal Childs")
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+					task.Data = string(marsData)
+				} else {
+					task.Data = task.DataBak
+				}
 			}
 		}
 
