@@ -968,9 +968,12 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	res := &pb.SaveTaskResponse{
 		Success: true,
 		Data: &pb.Task{
-			TaskID:      task.TaskID,
-			Data:        task.Data,
-			WorkflowDoc: task.WorkflowDoc,
+			TaskID:        task.TaskID,
+			Data:          task.Data,
+			WorkflowDoc:   task.WorkflowDoc,
+			CompanyID:     task.CompanyID,
+			CreatedByID:   task.CreatedByID,
+			CreatedByName: task.CreatedByName,
 		},
 	}
 
