@@ -23,14 +23,17 @@ func setHeaderHandler(h http.Handler, sid *shortid.Shortid) http.Handler {
 		w.Header().Set("Strict-Transport-Security", "max-age=31536000")
 
 		if allowedOrigin(r.Header.Get("Origin")) {
-			w.Header().Set("Content-Security-Policy", "object-src 'none'; child-src 'none'; script-src 'unsafe-inline' https: http: ")
-			w.Header().Set("X-Content-Type-Options", "nosniff")
-			w.Header().Set("X-Frame-Options", "DENY")
-			w.Header().Set("X-Permitted-Cross-Domain-Policies", "none")
-			w.Header().Set("X-XSS-Protection", "1; mode=block")
-			w.Header().Set("Permissions-Policy", "geolocation=()")
+			if getEnv("ENV", "DEV") != "PROD" {
+				w.Header().Set("Content-Security-Policy", "object-src 'none'; child-src 'none'; script-src 'unsafe-inline' https: http: ")
+				w.Header().Set("X-Content-Type-Options", "nosniff")
+				w.Header().Set("X-Frame-Options", "DENY")
+				w.Header().Set("X-Permitted-Cross-Domain-Policies", "none")
+				w.Header().Set("X-XSS-Protection", "1; mode=block")
+				w.Header().Set("Permissions-Policy", "geolocation=()")
+				w.Header().Set("Referrer-Policy", "no-referrer")
 
-			w.Header().Set("Access-Control-Allow-Origin", strings.Join(config.CorsAllowedOrigins, ", "))
+				w.Header().Set("Access-Control-Allow-Origin", strings.Join(config.CorsAllowedOrigins, ", "))
+			}
 			w.Header().Set("Access-Control-Allow-Methods", strings.Join(config.CorsAllowedMethods, ", "))
 			w.Header().Set("Access-Control-Allow-Headers", strings.Join(config.CorsAllowedHeaders, ", "))
 
@@ -57,6 +60,28 @@ func setHeaderHandler(h http.Handler, sid *shortid.Shortid) http.Handler {
 	}
 
 	return http.HandlerFunc(fn)
+}
+
+func originMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		referer := r.Header.Get("Referer")
+		envOrigin := r.Header.Get("ENV-Allow-Origin")
+		logrus.Infof("Origin: %v - Ref: %v - ENV: %v", origin, referer, envOrigin)
+
+		if getEnv("ENV", "DEV") == "PROD" {
+			if origin != "" && origin != envOrigin {
+				http.Error(w, "Service Unavailable", http.StatusServiceUnavailable)
+				return
+			}
+			if referer != "" && !strings.Contains(referer, envOrigin) {
+				http.Error(w, "Service Unavailable", http.StatusServiceUnavailable)
+				return
+			}
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 type HTTPReqInfo struct {
