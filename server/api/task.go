@@ -512,6 +512,8 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 }
 
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
+	logrus.Println("SaveTaskWithData Task Type:", req.Task.Type)
+
 	if req.Task.Type == "Swift" {
 		logrus.Println("SaveTaskWithData =================> 1")
 	}
