@@ -299,7 +299,7 @@ func httpGatewayServer(port int, grpcEndpoint string, authManager *manager.JWTMa
 
 	// Serve the swagger-ui and swagger file
 	mux := http.NewServeMux()
-	mux.Handle("/", rmux)
+	mux.Handle("/", originMiddleware(rmux))
 
 	mux.HandleFunc("/api/task/docs/swagger.json", serveSwagger)
 	fs := http.FileServer(http.Dir("www/swagger-ui"))

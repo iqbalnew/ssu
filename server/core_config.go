@@ -55,7 +55,7 @@ func initConfig() {
 		ServiceName:         getEnv("SERVICE_NAME", "Task"),
 		ListenAddress:       fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")),
 		CorsAllowedHeaders:  []string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Content-Disposition", "Origin", "Content-Length", "Authorization", "ResponseType", "X-Requested-With", "X-Forwarded-For"},
-		CorsAllowedMethods:  []string{"GET", "POST", "PATCH", "DELETE", "PUT"},
+		CorsAllowedMethods:  []string{"GET", "POST"},
 		CorsAllowedOrigins:  []string{"*"},
 		JWTSecret:           getEnv("JWT_SECRET", "secret"),
 		JWTDuration:         getEnv("JWT_DURATION", "48h"),
