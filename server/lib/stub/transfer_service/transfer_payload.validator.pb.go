@@ -320,6 +320,33 @@ func (this *CreateTaskInternalMultipleResponse) Validate() error {
 	}
 	return nil
 }
+func (this *DecodePayrollFileRequest) Validate() error {
+	return nil
+}
+func (this *DecodePayrollFileResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *DecodePayrollData) Validate() error {
+	for _, item := range this.Rows {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Rows", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *DecodePayrollRow) Validate() error {
+	if !(this.Amount >= 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Amount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Amount))
+	}
+	return nil
+}
 func (this *GetTaskPayrollRequest) Validate() error {
 	return nil
 }
@@ -365,10 +392,10 @@ func (this *CreateTaskPayrollResponse) Validate() error {
 	}
 	return nil
 }
-func (this *DecodeFileRequest) Validate() error {
+func (this *DecodeBulkFileRequest) Validate() error {
 	return nil
 }
-func (this *DecodeFileResponse) Validate() error {
+func (this *DecodeBulkFileResponse) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
@@ -376,7 +403,7 @@ func (this *DecodeFileResponse) Validate() error {
 	}
 	return nil
 }
-func (this *BulkData) Validate() error {
+func (this *DecodeBulkData) Validate() error {
 	for _, item := range this.Rows {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
@@ -386,7 +413,7 @@ func (this *BulkData) Validate() error {
 	}
 	return nil
 }
-func (this *BulkRow) Validate() error {
+func (this *DecodeBulkRow) Validate() error {
 	if !(this.Amount >= 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Amount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Amount))
 	}
