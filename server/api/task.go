@@ -512,6 +512,8 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 }
 
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
+	logrus.Println("SaveTaskWithData Task Type:", req.Task.Type)
+
 	if req.Task.Type == "Swift" {
 		logrus.Println("SaveTaskWithData =================> 1")
 	}
@@ -966,7 +968,12 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	res := &pb.SaveTaskResponse{
 		Success: true,
 		Data: &pb.Task{
-			TaskID: task.TaskID,
+			TaskID:        task.TaskID,
+			Data:          task.Data,
+			WorkflowDoc:   task.WorkflowDoc,
+			CompanyID:     task.CompanyID,
+			CreatedByID:   task.CreatedByID,
+			CreatedByName: task.CreatedByName,
 		},
 	}
 
@@ -1863,7 +1870,23 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if task.DataBak != "" && task.DataBak != "{}" {
 				task.Status = 4
 				task.Step = 3
-				task.Data = task.DataBak
+
+				if task.Type == "Subscription" {
+					taskSubscription := abonnement_pb.Abonnement{}
+
+					json.Unmarshal([]byte(task.Data), &taskSubscription)
+					lastTransStat := taskSubscription.BillingStatus
+					json.Unmarshal([]byte(task.DataBak), &taskSubscription)
+					taskSubscription.BillingStatus = lastTransStat
+					marsData, err := json.Marshal(&taskSubscription)
+					if err != nil {
+						logrus.Println("Error Marshal Childs")
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+					task.Data = string(marsData)
+				} else {
+					task.Data = task.DataBak
+				}
 			}
 		}
 
