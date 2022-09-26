@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/db"
 	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
@@ -965,6 +966,8 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		return nil, err
 	}
 
+	var createdAt, updatedAt time.Time = *task.CreatedAt, *task.UpdatedAt
+
 	res := &pb.SaveTaskResponse{
 		Success: true,
 		Data: &pb.Task{
@@ -974,6 +977,8 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 			CompanyID:     task.CompanyID,
 			CreatedByID:   task.CreatedByID,
 			CreatedByName: task.CreatedByName,
+			CreatedAt:     timestamppb.New(createdAt),
+			UpdatedAt:     timestamppb.New(updatedAt),
 		},
 	}
 
