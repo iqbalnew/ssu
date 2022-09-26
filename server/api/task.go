@@ -1230,7 +1230,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	currentDataBak := task.DataBak
 
 	if currentStep == 3 {
-		if currentStatus == 1 {
+		if currentStatus == 1 || currentStatus == 6 {
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 			companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
@@ -1295,6 +1295,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						account := account_pb.Account{}
 						json.Unmarshal([]byte(task.Childs[i].Data), &account)
 
+						if currentUser.UserType != "ba" && currentUser.CompanyID != account.CompanyID {
+							return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+						}
+
 						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 							CompanyID: account.CompanyID,
 						})
@@ -1313,6 +1317,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				} else {
 					account := account_pb.Account{}
 					json.Unmarshal([]byte(task.Data), &account)
+
+					if currentUser.UserType != "ba" && currentUser.CompanyID != account.CompanyID {
+						return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+					}
 
 					company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 						CompanyID: account.CompanyID,
@@ -1333,6 +1341,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				abonnement := abonnement_pb.ListTaskAbonnementRes{}
 				json.Unmarshal([]byte(task.Data), &abonnement)
 
+				if currentUser.UserType != "ba" && currentUser.CompanyID != abonnement.CompanyID {
+					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+				}
+
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 					CompanyID: abonnement.CompanyID,
 				})
@@ -1351,6 +1363,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
 				json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
 
+				if currentUser.UserType != "ba" && currentUser.CompanyID != beneficiaryAccount.CompanyID {
+					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+				}
+
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 					CompanyID: beneficiaryAccount.CompanyID,
 				})
@@ -1368,6 +1384,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if task.Type == "Role" {
 				role := role_pb.Role{}
 				json.Unmarshal([]byte(task.Data), &role)
+
+				if currentUser.UserType != "ba" && currentUser.CompanyID != role.CompanyID {
+					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+				}
 
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 					CompanyID: role.CompanyID,
@@ -1388,6 +1408,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				json.Unmarshal([]byte(task.Data), &workflow)
 				companyID, _ := strconv.ParseUint(workflow.Company.CompanyID, 10, 64)
 
+				if currentUser.UserType != "ba" && currentUser.CompanyID != companyID {
+					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+				}
+
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 					CompanyID: companyID,
 				})
@@ -1406,6 +1430,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				users := users_pb.UserTaskData{}
 				json.Unmarshal([]byte(task.Data), &users)
 
+				if currentUser.UserType != "ba" && currentUser.CompanyID != users.User.CompanyID {
+					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+				}
+
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 					CompanyID: users.User.CompanyID,
 				})
@@ -1423,6 +1451,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if task.Type == "Notification" {
 				notification := notification_pb.NotificationCompany{}
 				json.Unmarshal([]byte(task.Data), &notification)
+
+				if currentUser.UserType != "ba" && currentUser.CompanyID != notification.CompanyID {
+					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+				}
 
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 					CompanyID: notification.CompanyID,
@@ -1443,6 +1475,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				company := company_pb.CreateCompanyTaskReq{}
 				json.Unmarshal([]byte(task.Data), &company)
 
+				if currentUser.UserType != "ba" && currentUser.CompanyID != company.Company.CompanyID {
+					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+				}
+
 				companyBRICaMS, err := companyClient.BRICaMSgetCustomerByIDV2(ctx, &company_pb.BricamsGetCustomerByIdReq{
 					Id: fmt.Sprintf("%v", company.Company.CompanyID),
 				})
@@ -1458,6 +1494,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if task.Type == "Announcement" {
 				announcement := announcement_pb.Announcement{}
 				json.Unmarshal([]byte(task.Data), &announcement)
+
+				if currentUser.UserType != "ba" && currentUser.CompanyID != announcement.CompanyID {
+					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+				}
 
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 					CompanyID: announcement.CompanyID,
@@ -1835,7 +1875,23 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if task.DataBak != "" && task.DataBak != "{}" {
 				task.Status = 4
 				task.Step = 3
-				task.Data = task.DataBak
+
+				if task.Type == "Subscription" {
+					taskSubscription := abonnement_pb.Abonnement{}
+
+					json.Unmarshal([]byte(task.Data), &taskSubscription)
+					lastTransStat := taskSubscription.BillingStatus
+					json.Unmarshal([]byte(task.DataBak), &taskSubscription)
+					taskSubscription.BillingStatus = lastTransStat
+					marsData, err := json.Marshal(&taskSubscription)
+					if err != nil {
+						logrus.Println("Error Marshal Childs")
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+					task.Data = string(marsData)
+				} else {
+					task.Data = task.DataBak
+				}
 			}
 		}
 
