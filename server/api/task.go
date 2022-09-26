@@ -966,7 +966,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		return nil, err
 	}
 
-	saved, err := savedTask.ToPB()
+	saved, err := savedTask.ToPB(ctx)
 	if err != nil {
 		logrus.Errorln("Error save task with data to pb", err)
 	}
