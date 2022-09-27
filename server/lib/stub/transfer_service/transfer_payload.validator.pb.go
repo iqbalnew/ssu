@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
-	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -385,10 +385,22 @@ func (this *CreateTransferRequest) Validate() error {
 func (this *CreateTransferResponse) Validate() error {
 	return nil
 }
+func (this *CancelTransferRequest) Validate() error {
+	return nil
+}
+func (this *CancelTransferResponse) Validate() error {
+	return nil
+}
 func (this *CreateInquiryRequest) Validate() error {
 	return nil
 }
 func (this *CreateInquiryResponse) Validate() error {
+	return nil
+}
+func (this *CreateMassTransferRequest) Validate() error {
+	return nil
+}
+func (this *CreateMassTransferResponse) Validate() error {
 	return nil
 }
 func (this *GetTaskInternalBulkDetailRequest) Validate() error {

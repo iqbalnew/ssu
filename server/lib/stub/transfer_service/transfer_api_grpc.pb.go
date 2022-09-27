@@ -26,7 +26,9 @@ type ApiServiceClient interface {
 	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	GetPairRate(ctx context.Context, in *GetPairRateRequest, opts ...grpc.CallOption) (*GetPairRateResponse, error)
 	CreateTransfer(ctx context.Context, in *CreateTransferRequest, opts ...grpc.CallOption) (*CreateTransferResponse, error)
+	CancelTransfer(ctx context.Context, in *CancelTransferRequest, opts ...grpc.CallOption) (*CancelTransferResponse, error)
 	CreateInquiry(ctx context.Context, in *CreateInquiryRequest, opts ...grpc.CallOption) (*CreateInquiryResponse, error)
+	CreateMassTransfer(ctx context.Context, in *CreateMassTransferRequest, opts ...grpc.CallOption) (*CreateMassTransferResponse, error)
 	RunTransferJob(ctx context.Context, in *RunTransferJobRequest, opts ...grpc.CallOption) (*RunTransferJobResponse, error)
 	GetTaskInternalFile(ctx context.Context, in *GetTaskInternalFileRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	GetTaskInternalSingleTemplate(ctx context.Context, in *GetTaskInternalSingleTemplateRequest, opts ...grpc.CallOption) (*GetTaskInternalSingleTemplateResponse, error)
@@ -84,9 +86,27 @@ func (c *apiServiceClient) CreateTransfer(ctx context.Context, in *CreateTransfe
 	return out, nil
 }
 
+func (c *apiServiceClient) CancelTransfer(ctx context.Context, in *CancelTransferRequest, opts ...grpc.CallOption) (*CancelTransferResponse, error) {
+	out := new(CancelTransferResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CancelTransfer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) CreateInquiry(ctx context.Context, in *CreateInquiryRequest, opts ...grpc.CallOption) (*CreateInquiryResponse, error) {
 	out := new(CreateInquiryResponse)
 	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateInquiry", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) CreateMassTransfer(ctx context.Context, in *CreateMassTransferRequest, opts ...grpc.CallOption) (*CreateMassTransferResponse, error) {
+	out := new(CreateMassTransferResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateMassTransfer", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +300,9 @@ type ApiServiceServer interface {
 	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
 	GetPairRate(context.Context, *GetPairRateRequest) (*GetPairRateResponse, error)
 	CreateTransfer(context.Context, *CreateTransferRequest) (*CreateTransferResponse, error)
+	CancelTransfer(context.Context, *CancelTransferRequest) (*CancelTransferResponse, error)
 	CreateInquiry(context.Context, *CreateInquiryRequest) (*CreateInquiryResponse, error)
+	CreateMassTransfer(context.Context, *CreateMassTransferRequest) (*CreateMassTransferResponse, error)
 	RunTransferJob(context.Context, *RunTransferJobRequest) (*RunTransferJobResponse, error)
 	GetTaskInternalFile(context.Context, *GetTaskInternalFileRequest) (*httpbody.HttpBody, error)
 	GetTaskInternalSingleTemplate(context.Context, *GetTaskInternalSingleTemplateRequest) (*GetTaskInternalSingleTemplateResponse, error)
@@ -317,8 +339,14 @@ func (UnimplementedApiServiceServer) GetPairRate(context.Context, *GetPairRateRe
 func (UnimplementedApiServiceServer) CreateTransfer(context.Context, *CreateTransferRequest) (*CreateTransferResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTransfer not implemented")
 }
+func (UnimplementedApiServiceServer) CancelTransfer(context.Context, *CancelTransferRequest) (*CancelTransferResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CancelTransfer not implemented")
+}
 func (UnimplementedApiServiceServer) CreateInquiry(context.Context, *CreateInquiryRequest) (*CreateInquiryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInquiry not implemented")
+}
+func (UnimplementedApiServiceServer) CreateMassTransfer(context.Context, *CreateMassTransferRequest) (*CreateMassTransferResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMassTransfer not implemented")
 }
 func (UnimplementedApiServiceServer) RunTransferJob(context.Context, *RunTransferJobRequest) (*RunTransferJobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunTransferJob not implemented")
@@ -447,6 +475,24 @@ func _ApiService_CreateTransfer_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_CancelTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelTransferRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CancelTransfer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/CancelTransfer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CancelTransfer(ctx, req.(*CancelTransferRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_CreateInquiry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateInquiryRequest)
 	if err := dec(in); err != nil {
@@ -461,6 +507,24 @@ func _ApiService_CreateInquiry_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).CreateInquiry(ctx, req.(*CreateInquiryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_CreateMassTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMassTransferRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CreateMassTransfer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/CreateMassTransfer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CreateMassTransfer(ctx, req.(*CreateMassTransferRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -845,8 +909,16 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_CreateTransfer_Handler,
 		},
 		{
+			MethodName: "CancelTransfer",
+			Handler:    _ApiService_CancelTransfer_Handler,
+		},
+		{
 			MethodName: "CreateInquiry",
 			Handler:    _ApiService_CreateInquiry_Handler,
+		},
+		{
+			MethodName: "CreateMassTransfer",
+			Handler:    _ApiService_CreateMassTransfer_Handler,
 		},
 		{
 			MethodName: "RunTransferJob",

@@ -2145,6 +2145,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Step = 1
 			}
 		}
+
+		if task.Type == "Internal Fund Transafer" {
+
+			if req.Comment == "cancel" {
+
+				task.Status = 4
+				task.Step = 3
+
+			}
+
+		}
+
 	}
 
 	// if task.Type == "Menu:License" {
