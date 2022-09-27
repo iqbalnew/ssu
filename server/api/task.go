@@ -945,35 +945,43 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	logrus.Println("Task save ==> Task Type: ", task.Type)
 	logrus.Println("Task save ==> Task ID: ", task.TaskID)
 
+	var savedTask *pb.TaskORM
 	if req.TaskID > 0 {
 		command = "Update"
 		task.TaskID = req.TaskID
 		task.UpdatedByID = currentUser.UserID
 		task.UpdatedByName = currentUser.Username
 
-		_, err = s.provider.UpdateTask(ctx, &task, true)
+		savedTask, err = s.provider.UpdateTask(ctx, &task, true)
 	} else {
 		task.CreatedByID = currentUser.UserID
 		task.CreatedByName = currentUser.Username
 		task.UpdatedByID = currentUser.UserID
 		task.UpdatedByName = currentUser.Username
 
-		_, err = s.provider.CreateTask(ctx, &task)
+		savedTask, err = s.provider.CreateTask(ctx, &task)
 	}
 
 	if err != nil {
 		return nil, err
 	}
 
+	saved, err := savedTask.ToPB(ctx)
+	if err != nil {
+		logrus.Errorln("Error save task with data to pb", err)
+	}
+
 	res := &pb.SaveTaskResponse{
 		Success: true,
 		Data: &pb.Task{
-			TaskID:        task.TaskID,
-			Data:          task.Data,
-			WorkflowDoc:   task.WorkflowDoc,
-			CompanyID:     task.CompanyID,
-			CreatedByID:   task.CreatedByID,
-			CreatedByName: task.CreatedByName,
+			TaskID:        saved.TaskID,
+			Data:          saved.Data,
+			WorkflowDoc:   saved.WorkflowDoc,
+			CompanyID:     saved.CompanyID,
+			CreatedByID:   saved.CreatedByID,
+			CreatedByName: saved.CreatedByName,
+			CreatedAt:     saved.CreatedAt,
+			UpdatedAt:     saved.UpdatedAt,
 		},
 	}
 
