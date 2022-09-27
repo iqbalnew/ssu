@@ -2153,6 +2153,25 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Status = 4
 				task.Step = 3
 
+				var opts []grpc.DialOption
+				opts = append(opts, grpc.WithInsecure())
+
+				transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
+				if err != nil {
+					logrus.Errorln("Failed connect to Transfer Service: %v", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				defer transferConn.Close()
+
+				transferClient := transfer_pb.NewApiServiceClient(transferConn)
+
+				_, err = transferClient.CancelTransfer(ctx, &transfer_pb.CancelTransferRequest{
+					TaskID: req.GetTaskID(),
+				})
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				}
+
 			}
 
 		}
