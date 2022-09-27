@@ -3370,3 +3370,47 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 
 	return res, nil
 }
+
+func (s *Server) UpdateTaskRaw(ctx context.Context, req *pb.UpdateTaskRawReq) (*pb.SetTaskResponse, error) {
+	var err error
+	_, userMd, err := s.manager.GetMeFromMD(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	}
+
+	if strings.ToLower(req.Action) == "delete" {
+		allowed := checkAllowedApproval(userMd, req.Type, "data_entry:maker")
+		if !allowed {
+			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+		}
+	} else {
+		allowed := checkAllowedApproval(userMd, req.Type, "approve:signer")
+		if !allowed {
+			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+		}
+	}
+
+	task, _ := req.Task.ToORM(ctx)
+
+	updatedTask, err := s.provider.UpdateTask(ctx, &task, req.UpdateChild)
+	if err != nil {
+		return nil, err
+	}
+
+	taskPb, _ := updatedTask.ToPB(ctx)
+
+	result := &pb.SetTaskResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Task Updated",
+		Data:    &taskPb,
+	}
+
+	return result, nil
+}
