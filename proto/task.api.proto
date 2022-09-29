@@ -175,6 +175,10 @@ service TaskService {
 
     rpc UpdateTaskData(UpdateTaskDataReq) returns (UpdateTaskDataRes){
     }
+
+
+    rpc UpdateTaskRaw(UpdateTaskRawReq) returns (SetTaskResponse){
+    }
 }
 
 

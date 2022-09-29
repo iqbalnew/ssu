@@ -859,7 +859,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	product := productData.Data[0]
 
-	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Import LC"}
+	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Import LC", "Internal Fund Transfer"}
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
 		if req.Task.Type == "Swift" {
@@ -2145,6 +2145,37 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Step = 1
 			}
 		}
+
+		if task.Type == "Internal Fund Transafer" {
+
+			if req.Comment == "cancel" {
+
+				task.Status = 4
+				task.Step = 3
+
+				var opts []grpc.DialOption
+				opts = append(opts, grpc.WithInsecure())
+
+				transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
+				if err != nil {
+					logrus.Errorln("Failed connect to Transfer Service: %v", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				defer transferConn.Close()
+
+				transferClient := transfer_pb.NewApiServiceClient(transferConn)
+
+				_, err = transferClient.CancelTransfer(ctx, &transfer_pb.CancelTransferRequest{
+					TaskID: req.GetTaskID(),
+				})
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				}
+
+			}
+
+		}
+
 	}
 
 	// if task.Type == "Menu:License" {
@@ -3369,4 +3400,48 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 	}
 
 	return res, nil
+}
+
+func (s *Server) UpdateTaskRaw(ctx context.Context, req *pb.UpdateTaskRawReq) (*pb.SetTaskResponse, error) {
+	var err error
+	_, userMd, err := s.manager.GetMeFromMD(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	}
+
+	if strings.ToLower(req.Action) == "delete" {
+		allowed := checkAllowedApproval(userMd, req.Type, "data_entry:maker")
+		if !allowed {
+			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+		}
+	} else {
+		allowed := checkAllowedApproval(userMd, req.Type, "approve:signer")
+		if !allowed {
+			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+		}
+	}
+
+	task, _ := req.Task.ToORM(ctx)
+
+	updatedTask, err := s.provider.UpdateTask(ctx, &task, req.UpdateChild)
+	if err != nil {
+		return nil, err
+	}
+
+	taskPb, _ := updatedTask.ToPB(ctx)
+
+	result := &pb.SetTaskResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Task Updated",
+		Data:    &taskPb,
+	}
+
+	return result, nil
 }

@@ -52,82 +52,7 @@ func (this *GetPairRateResponse) Validate() error {
 func (this *Rate) Validate() error {
 	return nil
 }
-func (this *InternalSingleData) Validate() error {
-	if !(this.Amount >= 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Amount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Amount))
-	}
-	if !(this.ExchangeRate >= 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("ExchangeRate", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.ExchangeRate))
-	}
-	if !(this.ReceivedAmount >= 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("ReceivedAmount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.ReceivedAmount))
-	}
-	if this.RecurringPeriodStart != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RecurringPeriodStart); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("RecurringPeriodStart", err)
-		}
-	}
-	if this.RecurringPeriodEnd != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RecurringPeriodEnd); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("RecurringPeriodEnd", err)
-		}
-	}
-	if this.ScheduledAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
-		}
-	}
-	return nil
-}
-func (this *TaskInternalSingleData) Validate() error {
-	if this.Task != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
-		}
-	}
-	if this.Data != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
-		}
-	}
-	return nil
-}
-func (this *InternalMultipleData) Validate() error {
-	for _, item := range this.Receivers {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Receivers", err)
-			}
-		}
-	}
-	return nil
-}
 func (this *PayrollData) Validate() error {
-	if this.ScheduledAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
-		}
-	}
-	if !(this.Amount >= 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Amount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Amount))
-	}
-	for _, item := range this.Items {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Items", err)
-			}
-		}
-	}
-	for _, item := range this.Validation {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Validation", err)
-			}
-		}
-	}
-	return nil
-}
-func (this *PayrollDataJob) Validate() error {
 	if this.ScheduledAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
@@ -199,9 +124,6 @@ func (this *InternalBulkDataRequest) Validate() error {
 	}
 	return nil
 }
-func (this *InternalBulkData) Validate() error {
-	return nil
-}
 func (this *InternalBulkReceiverData) Validate() error {
 	if !(this.Amount >= 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Amount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Amount))
@@ -214,30 +136,7 @@ func (this *InternalBulkReceiverData) Validate() error {
 	}
 	return nil
 }
-func (this *TaskInternalMultipleData) Validate() error {
-	if this.Task != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
-		}
-	}
-	if this.Data != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
-		}
-	}
-	return nil
-}
-func (this *TaskInternalBulkData) Validate() error {
-	if this.Task != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
-		}
-	}
-	if this.Data != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
-		}
-	}
+func (this *InternalBulkData) Validate() error {
 	return nil
 }
 func (this *TaskInternalBulkReceiverData) Validate() error {
@@ -249,6 +148,46 @@ func (this *TaskInternalBulkReceiverData) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *TaskInternalSingleData) Validate() error {
+	if this.Task != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
+		}
+	}
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *InternalSingleData) Validate() error {
+	if !(this.Amount >= 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Amount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Amount))
+	}
+	if !(this.ExchangeRate >= 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("ExchangeRate", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.ExchangeRate))
+	}
+	if !(this.ReceivedAmount >= 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("ReceivedAmount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.ReceivedAmount))
+	}
+	if this.RecurringPeriodStart != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RecurringPeriodStart); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("RecurringPeriodStart", err)
+		}
+	}
+	if this.RecurringPeriodEnd != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RecurringPeriodEnd); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("RecurringPeriodEnd", err)
+		}
+	}
+	if this.ScheduledAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
 		}
 	}
 	return nil
@@ -300,6 +239,16 @@ func (this *CreateTaskInternalSingleResponse) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *InternalMultipleData) Validate() error {
+	for _, item := range this.Receivers {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Receivers", err)
+			}
 		}
 	}
 	return nil
@@ -377,9 +326,9 @@ func (this *GetTaskPayrollDetailResponse) Validate() error {
 	return nil
 }
 func (this *CreateTaskPayrollRequest) Validate() error {
-	if this.Data != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+	if this.ScheduledAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
 		}
 	}
 	return nil
@@ -390,6 +339,9 @@ func (this *CreateTaskPayrollResponse) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 		}
 	}
+	return nil
+}
+func (this *CreateTaskPayrollResponseData) Validate() error {
 	return nil
 }
 func (this *DecodeBulkFileRequest) Validate() error {
@@ -433,10 +385,22 @@ func (this *CreateTransferRequest) Validate() error {
 func (this *CreateTransferResponse) Validate() error {
 	return nil
 }
+func (this *CancelTransferRequest) Validate() error {
+	return nil
+}
+func (this *CancelTransferResponse) Validate() error {
+	return nil
+}
 func (this *CreateInquiryRequest) Validate() error {
 	return nil
 }
 func (this *CreateInquiryResponse) Validate() error {
+	return nil
+}
+func (this *CreateMassTransferRequest) Validate() error {
+	return nil
+}
+func (this *CreateMassTransferResponse) Validate() error {
 	return nil
 }
 func (this *GetTaskInternalBulkDetailRequest) Validate() error {
@@ -484,6 +448,19 @@ func (this *GetTaskInternalBulkResponse) Validate() error {
 	if this.Pagination != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
+func (this *TaskInternalBulkData) Validate() error {
+	if this.Task != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
+		}
+	}
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 		}
 	}
 	return nil

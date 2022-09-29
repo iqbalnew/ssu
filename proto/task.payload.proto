@@ -395,3 +395,9 @@ message RejectBySystemRes {
     bool success = 1;
  }
 
+ message UpdateTaskRawReq {
+    Task task = 1;
+    string type = 2;
+    string action = 3;
+    bool updateChild = 4;
+ }

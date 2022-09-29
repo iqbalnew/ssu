@@ -3347,6 +3347,77 @@ func (x *UpdateTaskDataRes) GetSuccess() bool {
 	return false
 }
 
+type UpdateTaskRawReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Task        *Task  `protobuf:"bytes,1,opt,name=task,proto3" json:"task,omitempty"`
+	Type        string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	Action      string `protobuf:"bytes,3,opt,name=action,proto3" json:"action,omitempty"`
+	UpdateChild bool   `protobuf:"varint,4,opt,name=updateChild,proto3" json:"updateChild,omitempty"`
+}
+
+func (x *UpdateTaskRawReq) Reset() {
+	*x = UpdateTaskRawReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_task_payload_proto_msgTypes[48]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateTaskRawReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateTaskRawReq) ProtoMessage() {}
+
+func (x *UpdateTaskRawReq) ProtoReflect() protoreflect.Message {
+	mi := &file_task_payload_proto_msgTypes[48]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateTaskRawReq.ProtoReflect.Descriptor instead.
+func (*UpdateTaskRawReq) Descriptor() ([]byte, []int) {
+	return file_task_payload_proto_rawDescGZIP(), []int{48}
+}
+
+func (x *UpdateTaskRawReq) GetTask() *Task {
+	if x != nil {
+		return x.Task
+	}
+	return nil
+}
+
+func (x *UpdateTaskRawReq) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *UpdateTaskRawReq) GetAction() string {
+	if x != nil {
+		return x.Action
+	}
+	return ""
+}
+
+func (x *UpdateTaskRawReq) GetUpdateChild() bool {
+	if x != nil {
+		return x.UpdateChild
+	}
+	return false
+}
+
 type GetActivityLogsRes_ActivityLogPagination struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3362,7 +3433,7 @@ type GetActivityLogsRes_ActivityLogPagination struct {
 func (x *GetActivityLogsRes_ActivityLogPagination) Reset() {
 	*x = GetActivityLogsRes_ActivityLogPagination{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_task_payload_proto_msgTypes[48]
+		mi := &file_task_payload_proto_msgTypes[49]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3375,7 +3446,7 @@ func (x *GetActivityLogsRes_ActivityLogPagination) String() string {
 func (*GetActivityLogsRes_ActivityLogPagination) ProtoMessage() {}
 
 func (x *GetActivityLogsRes_ActivityLogPagination) ProtoReflect() protoreflect.Message {
-	mi := &file_task_payload_proto_msgTypes[48]
+	mi := &file_task_payload_proto_msgTypes[49]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3992,8 +4063,16 @@ var file_task_payload_proto_rawDesc = []byte{
 	0x61, 0x74, 0x61, 0x22, 0x2d, 0x0a, 0x11, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x54, 0x61, 0x73,
 	0x6b, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x63, 0x63,
 	0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65,
-	0x73, 0x73, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x73, 0x73, 0x22, 0x8b, 0x01, 0x0a, 0x10, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x54, 0x61, 0x73,
+	0x6b, 0x52, 0x61, 0x77, 0x52, 0x65, 0x71, 0x12, 0x29, 0x0a, 0x04, 0x74, 0x61, 0x73, 0x6b, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x73, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x04, 0x74, 0x61,
+	0x73, 0x6b, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x20,
+	0x0a, 0x0b, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x68, 0x69, 0x6c, 0x64, 0x18, 0x04, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x0b, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x68, 0x69, 0x6c, 0x64,
+	0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -4009,7 +4088,7 @@ func file_task_payload_proto_rawDescGZIP() []byte {
 }
 
 var file_task_payload_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_task_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 49)
+var file_task_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 50)
 var file_task_payload_proto_goTypes = []interface{}{
 	(DownloadActivityLogsReq_Formats)(0),              // 0: task.service.v1.DownloadActivityLogsReq.Formats
 	(ListTaskRequestDirection)(0),                     // 1: task.service.v1.ListTaskRequest.direction
@@ -4061,50 +4140,52 @@ var file_task_payload_proto_goTypes = []interface{}{
 	(*GetTaskByIDRes)(nil),                            // 47: task.service.v1.GetTaskByIDRes
 	(*UpdateTaskDataReq)(nil),                         // 48: task.service.v1.UpdateTaskDataReq
 	(*UpdateTaskDataRes)(nil),                         // 49: task.service.v1.UpdateTaskDataRes
-	(*GetActivityLogsRes_ActivityLogPagination)(nil),  // 50: task.service.v1.GetActivityLogsRes.ActivityLogPagination
-	(*Task)(nil),                                      // 51: task.service.v1.Task
-	(structpb.NullValue)(0),                           // 52: google.protobuf.NullValue
-	(*timestamppb.Timestamp)(nil),                     // 53: google.protobuf.Timestamp
-	(Statuses)(0),                                     // 54: task.service.v1.statuses
-	(Steps)(0),                                        // 55: task.service.v1.steps
+	(*UpdateTaskRawReq)(nil),                          // 50: task.service.v1.UpdateTaskRawReq
+	(*GetActivityLogsRes_ActivityLogPagination)(nil),  // 51: task.service.v1.GetActivityLogsRes.ActivityLogPagination
+	(*Task)(nil),                                      // 52: task.service.v1.Task
+	(structpb.NullValue)(0),                           // 53: google.protobuf.NullValue
+	(*timestamppb.Timestamp)(nil),                     // 54: google.protobuf.Timestamp
+	(Statuses)(0),                                     // 55: task.service.v1.statuses
+	(Steps)(0),                                        // 56: task.service.v1.steps
 }
 var file_task_payload_proto_depIdxs = []int32{
-	51, // 0: task.service.v1.GenerateTaskWithWokflowRequest.task:type_name -> task.service.v1.Task
-	51, // 1: task.service.v1.SaveTaskRequest.task:type_name -> task.service.v1.Task
-	51, // 2: task.service.v1.SaveTaskResponse.data:type_name -> task.service.v1.Task
-	52, // 3: task.service.v1.errorBodyResponse.data:type_name -> google.protobuf.NullValue
-	51, // 4: task.service.v1.SetTaskResponse.data:type_name -> task.service.v1.Task
+	52, // 0: task.service.v1.GenerateTaskWithWokflowRequest.task:type_name -> task.service.v1.Task
+	52, // 1: task.service.v1.SaveTaskRequest.task:type_name -> task.service.v1.Task
+	52, // 2: task.service.v1.SaveTaskResponse.data:type_name -> task.service.v1.Task
+	53, // 3: task.service.v1.errorBodyResponse.data:type_name -> google.protobuf.NullValue
+	52, // 4: task.service.v1.SetTaskResponse.data:type_name -> task.service.v1.Task
 	17, // 5: task.service.v1.GetActivityLogsReq.filter:type_name -> task.service.v1.ActivityLogFilter
 	0,  // 6: task.service.v1.DownloadActivityLogsReq.fileformat:type_name -> task.service.v1.DownloadActivityLogsReq.Formats
 	17, // 7: task.service.v1.DownloadActivityLogsReq.filter:type_name -> task.service.v1.ActivityLogFilter
-	51, // 8: task.service.v1.ActivityLog.task:type_name -> task.service.v1.Task
-	53, // 9: task.service.v1.ActivityLog.createdAt:type_name -> google.protobuf.Timestamp
+	52, // 8: task.service.v1.ActivityLog.task:type_name -> task.service.v1.Task
+	54, // 9: task.service.v1.ActivityLog.createdAt:type_name -> google.protobuf.Timestamp
 	18, // 10: task.service.v1.GetActivityLogsRes.data:type_name -> task.service.v1.ActivityLog
-	50, // 11: task.service.v1.GetActivityLogsRes.pagination:type_name -> task.service.v1.GetActivityLogsRes.ActivityLogPagination
-	51, // 12: task.service.v1.ListTaskRequest.task:type_name -> task.service.v1.Task
+	51, // 11: task.service.v1.GetActivityLogsRes.pagination:type_name -> task.service.v1.GetActivityLogsRes.ActivityLogPagination
+	52, // 12: task.service.v1.ListTaskRequest.task:type_name -> task.service.v1.Task
 	1,  // 13: task.service.v1.ListTaskRequest.dir:type_name -> task.service.v1.ListTaskRequest.direction
-	51, // 14: task.service.v1.ListTaskPluckRequest.task:type_name -> task.service.v1.Task
-	51, // 15: task.service.v1.ListTaskResponse.data:type_name -> task.service.v1.Task
+	52, // 14: task.service.v1.ListTaskPluckRequest.task:type_name -> task.service.v1.Task
+	52, // 15: task.service.v1.ListTaskResponse.data:type_name -> task.service.v1.Task
 	24, // 16: task.service.v1.ListTaskResponse.pagination:type_name -> task.service.v1.PaginationResponse
-	54, // 17: task.service.v1.GraphStatusRequest.status:type_name -> task.service.v1.statuses
-	54, // 18: task.service.v1.GraphStatusColumnTypeRequest.status:type_name -> task.service.v1.statuses
+	55, // 17: task.service.v1.GraphStatusRequest.status:type_name -> task.service.v1.statuses
+	55, // 18: task.service.v1.GraphStatusColumnTypeRequest.status:type_name -> task.service.v1.statuses
 	31, // 19: task.service.v1.GraphStatusColumnTypeResponse.data:type_name -> task.service.v1.GraphStatusColumnType
-	54, // 20: task.service.v1.GraphStatus.status:type_name -> task.service.v1.statuses
+	55, // 20: task.service.v1.GraphStatus.status:type_name -> task.service.v1.statuses
 	32, // 21: task.service.v1.GraphStatusResponse.data:type_name -> task.service.v1.GraphStatus
-	55, // 22: task.service.v1.GraphStepRequest.step:type_name -> task.service.v1.steps
-	54, // 23: task.service.v1.GraphStepRequest.status:type_name -> task.service.v1.statuses
-	55, // 24: task.service.v1.GraphStep.step:type_name -> task.service.v1.steps
+	56, // 22: task.service.v1.GraphStepRequest.step:type_name -> task.service.v1.steps
+	55, // 23: task.service.v1.GraphStepRequest.status:type_name -> task.service.v1.statuses
+	56, // 24: task.service.v1.GraphStep.step:type_name -> task.service.v1.steps
 	35, // 25: task.service.v1.GraphStepResponse.data:type_name -> task.service.v1.GraphStep
-	54, // 26: task.service.v1.GraphStepWorkflow.status:type_name -> task.service.v1.statuses
+	55, // 26: task.service.v1.GraphStepWorkflow.status:type_name -> task.service.v1.statuses
 	38, // 27: task.service.v1.GetMyPendingTaskWithWorkflowGraphResponse.data:type_name -> task.service.v1.GraphStepWorkflow
-	51, // 28: task.service.v1.GetTaskByTypeIDRes.data:type_name -> task.service.v1.Task
-	54, // 29: task.service.v1.RejectBySystemReq.status:type_name -> task.service.v1.statuses
-	51, // 30: task.service.v1.GetTaskByIDRes.data:type_name -> task.service.v1.Task
-	31, // [31:31] is the sub-list for method output_type
-	31, // [31:31] is the sub-list for method input_type
-	31, // [31:31] is the sub-list for extension type_name
-	31, // [31:31] is the sub-list for extension extendee
-	0,  // [0:31] is the sub-list for field type_name
+	52, // 28: task.service.v1.GetTaskByTypeIDRes.data:type_name -> task.service.v1.Task
+	55, // 29: task.service.v1.RejectBySystemReq.status:type_name -> task.service.v1.statuses
+	52, // 30: task.service.v1.GetTaskByIDRes.data:type_name -> task.service.v1.Task
+	52, // 31: task.service.v1.UpdateTaskRawReq.task:type_name -> task.service.v1.Task
+	32, // [32:32] is the sub-list for method output_type
+	32, // [32:32] is the sub-list for method input_type
+	32, // [32:32] is the sub-list for extension type_name
+	32, // [32:32] is the sub-list for extension extendee
+	0,  // [0:32] is the sub-list for field type_name
 }
 
 func init() { file_task_payload_proto_init() }
@@ -4691,6 +4772,18 @@ func file_task_payload_proto_init() {
 			}
 		}
 		file_task_payload_proto_msgTypes[48].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateTaskRawReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_task_payload_proto_msgTypes[49].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetActivityLogsRes_ActivityLogPagination); i {
 			case 0:
 				return &v.state
@@ -4709,7 +4802,7 @@ func file_task_payload_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_task_payload_proto_rawDesc,
 			NumEnums:      2,
-			NumMessages:   49,
+			NumMessages:   50,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
