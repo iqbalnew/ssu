@@ -19,6 +19,7 @@ import (
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
+	swift_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/swift_service"
 	system_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/system_service"
 	transfer_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/transfer_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
@@ -86,6 +87,9 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 
 	case "Internal Fund Transfer":
 		_, key, err = TaskDataInternalSingleToPB(task.Data)
+
+	case "Swift":
+		_, key, err = TaskDataSwiftToPB(task.Data)
 
 	}
 
@@ -240,8 +244,8 @@ func TaskDataWorkflowToPB(data string) (val *workflow_pb.WorkflowTask, key strin
 	return &workflow, workflow.GetWorkflow().GetWorkflowCode(), nil
 }
 
-func TaskDataNotificationToPB(data string) (val *notification_pb.NotificationTask, key string, err error) {
-	notification := notification_pb.NotificationTask{}
+func TaskDataNotificationToPB(data string) (val *notification_pb.CreateNotificationRequest, key string, err error) {
+	notification := notification_pb.CreateNotificationRequest{}
 	err = json.Unmarshal([]byte(data), &notification)
 	if err != nil {
 		return nil, "", err
@@ -308,4 +312,14 @@ func TaskDataInternalSingleToPB(data string) (val *transfer_pb.InternalSingleDat
 	}
 
 	return internal, internal.DealCode, nil
+}
+
+func TaskDataSwiftToPB(data string) (val *swift_pb.RemittanceTransaction, key string, err error) {
+	swiftRemittance := &swift_pb.RemittanceTransaction{}
+	err = json.Unmarshal([]byte(data), &swiftRemittance)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return swiftRemittance, swiftRemittance.GetTRANSACTION_ID(), nil
 }
