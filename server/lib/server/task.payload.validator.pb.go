@@ -279,6 +279,12 @@ func (this *UpdateTaskDataReq) Validate() error {
 func (this *UpdateTaskDataRes) Validate() error {
 	return nil
 }
+func (this *UpdateTaskWorkflowReq) Validate() error {
+	return nil
+}
+func (this *UpdateTaskWorkflowRes) Validate() error {
+	return nil
+}
 func (this *UpdateTaskRawReq) Validate() error {
 	if this.Task != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {

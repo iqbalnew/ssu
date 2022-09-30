@@ -395,6 +395,16 @@ message RejectBySystemRes {
     bool success = 1;
  }
 
+ message UpdateTaskWorkflowReq {
+    string type = 1;
+    uint64 taskID = 2;
+    string workflow = 3;
+ }
+
+ message UpdateTaskWorkflowRes {
+    bool success = 1;
+ }
+
  message UpdateTaskRawReq {
     Task task = 1;
     string type = 2;
