@@ -3434,7 +3434,12 @@ func (s *Server) UpdateTaskRaw(ctx context.Context, req *pb.UpdateTaskRawReq) (*
 		return nil, err
 	}
 
-	taskPb, _ := updatedTask.ToPB(ctx)
+	newestTask, err := s.provider.FindTaskById(ctx, updatedTask.TaskID)
+	if err != nil {
+		return nil, err
+	}
+
+	taskPb, _ := newestTask.ToPB(ctx)
 
 	result := &pb.SetTaskResponse{
 		Error:   false,
