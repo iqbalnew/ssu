@@ -51,6 +51,8 @@ message SaveTaskRequest {
     Task task = 3 [(google.api.field_behavior) = OPTIONAL];
     bool isDraft = 2;
     double transactionAmount = 4;
+    uint64 companyID = 5;
+    uint64 holdingID = 6;
 }
 
 message SaveTaskResponse {
@@ -393,3 +395,19 @@ message RejectBySystemRes {
     bool success = 1;
  }
 
+ message UpdateTaskWorkflowReq {
+    string type = 1;
+    uint64 taskID = 2;
+    string workflow = 3;
+ }
+
+ message UpdateTaskWorkflowRes {
+    bool success = 1;
+ }
+
+ message UpdateTaskRawReq {
+    Task task = 1;
+    string type = 2;
+    string action = 3;
+    bool updateChild = 4;
+ }

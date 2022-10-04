@@ -406,7 +406,8 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 		logrus.Println("Menu License Child length 203: ", len(task.Childs))
 	}
 
-	return task, nil
+	taskModel = pb.TaskORM{TaskID: task.TaskID}
+	return &taskModel, nil
 }
 
 func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM, error) {

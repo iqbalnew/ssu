@@ -7,11 +7,11 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
-	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "google.golang.org/protobuf/types/known/structpb"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
+	_ "github.com/mwitkow/go-proto-validators"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -277,5 +277,19 @@ func (this *UpdateTaskDataReq) Validate() error {
 	return nil
 }
 func (this *UpdateTaskDataRes) Validate() error {
+	return nil
+}
+func (this *UpdateTaskWorkflowReq) Validate() error {
+	return nil
+}
+func (this *UpdateTaskWorkflowRes) Validate() error {
+	return nil
+}
+func (this *UpdateTaskRawReq) Validate() error {
+	if this.Task != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
+		}
+	}
 	return nil
 }

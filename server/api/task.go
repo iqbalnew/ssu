@@ -859,7 +859,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	product := productData.Data[0]
 
-	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Import LC"}
+	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Import LC", "Internal Fund Transfer", "External Fund Transfer", "Payroll Transfer"}
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
 		if req.Task.Type == "Swift" {
@@ -945,35 +945,43 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	logrus.Println("Task save ==> Task Type: ", task.Type)
 	logrus.Println("Task save ==> Task ID: ", task.TaskID)
 
+	var savedTask *pb.TaskORM
 	if req.TaskID > 0 {
 		command = "Update"
 		task.TaskID = req.TaskID
 		task.UpdatedByID = currentUser.UserID
 		task.UpdatedByName = currentUser.Username
 
-		_, err = s.provider.UpdateTask(ctx, &task, true)
+		savedTask, err = s.provider.UpdateTask(ctx, &task, true)
 	} else {
 		task.CreatedByID = currentUser.UserID
 		task.CreatedByName = currentUser.Username
 		task.UpdatedByID = currentUser.UserID
 		task.UpdatedByName = currentUser.Username
 
-		_, err = s.provider.CreateTask(ctx, &task)
+		savedTask, err = s.provider.CreateTask(ctx, &task)
 	}
 
 	if err != nil {
 		return nil, err
 	}
 
+	saved, err := savedTask.ToPB(ctx)
+	if err != nil {
+		logrus.Errorln("Error save task with data to pb", err)
+	}
+
 	res := &pb.SaveTaskResponse{
 		Success: true,
 		Data: &pb.Task{
-			TaskID:        task.TaskID,
-			Data:          task.Data,
-			WorkflowDoc:   task.WorkflowDoc,
-			CompanyID:     task.CompanyID,
-			CreatedByID:   task.CreatedByID,
-			CreatedByName: task.CreatedByName,
+			TaskID:        saved.TaskID,
+			Data:          saved.Data,
+			WorkflowDoc:   saved.WorkflowDoc,
+			CompanyID:     saved.CompanyID,
+			CreatedByID:   saved.CreatedByID,
+			CreatedByName: saved.CreatedByName,
+			CreatedAt:     saved.CreatedAt,
+			UpdatedAt:     saved.UpdatedAt,
 		},
 	}
 
@@ -1103,12 +1111,12 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	checkProduct := []string{}
+	skipProduct := []string{"BG Mapping", "BG Mapping Digital", "BG Issuing", "Internal Fund Transfer", "External Fund Transfer", "Payroll Transfer"}
 
 	logrus.Print(taskType)
 
-	for _, v := range checkProduct {
-		if v != taskType {
+	for _, v := range skipProduct {
+		if v == taskType {
 			return true
 		}
 	}
@@ -2137,6 +2145,37 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Step = 1
 			}
 		}
+
+		if task.Type == "Internal Fund Transafer" {
+
+			if req.Comment == "cancel" {
+
+				task.Status = 4
+				task.Step = 3
+
+				var opts []grpc.DialOption
+				opts = append(opts, grpc.WithInsecure())
+
+				transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
+				if err != nil {
+					logrus.Errorln("Failed connect to Transfer Service: %v", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+				defer transferConn.Close()
+
+				transferClient := transfer_pb.NewApiServiceClient(transferConn)
+
+				_, err = transferClient.CancelTransfer(ctx, &transfer_pb.CancelTransferRequest{
+					TaskID: req.GetTaskID(),
+				})
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				}
+
+			}
+
+		}
+
 	}
 
 	// if task.Type == "Menu:License" {
@@ -3361,4 +3400,53 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 	}
 
 	return res, nil
+}
+
+func (s *Server) UpdateTaskRaw(ctx context.Context, req *pb.UpdateTaskRawReq) (*pb.SetTaskResponse, error) {
+	var err error
+	_, userMd, err := s.manager.GetMeFromMD(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	}
+
+	if strings.ToLower(req.Action) == "delete" {
+		allowed := checkAllowedApproval(userMd, req.Type, "data_entry:maker")
+		if !allowed {
+			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+		}
+	} else {
+		allowed := checkAllowedApproval(userMd, req.Type, "approve:signer")
+		if !allowed {
+			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+		}
+	}
+
+	task, _ := req.Task.ToORM(ctx)
+
+	updatedTask, err := s.provider.UpdateTask(ctx, &task, req.UpdateChild)
+	if err != nil {
+		return nil, err
+	}
+
+	newestTask, err := s.provider.FindTaskById(ctx, updatedTask.TaskID)
+	if err != nil {
+		return nil, err
+	}
+
+	taskPb, _ := newestTask.ToPB(ctx)
+
+	result := &pb.SetTaskResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Task Updated",
+		Data:    &taskPb,
+	}
+
+	return result, nil
 }

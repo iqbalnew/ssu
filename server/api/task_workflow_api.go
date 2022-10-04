@@ -122,3 +122,27 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 
 	return result, nil
 }
+
+func (s *Server) UpdateTaskWorkflow(ctx context.Context, req *pb.UpdateTaskWorkflowReq) (*pb.UpdateTaskWorkflowRes, error) {
+	res := &pb.UpdateTaskWorkflowRes{
+		Success: false,
+	}
+
+	task, err := s.provider.FindTaskById(ctx, req.TaskID)
+	if err != nil {
+		return nil, err
+	}
+
+	if task.Type != req.Type {
+		return res, nil
+	}
+
+	task.WorkflowDoc = req.Workflow
+	_, err = s.provider.UpdateTask(ctx, task, false)
+	if err != nil {
+		return nil, err
+	}
+
+	res.Success = true
+	return res, nil
+}
