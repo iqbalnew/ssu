@@ -26,8 +26,8 @@ type ApiServiceClient interface {
 	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	GetPairRate(ctx context.Context, in *GetPairRateRequest, opts ...grpc.CallOption) (*GetPairRateResponse, error)
 	ExecInternalTransfer(ctx context.Context, in *ExecInternalTransferRequest, opts ...grpc.CallOption) (*ExecInternalTransferResponse, error)
-	CancelTransfer(ctx context.Context, in *CancelTransferRequest, opts ...grpc.CallOption) (*CancelTransferResponse, error)
-	CreateInternalTransaction(ctx context.Context, in *CreateInternalTransferRequest, opts ...grpc.CallOption) (*CreateInternalTransferResponse, error)
+	CreateInternalTransferTransaction(ctx context.Context, in *CreateInternalTransferTransactionRequest, opts ...grpc.CallOption) (*CreateInternalTransferTransactionResponse, error)
+	CancelInternalTransferTransaction(ctx context.Context, in *CancelInternalTransferTransactionRequest, opts ...grpc.CallOption) (*CancelInternalTransferTransactionResponse, error)
 	CreateMassInquiry(ctx context.Context, in *CreateMassInquiryRequest, opts ...grpc.CallOption) (*CreateMassInquiryResponse, error)
 	CreateMassTransfer(ctx context.Context, in *CreateMassTransferRequest, opts ...grpc.CallOption) (*CreateMassTransferResponse, error)
 	RunTransferJob(ctx context.Context, in *RunTransferJobRequest, opts ...grpc.CallOption) (*RunTransferJobResponse, error)
@@ -93,18 +93,18 @@ func (c *apiServiceClient) ExecInternalTransfer(ctx context.Context, in *ExecInt
 	return out, nil
 }
 
-func (c *apiServiceClient) CancelTransfer(ctx context.Context, in *CancelTransferRequest, opts ...grpc.CallOption) (*CancelTransferResponse, error) {
-	out := new(CancelTransferResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CancelTransfer", in, out, opts...)
+func (c *apiServiceClient) CreateInternalTransferTransaction(ctx context.Context, in *CreateInternalTransferTransactionRequest, opts ...grpc.CallOption) (*CreateInternalTransferTransactionResponse, error) {
+	out := new(CreateInternalTransferTransactionResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateInternalTransferTransaction", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *apiServiceClient) CreateInternalTransaction(ctx context.Context, in *CreateInternalTransferRequest, opts ...grpc.CallOption) (*CreateInternalTransferResponse, error) {
-	out := new(CreateInternalTransferResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateInternalTransaction", in, out, opts...)
+func (c *apiServiceClient) CancelInternalTransferTransaction(ctx context.Context, in *CancelInternalTransferTransactionRequest, opts ...grpc.CallOption) (*CancelInternalTransferTransactionResponse, error) {
+	out := new(CancelInternalTransferTransactionResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CancelInternalTransferTransaction", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -370,8 +370,8 @@ type ApiServiceServer interface {
 	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
 	GetPairRate(context.Context, *GetPairRateRequest) (*GetPairRateResponse, error)
 	ExecInternalTransfer(context.Context, *ExecInternalTransferRequest) (*ExecInternalTransferResponse, error)
-	CancelTransfer(context.Context, *CancelTransferRequest) (*CancelTransferResponse, error)
-	CreateInternalTransaction(context.Context, *CreateInternalTransferRequest) (*CreateInternalTransferResponse, error)
+	CreateInternalTransferTransaction(context.Context, *CreateInternalTransferTransactionRequest) (*CreateInternalTransferTransactionResponse, error)
+	CancelInternalTransferTransaction(context.Context, *CancelInternalTransferTransactionRequest) (*CancelInternalTransferTransactionResponse, error)
 	CreateMassInquiry(context.Context, *CreateMassInquiryRequest) (*CreateMassInquiryResponse, error)
 	CreateMassTransfer(context.Context, *CreateMassTransferRequest) (*CreateMassTransferResponse, error)
 	RunTransferJob(context.Context, *RunTransferJobRequest) (*RunTransferJobResponse, error)
@@ -416,11 +416,11 @@ func (UnimplementedApiServiceServer) GetPairRate(context.Context, *GetPairRateRe
 func (UnimplementedApiServiceServer) ExecInternalTransfer(context.Context, *ExecInternalTransferRequest) (*ExecInternalTransferResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecInternalTransfer not implemented")
 }
-func (UnimplementedApiServiceServer) CancelTransfer(context.Context, *CancelTransferRequest) (*CancelTransferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CancelTransfer not implemented")
+func (UnimplementedApiServiceServer) CreateInternalTransferTransaction(context.Context, *CreateInternalTransferTransactionRequest) (*CreateInternalTransferTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateInternalTransferTransaction not implemented")
 }
-func (UnimplementedApiServiceServer) CreateInternalTransaction(context.Context, *CreateInternalTransferRequest) (*CreateInternalTransferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateInternalTransaction not implemented")
+func (UnimplementedApiServiceServer) CancelInternalTransferTransaction(context.Context, *CancelInternalTransferTransactionRequest) (*CancelInternalTransferTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CancelInternalTransferTransaction not implemented")
 }
 func (UnimplementedApiServiceServer) CreateMassInquiry(context.Context, *CreateMassInquiryRequest) (*CreateMassInquiryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMassInquiry not implemented")
@@ -573,38 +573,38 @@ func _ApiService_ExecInternalTransfer_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_CancelTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CancelTransferRequest)
+func _ApiService_CreateInternalTransferTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateInternalTransferTransactionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).CancelTransfer(ctx, in)
+		return srv.(ApiServiceServer).CreateInternalTransferTransaction(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/CancelTransfer",
+		FullMethod: "/transfer.service.v1.ApiService/CreateInternalTransferTransaction",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CancelTransfer(ctx, req.(*CancelTransferRequest))
+		return srv.(ApiServiceServer).CreateInternalTransferTransaction(ctx, req.(*CreateInternalTransferTransactionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_CreateInternalTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateInternalTransferRequest)
+func _ApiService_CancelInternalTransferTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelInternalTransferTransactionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).CreateInternalTransaction(ctx, in)
+		return srv.(ApiServiceServer).CancelInternalTransferTransaction(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/CreateInternalTransaction",
+		FullMethod: "/transfer.service.v1.ApiService/CancelInternalTransferTransaction",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CreateInternalTransaction(ctx, req.(*CreateInternalTransferRequest))
+		return srv.(ApiServiceServer).CancelInternalTransferTransaction(ctx, req.(*CancelInternalTransferTransactionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1133,12 +1133,12 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_ExecInternalTransfer_Handler,
 		},
 		{
-			MethodName: "CancelTransfer",
-			Handler:    _ApiService_CancelTransfer_Handler,
+			MethodName: "CreateInternalTransferTransaction",
+			Handler:    _ApiService_CreateInternalTransferTransaction_Handler,
 		},
 		{
-			MethodName: "CreateInternalTransaction",
-			Handler:    _ApiService_CreateInternalTransaction_Handler,
+			MethodName: "CancelInternalTransferTransaction",
+			Handler:    _ApiService_CancelInternalTransferTransaction_Handler,
 		},
 		{
 			MethodName: "CreateMassInquiry",

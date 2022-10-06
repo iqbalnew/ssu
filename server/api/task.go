@@ -2183,7 +2183,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 				transferClient := transfer_pb.NewApiServiceClient(transferConn)
 
-				_, err = transferClient.CancelTransfer(ctx, &transfer_pb.CancelTransferRequest{
+				_, err = transferClient.CancelInternalTransferTransaction(ctx, &transfer_pb.CancelInternalTransferTransactionRequest{
 					TaskID: req.GetTaskID(),
 				})
 				if err != nil {
@@ -3116,12 +3116,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			transferClient := transfer_pb.NewApiServiceClient(transferConn)
 
 			taskData := transfer_pb.InternalSingleData{}
-			json.Unmarshal([]byte(currentData), &taskData)
+			err = json.Unmarshal([]byte(currentData), &taskData)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
 
-			_, err = transferClient.CreateInternalTransaction(ctx, &transfer_pb.CreateInternalTransferRequest{
+			_, err = transferClient.CreateInternalTransferTransaction(ctx, &transfer_pb.CreateInternalTransferTransactionRequest{
 				TaskID: task.TaskID,
 				Data:   &taskData,
 			})

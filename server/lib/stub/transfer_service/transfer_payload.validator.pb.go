@@ -241,7 +241,7 @@ func (this *SetTaskInternalResponse) Validate() error {
 	}
 	return nil
 }
-func (this *CreateInternalTransferRequest) Validate() error {
+func (this *CreateInternalTransferTransactionRequest) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
@@ -249,7 +249,7 @@ func (this *CreateInternalTransferRequest) Validate() error {
 	}
 	return nil
 }
-func (this *CreateInternalTransferResponse) Validate() error {
+func (this *CreateInternalTransferTransactionResponse) Validate() error {
 	return nil
 }
 func (this *ExecInternalTransferRequest) Validate() error {
@@ -258,10 +258,10 @@ func (this *ExecInternalTransferRequest) Validate() error {
 func (this *ExecInternalTransferResponse) Validate() error {
 	return nil
 }
-func (this *CancelTransferRequest) Validate() error {
+func (this *CancelInternalTransferTransactionRequest) Validate() error {
 	return nil
 }
-func (this *CancelTransferResponse) Validate() error {
+func (this *CancelInternalTransferTransactionResponse) Validate() error {
 	return nil
 }
 func (this *CreateMassInquiryRequest) Validate() error {
