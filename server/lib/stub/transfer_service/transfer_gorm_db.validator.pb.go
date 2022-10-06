@@ -123,3 +123,6 @@ func (this *InternalSingleTemplate) Validate() error {
 	}
 	return nil
 }
+func (this *MassTransferList) Validate() error {
+	return nil
+}
