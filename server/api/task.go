@@ -2526,11 +2526,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data)
 
 			data.TaskID = task.TaskID
-			res, err := companyClient.CreateNotification(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
+			if task.Status == 7 {
+				deleteReq := &notification_pb.CreateNotificationRequest{NotificationID: task.FeatureID}
+				res, err := companyClient.DeleteNotification(ctx, deleteReq, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Printf("[Delete Notification] data : %v", res)
+			} else {
+				res, err := companyClient.CreateNotification(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
 			}
-			logrus.Println(res)
 
 		case "User":
 
