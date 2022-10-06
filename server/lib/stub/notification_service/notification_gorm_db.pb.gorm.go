@@ -258,6 +258,7 @@ type ModuleEventORM struct {
 	Module                     *NotificationModuleORM `gorm:"foreignkey:NotificationModuleModuleID;association_foreignkey:ModuleID"`
 	Name                       string                 `gorm:"type:varchar(255)"`
 	NotificationModuleModuleID *uint64
+	NotificationModuleModuleId uint64
 	Notify                     string `gorm:"type:varchar(20)"`
 	TemplateDescription        string `gorm:"type:text"`
 	TemplateTitle              string `gorm:"type:text"`
@@ -314,6 +315,7 @@ func (m *ModuleEvent) ToORM(ctx context.Context) (ModuleEventORM, error) {
 	to.Notify = m.Notify
 	to.TemplateTitle = m.TemplateTitle
 	to.TemplateDescription = m.TemplateDescription
+	to.NotificationModuleModuleId = m.NotificationModuleModuleId
 	if posthook, ok := interface{}(m).(ModuleEventWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -362,6 +364,7 @@ func (m *ModuleEventORM) ToPB(ctx context.Context) (ModuleEvent, error) {
 	to.Notify = m.Notify
 	to.TemplateTitle = m.TemplateTitle
 	to.TemplateDescription = m.TemplateDescription
+	to.NotificationModuleModuleId = m.NotificationModuleModuleId
 	if posthook, ok := interface{}(m).(ModuleEventWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -2814,6 +2817,10 @@ func DefaultApplyFieldMaskModuleEvent(ctx context.Context, patchee *ModuleEvent,
 		}
 		if f == prefix+"TemplateDescription" {
 			patchee.TemplateDescription = patcher.TemplateDescription
+			continue
+		}
+		if f == prefix+"NotificationModuleModuleId" {
+			patchee.NotificationModuleModuleId = patcher.NotificationModuleModuleId
 			continue
 		}
 	}

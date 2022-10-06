@@ -1112,7 +1112,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"BG Mapping", "BG Mapping Digital", "BG Issuing", "Internal Fund Transfer", "External Fund Transfer", "Payroll Transfer"}
+	skipProduct := []string{"Internal Fund Transfer", "External Fund Transfer", "Payroll Transfer"}
 
 	logrus.Print(taskType)
 
@@ -1201,6 +1201,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		} else {
 			allowed := checkAllowedApproval(userMd, task.Type, "approve:signer")
 			if !allowed {
+				return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+			}
+		}
+	}
+
+	if strings.ToLower(req.Action) == "approve" {
+		allowed := checkAllowedApproval(userMd, task.Type, "approve:signer")
+		if !allowed {
+			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+		}
+		if currentUser.UserType != "ba" {
+			if currentUser.CompanyID != task.CompanyID {
 				return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
 			}
 		}
@@ -2110,6 +2122,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		if contains([]string{"BG Mapping"}, task.Type) {
 
+			if currentUser.UserType != "ba" {
+				if currentUser.CompanyID != task.CompanyID {
+					return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+				}
+			}
+
 			mappingDigitalTask, err := s.provider.GetListTask(ctx, &pb.TaskORM{
 				Type:      "BG Mapping Digital",
 				CompanyID: task.CompanyID,
@@ -2166,7 +2184,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 				transferClient := transfer_pb.NewApiServiceClient(transferConn)
 
-				_, err = transferClient.CancelTransfer(ctx, &transfer_pb.CancelTransferRequest{
+				_, err = transferClient.CancelInternalTransferTransaction(ctx, &transfer_pb.CancelInternalTransferTransactionRequest{
 					TaskID: req.GetTaskID(),
 				})
 				if err != nil {
@@ -2509,11 +2527,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			json.Unmarshal([]byte(task.Data), &data)
 
 			data.TaskID = task.TaskID
-			res, err := companyClient.CreateNotification(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				return nil, err
+			if task.Status == 7 {
+				deleteReq := &notification_pb.CreateNotificationRequest{NotificationID: task.FeatureID}
+				res, err := companyClient.DeleteNotification(ctx, deleteReq, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Printf("[Delete Notification] data : %v", res)
+			} else {
+				res, err := companyClient.CreateNotification(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				if err != nil {
+					return nil, err
+				}
+				logrus.Println(res)
 			}
-			logrus.Println(res)
 
 		case "User":
 
@@ -3099,12 +3126,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			transferClient := transfer_pb.NewApiServiceClient(transferConn)
 
 			taskData := transfer_pb.InternalSingleData{}
-			json.Unmarshal([]byte(currentData), &taskData)
+			err = json.Unmarshal([]byte(currentData), &taskData)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
 
-			_, err = transferClient.CreateTransfer(ctx, &transfer_pb.CreateTransferRequest{
+			_, err = transferClient.CreateInternalTransferTransaction(ctx, &transfer_pb.CreateInternalTransferTransactionRequest{
 				TaskID: task.TaskID,
 				Data:   &taskData,
 			})

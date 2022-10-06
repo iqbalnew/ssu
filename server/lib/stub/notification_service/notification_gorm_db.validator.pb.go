@@ -304,3 +304,6 @@ func (this *DefaultNotifications) Validate() error {
 	}
 	return nil
 }
+func (this *MappingVariable) Validate() error {
+	return nil
+}

@@ -67,14 +67,30 @@ func originMiddleware(next http.Handler) http.Handler {
 		origin := r.Header.Get("Origin")
 		referer := r.Header.Get("Referer")
 		envOrigin := r.Header.Get("ENV-Allow-Origin")
-		logrus.Infof("Origin: %v - Ref: %v - ENV: %v", origin, referer, envOrigin)
+		envOrigins := strings.Split(envOrigin, ",")
+		for i, v := range envOrigins {
+			envOrigins[i] = strings.TrimSpace(v)
+		}
+
+		logrus.Infof("Origin: %v - Ref: %v - ENV: %v", origin, referer, envOrigins)
 
 		if getEnv("ENV", "DEV") == "PROD" {
-			if origin != "" && origin != envOrigin {
-				http.Error(w, "Service Unavailable", http.StatusServiceUnavailable)
-				return
+			pass := false
+			if origin != "" {
+				for _, v := range envOrigins {
+					if origin == v {
+						pass = true
+					}
+				}
 			}
-			if referer != "" && !strings.Contains(referer, envOrigin) {
+			if referer != "" {
+				for _, v := range envOrigins {
+					if strings.Contains(referer, v) {
+						pass = true
+					}
+				}
+			}
+			if !pass {
 				http.Error(w, "Service Unavailable", http.StatusServiceUnavailable)
 				return
 			}

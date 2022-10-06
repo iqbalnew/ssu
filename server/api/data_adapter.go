@@ -86,7 +86,13 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 		_, key, err = TaskDataBGMappingDigitalToPB(task.Data)
 
 	case "Internal Fund Transfer":
-		_, key, err = TaskDataInternalSingleToPB(task.Data)
+		_, key, err = TaskDataInternalTransferToPB(task.Data)
+
+	case "External Fund Transfer":
+		_, key, err = TaskDataExternalTransferToPB(task.Data)
+
+	case "Payroll Transfer":
+		_, key, err = TaskDataPayrollTransferToPB(task.Data)
 
 	case "Swift":
 		_, key, err = TaskDataSwiftToPB(task.Data)
@@ -304,14 +310,34 @@ func TaskDataBGMappingDigitalToPB(data string) (val []*bg_pb.MappingDigitalData,
 	return mappingDigital, mappingDigital[0].GetCompanyName(), nil
 }
 
-func TaskDataInternalSingleToPB(data string) (val *transfer_pb.InternalSingleData, key string, err error) {
+func TaskDataInternalTransferToPB(data string) (val *transfer_pb.InternalSingleData, key string, err error) {
 	internal := &transfer_pb.InternalSingleData{}
 	err = json.Unmarshal([]byte(data), &internal)
 	if err != nil {
 		return nil, "", err
 	}
 
-	return internal, internal.DealCode, nil
+	return internal, internal.TransactionID, nil
+}
+
+func TaskDataExternalTransferToPB(data string) (val *transfer_pb.ExternalTransferData, key string, err error) {
+	external := &transfer_pb.ExternalTransferData{}
+	err = json.Unmarshal([]byte(data), &external)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return external, external.TransactionID, nil
+}
+
+func TaskDataPayrollTransferToPB(data string) (val *transfer_pb.PayrollData, key string, err error) {
+	payroll := &transfer_pb.PayrollData{}
+	err = json.Unmarshal([]byte(data), &payroll)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return payroll, payroll.TransactionID, nil
 }
 
 func TaskDataSwiftToPB(data string) (val *swift_pb.RemittanceTransaction, key string, err error) {
