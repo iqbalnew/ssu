@@ -2109,6 +2109,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		if contains([]string{"BG Mapping"}, task.Type) {
 
+			if currentUser.UserType != "ba" {
+				if currentUser.CompanyID != task.CompanyID {
+					return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+				}
+			}
+
 			mappingDigitalTask, err := s.provider.GetListTask(ctx, &pb.TaskORM{
 				Type:      "BG Mapping Digital",
 				CompanyID: task.CompanyID,
