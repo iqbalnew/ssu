@@ -1205,6 +1205,18 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		}
 	}
 
+	if strings.ToLower(req.Action) == "approve" {
+			allowed := checkAllowedApproval(userMd, task.Type, "approve:signer")
+			if !allowed {
+				return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+			}
+			if currentUser.UserType != "ba" {
+				if currentUser.CompanyID != task.CompanyID {
+					return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+				}
+			}
+		}
+
 	if task.IsParentActive {
 		return nil, status.Errorf(codes.InvalidArgument, "This is child task with active parent, please refer to parent for change status")
 	}
