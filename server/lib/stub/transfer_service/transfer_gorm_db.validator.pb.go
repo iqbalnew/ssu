@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/infobloxopen/protoc-gen-gorm/options"
 	_ "github.com/mwitkow/go-proto-validators"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -32,12 +32,7 @@ func (this *Currency) Validate() error {
 	}
 	return nil
 }
-func (this *TransferJob) Validate() error {
-	if this.RunAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RunAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("RunAt", err)
-		}
-	}
+func (this *InternalTransferTransaction) Validate() error {
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)

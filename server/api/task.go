@@ -1206,16 +1206,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if strings.ToLower(req.Action) == "approve" {
-			allowed := checkAllowedApproval(userMd, task.Type, "approve:signer")
-			if !allowed {
+		allowed := checkAllowedApproval(userMd, task.Type, "approve:signer")
+		if !allowed {
+			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+		}
+		if currentUser.UserType != "ba" {
+			if currentUser.CompanyID != task.CompanyID {
 				return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
 			}
-			if currentUser.UserType != "ba" {
-				if currentUser.CompanyID != task.CompanyID {
-					return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
-				}
-			}
 		}
+	}
 
 	if task.IsParentActive {
 		return nil, status.Errorf(codes.InvalidArgument, "This is child task with active parent, please refer to parent for change status")
@@ -2183,7 +2183,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 				transferClient := transfer_pb.NewApiServiceClient(transferConn)
 
-				_, err = transferClient.CancelTransfer(ctx, &transfer_pb.CancelTransferRequest{
+				_, err = transferClient.CancelInternalTransferTransaction(ctx, &transfer_pb.CancelInternalTransferTransactionRequest{
 					TaskID: req.GetTaskID(),
 				})
 				if err != nil {
@@ -3116,12 +3116,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			transferClient := transfer_pb.NewApiServiceClient(transferConn)
 
 			taskData := transfer_pb.InternalSingleData{}
-			json.Unmarshal([]byte(currentData), &taskData)
+			err = json.Unmarshal([]byte(currentData), &taskData)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
 
-			_, err = transferClient.CreateTransfer(ctx, &transfer_pb.CreateTransferRequest{
+			_, err = transferClient.CreateInternalTransferTransaction(ctx, &transfer_pb.CreateInternalTransferTransactionRequest{
 				TaskID: task.TaskID,
 				Data:   &taskData,
 			})
