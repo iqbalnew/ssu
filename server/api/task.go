@@ -1122,6 +1122,8 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 		}
 	}
 
+	logrus.Println("check md Task Type:", taskType)
+
 	productName := strings.Replace(taskType, ":", "_", -1)
 	productName = strings.Replace(productName, " ", "_", -1)
 	productName = strings.ToLower(productName)
@@ -1138,8 +1140,8 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	// 		break
 	// 	}
 	// }
-	// logrus.Println("MD +==============>", md)
-	// logrus.Println("Product +===============>", productName)
+	logrus.Println("MD +==============>", md)
+	logrus.Println("Product +===============>", productName)
 	if len(md[productName]) > 0 {
 		result := strings.Split(md[productName][0], ",")
 		logrus.Print("result md %s", result)
