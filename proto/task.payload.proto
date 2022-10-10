@@ -53,6 +53,7 @@ message SaveTaskRequest {
     double transactionAmount = 4;
     uint64 companyID = 5;
     uint64 holdingID = 6;
+    string transactionCurrency = 7;
 }
 
 message SaveTaskResponse {
