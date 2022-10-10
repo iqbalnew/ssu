@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -247,6 +247,11 @@ func (this *CreateInternalTransferTransactionRequest) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 		}
 	}
+	if this.CurrentWorkflow != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CurrentWorkflow); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CurrentWorkflow", err)
+		}
+	}
 	return nil
 }
 func (this *CreateInternalTransferTransactionResponse) Validate() error {
@@ -377,9 +382,6 @@ func (this *PayrollDataJob) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
 		}
 	}
-	if !(this.Amount >= 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Amount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Amount))
-	}
 	if this.InquiryResult != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.InquiryResult); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("InquiryResult", err)
@@ -398,9 +400,6 @@ func (this *PayrollData) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
 		}
 	}
-	if !(this.Amount >= 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Amount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Amount))
-	}
 	return nil
 }
 func (this *PayrollDataDetail) Validate() error {
@@ -408,9 +407,6 @@ func (this *PayrollDataDetail) Validate() error {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
 		}
-	}
-	if !(this.Amount >= 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Amount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Amount))
 	}
 	for _, item := range this.Items {
 		if item != nil {
@@ -437,9 +433,6 @@ func (this *PayrollDataList) Validate() error {
 	return nil
 }
 func (this *PayrollItemDetail) Validate() error {
-	if !(this.Fee >= 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Fee", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Fee))
-	}
 	return nil
 }
 func (this *PayrollItem) Validate() error {
@@ -574,6 +567,12 @@ func (this *CreateTaskPayrollResponse) Validate() error {
 	return nil
 }
 func (this *CreateTaskPayrollResponseData) Validate() error {
+	return nil
+}
+func (this *CancelTransferPayrollRequest) Validate() error {
+	return nil
+}
+func (this *CancelTransferPayrollResponse) Validate() error {
 	return nil
 }
 func (this *DecodeBulkFileRequest) Validate() error {
@@ -738,6 +737,12 @@ func (this *RunMassTransferJobRequest) Validate() error {
 func (this *RunMassTransferJobResponse) Validate() error {
 	return nil
 }
+func (this *RunMassTransferScheduledJobRequest) Validate() error {
+	return nil
+}
+func (this *RunMassTransferScheduledJobResponse) Validate() error {
+	return nil
+}
 func (this *SetTaskPayrollRequest) Validate() error {
 	return nil
 }
@@ -802,9 +807,15 @@ func (this *ExternalTransferData) Validate() error {
 	return nil
 }
 func (this *SenderData) Validate() error {
+	if !(this.AccountBalance >= 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("AccountBalance", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.AccountBalance))
+	}
 	return nil
 }
 func (this *BeneficiaryData) Validate() error {
+	if !(this.AccountBalance >= 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("AccountBalance", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.AccountBalance))
+	}
 	return nil
 }
 func (this *GetTaskExternalTransferRequest) Validate() error {

@@ -55,7 +55,9 @@ type ApiServiceClient interface {
 	CreateTaskPayroll(ctx context.Context, in *CreateTaskPayrollRequest, opts ...grpc.CallOption) (*CreateTaskPayrollResponse, error)
 	RunMassInquiryJob(ctx context.Context, in *RunMassInquiryJobRequest, opts ...grpc.CallOption) (*RunMassInquiryJobResponse, error)
 	RunMassTransferJob(ctx context.Context, in *RunMassTransferJobRequest, opts ...grpc.CallOption) (*RunMassTransferJobResponse, error)
+	RunMassTransferScheduledJob(ctx context.Context, in *RunMassTransferScheduledJobRequest, opts ...grpc.CallOption) (*RunMassTransferScheduledJobResponse, error)
 	SetTaskPayroll(ctx context.Context, in *SetTaskPayrollRequest, opts ...grpc.CallOption) (*SetTaskPayrollResponse, error)
+	CancelTransferPayroll(ctx context.Context, in *CancelTransferPayrollRequest, opts ...grpc.CallOption) (*CancelTransferPayrollResponse, error)
 }
 
 type apiServiceClient struct {
@@ -354,9 +356,27 @@ func (c *apiServiceClient) RunMassTransferJob(ctx context.Context, in *RunMassTr
 	return out, nil
 }
 
+func (c *apiServiceClient) RunMassTransferScheduledJob(ctx context.Context, in *RunMassTransferScheduledJobRequest, opts ...grpc.CallOption) (*RunMassTransferScheduledJobResponse, error) {
+	out := new(RunMassTransferScheduledJobResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/RunMassTransferScheduledJob", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) SetTaskPayroll(ctx context.Context, in *SetTaskPayrollRequest, opts ...grpc.CallOption) (*SetTaskPayrollResponse, error) {
 	out := new(SetTaskPayrollResponse)
 	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/SetTaskPayroll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) CancelTransferPayroll(ctx context.Context, in *CancelTransferPayrollRequest, opts ...grpc.CallOption) (*CancelTransferPayrollResponse, error) {
+	out := new(CancelTransferPayrollResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CancelTransferPayroll", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -399,7 +419,9 @@ type ApiServiceServer interface {
 	CreateTaskPayroll(context.Context, *CreateTaskPayrollRequest) (*CreateTaskPayrollResponse, error)
 	RunMassInquiryJob(context.Context, *RunMassInquiryJobRequest) (*RunMassInquiryJobResponse, error)
 	RunMassTransferJob(context.Context, *RunMassTransferJobRequest) (*RunMassTransferJobResponse, error)
+	RunMassTransferScheduledJob(context.Context, *RunMassTransferScheduledJobRequest) (*RunMassTransferScheduledJobResponse, error)
 	SetTaskPayroll(context.Context, *SetTaskPayrollRequest) (*SetTaskPayrollResponse, error)
+	CancelTransferPayroll(context.Context, *CancelTransferPayrollRequest) (*CancelTransferPayrollResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -503,8 +525,14 @@ func (UnimplementedApiServiceServer) RunMassInquiryJob(context.Context, *RunMass
 func (UnimplementedApiServiceServer) RunMassTransferJob(context.Context, *RunMassTransferJobRequest) (*RunMassTransferJobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunMassTransferJob not implemented")
 }
+func (UnimplementedApiServiceServer) RunMassTransferScheduledJob(context.Context, *RunMassTransferScheduledJobRequest) (*RunMassTransferScheduledJobResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunMassTransferScheduledJob not implemented")
+}
 func (UnimplementedApiServiceServer) SetTaskPayroll(context.Context, *SetTaskPayrollRequest) (*SetTaskPayrollResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetTaskPayroll not implemented")
+}
+func (UnimplementedApiServiceServer) CancelTransferPayroll(context.Context, *CancelTransferPayrollRequest) (*CancelTransferPayrollResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CancelTransferPayroll not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -1095,6 +1123,24 @@ func _ApiService_RunMassTransferJob_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_RunMassTransferScheduledJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunMassTransferScheduledJobRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).RunMassTransferScheduledJob(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/RunMassTransferScheduledJob",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).RunMassTransferScheduledJob(ctx, req.(*RunMassTransferScheduledJobRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_SetTaskPayroll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SetTaskPayrollRequest)
 	if err := dec(in); err != nil {
@@ -1109,6 +1155,24 @@ func _ApiService_SetTaskPayroll_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).SetTaskPayroll(ctx, req.(*SetTaskPayrollRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_CancelTransferPayroll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelTransferPayrollRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CancelTransferPayroll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/CancelTransferPayroll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CancelTransferPayroll(ctx, req.(*CancelTransferPayrollRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1249,8 +1313,16 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_RunMassTransferJob_Handler,
 		},
 		{
+			MethodName: "RunMassTransferScheduledJob",
+			Handler:    _ApiService_RunMassTransferScheduledJob_Handler,
+		},
+		{
 			MethodName: "SetTaskPayroll",
 			Handler:    _ApiService_SetTaskPayroll_Handler,
+		},
+		{
+			MethodName: "CancelTransferPayroll",
+			Handler:    _ApiService_CancelTransferPayroll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
