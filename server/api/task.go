@@ -2048,6 +2048,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 					roleTask, err := s.GetListTask(ctx, &pb.ListTaskRequest{
 						Filter: "type:Role",
+						In:     fmt.Sprintf("data.companyID:%v", account.CompanyID),
 					})
 					if err != nil {
 						logrus.Errorln("Error Listing Role: ", err)
@@ -2073,6 +2074,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 				roleTask, err := s.GetListTask(ctx, &pb.ListTaskRequest{
 					Filter: "type:Role",
+					In:     fmt.Sprintf("data.companyID:%v", account.CompanyID),
 				})
 				if err != nil {
 					logrus.Errorln("Error Listing Role: ", err)
@@ -2100,6 +2102,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			roleTask, err := s.GetListTask(ctx, &pb.ListTaskRequest{
 				Filter: "type:Role",
+				In:     fmt.Sprintf("data.companyID:%v", beneficiaryAccount.CompanyID),
 			})
 			if err != nil {
 				logrus.Errorln("Error Listing Role: ", err)
