@@ -86,13 +86,13 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 		_, key, err = TaskDataBGMappingDigitalToPB(task.Data)
 
 	case "Internal Fund Transfer":
-		_, key, err = TaskDataInternalTransferToPB(task.Data)
+		_, key, err = TaskDataInternalTransferToPB(task.Data, task.TaskID)
 
 	case "External Fund Transfer":
-		_, key, err = TaskDataExternalTransferToPB(task.Data)
+		_, key, err = TaskDataExternalTransferToPB(task.Data, task.TaskID)
 
 	case "Payroll Transfer":
-		_, key, err = TaskDataPayrollTransferToPB(task.Data)
+		_, key, err = TaskDataPayrollTransferToPB(task.Data, task.TaskID)
 
 	case "Swift":
 		_, key, err = TaskDataSwiftToPB(task.Data)
@@ -310,34 +310,34 @@ func TaskDataBGMappingDigitalToPB(data string) (val []*bg_pb.MappingDigitalData,
 	return mappingDigital, mappingDigital[0].GetCompanyName(), nil
 }
 
-func TaskDataInternalTransferToPB(data string) (val *transfer_pb.InternalSingleData, key string, err error) {
+func TaskDataInternalTransferToPB(data string, taskID uint64) (val *transfer_pb.InternalSingleData, key string, err error) {
 	internal := &transfer_pb.InternalSingleData{}
 	err = json.Unmarshal([]byte(data), &internal)
 	if err != nil {
 		return nil, "", err
 	}
 
-	return internal, internal.TransactionID, nil
+	return internal, fmt.Sprintf("IFT", taskID), nil
 }
 
-func TaskDataExternalTransferToPB(data string) (val *transfer_pb.ExternalTransferData, key string, err error) {
+func TaskDataExternalTransferToPB(data string, taskID uint64) (val *transfer_pb.ExternalTransferData, key string, err error) {
 	external := &transfer_pb.ExternalTransferData{}
 	err = json.Unmarshal([]byte(data), &external)
 	if err != nil {
 		return nil, "", err
 	}
 
-	return external, external.TransactionID, nil
+	return external, fmt.Sprintf("EFT", taskID), nil
 }
 
-func TaskDataPayrollTransferToPB(data string) (val *transfer_pb.PayrollData, key string, err error) {
+func TaskDataPayrollTransferToPB(data string, taskID uint64) (val *transfer_pb.PayrollData, key string, err error) {
 	payroll := &transfer_pb.PayrollData{}
 	err = json.Unmarshal([]byte(data), &payroll)
 	if err != nil {
 		return nil, "", err
 	}
 
-	return payroll, payroll.TransactionID, nil
+	return payroll, fmt.Sprintf("IPY", taskID), nil
 }
 
 func TaskDataSwiftToPB(data string) (val *swift_pb.RemittanceTransaction, key string, err error) {
