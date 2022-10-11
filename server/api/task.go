@@ -2540,6 +2540,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 				logrus.Printf("[Delete Notification] data : %v", res)
 			} else {
+				data.NotificationID = task.FeatureID
 				res, err := companyClient.CreateNotification(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
