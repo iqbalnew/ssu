@@ -1146,7 +1146,7 @@ func (x *InternalMultipleReceiverData) GetCurrency() CurrencyType {
 	if x != nil {
 		return x.Currency
 	}
-	return CurrencyType_Debit
+	return CurrencyType_NullCurrencyType
 }
 
 func (x *InternalMultipleReceiverData) GetFee() Fee {
@@ -1329,7 +1329,7 @@ func (x *InternalBulkDataRequest) GetCurrency() CurrencyType {
 	if x != nil {
 		return x.Currency
 	}
-	return CurrencyType_Debit
+	return CurrencyType_NullCurrencyType
 }
 
 func (x *InternalBulkDataRequest) GetIsParent() bool {
@@ -1598,7 +1598,7 @@ func (x *InternalBulkData) GetCurrency() CurrencyType {
 	if x != nil {
 		return x.Currency
 	}
-	return CurrencyType_Debit
+	return CurrencyType_NullCurrencyType
 }
 
 func (x *InternalBulkData) GetIsParent() bool {

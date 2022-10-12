@@ -179,7 +179,7 @@ func (x *InternalTransferData) GetCurrency() CurrencyType {
 	if x != nil {
 		return x.Currency
 	}
-	return CurrencyType_Debit
+	return CurrencyType_NullCurrencyType
 }
 
 func (x *InternalTransferData) GetFee() Fee {
