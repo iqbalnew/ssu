@@ -884,6 +884,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 			ProductID:           product.ProductID,
 			CompanyID:           currentUser.CompanyID,
 			TransactionalNumber: uint64(req.TransactionAmount),
+			Currency:            req.GetTransactionCurrency(),
 		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 		if err != nil {
 			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
@@ -1121,6 +1122,8 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 		}
 	}
 
+	logrus.Println("check md Task Type:", taskType)
+
 	productName := strings.Replace(taskType, ":", "_", -1)
 	productName = strings.Replace(productName, " ", "_", -1)
 	productName = strings.ToLower(productName)
@@ -1137,8 +1140,8 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	// 		break
 	// 	}
 	// }
-	// logrus.Println("MD +==============>", md)
-	// logrus.Println("Product +===============>", productName)
+	logrus.Println("MD +==============>", md)
+	logrus.Println("Product +===============>", productName)
 	if len(md[productName]) > 0 {
 		result := strings.Split(md[productName][0], ",")
 		logrus.Print("result md %s", result)
@@ -2537,6 +2540,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 				logrus.Printf("[Delete Notification] data : %v", res)
 			} else {
+				data.NotificationID = task.FeatureID
 				res, err := companyClient.CreateNotification(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					return nil, err
@@ -3335,6 +3339,7 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 		getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
 			ProductID:           product.ProductID,
 			TransactionalNumber: uint64(req.TransactionAmount),
+			Currency:            req.GetTransactionCurrency(),
 		})
 		if err != nil {
 			logrus.Errorln("[api][func: UpdateTaskPlain] Failed to generate workflow: %v", err)
