@@ -317,7 +317,7 @@ func TaskDataInternalTransferToPB(data string, taskID uint64) (val *transfer_pb.
 		return nil, "", err
 	}
 
-	return internal, fmt.Sprintf("IFT", taskID), nil
+	return internal, fmt.Sprintf("IFT%v", taskID), nil
 }
 
 func TaskDataExternalTransferToPB(data string, taskID uint64) (val *transfer_pb.ExternalTransferData, key string, err error) {
@@ -327,7 +327,7 @@ func TaskDataExternalTransferToPB(data string, taskID uint64) (val *transfer_pb.
 		return nil, "", err
 	}
 
-	return external, fmt.Sprintf("EFT", taskID), nil
+	return external, fmt.Sprintf("EFT%v", taskID), nil
 }
 
 func TaskDataPayrollTransferToPB(data string, taskID uint64) (val *transfer_pb.PayrollData, key string, err error) {
@@ -337,7 +337,7 @@ func TaskDataPayrollTransferToPB(data string, taskID uint64) (val *transfer_pb.P
 		return nil, "", err
 	}
 
-	return payroll, fmt.Sprintf("IPY", taskID), nil
+	return payroll, fmt.Sprintf("IPY%v", taskID), nil
 }
 
 func TaskDataSwiftToPB(data string) (val *swift_pb.RemittanceTransaction, key string, err error) {
