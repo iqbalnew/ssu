@@ -3131,7 +3131,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			transferClient := transfer_pb.NewApiServiceClient(transferConn)
 
-			taskData := transfer_pb.InternalSingleData{}
+			taskData := transfer_pb.InternalTransferData{}
 			err = json.Unmarshal([]byte(currentData), &taskData)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)

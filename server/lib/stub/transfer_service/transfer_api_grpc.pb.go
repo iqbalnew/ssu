@@ -24,40 +24,36 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ApiServiceClient interface {
 	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
-	GetPairRate(ctx context.Context, in *GetPairRateRequest, opts ...grpc.CallOption) (*GetPairRateResponse, error)
-	ExecInternalTransfer(ctx context.Context, in *ExecInternalTransferRequest, opts ...grpc.CallOption) (*ExecInternalTransferResponse, error)
+	GetTaskInternalTransferSingleTemplate(ctx context.Context, in *GetTaskInternalTransferSingleTemplateRequest, opts ...grpc.CallOption) (*GetTaskInternalTransferSingleTemplateResponse, error)
+	GetTaskInternalTransferSingleTemplateDetail(ctx context.Context, in *GetTaskInternalTransferSingleTemplateDetailRequest, opts ...grpc.CallOption) (*GetTaskInternalTransferSingleTemplateDetailResponse, error)
+	CreateTaskInternalTransferSingleTemplate(ctx context.Context, in *InternalTransferSingleTemplate, opts ...grpc.CallOption) (*CreateTaskInternalTransferSingleTemplateResponse, error)
+	DeleteTaskInternalTransferSingleTemplate(ctx context.Context, in *DeleteTaskInternalTransferSingleTemplateRequest, opts ...grpc.CallOption) (*DeleteTaskInternalTransferSingleTemplateResponse, error)
+	GetTaskInternalTransferFile(ctx context.Context, in *GetTaskInternalTransferFileRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
+	GetTaskInternalTransfer(ctx context.Context, in *GetTaskInternalTransferRequest, opts ...grpc.CallOption) (*GetTaskInternalTransferResponse, error)
+	GetTaskInternalTransferDetail(ctx context.Context, in *GetTaskInternalTransferDetailRequest, opts ...grpc.CallOption) (*GetTaskInternalTransferDetailResponse, error)
 	CreateInternalTransferTransaction(ctx context.Context, in *CreateInternalTransferTransactionRequest, opts ...grpc.CallOption) (*CreateInternalTransferTransactionResponse, error)
 	CancelInternalTransferTransaction(ctx context.Context, in *CancelInternalTransferTransactionRequest, opts ...grpc.CallOption) (*CancelInternalTransferTransactionResponse, error)
-	CreateMassInquiry(ctx context.Context, in *CreateMassInquiryRequest, opts ...grpc.CallOption) (*CreateMassInquiryResponse, error)
-	CreateMassTransfer(ctx context.Context, in *CreateMassTransferRequest, opts ...grpc.CallOption) (*CreateMassTransferResponse, error)
-	RunTransferJob(ctx context.Context, in *RunTransferJobRequest, opts ...grpc.CallOption) (*RunTransferJobResponse, error)
+	SetTaskInternalTransfer(ctx context.Context, in *SetTaskInternalTransferRequest, opts ...grpc.CallOption) (*SetTaskInternalTransferResponse, error)
+	ExecInternalTransfer(ctx context.Context, in *ExecInternalTransferRequest, opts ...grpc.CallOption) (*ExecInternalTransferResponse, error)
+	CreateTaskInternalTransferSingle(ctx context.Context, in *CreateTaskInternalTransferSingleRequest, opts ...grpc.CallOption) (*CreateTaskInternalTransferSingleResponse, error)
+	CreateTaskInternalTransferMultiple(ctx context.Context, in *CreateTaskInternalTransferMultipleRequest, opts ...grpc.CallOption) (*CreateTaskInternalTransferMultipleResponse, error)
 	GetTaskExternalTransfer(ctx context.Context, in *GetTaskExternalTransferRequest, opts ...grpc.CallOption) (*GetTaskExternalTransferResponse, error)
 	GetTaskExternalTransferDetail(ctx context.Context, in *GetTaskExternalTransferDetailRequest, opts ...grpc.CallOption) (*GetTaskExternalTransferDetailResponse, error)
+	CreateExternalTransferTransaction(ctx context.Context, in *CreateExternalTransferTransactionRequest, opts ...grpc.CallOption) (*CreateExternalTransferTransactionResponse, error)
+	SetTaskExternalTransfer(ctx context.Context, in *SetTaskExternalTransferRequest, opts ...grpc.CallOption) (*SetTaskExternalTransferResponse, error)
 	CreateTaskExternalTransferSingle(ctx context.Context, in *CreateTaskExternalTransferSingleRequest, opts ...grpc.CallOption) (*CreateTaskExternalTransferSingleResponse, error)
-	GetTaskInternalFile(ctx context.Context, in *GetTaskInternalFileRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
-	GetTaskInternalSingleTemplate(ctx context.Context, in *GetTaskInternalSingleTemplateRequest, opts ...grpc.CallOption) (*GetTaskInternalSingleTemplateResponse, error)
-	GetTaskInternalSingleTemplateDetail(ctx context.Context, in *GetTaskInternalSingleTemplateDetailRequest, opts ...grpc.CallOption) (*GetTaskInternalSingleTemplateDetailResponse, error)
-	CreateTaskInternalSingleTemplate(ctx context.Context, in *InternalSingleTemplate, opts ...grpc.CallOption) (*CreateTaskInternalSingleTemplateResponse, error)
-	DeleteTaskInternalSingleTemplate(ctx context.Context, in *DeleteTaskInternalSingleTemplateRequest, opts ...grpc.CallOption) (*DeleteTaskInternalSingleTemplateResponse, error)
-	GetTaskInternal(ctx context.Context, in *GetTaskInternalRequest, opts ...grpc.CallOption) (*GetTaskInternalResponse, error)
-	GetTaskInternalDetail(ctx context.Context, in *GetTaskInternalDetailRequest, opts ...grpc.CallOption) (*GetTaskInternalDetailResponse, error)
-	CreateTaskInternalSingle(ctx context.Context, in *CreateTaskInternalSingleRequest, opts ...grpc.CallOption) (*CreateTaskInternalSingleResponse, error)
-	CreateTaskInternalMultiple(ctx context.Context, in *CreateTaskInternalMultipleRequest, opts ...grpc.CallOption) (*CreateTaskInternalMultipleResponse, error)
-	SetTaskInternal(ctx context.Context, in *SetTaskInternalRequest, opts ...grpc.CallOption) (*SetTaskInternalResponse, error)
-	DecodeBulkFile(ctx context.Context, in *DecodeBulkFileRequest, opts ...grpc.CallOption) (*DecodeBulkFileResponse, error)
-	GetTaskInternalBulk(ctx context.Context, in *GetTaskInternalBulkRequest, opts ...grpc.CallOption) (*GetTaskInternalBulkResponse, error)
-	GetTaskInternalBulkDetail(ctx context.Context, in *GetTaskInternalBulkDetailRequest, opts ...grpc.CallOption) (*GetTaskInternalBulkDetailResponse, error)
-	CreateTaskInternalBulk(ctx context.Context, in *CreateTaskInternalBulkRequest, opts ...grpc.CallOption) (*CreateTaskInternalBulkResponse, error)
-	DecodePayrollFile(ctx context.Context, in *DecodePayrollFileRequest, opts ...grpc.CallOption) (*DecodePayrollFileResponse, error)
+	CreateTaskExternalTransferMultiple(ctx context.Context, in *CreateTaskExternalTransferMultipleRequest, opts ...grpc.CallOption) (*CreateTaskExternalTransferMultipleResponse, error)
 	GetTaskPayrollFile(ctx context.Context, in *GetTaskPayrollFileRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	GetTaskPayroll(ctx context.Context, in *GetTaskPayrollRequest, opts ...grpc.CallOption) (*GetTaskPayrollResponse, error)
 	GetTaskPayrollDetail(ctx context.Context, in *GetTaskPayrollDetailRequest, opts ...grpc.CallOption) (*GetTaskPayrollDetailResponse, error)
 	CreateTaskPayroll(ctx context.Context, in *CreateTaskPayrollRequest, opts ...grpc.CallOption) (*CreateTaskPayrollResponse, error)
-	RunMassInquiryJob(ctx context.Context, in *RunMassInquiryJobRequest, opts ...grpc.CallOption) (*RunMassInquiryJobResponse, error)
-	RunMassTransferJob(ctx context.Context, in *RunMassTransferJobRequest, opts ...grpc.CallOption) (*RunMassTransferJobResponse, error)
-	RunMassTransferScheduledJob(ctx context.Context, in *RunMassTransferScheduledJobRequest, opts ...grpc.CallOption) (*RunMassTransferScheduledJobResponse, error)
 	SetTaskPayroll(ctx context.Context, in *SetTaskPayrollRequest, opts ...grpc.CallOption) (*SetTaskPayrollResponse, error)
 	CancelTransferPayroll(ctx context.Context, in *CancelTransferPayrollRequest, opts ...grpc.CallOption) (*CancelTransferPayrollResponse, error)
+	RunFileCheckingPayrollJob(ctx context.Context, in *RunFileCheckingPayrollJobRequest, opts ...grpc.CallOption) (*RunFileCheckingPayrollJobResponse, error)
+	RunMassInquiryJob(ctx context.Context, in *RunMassInquiryJobRequest, opts ...grpc.CallOption) (*RunMassInquiryJobResponse, error)
+	CreateMassTransfer(ctx context.Context, in *CreateMassTransferRequest, opts ...grpc.CallOption) (*CreateMassTransferResponse, error)
+	RunMassTransferJob(ctx context.Context, in *RunMassTransferJobRequest, opts ...grpc.CallOption) (*RunMassTransferJobResponse, error)
+	RunMassTransferScheduledJob(ctx context.Context, in *RunMassTransferScheduledJobRequest, opts ...grpc.CallOption) (*RunMassTransferScheduledJobResponse, error)
 }
 
 type apiServiceClient struct {
@@ -77,18 +73,63 @@ func (c *apiServiceClient) HealthCheck(ctx context.Context, in *HealthCheckReque
 	return out, nil
 }
 
-func (c *apiServiceClient) GetPairRate(ctx context.Context, in *GetPairRateRequest, opts ...grpc.CallOption) (*GetPairRateResponse, error) {
-	out := new(GetPairRateResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetPairRate", in, out, opts...)
+func (c *apiServiceClient) GetTaskInternalTransferSingleTemplate(ctx context.Context, in *GetTaskInternalTransferSingleTemplateRequest, opts ...grpc.CallOption) (*GetTaskInternalTransferSingleTemplateResponse, error) {
+	out := new(GetTaskInternalTransferSingleTemplateResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetTaskInternalTransferSingleTemplate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *apiServiceClient) ExecInternalTransfer(ctx context.Context, in *ExecInternalTransferRequest, opts ...grpc.CallOption) (*ExecInternalTransferResponse, error) {
-	out := new(ExecInternalTransferResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/ExecInternalTransfer", in, out, opts...)
+func (c *apiServiceClient) GetTaskInternalTransferSingleTemplateDetail(ctx context.Context, in *GetTaskInternalTransferSingleTemplateDetailRequest, opts ...grpc.CallOption) (*GetTaskInternalTransferSingleTemplateDetailResponse, error) {
+	out := new(GetTaskInternalTransferSingleTemplateDetailResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetTaskInternalTransferSingleTemplateDetail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) CreateTaskInternalTransferSingleTemplate(ctx context.Context, in *InternalTransferSingleTemplate, opts ...grpc.CallOption) (*CreateTaskInternalTransferSingleTemplateResponse, error) {
+	out := new(CreateTaskInternalTransferSingleTemplateResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateTaskInternalTransferSingleTemplate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) DeleteTaskInternalTransferSingleTemplate(ctx context.Context, in *DeleteTaskInternalTransferSingleTemplateRequest, opts ...grpc.CallOption) (*DeleteTaskInternalTransferSingleTemplateResponse, error) {
+	out := new(DeleteTaskInternalTransferSingleTemplateResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/DeleteTaskInternalTransferSingleTemplate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetTaskInternalTransferFile(ctx context.Context, in *GetTaskInternalTransferFileRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+	out := new(httpbody.HttpBody)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetTaskInternalTransferFile", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetTaskInternalTransfer(ctx context.Context, in *GetTaskInternalTransferRequest, opts ...grpc.CallOption) (*GetTaskInternalTransferResponse, error) {
+	out := new(GetTaskInternalTransferResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetTaskInternalTransfer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) GetTaskInternalTransferDetail(ctx context.Context, in *GetTaskInternalTransferDetailRequest, opts ...grpc.CallOption) (*GetTaskInternalTransferDetailResponse, error) {
+	out := new(GetTaskInternalTransferDetailResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetTaskInternalTransferDetail", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -113,27 +154,36 @@ func (c *apiServiceClient) CancelInternalTransferTransaction(ctx context.Context
 	return out, nil
 }
 
-func (c *apiServiceClient) CreateMassInquiry(ctx context.Context, in *CreateMassInquiryRequest, opts ...grpc.CallOption) (*CreateMassInquiryResponse, error) {
-	out := new(CreateMassInquiryResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateMassInquiry", in, out, opts...)
+func (c *apiServiceClient) SetTaskInternalTransfer(ctx context.Context, in *SetTaskInternalTransferRequest, opts ...grpc.CallOption) (*SetTaskInternalTransferResponse, error) {
+	out := new(SetTaskInternalTransferResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/SetTaskInternalTransfer", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *apiServiceClient) CreateMassTransfer(ctx context.Context, in *CreateMassTransferRequest, opts ...grpc.CallOption) (*CreateMassTransferResponse, error) {
-	out := new(CreateMassTransferResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateMassTransfer", in, out, opts...)
+func (c *apiServiceClient) ExecInternalTransfer(ctx context.Context, in *ExecInternalTransferRequest, opts ...grpc.CallOption) (*ExecInternalTransferResponse, error) {
+	out := new(ExecInternalTransferResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/ExecInternalTransfer", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *apiServiceClient) RunTransferJob(ctx context.Context, in *RunTransferJobRequest, opts ...grpc.CallOption) (*RunTransferJobResponse, error) {
-	out := new(RunTransferJobResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/RunTransferJob", in, out, opts...)
+func (c *apiServiceClient) CreateTaskInternalTransferSingle(ctx context.Context, in *CreateTaskInternalTransferSingleRequest, opts ...grpc.CallOption) (*CreateTaskInternalTransferSingleResponse, error) {
+	out := new(CreateTaskInternalTransferSingleResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateTaskInternalTransferSingle", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) CreateTaskInternalTransferMultiple(ctx context.Context, in *CreateTaskInternalTransferMultipleRequest, opts ...grpc.CallOption) (*CreateTaskInternalTransferMultipleResponse, error) {
+	out := new(CreateTaskInternalTransferMultipleResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateTaskInternalTransferMultiple", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -158,6 +208,24 @@ func (c *apiServiceClient) GetTaskExternalTransferDetail(ctx context.Context, in
 	return out, nil
 }
 
+func (c *apiServiceClient) CreateExternalTransferTransaction(ctx context.Context, in *CreateExternalTransferTransactionRequest, opts ...grpc.CallOption) (*CreateExternalTransferTransactionResponse, error) {
+	out := new(CreateExternalTransferTransactionResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateExternalTransferTransaction", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) SetTaskExternalTransfer(ctx context.Context, in *SetTaskExternalTransferRequest, opts ...grpc.CallOption) (*SetTaskExternalTransferResponse, error) {
+	out := new(SetTaskExternalTransferResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/SetTaskExternalTransfer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) CreateTaskExternalTransferSingle(ctx context.Context, in *CreateTaskExternalTransferSingleRequest, opts ...grpc.CallOption) (*CreateTaskExternalTransferSingleResponse, error) {
 	out := new(CreateTaskExternalTransferSingleResponse)
 	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateTaskExternalTransferSingle", in, out, opts...)
@@ -167,135 +235,9 @@ func (c *apiServiceClient) CreateTaskExternalTransferSingle(ctx context.Context,
 	return out, nil
 }
 
-func (c *apiServiceClient) GetTaskInternalFile(ctx context.Context, in *GetTaskInternalFileRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
-	out := new(httpbody.HttpBody)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetTaskInternalFile", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) GetTaskInternalSingleTemplate(ctx context.Context, in *GetTaskInternalSingleTemplateRequest, opts ...grpc.CallOption) (*GetTaskInternalSingleTemplateResponse, error) {
-	out := new(GetTaskInternalSingleTemplateResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetTaskInternalSingleTemplate", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) GetTaskInternalSingleTemplateDetail(ctx context.Context, in *GetTaskInternalSingleTemplateDetailRequest, opts ...grpc.CallOption) (*GetTaskInternalSingleTemplateDetailResponse, error) {
-	out := new(GetTaskInternalSingleTemplateDetailResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetTaskInternalSingleTemplateDetail", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) CreateTaskInternalSingleTemplate(ctx context.Context, in *InternalSingleTemplate, opts ...grpc.CallOption) (*CreateTaskInternalSingleTemplateResponse, error) {
-	out := new(CreateTaskInternalSingleTemplateResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateTaskInternalSingleTemplate", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) DeleteTaskInternalSingleTemplate(ctx context.Context, in *DeleteTaskInternalSingleTemplateRequest, opts ...grpc.CallOption) (*DeleteTaskInternalSingleTemplateResponse, error) {
-	out := new(DeleteTaskInternalSingleTemplateResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/DeleteTaskInternalSingleTemplate", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) GetTaskInternal(ctx context.Context, in *GetTaskInternalRequest, opts ...grpc.CallOption) (*GetTaskInternalResponse, error) {
-	out := new(GetTaskInternalResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetTaskInternal", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) GetTaskInternalDetail(ctx context.Context, in *GetTaskInternalDetailRequest, opts ...grpc.CallOption) (*GetTaskInternalDetailResponse, error) {
-	out := new(GetTaskInternalDetailResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetTaskInternalDetail", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) CreateTaskInternalSingle(ctx context.Context, in *CreateTaskInternalSingleRequest, opts ...grpc.CallOption) (*CreateTaskInternalSingleResponse, error) {
-	out := new(CreateTaskInternalSingleResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateTaskInternalSingle", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) CreateTaskInternalMultiple(ctx context.Context, in *CreateTaskInternalMultipleRequest, opts ...grpc.CallOption) (*CreateTaskInternalMultipleResponse, error) {
-	out := new(CreateTaskInternalMultipleResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateTaskInternalMultiple", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) SetTaskInternal(ctx context.Context, in *SetTaskInternalRequest, opts ...grpc.CallOption) (*SetTaskInternalResponse, error) {
-	out := new(SetTaskInternalResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/SetTaskInternal", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) DecodeBulkFile(ctx context.Context, in *DecodeBulkFileRequest, opts ...grpc.CallOption) (*DecodeBulkFileResponse, error) {
-	out := new(DecodeBulkFileResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/DecodeBulkFile", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) GetTaskInternalBulk(ctx context.Context, in *GetTaskInternalBulkRequest, opts ...grpc.CallOption) (*GetTaskInternalBulkResponse, error) {
-	out := new(GetTaskInternalBulkResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetTaskInternalBulk", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) GetTaskInternalBulkDetail(ctx context.Context, in *GetTaskInternalBulkDetailRequest, opts ...grpc.CallOption) (*GetTaskInternalBulkDetailResponse, error) {
-	out := new(GetTaskInternalBulkDetailResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/GetTaskInternalBulkDetail", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) CreateTaskInternalBulk(ctx context.Context, in *CreateTaskInternalBulkRequest, opts ...grpc.CallOption) (*CreateTaskInternalBulkResponse, error) {
-	out := new(CreateTaskInternalBulkResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateTaskInternalBulk", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) DecodePayrollFile(ctx context.Context, in *DecodePayrollFileRequest, opts ...grpc.CallOption) (*DecodePayrollFileResponse, error) {
-	out := new(DecodePayrollFileResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/DecodePayrollFile", in, out, opts...)
+func (c *apiServiceClient) CreateTaskExternalTransferMultiple(ctx context.Context, in *CreateTaskExternalTransferMultipleRequest, opts ...grpc.CallOption) (*CreateTaskExternalTransferMultipleResponse, error) {
+	out := new(CreateTaskExternalTransferMultipleResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateTaskExternalTransferMultiple", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -338,9 +280,45 @@ func (c *apiServiceClient) CreateTaskPayroll(ctx context.Context, in *CreateTask
 	return out, nil
 }
 
+func (c *apiServiceClient) SetTaskPayroll(ctx context.Context, in *SetTaskPayrollRequest, opts ...grpc.CallOption) (*SetTaskPayrollResponse, error) {
+	out := new(SetTaskPayrollResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/SetTaskPayroll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) CancelTransferPayroll(ctx context.Context, in *CancelTransferPayrollRequest, opts ...grpc.CallOption) (*CancelTransferPayrollResponse, error) {
+	out := new(CancelTransferPayrollResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CancelTransferPayroll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) RunFileCheckingPayrollJob(ctx context.Context, in *RunFileCheckingPayrollJobRequest, opts ...grpc.CallOption) (*RunFileCheckingPayrollJobResponse, error) {
+	out := new(RunFileCheckingPayrollJobResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/RunFileCheckingPayrollJob", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) RunMassInquiryJob(ctx context.Context, in *RunMassInquiryJobRequest, opts ...grpc.CallOption) (*RunMassInquiryJobResponse, error) {
 	out := new(RunMassInquiryJobResponse)
 	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/RunMassInquiryJob", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) CreateMassTransfer(ctx context.Context, in *CreateMassTransferRequest, opts ...grpc.CallOption) (*CreateMassTransferResponse, error) {
+	out := new(CreateMassTransferResponse)
+	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateMassTransfer", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -365,63 +343,41 @@ func (c *apiServiceClient) RunMassTransferScheduledJob(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *apiServiceClient) SetTaskPayroll(ctx context.Context, in *SetTaskPayrollRequest, opts ...grpc.CallOption) (*SetTaskPayrollResponse, error) {
-	out := new(SetTaskPayrollResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/SetTaskPayroll", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *apiServiceClient) CancelTransferPayroll(ctx context.Context, in *CancelTransferPayrollRequest, opts ...grpc.CallOption) (*CancelTransferPayrollResponse, error) {
-	out := new(CancelTransferPayrollResponse)
-	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CancelTransferPayroll", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
 type ApiServiceServer interface {
 	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
-	GetPairRate(context.Context, *GetPairRateRequest) (*GetPairRateResponse, error)
-	ExecInternalTransfer(context.Context, *ExecInternalTransferRequest) (*ExecInternalTransferResponse, error)
+	GetTaskInternalTransferSingleTemplate(context.Context, *GetTaskInternalTransferSingleTemplateRequest) (*GetTaskInternalTransferSingleTemplateResponse, error)
+	GetTaskInternalTransferSingleTemplateDetail(context.Context, *GetTaskInternalTransferSingleTemplateDetailRequest) (*GetTaskInternalTransferSingleTemplateDetailResponse, error)
+	CreateTaskInternalTransferSingleTemplate(context.Context, *InternalTransferSingleTemplate) (*CreateTaskInternalTransferSingleTemplateResponse, error)
+	DeleteTaskInternalTransferSingleTemplate(context.Context, *DeleteTaskInternalTransferSingleTemplateRequest) (*DeleteTaskInternalTransferSingleTemplateResponse, error)
+	GetTaskInternalTransferFile(context.Context, *GetTaskInternalTransferFileRequest) (*httpbody.HttpBody, error)
+	GetTaskInternalTransfer(context.Context, *GetTaskInternalTransferRequest) (*GetTaskInternalTransferResponse, error)
+	GetTaskInternalTransferDetail(context.Context, *GetTaskInternalTransferDetailRequest) (*GetTaskInternalTransferDetailResponse, error)
 	CreateInternalTransferTransaction(context.Context, *CreateInternalTransferTransactionRequest) (*CreateInternalTransferTransactionResponse, error)
 	CancelInternalTransferTransaction(context.Context, *CancelInternalTransferTransactionRequest) (*CancelInternalTransferTransactionResponse, error)
-	CreateMassInquiry(context.Context, *CreateMassInquiryRequest) (*CreateMassInquiryResponse, error)
-	CreateMassTransfer(context.Context, *CreateMassTransferRequest) (*CreateMassTransferResponse, error)
-	RunTransferJob(context.Context, *RunTransferJobRequest) (*RunTransferJobResponse, error)
+	SetTaskInternalTransfer(context.Context, *SetTaskInternalTransferRequest) (*SetTaskInternalTransferResponse, error)
+	ExecInternalTransfer(context.Context, *ExecInternalTransferRequest) (*ExecInternalTransferResponse, error)
+	CreateTaskInternalTransferSingle(context.Context, *CreateTaskInternalTransferSingleRequest) (*CreateTaskInternalTransferSingleResponse, error)
+	CreateTaskInternalTransferMultiple(context.Context, *CreateTaskInternalTransferMultipleRequest) (*CreateTaskInternalTransferMultipleResponse, error)
 	GetTaskExternalTransfer(context.Context, *GetTaskExternalTransferRequest) (*GetTaskExternalTransferResponse, error)
 	GetTaskExternalTransferDetail(context.Context, *GetTaskExternalTransferDetailRequest) (*GetTaskExternalTransferDetailResponse, error)
+	CreateExternalTransferTransaction(context.Context, *CreateExternalTransferTransactionRequest) (*CreateExternalTransferTransactionResponse, error)
+	SetTaskExternalTransfer(context.Context, *SetTaskExternalTransferRequest) (*SetTaskExternalTransferResponse, error)
 	CreateTaskExternalTransferSingle(context.Context, *CreateTaskExternalTransferSingleRequest) (*CreateTaskExternalTransferSingleResponse, error)
-	GetTaskInternalFile(context.Context, *GetTaskInternalFileRequest) (*httpbody.HttpBody, error)
-	GetTaskInternalSingleTemplate(context.Context, *GetTaskInternalSingleTemplateRequest) (*GetTaskInternalSingleTemplateResponse, error)
-	GetTaskInternalSingleTemplateDetail(context.Context, *GetTaskInternalSingleTemplateDetailRequest) (*GetTaskInternalSingleTemplateDetailResponse, error)
-	CreateTaskInternalSingleTemplate(context.Context, *InternalSingleTemplate) (*CreateTaskInternalSingleTemplateResponse, error)
-	DeleteTaskInternalSingleTemplate(context.Context, *DeleteTaskInternalSingleTemplateRequest) (*DeleteTaskInternalSingleTemplateResponse, error)
-	GetTaskInternal(context.Context, *GetTaskInternalRequest) (*GetTaskInternalResponse, error)
-	GetTaskInternalDetail(context.Context, *GetTaskInternalDetailRequest) (*GetTaskInternalDetailResponse, error)
-	CreateTaskInternalSingle(context.Context, *CreateTaskInternalSingleRequest) (*CreateTaskInternalSingleResponse, error)
-	CreateTaskInternalMultiple(context.Context, *CreateTaskInternalMultipleRequest) (*CreateTaskInternalMultipleResponse, error)
-	SetTaskInternal(context.Context, *SetTaskInternalRequest) (*SetTaskInternalResponse, error)
-	DecodeBulkFile(context.Context, *DecodeBulkFileRequest) (*DecodeBulkFileResponse, error)
-	GetTaskInternalBulk(context.Context, *GetTaskInternalBulkRequest) (*GetTaskInternalBulkResponse, error)
-	GetTaskInternalBulkDetail(context.Context, *GetTaskInternalBulkDetailRequest) (*GetTaskInternalBulkDetailResponse, error)
-	CreateTaskInternalBulk(context.Context, *CreateTaskInternalBulkRequest) (*CreateTaskInternalBulkResponse, error)
-	DecodePayrollFile(context.Context, *DecodePayrollFileRequest) (*DecodePayrollFileResponse, error)
+	CreateTaskExternalTransferMultiple(context.Context, *CreateTaskExternalTransferMultipleRequest) (*CreateTaskExternalTransferMultipleResponse, error)
 	GetTaskPayrollFile(context.Context, *GetTaskPayrollFileRequest) (*httpbody.HttpBody, error)
 	GetTaskPayroll(context.Context, *GetTaskPayrollRequest) (*GetTaskPayrollResponse, error)
 	GetTaskPayrollDetail(context.Context, *GetTaskPayrollDetailRequest) (*GetTaskPayrollDetailResponse, error)
 	CreateTaskPayroll(context.Context, *CreateTaskPayrollRequest) (*CreateTaskPayrollResponse, error)
-	RunMassInquiryJob(context.Context, *RunMassInquiryJobRequest) (*RunMassInquiryJobResponse, error)
-	RunMassTransferJob(context.Context, *RunMassTransferJobRequest) (*RunMassTransferJobResponse, error)
-	RunMassTransferScheduledJob(context.Context, *RunMassTransferScheduledJobRequest) (*RunMassTransferScheduledJobResponse, error)
 	SetTaskPayroll(context.Context, *SetTaskPayrollRequest) (*SetTaskPayrollResponse, error)
 	CancelTransferPayroll(context.Context, *CancelTransferPayrollRequest) (*CancelTransferPayrollResponse, error)
+	RunFileCheckingPayrollJob(context.Context, *RunFileCheckingPayrollJobRequest) (*RunFileCheckingPayrollJobResponse, error)
+	RunMassInquiryJob(context.Context, *RunMassInquiryJobRequest) (*RunMassInquiryJobResponse, error)
+	CreateMassTransfer(context.Context, *CreateMassTransferRequest) (*CreateMassTransferResponse, error)
+	RunMassTransferJob(context.Context, *RunMassTransferJobRequest) (*RunMassTransferJobResponse, error)
+	RunMassTransferScheduledJob(context.Context, *RunMassTransferScheduledJobRequest) (*RunMassTransferScheduledJobResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -432,11 +388,26 @@ type UnimplementedApiServiceServer struct {
 func (UnimplementedApiServiceServer) HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
 }
-func (UnimplementedApiServiceServer) GetPairRate(context.Context, *GetPairRateRequest) (*GetPairRateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPairRate not implemented")
+func (UnimplementedApiServiceServer) GetTaskInternalTransferSingleTemplate(context.Context, *GetTaskInternalTransferSingleTemplateRequest) (*GetTaskInternalTransferSingleTemplateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternalTransferSingleTemplate not implemented")
 }
-func (UnimplementedApiServiceServer) ExecInternalTransfer(context.Context, *ExecInternalTransferRequest) (*ExecInternalTransferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ExecInternalTransfer not implemented")
+func (UnimplementedApiServiceServer) GetTaskInternalTransferSingleTemplateDetail(context.Context, *GetTaskInternalTransferSingleTemplateDetailRequest) (*GetTaskInternalTransferSingleTemplateDetailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternalTransferSingleTemplateDetail not implemented")
+}
+func (UnimplementedApiServiceServer) CreateTaskInternalTransferSingleTemplate(context.Context, *InternalTransferSingleTemplate) (*CreateTaskInternalTransferSingleTemplateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskInternalTransferSingleTemplate not implemented")
+}
+func (UnimplementedApiServiceServer) DeleteTaskInternalTransferSingleTemplate(context.Context, *DeleteTaskInternalTransferSingleTemplateRequest) (*DeleteTaskInternalTransferSingleTemplateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTaskInternalTransferSingleTemplate not implemented")
+}
+func (UnimplementedApiServiceServer) GetTaskInternalTransferFile(context.Context, *GetTaskInternalTransferFileRequest) (*httpbody.HttpBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternalTransferFile not implemented")
+}
+func (UnimplementedApiServiceServer) GetTaskInternalTransfer(context.Context, *GetTaskInternalTransferRequest) (*GetTaskInternalTransferResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternalTransfer not implemented")
+}
+func (UnimplementedApiServiceServer) GetTaskInternalTransferDetail(context.Context, *GetTaskInternalTransferDetailRequest) (*GetTaskInternalTransferDetailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternalTransferDetail not implemented")
 }
 func (UnimplementedApiServiceServer) CreateInternalTransferTransaction(context.Context, *CreateInternalTransferTransactionRequest) (*CreateInternalTransferTransactionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInternalTransferTransaction not implemented")
@@ -444,14 +415,17 @@ func (UnimplementedApiServiceServer) CreateInternalTransferTransaction(context.C
 func (UnimplementedApiServiceServer) CancelInternalTransferTransaction(context.Context, *CancelInternalTransferTransactionRequest) (*CancelInternalTransferTransactionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CancelInternalTransferTransaction not implemented")
 }
-func (UnimplementedApiServiceServer) CreateMassInquiry(context.Context, *CreateMassInquiryRequest) (*CreateMassInquiryResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateMassInquiry not implemented")
+func (UnimplementedApiServiceServer) SetTaskInternalTransfer(context.Context, *SetTaskInternalTransferRequest) (*SetTaskInternalTransferResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetTaskInternalTransfer not implemented")
 }
-func (UnimplementedApiServiceServer) CreateMassTransfer(context.Context, *CreateMassTransferRequest) (*CreateMassTransferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateMassTransfer not implemented")
+func (UnimplementedApiServiceServer) ExecInternalTransfer(context.Context, *ExecInternalTransferRequest) (*ExecInternalTransferResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecInternalTransfer not implemented")
 }
-func (UnimplementedApiServiceServer) RunTransferJob(context.Context, *RunTransferJobRequest) (*RunTransferJobResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RunTransferJob not implemented")
+func (UnimplementedApiServiceServer) CreateTaskInternalTransferSingle(context.Context, *CreateTaskInternalTransferSingleRequest) (*CreateTaskInternalTransferSingleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskInternalTransferSingle not implemented")
+}
+func (UnimplementedApiServiceServer) CreateTaskInternalTransferMultiple(context.Context, *CreateTaskInternalTransferMultipleRequest) (*CreateTaskInternalTransferMultipleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskInternalTransferMultiple not implemented")
 }
 func (UnimplementedApiServiceServer) GetTaskExternalTransfer(context.Context, *GetTaskExternalTransferRequest) (*GetTaskExternalTransferResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskExternalTransfer not implemented")
@@ -459,53 +433,17 @@ func (UnimplementedApiServiceServer) GetTaskExternalTransfer(context.Context, *G
 func (UnimplementedApiServiceServer) GetTaskExternalTransferDetail(context.Context, *GetTaskExternalTransferDetailRequest) (*GetTaskExternalTransferDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskExternalTransferDetail not implemented")
 }
+func (UnimplementedApiServiceServer) CreateExternalTransferTransaction(context.Context, *CreateExternalTransferTransactionRequest) (*CreateExternalTransferTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateExternalTransferTransaction not implemented")
+}
+func (UnimplementedApiServiceServer) SetTaskExternalTransfer(context.Context, *SetTaskExternalTransferRequest) (*SetTaskExternalTransferResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetTaskExternalTransfer not implemented")
+}
 func (UnimplementedApiServiceServer) CreateTaskExternalTransferSingle(context.Context, *CreateTaskExternalTransferSingleRequest) (*CreateTaskExternalTransferSingleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskExternalTransferSingle not implemented")
 }
-func (UnimplementedApiServiceServer) GetTaskInternalFile(context.Context, *GetTaskInternalFileRequest) (*httpbody.HttpBody, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternalFile not implemented")
-}
-func (UnimplementedApiServiceServer) GetTaskInternalSingleTemplate(context.Context, *GetTaskInternalSingleTemplateRequest) (*GetTaskInternalSingleTemplateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternalSingleTemplate not implemented")
-}
-func (UnimplementedApiServiceServer) GetTaskInternalSingleTemplateDetail(context.Context, *GetTaskInternalSingleTemplateDetailRequest) (*GetTaskInternalSingleTemplateDetailResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternalSingleTemplateDetail not implemented")
-}
-func (UnimplementedApiServiceServer) CreateTaskInternalSingleTemplate(context.Context, *InternalSingleTemplate) (*CreateTaskInternalSingleTemplateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskInternalSingleTemplate not implemented")
-}
-func (UnimplementedApiServiceServer) DeleteTaskInternalSingleTemplate(context.Context, *DeleteTaskInternalSingleTemplateRequest) (*DeleteTaskInternalSingleTemplateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteTaskInternalSingleTemplate not implemented")
-}
-func (UnimplementedApiServiceServer) GetTaskInternal(context.Context, *GetTaskInternalRequest) (*GetTaskInternalResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternal not implemented")
-}
-func (UnimplementedApiServiceServer) GetTaskInternalDetail(context.Context, *GetTaskInternalDetailRequest) (*GetTaskInternalDetailResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternalDetail not implemented")
-}
-func (UnimplementedApiServiceServer) CreateTaskInternalSingle(context.Context, *CreateTaskInternalSingleRequest) (*CreateTaskInternalSingleResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskInternalSingle not implemented")
-}
-func (UnimplementedApiServiceServer) CreateTaskInternalMultiple(context.Context, *CreateTaskInternalMultipleRequest) (*CreateTaskInternalMultipleResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskInternalMultiple not implemented")
-}
-func (UnimplementedApiServiceServer) SetTaskInternal(context.Context, *SetTaskInternalRequest) (*SetTaskInternalResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetTaskInternal not implemented")
-}
-func (UnimplementedApiServiceServer) DecodeBulkFile(context.Context, *DecodeBulkFileRequest) (*DecodeBulkFileResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DecodeBulkFile not implemented")
-}
-func (UnimplementedApiServiceServer) GetTaskInternalBulk(context.Context, *GetTaskInternalBulkRequest) (*GetTaskInternalBulkResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternalBulk not implemented")
-}
-func (UnimplementedApiServiceServer) GetTaskInternalBulkDetail(context.Context, *GetTaskInternalBulkDetailRequest) (*GetTaskInternalBulkDetailResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternalBulkDetail not implemented")
-}
-func (UnimplementedApiServiceServer) CreateTaskInternalBulk(context.Context, *CreateTaskInternalBulkRequest) (*CreateTaskInternalBulkResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskInternalBulk not implemented")
-}
-func (UnimplementedApiServiceServer) DecodePayrollFile(context.Context, *DecodePayrollFileRequest) (*DecodePayrollFileResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DecodePayrollFile not implemented")
+func (UnimplementedApiServiceServer) CreateTaskExternalTransferMultiple(context.Context, *CreateTaskExternalTransferMultipleRequest) (*CreateTaskExternalTransferMultipleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskExternalTransferMultiple not implemented")
 }
 func (UnimplementedApiServiceServer) GetTaskPayrollFile(context.Context, *GetTaskPayrollFileRequest) (*httpbody.HttpBody, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskPayrollFile not implemented")
@@ -519,20 +457,26 @@ func (UnimplementedApiServiceServer) GetTaskPayrollDetail(context.Context, *GetT
 func (UnimplementedApiServiceServer) CreateTaskPayroll(context.Context, *CreateTaskPayrollRequest) (*CreateTaskPayrollResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskPayroll not implemented")
 }
+func (UnimplementedApiServiceServer) SetTaskPayroll(context.Context, *SetTaskPayrollRequest) (*SetTaskPayrollResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetTaskPayroll not implemented")
+}
+func (UnimplementedApiServiceServer) CancelTransferPayroll(context.Context, *CancelTransferPayrollRequest) (*CancelTransferPayrollResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CancelTransferPayroll not implemented")
+}
+func (UnimplementedApiServiceServer) RunFileCheckingPayrollJob(context.Context, *RunFileCheckingPayrollJobRequest) (*RunFileCheckingPayrollJobResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunFileCheckingPayrollJob not implemented")
+}
 func (UnimplementedApiServiceServer) RunMassInquiryJob(context.Context, *RunMassInquiryJobRequest) (*RunMassInquiryJobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunMassInquiryJob not implemented")
+}
+func (UnimplementedApiServiceServer) CreateMassTransfer(context.Context, *CreateMassTransferRequest) (*CreateMassTransferResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMassTransfer not implemented")
 }
 func (UnimplementedApiServiceServer) RunMassTransferJob(context.Context, *RunMassTransferJobRequest) (*RunMassTransferJobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunMassTransferJob not implemented")
 }
 func (UnimplementedApiServiceServer) RunMassTransferScheduledJob(context.Context, *RunMassTransferScheduledJobRequest) (*RunMassTransferScheduledJobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunMassTransferScheduledJob not implemented")
-}
-func (UnimplementedApiServiceServer) SetTaskPayroll(context.Context, *SetTaskPayrollRequest) (*SetTaskPayrollResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetTaskPayroll not implemented")
-}
-func (UnimplementedApiServiceServer) CancelTransferPayroll(context.Context, *CancelTransferPayrollRequest) (*CancelTransferPayrollResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CancelTransferPayroll not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -565,38 +509,128 @@ func _ApiService_HealthCheck_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_GetPairRate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPairRateRequest)
+func _ApiService_GetTaskInternalTransferSingleTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTaskInternalTransferSingleTemplateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).GetPairRate(ctx, in)
+		return srv.(ApiServiceServer).GetTaskInternalTransferSingleTemplate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/GetPairRate",
+		FullMethod: "/transfer.service.v1.ApiService/GetTaskInternalTransferSingleTemplate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GetPairRate(ctx, req.(*GetPairRateRequest))
+		return srv.(ApiServiceServer).GetTaskInternalTransferSingleTemplate(ctx, req.(*GetTaskInternalTransferSingleTemplateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_ExecInternalTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ExecInternalTransferRequest)
+func _ApiService_GetTaskInternalTransferSingleTemplateDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTaskInternalTransferSingleTemplateDetailRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).ExecInternalTransfer(ctx, in)
+		return srv.(ApiServiceServer).GetTaskInternalTransferSingleTemplateDetail(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/ExecInternalTransfer",
+		FullMethod: "/transfer.service.v1.ApiService/GetTaskInternalTransferSingleTemplateDetail",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).ExecInternalTransfer(ctx, req.(*ExecInternalTransferRequest))
+		return srv.(ApiServiceServer).GetTaskInternalTransferSingleTemplateDetail(ctx, req.(*GetTaskInternalTransferSingleTemplateDetailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_CreateTaskInternalTransferSingleTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InternalTransferSingleTemplate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CreateTaskInternalTransferSingleTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/CreateTaskInternalTransferSingleTemplate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CreateTaskInternalTransferSingleTemplate(ctx, req.(*InternalTransferSingleTemplate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_DeleteTaskInternalTransferSingleTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTaskInternalTransferSingleTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DeleteTaskInternalTransferSingleTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/DeleteTaskInternalTransferSingleTemplate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DeleteTaskInternalTransferSingleTemplate(ctx, req.(*DeleteTaskInternalTransferSingleTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetTaskInternalTransferFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTaskInternalTransferFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetTaskInternalTransferFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/GetTaskInternalTransferFile",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetTaskInternalTransferFile(ctx, req.(*GetTaskInternalTransferFileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetTaskInternalTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTaskInternalTransferRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetTaskInternalTransfer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/GetTaskInternalTransfer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetTaskInternalTransfer(ctx, req.(*GetTaskInternalTransferRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_GetTaskInternalTransferDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTaskInternalTransferDetailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).GetTaskInternalTransferDetail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/GetTaskInternalTransferDetail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).GetTaskInternalTransferDetail(ctx, req.(*GetTaskInternalTransferDetailRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -637,56 +671,74 @@ func _ApiService_CancelInternalTransferTransaction_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_CreateMassInquiry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateMassInquiryRequest)
+func _ApiService_SetTaskInternalTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetTaskInternalTransferRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).CreateMassInquiry(ctx, in)
+		return srv.(ApiServiceServer).SetTaskInternalTransfer(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/CreateMassInquiry",
+		FullMethod: "/transfer.service.v1.ApiService/SetTaskInternalTransfer",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CreateMassInquiry(ctx, req.(*CreateMassInquiryRequest))
+		return srv.(ApiServiceServer).SetTaskInternalTransfer(ctx, req.(*SetTaskInternalTransferRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_CreateMassTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateMassTransferRequest)
+func _ApiService_ExecInternalTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecInternalTransferRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).CreateMassTransfer(ctx, in)
+		return srv.(ApiServiceServer).ExecInternalTransfer(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/CreateMassTransfer",
+		FullMethod: "/transfer.service.v1.ApiService/ExecInternalTransfer",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CreateMassTransfer(ctx, req.(*CreateMassTransferRequest))
+		return srv.(ApiServiceServer).ExecInternalTransfer(ctx, req.(*ExecInternalTransferRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_RunTransferJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RunTransferJobRequest)
+func _ApiService_CreateTaskInternalTransferSingle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTaskInternalTransferSingleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).RunTransferJob(ctx, in)
+		return srv.(ApiServiceServer).CreateTaskInternalTransferSingle(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/RunTransferJob",
+		FullMethod: "/transfer.service.v1.ApiService/CreateTaskInternalTransferSingle",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).RunTransferJob(ctx, req.(*RunTransferJobRequest))
+		return srv.(ApiServiceServer).CreateTaskInternalTransferSingle(ctx, req.(*CreateTaskInternalTransferSingleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_CreateTaskInternalTransferMultiple_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTaskInternalTransferMultipleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CreateTaskInternalTransferMultiple(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/CreateTaskInternalTransferMultiple",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CreateTaskInternalTransferMultiple(ctx, req.(*CreateTaskInternalTransferMultipleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -727,6 +779,42 @@ func _ApiService_GetTaskExternalTransferDetail_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_CreateExternalTransferTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateExternalTransferTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CreateExternalTransferTransaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/CreateExternalTransferTransaction",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CreateExternalTransferTransaction(ctx, req.(*CreateExternalTransferTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_SetTaskExternalTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetTaskExternalTransferRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).SetTaskExternalTransfer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/SetTaskExternalTransfer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).SetTaskExternalTransfer(ctx, req.(*SetTaskExternalTransferRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_CreateTaskExternalTransferSingle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateTaskExternalTransferSingleRequest)
 	if err := dec(in); err != nil {
@@ -745,272 +833,20 @@ func _ApiService_CreateTaskExternalTransferSingle_Handler(srv interface{}, ctx c
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_GetTaskInternalFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTaskInternalFileRequest)
+func _ApiService_CreateTaskExternalTransferMultiple_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTaskExternalTransferMultipleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApiServiceServer).GetTaskInternalFile(ctx, in)
+		return srv.(ApiServiceServer).CreateTaskExternalTransferMultiple(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/GetTaskInternalFile",
+		FullMethod: "/transfer.service.v1.ApiService/CreateTaskExternalTransferMultiple",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GetTaskInternalFile(ctx, req.(*GetTaskInternalFileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_GetTaskInternalSingleTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTaskInternalSingleTemplateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).GetTaskInternalSingleTemplate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/GetTaskInternalSingleTemplate",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GetTaskInternalSingleTemplate(ctx, req.(*GetTaskInternalSingleTemplateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_GetTaskInternalSingleTemplateDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTaskInternalSingleTemplateDetailRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).GetTaskInternalSingleTemplateDetail(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/GetTaskInternalSingleTemplateDetail",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GetTaskInternalSingleTemplateDetail(ctx, req.(*GetTaskInternalSingleTemplateDetailRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_CreateTaskInternalSingleTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InternalSingleTemplate)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).CreateTaskInternalSingleTemplate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/CreateTaskInternalSingleTemplate",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CreateTaskInternalSingleTemplate(ctx, req.(*InternalSingleTemplate))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_DeleteTaskInternalSingleTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteTaskInternalSingleTemplateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).DeleteTaskInternalSingleTemplate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/DeleteTaskInternalSingleTemplate",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).DeleteTaskInternalSingleTemplate(ctx, req.(*DeleteTaskInternalSingleTemplateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_GetTaskInternal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTaskInternalRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).GetTaskInternal(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/GetTaskInternal",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GetTaskInternal(ctx, req.(*GetTaskInternalRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_GetTaskInternalDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTaskInternalDetailRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).GetTaskInternalDetail(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/GetTaskInternalDetail",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GetTaskInternalDetail(ctx, req.(*GetTaskInternalDetailRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_CreateTaskInternalSingle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateTaskInternalSingleRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).CreateTaskInternalSingle(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/CreateTaskInternalSingle",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CreateTaskInternalSingle(ctx, req.(*CreateTaskInternalSingleRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_CreateTaskInternalMultiple_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateTaskInternalMultipleRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).CreateTaskInternalMultiple(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/CreateTaskInternalMultiple",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CreateTaskInternalMultiple(ctx, req.(*CreateTaskInternalMultipleRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_SetTaskInternal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetTaskInternalRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).SetTaskInternal(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/SetTaskInternal",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).SetTaskInternal(ctx, req.(*SetTaskInternalRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_DecodeBulkFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DecodeBulkFileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).DecodeBulkFile(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/DecodeBulkFile",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).DecodeBulkFile(ctx, req.(*DecodeBulkFileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_GetTaskInternalBulk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTaskInternalBulkRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).GetTaskInternalBulk(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/GetTaskInternalBulk",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GetTaskInternalBulk(ctx, req.(*GetTaskInternalBulkRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_GetTaskInternalBulkDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTaskInternalBulkDetailRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).GetTaskInternalBulkDetail(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/GetTaskInternalBulkDetail",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GetTaskInternalBulkDetail(ctx, req.(*GetTaskInternalBulkDetailRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_CreateTaskInternalBulk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateTaskInternalBulkRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).CreateTaskInternalBulk(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/CreateTaskInternalBulk",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CreateTaskInternalBulk(ctx, req.(*CreateTaskInternalBulkRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_DecodePayrollFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DecodePayrollFileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).DecodePayrollFile(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/DecodePayrollFile",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).DecodePayrollFile(ctx, req.(*DecodePayrollFileRequest))
+		return srv.(ApiServiceServer).CreateTaskExternalTransferMultiple(ctx, req.(*CreateTaskExternalTransferMultipleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1087,6 +923,60 @@ func _ApiService_CreateTaskPayroll_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_SetTaskPayroll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetTaskPayrollRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).SetTaskPayroll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/SetTaskPayroll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).SetTaskPayroll(ctx, req.(*SetTaskPayrollRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_CancelTransferPayroll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelTransferPayrollRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CancelTransferPayroll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/CancelTransferPayroll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CancelTransferPayroll(ctx, req.(*CancelTransferPayrollRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_RunFileCheckingPayrollJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunFileCheckingPayrollJobRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).RunFileCheckingPayrollJob(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/RunFileCheckingPayrollJob",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).RunFileCheckingPayrollJob(ctx, req.(*RunFileCheckingPayrollJobRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_RunMassInquiryJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RunMassInquiryJobRequest)
 	if err := dec(in); err != nil {
@@ -1101,6 +991,24 @@ func _ApiService_RunMassInquiryJob_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).RunMassInquiryJob(ctx, req.(*RunMassInquiryJobRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_CreateMassTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMassTransferRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CreateMassTransfer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/transfer.service.v1.ApiService/CreateMassTransfer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CreateMassTransfer(ctx, req.(*CreateMassTransferRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1141,42 +1049,6 @@ func _ApiService_RunMassTransferScheduledJob_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_SetTaskPayroll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetTaskPayrollRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).SetTaskPayroll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/SetTaskPayroll",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).SetTaskPayroll(ctx, req.(*SetTaskPayrollRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ApiService_CancelTransferPayroll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CancelTransferPayrollRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).CancelTransferPayroll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/transfer.service.v1.ApiService/CancelTransferPayroll",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CancelTransferPayroll(ctx, req.(*CancelTransferPayrollRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1189,12 +1061,32 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_HealthCheck_Handler,
 		},
 		{
-			MethodName: "GetPairRate",
-			Handler:    _ApiService_GetPairRate_Handler,
+			MethodName: "GetTaskInternalTransferSingleTemplate",
+			Handler:    _ApiService_GetTaskInternalTransferSingleTemplate_Handler,
 		},
 		{
-			MethodName: "ExecInternalTransfer",
-			Handler:    _ApiService_ExecInternalTransfer_Handler,
+			MethodName: "GetTaskInternalTransferSingleTemplateDetail",
+			Handler:    _ApiService_GetTaskInternalTransferSingleTemplateDetail_Handler,
+		},
+		{
+			MethodName: "CreateTaskInternalTransferSingleTemplate",
+			Handler:    _ApiService_CreateTaskInternalTransferSingleTemplate_Handler,
+		},
+		{
+			MethodName: "DeleteTaskInternalTransferSingleTemplate",
+			Handler:    _ApiService_DeleteTaskInternalTransferSingleTemplate_Handler,
+		},
+		{
+			MethodName: "GetTaskInternalTransferFile",
+			Handler:    _ApiService_GetTaskInternalTransferFile_Handler,
+		},
+		{
+			MethodName: "GetTaskInternalTransfer",
+			Handler:    _ApiService_GetTaskInternalTransfer_Handler,
+		},
+		{
+			MethodName: "GetTaskInternalTransferDetail",
+			Handler:    _ApiService_GetTaskInternalTransferDetail_Handler,
 		},
 		{
 			MethodName: "CreateInternalTransferTransaction",
@@ -1205,16 +1097,20 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_CancelInternalTransferTransaction_Handler,
 		},
 		{
-			MethodName: "CreateMassInquiry",
-			Handler:    _ApiService_CreateMassInquiry_Handler,
+			MethodName: "SetTaskInternalTransfer",
+			Handler:    _ApiService_SetTaskInternalTransfer_Handler,
 		},
 		{
-			MethodName: "CreateMassTransfer",
-			Handler:    _ApiService_CreateMassTransfer_Handler,
+			MethodName: "ExecInternalTransfer",
+			Handler:    _ApiService_ExecInternalTransfer_Handler,
 		},
 		{
-			MethodName: "RunTransferJob",
-			Handler:    _ApiService_RunTransferJob_Handler,
+			MethodName: "CreateTaskInternalTransferSingle",
+			Handler:    _ApiService_CreateTaskInternalTransferSingle_Handler,
+		},
+		{
+			MethodName: "CreateTaskInternalTransferMultiple",
+			Handler:    _ApiService_CreateTaskInternalTransferMultiple_Handler,
 		},
 		{
 			MethodName: "GetTaskExternalTransfer",
@@ -1225,68 +1121,20 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_GetTaskExternalTransferDetail_Handler,
 		},
 		{
+			MethodName: "CreateExternalTransferTransaction",
+			Handler:    _ApiService_CreateExternalTransferTransaction_Handler,
+		},
+		{
+			MethodName: "SetTaskExternalTransfer",
+			Handler:    _ApiService_SetTaskExternalTransfer_Handler,
+		},
+		{
 			MethodName: "CreateTaskExternalTransferSingle",
 			Handler:    _ApiService_CreateTaskExternalTransferSingle_Handler,
 		},
 		{
-			MethodName: "GetTaskInternalFile",
-			Handler:    _ApiService_GetTaskInternalFile_Handler,
-		},
-		{
-			MethodName: "GetTaskInternalSingleTemplate",
-			Handler:    _ApiService_GetTaskInternalSingleTemplate_Handler,
-		},
-		{
-			MethodName: "GetTaskInternalSingleTemplateDetail",
-			Handler:    _ApiService_GetTaskInternalSingleTemplateDetail_Handler,
-		},
-		{
-			MethodName: "CreateTaskInternalSingleTemplate",
-			Handler:    _ApiService_CreateTaskInternalSingleTemplate_Handler,
-		},
-		{
-			MethodName: "DeleteTaskInternalSingleTemplate",
-			Handler:    _ApiService_DeleteTaskInternalSingleTemplate_Handler,
-		},
-		{
-			MethodName: "GetTaskInternal",
-			Handler:    _ApiService_GetTaskInternal_Handler,
-		},
-		{
-			MethodName: "GetTaskInternalDetail",
-			Handler:    _ApiService_GetTaskInternalDetail_Handler,
-		},
-		{
-			MethodName: "CreateTaskInternalSingle",
-			Handler:    _ApiService_CreateTaskInternalSingle_Handler,
-		},
-		{
-			MethodName: "CreateTaskInternalMultiple",
-			Handler:    _ApiService_CreateTaskInternalMultiple_Handler,
-		},
-		{
-			MethodName: "SetTaskInternal",
-			Handler:    _ApiService_SetTaskInternal_Handler,
-		},
-		{
-			MethodName: "DecodeBulkFile",
-			Handler:    _ApiService_DecodeBulkFile_Handler,
-		},
-		{
-			MethodName: "GetTaskInternalBulk",
-			Handler:    _ApiService_GetTaskInternalBulk_Handler,
-		},
-		{
-			MethodName: "GetTaskInternalBulkDetail",
-			Handler:    _ApiService_GetTaskInternalBulkDetail_Handler,
-		},
-		{
-			MethodName: "CreateTaskInternalBulk",
-			Handler:    _ApiService_CreateTaskInternalBulk_Handler,
-		},
-		{
-			MethodName: "DecodePayrollFile",
-			Handler:    _ApiService_DecodePayrollFile_Handler,
+			MethodName: "CreateTaskExternalTransferMultiple",
+			Handler:    _ApiService_CreateTaskExternalTransferMultiple_Handler,
 		},
 		{
 			MethodName: "GetTaskPayrollFile",
@@ -1305,8 +1153,24 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_CreateTaskPayroll_Handler,
 		},
 		{
+			MethodName: "SetTaskPayroll",
+			Handler:    _ApiService_SetTaskPayroll_Handler,
+		},
+		{
+			MethodName: "CancelTransferPayroll",
+			Handler:    _ApiService_CancelTransferPayroll_Handler,
+		},
+		{
+			MethodName: "RunFileCheckingPayrollJob",
+			Handler:    _ApiService_RunFileCheckingPayrollJob_Handler,
+		},
+		{
 			MethodName: "RunMassInquiryJob",
 			Handler:    _ApiService_RunMassInquiryJob_Handler,
+		},
+		{
+			MethodName: "CreateMassTransfer",
+			Handler:    _ApiService_CreateMassTransfer_Handler,
 		},
 		{
 			MethodName: "RunMassTransferJob",
@@ -1315,14 +1179,6 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RunMassTransferScheduledJob",
 			Handler:    _ApiService_RunMassTransferScheduledJob_Handler,
-		},
-		{
-			MethodName: "SetTaskPayroll",
-			Handler:    _ApiService_SetTaskPayroll_Handler,
-		},
-		{
-			MethodName: "CancelTransferPayroll",
-			Handler:    _ApiService_CancelTransferPayroll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

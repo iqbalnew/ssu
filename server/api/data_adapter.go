@@ -310,8 +310,8 @@ func TaskDataBGMappingDigitalToPB(data string) (val []*bg_pb.MappingDigitalData,
 	return mappingDigital, mappingDigital[0].GetCompanyName(), nil
 }
 
-func TaskDataInternalTransferToPB(data string, taskID uint64) (val *transfer_pb.InternalSingleData, key string, err error) {
-	internal := &transfer_pb.InternalSingleData{}
+func TaskDataInternalTransferToPB(data string, taskID uint64) (val *transfer_pb.InternalTransferData, key string, err error) {
+	internal := &transfer_pb.InternalTransferData{}
 	err = json.Unmarshal([]byte(data), &internal)
 	if err != nil {
 		return nil, "", err
