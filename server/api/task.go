@@ -2136,7 +2136,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			mappingDigitalTask, err := s.provider.GetListTask(ctx, &pb.TaskORM{
 				Type:      "BG Mapping Digital",
 				CompanyID: task.CompanyID,
-			}, &pb.PaginationResponse{}, &db.QueryBuilder{}, []uint64{})
+			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, []uint64{})
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
