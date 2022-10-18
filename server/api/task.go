@@ -3439,7 +3439,7 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 
 func (s *Server) UpdateTaskRaw(ctx context.Context, req *pb.UpdateTaskRawReq) (*pb.SetTaskResponse, error) {
 	var err error
-	_, userMd, err := s.manager.GetMeFromMD(ctx)
+	currentUser, userMd, err := s.manager.GetMeFromMD(ctx)
 
 	if err != nil {
 		return nil, err
@@ -3481,6 +3481,25 @@ func (s *Server) UpdateTaskRaw(ctx context.Context, req *pb.UpdateTaskRawReq) (*
 		Code:    200,
 		Message: "Task Updated",
 		Data:    &taskPb,
+	}
+
+	logrus.Println("Save LOG task 'update', type: ", task.Type)
+	// Save activity Log
+	if getEnv("ENV", "LOCAL") != "LOCAL" {
+		logrus.Println("Set to save log")
+		taskORM, err := req.Task.ToORM(ctx)
+		if err != nil {
+			return nil, err
+		}
+		activityLog, err := GenerateActivityLog(&taskORM, currentUser, req.Action, "Update")
+		if err != nil {
+			logrus.Errorln("Failed to generate activity log: %v", err)
+			return nil, err
+		}
+		err = s.provider.SaveLog(ctx, activityLog)
+		if err != nil {
+			logrus.Errorln("Error SaveActivityLog: ", err)
+		}
 	}
 
 	return result, nil
