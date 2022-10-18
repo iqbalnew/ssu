@@ -13,6 +13,7 @@ import (
 	beneficiary_account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/beneficiary_account_service"
 	bg_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/bg_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
+	cut_off_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/cut_off_service"
 	deposito_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/deposito_service"
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
@@ -24,7 +25,6 @@ import (
 	transfer_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/transfer_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
-	cut_off_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/cut_off_service"
 )
 
 // generate activity log then Assign TaskID, Type, Description, Data and Key from input task data
@@ -101,6 +101,8 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 	case "Holiday":
 		_, key, err = TaskDataHolidayToPB(task.Data)
 
+	case "Cut Off":
+		_, key, err = TaskDataCutOffToPB(task.Data)
 	}
 
 	if err != nil {
@@ -362,4 +364,14 @@ func TaskDataHolidayToPB(data string) (val *cut_off_pb.Holiday, key string, err 
 	}
 
 	return holiday, holiday.GetScheduleName(), nil
+}
+
+func TaskDataCutOffToPB(data string) (val *cut_off_pb.CutOff, key string, err error) {
+	cut_off := &cut_off_pb.CutOff{}
+	err = json.Unmarshal([]byte(data), &cut_off)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return cut_off, cut_off.GetScheduleName(), nil
 }
