@@ -24,6 +24,7 @@ import (
 	transfer_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/transfer_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
+	cut_off_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/cut_off_service"
 )
 
 // generate activity log then Assign TaskID, Type, Description, Data and Key from input task data
@@ -96,6 +97,9 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 
 	case "Swift":
 		_, key, err = TaskDataSwiftToPB(task.Data)
+
+	case "Holiday":
+		_, key, err = TaskDataHolidayToPB(task.Data)
 
 	}
 
@@ -348,4 +352,14 @@ func TaskDataSwiftToPB(data string) (val *swift_pb.RemittanceTransaction, key st
 	}
 
 	return swiftRemittance, swiftRemittance.GetTRANSACTION_ID(), nil
+}
+
+func TaskDataHolidayToPB(data string) (val *cut_off_pb.Holiday, key string, err error) {
+	holiday := &cut_off_pb.Holiday{}
+	err = json.Unmarshal([]byte(data), &holiday)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return holiday, holiday.GetScheduleName(), nil
 }
