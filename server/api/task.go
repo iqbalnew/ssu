@@ -1356,7 +1356,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				}
 			}
 			if task.Type == "Subscription" {
-				abonnement := abonnement_pb.Abonnement{}
+				abonnement := abonnement_pb.ListTaskAbonnementRes{}
 				json.Unmarshal([]byte(task.Data), &abonnement)
 
 				if currentUser.UserType != "ba" && currentUser.CompanyID != abonnement.CompanyID {
