@@ -366,8 +366,8 @@ func TaskDataHolidayToPB(data string) (val *cut_off_pb.Holiday, key string, err 
 	return holiday, holiday.GetScheduleName(), nil
 }
 
-func TaskDataCutOffToPB(data string) (val *cut_off_pb.CutOff, key string, err error) {
-	cut_off := &cut_off_pb.CutOff{}
+func TaskDataCutOffToPB(data string) (val *cut_off_pb.CutOffData, key string, err error) {
+	cut_off := &cut_off_pb.CutOffData{}
 	err = json.Unmarshal([]byte(data), &cut_off)
 	if err != nil {
 		return nil, "", err
