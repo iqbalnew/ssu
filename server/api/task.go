@@ -1895,7 +1895,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Step = 3
 
 				if task.Type == "Subscription" {
-					taskSubscription := abonnement_pb.Abonnement{}
+					taskSubscription := abonnement_pb.CreateAbonnementTaskReq{}
 
 					json.Unmarshal([]byte(task.Data), &taskSubscription)
 					lastTransStat := taskSubscription.BillingStatus
