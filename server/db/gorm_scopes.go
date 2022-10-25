@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -141,7 +140,6 @@ func QueryScoop(v string) func(db *gorm.DB) *gorm.DB {
 func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 	// Example of v: "key:val1,val2,val3"
 	return func(db *gorm.DB) *gorm.DB {
-		logrus.Println("WhereInScoop: ", v)
 		if v == "" {
 			return db
 		}
@@ -156,17 +154,14 @@ func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 		if len(query) > 2 {
 			values = strings.Join(query[1:], ":")
 		}
-		logrus.Println("WhereInScoop: ", column, values)
 
 		not := false
 		if string(query[1][0:1]) == "!" {
 			not = true
 			values = query[1][1:len(query[1])]
-			logrus.Printf(values)
 		}
 
 		inVals := strings.Split(values, ",")
-		logrus.Println("WhereInScoop invals: ", column, inVals)
 
 		if not {
 			db = db.Where(column+" NOT IN (?)", inVals)
@@ -180,7 +175,6 @@ func WhereInScoop(v string) func(db *gorm.DB) *gorm.DB {
 
 func queryColumnsLoop(db *gorm.DB, columns []string, expresion string, value string) *gorm.DB {
 	for i, s := range columns {
-		logrus.Printf("SSS: ", s)
 		s = columnNameBuilder(s, false)
 		if i == 0 {
 			db = db.Where(fmt.Sprintf("%s %s ?", s, expresion), value)
@@ -192,7 +186,6 @@ func queryColumnsLoop(db *gorm.DB, columns []string, expresion string, value str
 }
 
 func reviewedByHandler(val string, expresion string, db *gorm.DB) *gorm.DB {
-	logrus.Println("Reviewed By Handler triggered")
 	approved := db.Session(&gorm.Session{NewDB: true})
 	rejected := db.Session(&gorm.Session{NewDB: true})
 	// filter := db.Session(&gorm.Session{NewDB: true})
@@ -222,7 +215,6 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 		}
 
 		for _, s := range filters {
-			logrus.Println(s)
 			filter := strings.Split(s, ":")
 			if len(filter) >= 2 {
 				keyword := filter[1]
@@ -247,8 +239,6 @@ func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {
 				}
 
 				column := columnNameBuilder(filter[0], false)
-				logrus.Println(column)
-				logrus.Println(column)
 				if expression == "%%" {
 					value := "%" + string(keyword[2:len(filter[1])]) + "%"
 					if column != "\"reviewed_by\"" {
@@ -327,8 +317,6 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 			return db
 		}
 
-		logrus.Println(v)
-
 		in := strings.Split(v, "|")
 		if len(in) < 3 {
 			return db
@@ -362,9 +350,6 @@ func CustomOrderScoop(v string) func(db *gorm.DB) *gorm.DB {
 			}
 		}
 
-		logrus.Println("[DEBUG] Custom Order: ", orderByQuery)
-		logrus.Println("[DEBUG] Key: ", key)
-
 		db = db.Order(orderByQuery)
 
 		return db
@@ -386,7 +371,6 @@ func FilterOrScoope(v string, customOr string) func(db *gorm.DB) *gorm.DB {
 		dbQuery := db.Session(&gorm.Session{NewDB: true})
 
 		for _, s := range filters {
-			logrus.Println(s)
 			filter := strings.Split(s, ":")
 			if len(filter) >= 2 {
 				keyword := filter[1]
@@ -518,7 +502,6 @@ func columnNameBuilder(s string, isObject bool) string {
 		for i, t := range nested {
 			if i == 0 {
 				s = fmt.Sprintf("\"%s\"", t)
-				logrus.Printf("Q: ", s)
 			} else if i == len(nested)-1 && !isObject {
 				s = s + fmt.Sprintf("->>'%s'", t)
 			} else {
