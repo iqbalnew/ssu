@@ -6,8 +6,9 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
+ 
 
-# Make data base, printed on Mon Oct 17 13:46:22 2022
+# Make data base, printed on Tue Oct 25 10:25:24 2022
 
 # Variables
 
@@ -52,7 +53,7 @@ INFOPATH = /opt/homebrew/share/info:
 # environment
 P9K_SSH = 0
 # environment
-VSCODE_CWD = /Users/farizrachmanyusuf/Codes/addons-task-service
+VSCODE_CWD = /Users/farizrachmanyusuf/Codes/example-nx-app
 # environment
 GOPROXY = https://proxy.golang.org,direct
 # environment
@@ -68,7 +69,7 @@ ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.PFOX4ocXen/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.GpwYUwMTWW/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -118,10 +119,11 @@ USER = farizrachmanyusuf
 # makefile (from `Makefile', line 4)
 DOCKER_CONTAINER_IMAGE = addons-task-service:latest
 # environment
-TERM_SESSION_ID = FBFD570B-7EEB-47BB-961C-FE997756471E
+TERM_SESSION_ID = 0209098D-D85B-46E6-A471-596D14023934
 # environment
 LESS = -R
 # automatic
+ 
 %D = $(patsubst %/,%,$(dir $%))
 # default
 MAKE_COMMAND := /Applications/Xcode.app/Contents/Developer/usr/bin/make
@@ -152,7 +154,7 @@ TERM_PROGRAM_VERSION = 445
 # environment
 NVM_DIR = /Users/farizrachmanyusuf/.nvm
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.6207673.6207679.D31DEED3-9F65-49C6-A13B-2A7EF7906E30
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.6207673.6207679.8AED4F7C-36DC-4D26-B3E8-2EFD227F3847
 # environment
 HOMEBREW_PREFIX = /opt/homebrew
 # automatic
@@ -192,9 +194,9 @@ LANG = C
 # environment
 TERM = xterm-256color
 # environment
-_P9K_TTY = /dev/ttys005
+_P9K_TTY = /dev/ttys000
 # environment
-VSCODE_PID = 28456
+VSCODE_PID = 81672
 # variable set hash-table stats:
 # Load=92/1024=9%, Rehash=0, Collisions=3/123=2%
 
@@ -204,7 +206,7 @@ VSCODE_PID = 28456
 
 # Directories
 
-# . (device 16777232, inode 1768050): 27 files, no impossibilities.
+# . (device 16777234, inode 1768050): 27 files, no impossibilities.
 
 # 27 files, no impossibilities in 1 directories.
 
@@ -293,7 +295,6 @@ default: depend
 
 generate:
 #  Implicit rule search has not been done.
- 
 #  Modification time never checked.
 #  File has not been updated.
 #  commands to execute (from `Makefile', line 46):
@@ -407,6 +408,6 @@ install: depend build
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Mon Oct 17 13:46:22 2022
+# Finished Make data base on Tue Oct 25 10:25:24 2022
 
  
