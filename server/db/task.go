@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
-	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
@@ -65,7 +64,6 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 	}
 
 	if err = query.Find(&result).Error; err != nil {
-		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 
@@ -109,7 +107,6 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 	query = query.Group("workflow_doc->'workflow'->>'currentStep', type, status")
 
 	if err = query.Find(&result).Error; err != nil {
-		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 
@@ -178,7 +175,6 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, servi
 	query = query.Group("step, type")
 
 	if err = query.Find(&result).Error; err != nil {
-		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 
@@ -218,7 +214,6 @@ func (p *GormProvider) GetGraphServiceType(ctx context.Context, service string, 
 	query = query.Group(fmt.Sprintf("%s, type", column))
 
 	if err = query.Find(&result).Error; err != nil {
-		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 	return result, nil
@@ -252,7 +247,6 @@ func (p *GormProvider) GetGraphStatus(ctx context.Context, service string, stat 
 	query = query.Group("status, type")
 
 	if err = query.Find(&result).Error; err != nil {
-		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 	return result, nil
@@ -267,7 +261,6 @@ func (p *GormProvider) CreateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 	task.Childs = nil
 
 	if err := query.Debug().Create(&task).Error; err != nil {
-		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 
@@ -281,11 +274,9 @@ func (p *GormProvider) CreateTask(ctx context.Context, task *pb.TaskORM) (*pb.Ta
 			UpdateAll: true,
 		}).Create(&childs).Error; err != nil {
 			if !errors.Is(err, gorm.ErrModelValueRequired) {
-				logrus.Errorln(err)
 				return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
 			}
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
-				logrus.Errorln(err)
 				return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 			}
 		}
@@ -314,7 +305,6 @@ func (p *GormProvider) FindAndSetStatus(ctx context.Context, taskID uint64, stat
 	}
 
 	if err := p.db_main.Model(&pb.TaskORM{}).Where("task_id IN ?", listIDs).Updates(&updateData).Error; err != nil {
-		logrus.Errorln(err)
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 
@@ -336,7 +326,6 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 		}
 
 		if err := p.db_main.Debug().Model(&pb.TaskORM{}).Where("task_id IN ?", listIDs).Updates(&updateData).Error; err != nil {
-			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 		}
 
@@ -351,14 +340,11 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 		task.Childs = []*pb.TaskORM{}
 		if err := query.Model(&taskModel).Updates(&task).Error; err != nil {
 			if !errors.Is(err, gorm.ErrModelValueRequired) {
-				logrus.Errorln(err)
 				return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
 			}
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
-				logrus.Errorln(err)
 				return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 			} else {
-				logrus.Errorln(err)
 				return nil, status.Errorf(codes.NotFound, "Task Not Found")
 			}
 		}
@@ -372,38 +358,23 @@ func (p *GormProvider) UpdateTask(ctx context.Context, task *pb.TaskORM, updateC
 
 			if task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
 				if err := p.db_main.Where("parent_id", task.TaskID).Delete(&pb.TaskORM{}).Error; err != nil {
-					logrus.Errorln(err)
 					return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 				}
 			}
-
-			logrus.Println()
-			logrus.Printf("ParentID: %d", task.TaskID)
-			logrus.Println("Update Childs")
 
 			if err := p.db_main.Clauses(clause.OnConflict{
 				Columns:   []clause.Column{{Name: "task_id"}},
 				UpdateAll: true,
 			}).Create(&childs).Error; err != nil {
 				if !errors.Is(err, gorm.ErrModelValueRequired) {
-					logrus.Errorln(err)
 					return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
 				}
 				if !errors.Is(err, gorm.ErrRecordNotFound) {
-					logrus.Errorln(err)
 					return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 				}
 			}
 
 		}
-		if task.Type == "Menu:License" {
-			logrus.Println("Menu License Child length 201: ", len(task.Childs))
-			logrus.Println("Menu License Child length 202: ", len(childs))
-		}
-	}
-
-	if task.Type == "Menu:License" {
-		logrus.Println("Menu License Child length 203: ", len(task.Childs))
 	}
 
 	taskModel = pb.TaskORM{TaskID: task.TaskID}
@@ -414,11 +385,9 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	task := &pb.TaskORM{TaskID: id}
 	if err := p.db_main.Preload(clause.Associations).First(&task).Error; err != nil {
 		if !errors.Is(err, gorm.ErrModelValueRequired) {
-			logrus.Errorln(err)
 			return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
 		}
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 		} else {
 			return nil, status.Errorf(codes.NotFound, "Task Not Found")
@@ -436,19 +405,15 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	if filter != nil {
 		query = query.Where(&filter)
 	}
-	logrus.Println("[DEBUG] get list task swift: ", sql.Filter)
-	logrus.Println("[DEBUG] get list task swift: ", sql.FilterOr)
 
 	customQuery := ""
-	logrus.Println("[DEBUG] WorkflowIDFilter: ", workflowRoleIDFilter)
+
 	if len(workflowRoleIDFilter) > 0 {
 		value := strings.ReplaceAll(fmt.Sprint(workflowRoleIDFilter), " ", "','")
 		value = strings.ReplaceAll(value, "[", "'")
 		value = strings.ReplaceAll(value, "]", "'")
 		customQuery = fmt.Sprintf("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && array[%s]", value)
 	}
-
-	logrus.Println("[DEBUG] get list task swift: ", customQuery)
 
 	query = query.Scopes(FilterScoope(sql.Filter))
 	query = query.Scopes(FilterOrScoope(sql.FilterOr, customQuery))
@@ -461,13 +426,10 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
 	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
 		if !errors.Is(err, gorm.ErrModelValueRequired) {
-			logrus.Errorln(err)
 			return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
 		}
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "Internal Server Error")
-
 		}
 	}
 	return tasks, nil
@@ -484,11 +446,9 @@ func (p *GormProvider) GetListTaskPluck(ctx context.Context, key string, filter 
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	if err := query.Pluck(columnNameBuilder(key, false), &data).Error; err != nil {
 		if !errors.Is(err, gorm.ErrModelValueRequired) {
-			logrus.Errorln(err)
 			return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
 		}
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 		}
 	}
@@ -500,11 +460,9 @@ func (p *GormProvider) GetListTaskWithFilter(ctx context.Context, task *pb.TaskO
 	err = res.Find(&tasks).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrModelValueRequired) {
-			logrus.Errorln(err)
 			return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
 		}
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			logrus.Errorln(err)
 			return nil, status.Errorf(codes.Internal, "DB Internal Error")
 		}
 	}
@@ -516,7 +474,6 @@ func (p *GormProvider) SaveTask(ctx context.Context, task *pb.TaskORM) (*pb.Task
 		Columns:   []clause.Column{{Name: "task_id"}},
 		UpdateAll: true,
 	}).Save(&task).Error; err != nil {
-		logrus.Errorln("[db][func: SaveTask] Error save task", err)
 		return nil, err
 	}
 	return task, nil
@@ -557,7 +514,6 @@ func (p *GormProvider) DeleteCompanyTask(ctx context.Context, listTask []pb.Task
 	}
 
 	if err := p.db_main.Debug().Model(&pb.TaskORM{}).Where("task_id IN ?", listID).Updates(&updateData).Error; err != nil {
-		logrus.Errorln(err)
 		return status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 	return nil

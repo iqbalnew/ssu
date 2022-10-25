@@ -1165,11 +1165,10 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 }
 
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
+
 	var err error
+
 	currentUser, userMd, err := s.manager.GetMeFromMD(ctx)
-	// currentUser, userMd, err := manager.UserData{
-	// 	UserID: 6,
-	// }, metadata.MD{}, err
 	if err != nil {
 		return nil, err
 	}
@@ -1189,44 +1188,51 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		return nil, err
 	}
 
-	// if task.Type == "Menu:License" {
-	// 	logrus.Println("Menu License Child length 101 : ", len(task.Childs))
-	// }
-
 	if task.Type != "System" && task.Type != "Menu:License" {
 
 		if strings.ToLower(req.Action) == "delete" {
+
 			allowed := checkAllowedApproval(userMd, task.Type, "data_entry:maker")
 			if !allowed {
+				logrus.Errorln("[api][func: SetTask] Permission Denied")
 				return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
 			}
+
 		} else {
+
 			allowed := checkAllowedApproval(userMd, task.Type, "approve:signer")
 			if !allowed {
+				logrus.Errorln("[api][func: SetTask] Permission Denied")
 				return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
 			}
+
 		}
+
 	}
 
 	if strings.ToLower(req.Action) == "approve" {
+
 		allowed := checkAllowedApproval(userMd, task.Type, "approve:signer")
 		if !allowed {
+			logrus.Errorln("[api][func: SetTask] Permission Denied")
 			return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
 		}
+
 		if currentUser.UserType != "ba" {
+
 			if currentUser.CompanyID != task.CompanyID {
+				logrus.Errorln("[api][func: SetTask] Permission Denied")
 				return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
 			}
+
 		}
+
 	}
 
 	if task.IsParentActive {
+		logrus.Errorln("[api][func: SetTask] This is child task with active parent, please refer to parent for change status")
 		return nil, status.Errorf(codes.InvalidArgument, "This is child task with active parent, please refer to parent for change status")
 	}
-
-	// if task.Type == "BG Issuing" && task.Step != 4 {
-	// 	return nil, status.Errorf(codes.PermissionDenied, "Internal Error: %v", "BG Issuing task hasn't been approved by Releaser")
-	// }
 
 	isParent := false
 	if task.Data == "[]" {
@@ -1247,25 +1253,25 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	currentData := task.Data
 	currentDataBak := task.DataBak
 
-	if currentStep == 3 {
-		if currentStatus == 1 || currentStatus == 6 {
+	if currentStep == 3 { // If Current Step is Signer
+
+		if currentStatus == 1 || currentStatus == 6 { // If Current Status is Pending Or DeleteRequest
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
+
 			companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Company Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect Company Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer companyConn.Close()
 
 			companyClient := company_pb.NewApiServiceClient(companyConn)
 
-			// Check task types that need company ID
 			if task.Type == "Menu:License" {
+
 				if strings.Contains(task.Data, `"isParent": true`) {
-					// isParent = true
 
 					for i := range task.Childs {
 						menu := menu_pb.MenuLicenseSave{}
@@ -1275,45 +1281,58 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 							CompanyID: menu.CompanyID,
 						})
 						if err != nil {
-							logrus.Errorln("Failed to get company data: %v", err)
-							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+							logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
 							return nil, status.Errorf(codes.Internal, "Internal Error")
 						}
+
 						if len(company.Data) == 0 {
-							logrus.Infoln("Company does not exist")
+							logrus.Errorln("[api][func: SetTask] Company does not exist")
 							return nil, status.Errorf(codes.NotFound, "Company does not exist")
 						}
 
 					}
+
 				} else {
+
 					menu := menu_pb.MenuLicenseSave{}
-					json.Unmarshal([]byte(task.Data), &menu)
+					err = json.Unmarshal([]byte(task.Data), &menu)
+					if err != nil {
+						logrus.Errorln("[api][func: SetTask] Unable to Umarshal Data:", err)
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
 
 					company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 						CompanyID: menu.CompanyID,
 					})
 					if err != nil {
-						logrus.Errorln("Failed to get company data: %v", err)
-						// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+						logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
 						return nil, status.Errorf(codes.Internal, "Internal Error")
 					}
+
 					if len(company.Data) == 0 {
-						logrus.Infoln("Company does not exist")
+						logrus.Errorln("[api][func: SetTask] Company does not exist")
 						return nil, status.Errorf(codes.NotFound, "Company does not exist")
 					}
 
 				}
+
 			}
+
 			if task.Type == "Account" {
+
 				if strings.Contains(task.Data, `"isParent": true`) {
 
 					for i := range task.Childs {
+
 						account := account_pb.Account{}
-						json.Unmarshal([]byte(task.Childs[i].Data), &account)
+						err = json.Unmarshal([]byte(task.Childs[i].Data), &account)
+						if err != nil {
+							logrus.Errorln("[api][func: SetTask] Unable to Umarshal Data:", err)
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
 
 						if currentUser.UserType != "ba" && currentUser.CompanyID != account.CompanyID {
+							logrus.Errorln("[api][func: SetTask] Permission Denied")
 							return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 						}
 
@@ -1321,22 +1340,28 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 							CompanyID: account.CompanyID,
 						})
 						if err != nil {
-							logrus.Errorln("Failed to get company data: %v", err)
-							// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+							logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
 							return nil, status.Errorf(codes.Internal, "Internal Error")
 						}
+
 						if len(company.Data) == 0 {
-							logrus.Infoln("Company does not exist")
+							logrus.Errorln("[api][func: SetTask] Company does not exist")
 							return nil, status.Errorf(codes.NotFound, "Company does not exist")
 						}
 
 					}
+
 				} else {
+
 					account := account_pb.Account{}
-					json.Unmarshal([]byte(task.Data), &account)
+					err = json.Unmarshal([]byte(task.Data), &account)
+					if err != nil {
+						logrus.Errorln("[api][func: SetTask] Unable to Umarshal Data:", err)
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
 
 					if currentUser.UserType != "ba" && currentUser.CompanyID != account.CompanyID {
+						logrus.Errorln("[api][func: SetTask] Permission Denied")
 						return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 					}
 
@@ -1344,22 +1369,30 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						CompanyID: account.CompanyID,
 					})
 					if err != nil {
-						logrus.Errorln("Failed to get company data: %v", err)
-						// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+						logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
 						return nil, status.Errorf(codes.Internal, "Internal Error")
 					}
+
 					if len(company.Data) == 0 {
-						logrus.Infoln("Company does not exist")
+						logrus.Errorln("[api][func: SetTask] Company does not exist")
 						return nil, status.Errorf(codes.NotFound, "Company does not exist")
 					}
+
 				}
+
 			}
+
 			if task.Type == "Subscription" {
+
 				abonnement := abonnement_pb.ListTaskAbonnementRes{}
-				json.Unmarshal([]byte(task.Data), &abonnement)
+				err = json.Unmarshal([]byte(task.Data), &abonnement)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Umarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				if currentUser.UserType != "ba" && currentUser.CompanyID != abonnement.CompanyID {
+					logrus.Errorln("[api][func: SetTask] Permission Denied")
 					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 				}
 
@@ -1367,21 +1400,27 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					CompanyID: abonnement.CompanyID,
 				})
 				if err != nil {
-					logrus.Errorln("Failed to get company data: %v", err)
-					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+					logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
+
 				if len(company.Data) == 0 {
-					logrus.Infoln("Company does not exist")
+					logrus.Errorln("[api][func: SetTask] Company does not exist")
 					return nil, status.Errorf(codes.NotFound, "Company does not exist")
 				}
+
 			}
+
 			if task.Type == "Beneficiary Account" {
+
 				beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
-				json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
+				err = json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
+				if err != nil {
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				if currentUser.UserType != "ba" && currentUser.CompanyID != beneficiaryAccount.CompanyID {
+					logrus.Errorln("[api][func: SetTask] Permission Denied")
 					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 				}
 
@@ -1389,21 +1428,28 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					CompanyID: beneficiaryAccount.CompanyID,
 				})
 				if err != nil {
-					logrus.Errorln("Failed to get company data: %v", err)
-					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+					logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
+
 				if len(company.Data) == 0 {
-					logrus.Infoln("Company does not exist")
+					logrus.Errorln("[api][func: SetTask] Company does not exist")
 					return nil, status.Errorf(codes.NotFound, "Company does not exist")
 				}
+
 			}
+
 			if task.Type == "Role" {
+
 				role := role_pb.Role{}
-				json.Unmarshal([]byte(task.Data), &role)
+				err = json.Unmarshal([]byte(task.Data), &role)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Umarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				if currentUser.UserType != "ba" && currentUser.CompanyID != role.CompanyID {
+					logrus.Errorln("[api][func: SetTask] Permission Denied")
 					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 				}
 
@@ -1411,22 +1457,25 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					CompanyID: role.CompanyID,
 				})
 				if err != nil {
-					logrus.Errorln("Failed to get company data: %v", err)
-					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+					logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
+
 				if len(company.Data) == 0 {
-					logrus.Infoln("Company does not exist")
+					logrus.Errorln("[api][func: SetTask] Company does not exist")
 					return nil, status.Errorf(codes.NotFound, "Company does not exist")
 				}
+
 			}
+
 			if task.Type == "Workflow" {
+
 				workflow := workflow_pb.WorkflowTask{}
 				json.Unmarshal([]byte(task.Data), &workflow)
 				companyID, _ := strconv.ParseUint(workflow.Company.CompanyID, 10, 64)
 
 				if currentUser.UserType != "ba" && currentUser.CompanyID != companyID {
+					logrus.Errorln("[api][func: SetTask] Permission Denied")
 					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 				}
 
@@ -1434,21 +1483,28 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					CompanyID: companyID,
 				})
 				if err != nil {
-					logrus.Errorln("Failed to get company data: %v", err)
-					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+					logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
+
 				if len(company.Data) == 0 {
-					logrus.Infoln("Company does not exist")
+					logrus.Errorln("[api][func: SetTask] Company does not exist")
 					return nil, status.Errorf(codes.NotFound, "Company does not exist")
 				}
+
 			}
+
 			if task.Type == "User" {
+
 				users := users_pb.UserTaskData{}
-				json.Unmarshal([]byte(task.Data), &users)
+				err = json.Unmarshal([]byte(task.Data), &users)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Umarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				if currentUser.UserType != "ba" && currentUser.CompanyID != users.User.CompanyID {
+					logrus.Errorln("[api][func: SetTask] Permission Denied")
 					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 				}
 
@@ -1456,21 +1512,28 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					CompanyID: users.User.CompanyID,
 				})
 				if err != nil {
-					logrus.Errorln("Failed to get company data: %v", err)
-					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+					logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
+
 				if len(company.Data) == 0 {
-					logrus.Infoln("Company does not exist")
+					logrus.Errorln("[api][func: SetTask] Company does not exist")
 					return nil, status.Errorf(codes.NotFound, "Company does not exist")
 				}
+
 			}
+
 			if task.Type == "Notification" {
+
 				notification := notification_pb.NotificationCompany{}
-				json.Unmarshal([]byte(task.Data), &notification)
+				err = json.Unmarshal([]byte(task.Data), &notification)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Umarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				if currentUser.UserType != "ba" && currentUser.CompanyID != notification.CompanyID {
+					logrus.Errorln("[api][func: SetTask] Permission Denied")
 					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 				}
 
@@ -1478,22 +1541,28 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					CompanyID: notification.CompanyID,
 				})
 				if err != nil {
-					logrus.Errorln("Failed to get company data: %v", err)
-					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+					logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
+
 				if len(company.Data) == 0 {
-					logrus.Infoln("Company does not exist")
+					logrus.Errorln("[api][func: SetTask] Company does not exist")
 					return nil, status.Errorf(codes.NotFound, "Company does not exist")
 				}
+
 			}
 
 			if task.Type == "Company" {
+
 				company := company_pb.CreateCompanyTaskReq{}
-				json.Unmarshal([]byte(task.Data), &company)
+				err = json.Unmarshal([]byte(task.Data), &company)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Umarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				if currentUser.UserType != "ba" && currentUser.CompanyID != company.Company.CompanyID {
+					logrus.Errorln("[api][func: SetTask] Permission Denied")
 					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 				}
 
@@ -1501,19 +1570,28 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					Id: fmt.Sprintf("%v", company.Company.CompanyID),
 				})
 				if err != nil {
-					logrus.Errorln("Failed to get BRICaMS data", err)
+					logrus.Errorln("[api][func: SetTask] Failed when BRICaMSgetCustomerByIDV2:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
+
 				if companyBRICaMS.ResponseCode == "0002" {
+					logrus.Errorln("[api][func: SetTask] Company Data Not Found From BRICaMS")
 					return nil, status.Errorf(codes.NotFound, "Company Data Not Found From BRICaMS")
 				}
+
 			}
 
 			if task.Type == "Announcement" {
+
 				announcement := announcement_pb.Announcement{}
-				json.Unmarshal([]byte(task.Data), &announcement)
+				err = json.Unmarshal([]byte(task.Data), &announcement)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Umarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				if currentUser.UserType != "ba" && currentUser.CompanyID != announcement.CompanyID {
+					logrus.Errorln("[api][func: SetTask] Permission Denied")
 					return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 				}
 
@@ -1521,55 +1599,69 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					CompanyID: announcement.CompanyID,
 				})
 				if err != nil {
-					logrus.Errorln("Failed to get company data: %v", err)
-					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+					logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
+
 				if len(company.Data) == 0 {
-					logrus.Infoln("Company does not exist")
+					logrus.Errorln("[api][func: SetTask] Company does not exist")
 					return nil, status.Errorf(codes.NotFound, "Company does not exist")
 				}
+
 			}
+
 		}
+
 	}
+
 	switch strings.ToLower(req.Action) {
+
 	case "rework":
+
 		taskPb, _ := task.ToPB(ctx)
+
 		if currentStatus == 3 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Status Already Returned",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		if currentStatus == 4 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Status Already Approved",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		if currentStatus == 5 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Status Already Rejected",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		if currentStatus == 7 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Already Deleted",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		task.LastApprovedByID = 0
@@ -1578,60 +1670,83 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByName = currentUser.Username
 
 		if req.Comment != "" {
+
 			if re.MatchString(req.Comment) {
-				logrus.Errorf(`Error ---> Invalid Rework Comment Characters: %s`, req.Comment)
+
+				logrus.Errorln("[api][func: SetTask] Invalid Reword Comment Characters:", req.Comment)
 				return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
+
 			} else {
+
 				task.Comment = req.Comment
+
 			}
+
 		} else {
+
 			task.Comment = "-"
+
 		}
 
 		if req.Reasons != "" {
+
 			task.Reasons = req.Reasons
+
 		} else {
+
 			task.Reasons = "-"
+
 		}
 
 		task.Status = 3
 		task.Step = 1
+
 	case "approve":
+
 		taskPb, _ := task.ToPB(ctx)
+
 		if currentStatus == 3 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Status Already Returned",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		if currentStatus == 4 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Status Already Approved",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		if currentStatus == 5 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Status Already Rejected",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		if currentStatus == 7 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Already Deleted",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		task.LastApprovedByID = currentUser.UserID
@@ -1639,14 +1754,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByID = 0
 		task.LastRejectedByName = ""
 
-		// Temporarily approve for all steps
 		if task.Type == "BG Issuing" {
+
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
 			bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to BG Service: %v", err)
+				logrus.Errorln("[api][func: SetTask] Unable to connect BG Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer bgConn.Close()
@@ -1654,9 +1769,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
 			taskData := bg_pb.IssuingData{}
-			json.Unmarshal([]byte(currentData), &taskData)
+			err = json.Unmarshal([]byte(currentData), &taskData)
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error", err)
 			}
 
 			bgGrpcReq := &bg_pb.CreateIssuingRequest{
@@ -1664,10 +1780,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Data:   &taskData,
 			}
 
-			// logrus.Println(taskData.String())
-
 			result, err := bgClient.CreateIssuing(ctx, bgGrpcReq, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Failed when CreateIssuing:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 			}
 
@@ -1679,9 +1794,10 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		}
 
-		// Fix Workflow Step 2
 		if currentStep == 2 {
+
 			currentStep = 3
+
 		}
 
 		if currentStatus == 2 {
@@ -1689,54 +1805,55 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			task.Step = 3
 			task.Status = 1
 
-			// if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
-			// 	task.Step = 3
-			// }
-
 		} else {
 
-			// if task.Type == "Announcement" || task.Type == "Notification" || task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
 			if currentStep == 1 {
+
 				task.Status = 1
 				task.Step = 3
+
 				if currentStatus == 6 {
+
 					task.Status = currentStatus
+
 				}
+
 			}
 
 			if currentStep == 3 {
+
 				task.Status = 1
-				// task.Step = 4
-				// if task.Type == "Announcement" {
 				task.Status = 4
 				task.Step = 3
 				sendTask = true
+
 				if currentStatus == 6 {
-					// function for delete other service coresponding with company here
+
 					if task.Type == "Company" {
-						// send notif with delete company event
-						// SendNotification(ctx, task, "Delete request gets approval")
+
 						err := s.DeleteCompany(originalCtx, task.Data)
 						if err != nil {
-							logrus.Errorln("Failed to delete company: %v", err)
+							logrus.Errorln("[api][func: SetTask] Failed when DeleteCompany:", err)
 							return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 						}
+
 					}
+
 					task.Status = 7
 
 				}
-				// }
-				// if currentStatus == 6 {
-				// 	task.Status = currentStatus
-				// }
+
 			}
 
 			if currentStep == 4 {
 
 				sendTask = true
 				task.Status = 4
+
 				if currentStatus == 6 {
+
 					task.Status = 7
+
 				}
 
 				if task.Type == "Company" {
@@ -1746,9 +1863,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 					workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9097"), opts...)
 					if err != nil {
-						logrus.Errorln("Failed connect to Workflow Service: %v", err)
-						// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
-
+						logrus.Errorln("[api][func: SetTask] Unable to connect Workflow Service:", err)
 						return nil, status.Errorf(codes.Internal, "Internal Error")
 					}
 					defer workflowConn.Close()
@@ -1756,99 +1871,86 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					workflowClient := workflow_pb.NewApiServiceClient(workflowConn)
 
 					company := company_pb.CreateCompanyReq{}
-					json.Unmarshal([]byte(task.Data), &company)
+					err = json.Unmarshal([]byte(task.Data), &company)
+					if err != nil {
+						logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
 
-					data := workflow_pb.CreateCompanyWorkflowRequest{}
-					data.TaskID = task.TaskID
-					data.Data = &workflow_pb.CompanyWorkflows{
-						CompanyID:                company.GetData().Company.CompanyID,
-						IsTransactionSTP:         company.GetData().Workflow.IsTansactionalStp,
-						IsTransactionChecker:     company.GetData().Workflow.TansactionalStpStep.Verifier,
-						IsTransactionSigner:      company.GetData().Workflow.TansactionalStpStep.Approver,
-						IsTransactionReleaser:    company.GetData().Workflow.TansactionalStpStep.Releaser,
-						IsNonTransactionSTP:      company.GetData().Workflow.IsNonTansactionalStp,
-						IsNonTransactionChecker:  company.GetData().Workflow.NonTansactionalStpStep.Verifier,
-						IsNonTransactionSigner:   company.GetData().Workflow.NonTansactionalStpStep.Approver,
-						IsNonTransactionReleaser: company.GetData().Workflow.NonTansactionalStpStep.Releaser,
-						CreatedByID:              currentUser.UserID,
+					data := workflow_pb.CreateCompanyWorkflowRequest{
+						TaskID: task.TaskID,
+						Data: &workflow_pb.CompanyWorkflows{
+							CompanyID:                company.GetData().Company.CompanyID,
+							IsTransactionSTP:         company.GetData().Workflow.IsTansactionalStp,
+							IsTransactionChecker:     company.GetData().Workflow.TansactionalStpStep.Verifier,
+							IsTransactionSigner:      company.GetData().Workflow.TansactionalStpStep.Approver,
+							IsTransactionReleaser:    company.GetData().Workflow.TansactionalStpStep.Releaser,
+							IsNonTransactionSTP:      company.GetData().Workflow.IsNonTansactionalStp,
+							IsNonTransactionChecker:  company.GetData().Workflow.NonTansactionalStpStep.Verifier,
+							IsNonTransactionSigner:   company.GetData().Workflow.NonTansactionalStpStep.Approver,
+							IsNonTransactionReleaser: company.GetData().Workflow.NonTansactionalStpStep.Releaser,
+							CreatedByID:              currentUser.UserID,
+						},
 					}
 
 					_, err = workflowClient.CreateCompanyWorkflow(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 					if err != nil {
+						logrus.Errorln("[api][func: SetTask] Failed when CreateCompanyWorkflow:", err)
 						return nil, err
 					}
 
 				}
 
 			}
-			// } else {
-			// 	if currentStep >= 3 {
-			// 		if task.Type == "Company" || task.Type == "Account" || task.Type == "User" || task.Type == "Role" || task.Type == "Workflow" || task.Type == "Liquidity" {
-			// 			if currentStep == 4 {
-			// 				sendTask = true
-			// 				task.Status = 4
-			// 				if currentStatus == 6 {
-			// 					task.Status = 7
-			// 				}
-			// 			} else {
-			// 				task.Status = 1
-			// 				task.Step++
-			// 				if currentStatus == 6 {
-			// 					task.Status = currentStatus
-			// 				}
-			// 			}
-			// 		} else {
-			// 			sendTask = true
-			// 			task.Status = 4
-			// 			if currentStatus == 6 {
-			// 				task.Status = 7
-			// 			}
-			// 		}
-			// 	} else {
-			// 		task.Status = 1
-			// 		task.Step++
-			// 		if currentStatus == 6 {
-			// 			task.Status = currentStatus
-			// 		}
-			// 	}
-			// }
+
 		}
+
 	case "reject":
+
 		taskPb, _ := task.ToPB(ctx)
+
 		if currentStatus == 3 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Status Already Returned",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		if currentStatus == 4 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Status Already Approved",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		if currentStatus == 5 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Status Already Rejected",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		if currentStatus == 7 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Already Deleted",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		task.LastApprovedByID = 0
@@ -1857,31 +1959,50 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByName = currentUser.Username
 
 		if req.Comment != "" {
+
 			if re.MatchString(req.Comment) {
-				logrus.Errorf(`Error ---> Invalid Reject Comment Characters: %s`, req.Comment)
+
+				logrus.Errorln("[api][func: SetTask] Invalid Reject Comment Characters:", req.Comment)
 				return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
+
 			} else {
+
 				task.Comment = req.Comment
+
 			}
+
 		} else {
+
 			task.Comment = "-"
+
 		}
 
 		if req.Reasons != "" {
+
 			task.Reasons = req.Reasons
+
 		} else {
+
 			task.Reasons = "-"
+
 		}
 
 		if currentStatus == 6 && (task.DataBak != "" && task.DataBak != "{}") {
+
 			task.Status = 4
 			task.Step = 3
+
 			if task.DataBak != "" && task.DataBak != "{}" {
+
 				task.Data = task.DataBak
+
 			}
+
 		} else {
+
 			task.Status = 5
 			task.Step = 0
+
 		}
 
 		taskType := []string{"System", "Account", "Beneficiary Account", "Company", "User",
@@ -1890,131 +2011,178 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			"Abonnement"}
 
 		if contains(taskType, task.Type) {
+
 			if task.DataBak != "" && task.DataBak != "{}" {
+
 				task.Status = 4
 				task.Step = 3
 
 				if task.Type == "Subscription" {
+
 					taskSubscription := abonnement_pb.CreateAbonnementTaskReq{}
 
-					json.Unmarshal([]byte(task.Data), &taskSubscription)
-					lastTransStat := taskSubscription.BillingStatus
-					json.Unmarshal([]byte(task.DataBak), &taskSubscription)
-					taskSubscription.BillingStatus = lastTransStat
-					marsData, err := json.Marshal(&taskSubscription)
+					err = json.Unmarshal([]byte(task.Data), &taskSubscription)
 					if err != nil {
-						logrus.Println("Error Marshal Childs")
+						logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
 						return nil, status.Errorf(codes.Internal, "Internal Error")
 					}
+
+					lastTransStat := taskSubscription.BillingStatus
+
+					err = json.Unmarshal([]byte(task.DataBak), &taskSubscription)
+					if err != nil {
+						logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+
+					taskSubscription.BillingStatus = lastTransStat
+
+					marsData, err := json.Marshal(&taskSubscription)
+					if err != nil {
+						logrus.Errorln("[api][func: SetTask] Unable to Marshal Data:", err)
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+
 					task.Data = string(marsData)
+
 				} else {
+
 					task.Data = task.DataBak
+
 				}
+
 			}
+
 		}
 
 		if task.Type == "Menu:Appearance" || task.Type == "Menu:License" {
+
 			if task.ChildBak != "" && task.ChildBak != "[]" {
+
 				taskChilds := []*pb.TaskORM{}
+
 				err := json.Unmarshal([]byte(task.ChildBak), &taskChilds)
 				if err != nil {
-					logrus.Errorln("Error Unmarshal Task Childs: ", err)
+					logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
+
 				task.Childs = taskChilds
+
 			}
+
 		}
+
 	case "delete":
+
 		taskPb, _ := task.ToPB(ctx)
+
 		if currentStatus == 3 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Status Already Returned",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
-		// if currentStatus == 4 {
-		// 	taskType := []string{"BG Mapping", "BG Mapping Digital"}
-		// 	if !contains(taskType, task.Type) {
-		// 		return &pb.SetTaskResponse{
-		// 			Error:   false,
-		// 			Code:    200,
-		// 			Message: "Task Status Already Approved",
-		// 			Data:    &taskPb,
-		// 		}, nil
-		// 	}
-		// }
-
 		if currentStatus == 5 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Status Already Rejected",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		if currentStatus == 7 {
+
 			return &pb.SetTaskResponse{
 				Error:   false,
 				Code:    200,
 				Message: "Task Already Deleted",
 				Data:    &taskPb,
 			}, nil
+
 		}
 
 		if task.Type == "Company" {
-			company := company_pb.CreateCompanyTaskReq{}
-			json.Unmarshal([]byte(task.Data), &company)
-			data, err := s.provider.GetGraphStepAll(ctx, fmt.Sprint(company.Company.CompanyID))
 
-			logrus.Println("graph all --> ", data, data.Total)
+			company := company_pb.CreateCompanyTaskReq{}
+			err = json.Unmarshal([]byte(task.Data), &company)
 			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
+			data, err := s.provider.GetGraphStepAll(ctx, fmt.Sprint(company.Company.CompanyID))
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Failed when GetGraphStepAll:", err)
 				return nil, err
 			}
+
 			if data.Total > 0 {
+				logrus.Errorln("[api][func: SetTask] Cannot delete company, some task on progress")
 				return nil, status.Errorf(codes.Canceled, "Cannot delete company, some task on progress")
 			}
+
 		}
 
 		if task.Type == "Role" {
-			logrus.Infoln("Delete role")
+
 			role := role_pb.Role{}
-			json.Unmarshal([]byte(task.Data), &role)
+
+			err = json.Unmarshal([]byte(task.Data), &role)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
 			companyID := role.CompanyID
-			logrus.Infoln("companyID -->", companyID)
-			logrus.Infoln("role.RoleID -->", role.RoleID)
 
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
+
 			workFlowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
 			if err != nil {
-				logrus.Errorln("Error Connecting to Workflow Service: ", err)
+				logrus.Errorln("[api][func: SetTask] Unable to connect Workflow Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer workFlowConn.Close()
 
 			workflowClient := workflow_pb.NewApiServiceClient(workFlowConn)
+
 			workFlow, err := workflowClient.ListWorkflow(ctx, &workflow_pb.ListWorkflowRequest{
 				Filter: fmt.Sprintf("CompanyID:%d", companyID),
 			}, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
-				logrus.Errorln("Error Listing Workflow: ", err)
+				logrus.Errorln("[api][func: SetTask] Failed when ListWorkflow:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
 			used := []string{}
 			for _, v := range workFlow.Data {
+
 				for _, v2 := range v.Logics {
+
 					for _, v3 := range v2.Requirements {
+
 						if v3.RoleID == role.RoleID {
+
 							used = append(used, v.WorkflowCode)
+
 						}
+
 					}
+
 				}
+
 			}
+
 			if len(used) > 0 {
 				return nil, status.Errorf(codes.Canceled, "Delete Role Failed: Role mapping to workflow [ %v ]", strings.Join(used, ", "))
 			}
@@ -2023,114 +2191,183 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Filter: "type:User",
 			})
 			if err != nil {
-				logrus.Errorln("Error Listing User: ", err)
+				logrus.Errorln("[api][func: SetTask] Failed when GetListTask:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
 			used2 := []string{}
 			for _, v := range userTask.Data {
+
 				if strings.Contains(v.Data, fmt.Sprintf(`"roleID": %v`, role.RoleID)) {
+
 					userDat := users_pb.UserTaskData{}
-					json.Unmarshal([]byte(v.Data), &userDat)
-					logrus.Infoln("checkuser -->", userDat)
+
+					err = json.Unmarshal([]byte(v.Data), &userDat)
+					if err != nil {
+						logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+
 					used2 = append(used2, userDat.User.Username)
+
 				}
+
 			}
+
 			if len(used2) > 0 {
 				return nil, status.Errorf(codes.Canceled, "Delete Role Failed: Role mapping to User [ %v ]", strings.Join(used2, ", "))
 			}
+
 		}
 
 		if task.Type == "Account" {
-			logrus.Infoln("Delete account")
+
 			if strings.Contains(task.Data, `"isParent": true`) {
+
 				for i := range task.Childs {
+
 					account := account_pb.Account{}
-					json.Unmarshal([]byte(task.Childs[i].Data), &account)
-					logrus.Infoln("AccountNumber --> ", account.AccountNumber)
+					err = json.Unmarshal([]byte(task.Childs[i].Data), &account)
+					if err != nil {
+						logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
 
 					roleTask, err := s.GetListTask(ctx, &pb.ListTaskRequest{
 						Filter: "type:Role",
 						In:     fmt.Sprintf("data.companyID:%v", account.CompanyID),
 					})
 					if err != nil {
-						logrus.Errorln("Error Listing Role: ", err)
+						logrus.Errorln("[api][func: SetTask] Failed when GetListTask:", err)
 						return nil, status.Errorf(codes.Internal, "Internal Error")
 					}
 
 					used := []string{}
 					for _, v := range roleTask.Data {
+
 						if strings.Contains(v.Data, fmt.Sprintf(`"accountNumber": "%v"`, account.AccountNumber)) {
+
 							role := role_pb.Role{}
-							json.Unmarshal([]byte(v.Data), &role)
+
+							err = json.Unmarshal([]byte(v.Data), &role)
+							if err != nil {
+								logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+								return nil, status.Errorf(codes.Internal, "Internal Error")
+							}
+
 							used = append(used, role.Name)
+
 						}
+
 					}
+
 					if len(used) > 0 {
 						return nil, status.Errorf(codes.Canceled, "Delete Account Failed: Account mapping to role [ %v ]", strings.Join(used, ", "))
 					}
+
 				}
+
 			} else {
+
 				account := account_pb.Account{}
-				json.Unmarshal([]byte(task.Data), &account)
-				logrus.Infoln("AccountNumber --> ", account.AccountNumber)
+
+				err = json.Unmarshal([]byte(task.Data), &account)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				roleTask, err := s.GetListTask(ctx, &pb.ListTaskRequest{
 					Filter: "type:Role",
 					In:     fmt.Sprintf("data.companyID:%v", account.CompanyID),
 				})
 				if err != nil {
-					logrus.Errorln("Error Listing Role: ", err)
+					logrus.Errorln("[api][func: SetTask] Failed when GetListTask:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
 
 				used := []string{}
 				for _, v := range roleTask.Data {
+
 					if strings.Contains(v.Data, fmt.Sprintf(`"accountNumber": "%v"`, account.AccountNumber)) {
+
 						role := role_pb.Role{}
-						json.Unmarshal([]byte(v.Data), &role)
+
+						err = json.Unmarshal([]byte(v.Data), &role)
+						if err != nil {
+							logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
+
 						used = append(used, role.Name)
+
 					}
+
 				}
+
 				if len(used) > 0 {
 					return nil, status.Errorf(codes.Canceled, "Delete Account Failed: Account mapping to role [ %v ]", strings.Join(used, ", "))
 				}
+
 			}
+
 		}
 
 		if task.Type == "Beneficiary Account" {
-			logrus.Infoln("Delete beneficiary account")
+
 			beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
-			json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
+
+			err = json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
 
 			roleTask, err := s.GetListTask(ctx, &pb.ListTaskRequest{
 				Filter: "type:Role",
 				In:     fmt.Sprintf("data.companyID:%v", beneficiaryAccount.CompanyID),
 			})
 			if err != nil {
-				logrus.Errorln("Error Listing Role: ", err)
+				logrus.Errorln("[api][func: SetTask] Failed when GetListTask:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
 			used := []string{}
 			for _, v := range roleTask.Data {
+
 				if strings.Contains(v.Data, fmt.Sprintf(`"accountNumber": "%v"`, beneficiaryAccount.AccountNumber)) {
+
 					role := role_pb.Role{}
-					json.Unmarshal([]byte(v.Data), &role)
+
+					err = json.Unmarshal([]byte(v.Data), &role)
+					if err != nil {
+						logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+						return nil, status.Errorf(codes.Internal, "Internal Error")
+					}
+
 					used = append(used, role.Name)
+
 				}
+
 			}
+
 			if len(used) > 0 {
 				return nil, status.Errorf(codes.Canceled, "Delete Account Failed: Account mapping to role [ %v ]", strings.Join(used, ", "))
 			}
+
 		}
 
-		if contains([]string{"BG Mapping"}, task.Type) {
+		if task.Type == "BG Mapping" {
 
 			if currentUser.UserType != "ba" {
+
 				if currentUser.CompanyID != task.CompanyID {
+
+					logrus.Errorln("[api][func: SetTask] Permission Denied")
 					return nil, status.Errorf(codes.PermissionDenied, "Permission Denied")
+
 				}
+
 			}
 
 			mappingDigitalTask, err := s.provider.GetListTask(ctx, &pb.TaskORM{
@@ -2138,13 +2375,17 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				CompanyID: task.CompanyID,
 			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, []uint64{})
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				logrus.Errorln("[api][func: SetTask] Failed when GetListTask:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
 			used := []string{}
 			for _, v := range mappingDigitalTask {
+
 				used = append(used, strconv.FormatUint(v.TaskID, 10))
+
 			}
+
 			if len(mappingDigitalTask) > 0 {
 				return nil, status.Errorf(codes.Canceled, "Bad Request: Delete BG Mapping Failed: BG Mapping used to Mapping Digital BG [ %v ]", strings.Join(used, ", "))
 			}
@@ -2160,14 +2401,20 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Step = 3
 
 		if currentStatus == 2 {
+
 			if !(task.DataBak == "" || task.DataBak == "{}") {
+
 				task.Status = 4
 				task.Step = 3
 				task.Data = task.DataBak
+
 			} else {
+
 				task.Status = 7
 				task.Step = 1
+
 			}
+
 		}
 
 		if task.Type == "Internal Fund Transafer" {
@@ -2182,7 +2429,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 				transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
 				if err != nil {
-					logrus.Errorln("Failed connect to Transfer Service: %v", err)
+					logrus.Errorln("[api][func: SetTask] Unable to connect Transfer Service:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
 				defer transferConn.Close()
@@ -2193,7 +2440,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					TaskID: req.GetTaskID(),
 				})
 				if err != nil {
-					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+					logrus.Errorln("[api][func: SetTask] Failed when CancelInternalTransferTransaction:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
 
 			}
@@ -2202,11 +2450,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	}
 
-	// if task.Type == "Menu:License" {
-	// 	logrus.Println("Menu License Child length 102 : ", len(task.Childs))
-	// }
-
 	for i := range task.Childs {
+
 		task.Childs[i].LastApprovedByID = task.LastApprovedByID
 		task.Childs[i].LastApprovedByName = task.LastApprovedByName
 		task.Childs[i].LastRejectedByID = task.LastRejectedByID
@@ -2215,43 +2460,52 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.Childs[i].CreatedByName = task.CreatedByName
 		task.Childs[i].UpdatedByID = task.UpdatedByID
 		task.Childs[i].UpdatedByName = task.UpdatedByName
+
 		if sendTask {
+
 			task.Childs[i].Status = task.Status
 			task.Childs[i].Step = task.Step
+
 		}
+
 	}
 
-	// if task.Type == "Menu:License" {
-	// 	logrus.Println("Menu License Child length 103 : ", len(task.Childs))
-	// }
-
 	if sendTask {
+
 		if task.Data != "" && task.Data != "{}" {
-			logrus.Println("Save Backup")
+
+			logrus.Println("[api][func: SetTask] Save Backup")
 			task.DataBak = task.Data
+
 		}
+
 		if task.DataBak == "" {
+
 			task.DataBak = "{}"
+
 		}
 
 		if (task.Type == "Menu:License" || task.Type == "Menu:Appearance") && len(task.Childs) > 0 {
+
 			jsonChilds, err := json.Marshal(task.Childs)
 			if err != nil {
-				logrus.Println("Error Marshal Childs")
+				logrus.Errorln("[api][func: SetTask] Unable to Marshal Data:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
-			task.ChildBak = string(jsonChilds)
-		} else {
-			task.ChildBak = "[]"
-		}
-	}
 
-	// if task.Type == "Menu:License" {
-	// 	logrus.Println("Menu License Child length 104 : ", len(task.Childs))
-	// }
+			task.ChildBak = string(jsonChilds)
+
+		} else {
+
+			task.ChildBak = "[]"
+
+		}
+
+	}
 
 	updatedTask, err := s.provider.UpdateTask(ctx, task, false)
 	if err != nil {
+		logrus.Errorln("[api][func: SetTask] Failed when UpdateTask:", err)
 		return nil, err
 	}
 
@@ -2267,41 +2521,17 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if sendTask {
+
 		switch task.Type {
+
 		case "Announcement":
 
-			// data := &dataPublish{
-			// 	DataType: "create-task",
-			// 	Data:     task.Data,
-			// }
-
-			// out, err := json.Marshal(data)
-			// if err != nil {
-			// 	panic(err)
-			// }
-
-			// amqpConfig := amqp.NewDurableQueueConfig(getEnv("AMQP_URI", "amqp://user:bitnami@localhost:5672"))
-
-			// publisher, err := amqp.NewPublisher(amqpConfig, watermill.NewStdLogger(false, false))
-			// if err != nil {
-			// 	logrus.Errorf("Failed to create publisher: %s", err)
-			// 	return nil, status.Errorf(codes.Internal, "Failed to create publisher: %s", err)
-			// }
-
-			// msg := message.NewMessage(watermill.NewUUID(), out)
-
-			// if err := publisher.Publish("announcement.topic", msg); err != nil {
-			// 	logrus.Errorf("Failed to publish: %s", err)
-			// 	return nil, status.Errorf(codes.Internal, "Failed to publish: %s", err)
-			// }
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
 			announcementConn, err := grpc.Dial(getEnv("ANNOUNCEMENT_SERVICE", ":9091"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Announcement Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Announcement Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect Announcement Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer announcementConn.Close()
@@ -2309,7 +2539,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			announcementClient := announcement_pb.NewApiServiceClient(announcementConn)
 
 			data := announcement_pb.Announcement{}
-			json.Unmarshal([]byte(task.Data), &data)
+
+			err = json.Unmarshal([]byte(task.Data), &data)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
 			send := &announcement_pb.CreateAnnouncementRequest{
 				TaskID: task.TaskID,
 				Data:   &data,
@@ -2317,15 +2553,21 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			send.Data.AnnouncementID = task.FeatureID
 
 			if task.Status == 7 {
+
 				_, err = announcementClient.DeleteAnnouncement(ctx, send, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when DeleteAnnouncement:", err)
 					return nil, err
 				}
+
 			} else {
+
 				_, err = announcementClient.CreateAnnouncement(ctx, send, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when CreateAnnouncement:", err)
 					return nil, err
 				}
+
 			}
 
 		case "Company":
@@ -2335,9 +2577,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Company Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect Company Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer companyConn.Close()
@@ -2345,26 +2585,31 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			companyClient := company_pb.NewApiServiceClient(companyConn)
 
 			data := company_pb.CreateCompanyReq{}
-			json.Unmarshal([]byte(task.Data), &data.Data)
+
+			err = json.Unmarshal([]byte(task.Data), &data.Data)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
 			data.TaskID = task.TaskID
 
 			if task.Status == 7 {
-				// deleteReq := data.
-				res, err := companyClient.DeleteCompany(ctx, data.Data, grpc.Header(&header), grpc.Trailer(&trailer))
+
+				_, err := companyClient.DeleteCompany(ctx, data.Data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when DeleteCompany:", err)
 					return nil, err
 				}
-				logrus.Printf("[Delete Company] data : %v", res)
-				// send notif with delete company event
-				// SendNotification(ctx, task, "Delete request gets approval")
+
 			} else {
-				res, err := companyClient.CreateCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+
+				_, err := companyClient.CreateCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when CreateCompany:", err)
 					return nil, err
 				}
-				logrus.Println(res)
-				// send notif with create company event
-				// SendNotification(ctx, task, "Group data created and/or sent for approval")
+
 			}
 
 		case "Deposito":
@@ -2374,9 +2619,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			DepositoConn, err := grpc.Dial(getEnv("DEPOSITO_SERVICE", ":9201"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Company Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect Deposito Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer DepositoConn.Close()
@@ -2384,7 +2627,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			depositoClient := deposito_pb.NewDepositoServiceClient(DepositoConn)
 
 			data := &deposito_pb.CreateDepositoRequest{}
-			json.Unmarshal([]byte(task.Data), &data.Data)
+
+			err = json.Unmarshal([]byte(task.Data), &data.Data)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
 			data.Data.Deposito.DepositoID = task.FeatureID
 			data.Data.Task = &deposito_pb.Task{
 				TaskID:             task.TaskID,
@@ -2396,49 +2645,21 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Reasons:            task.Reasons,
 				Comment:            task.Comment,
 			}
-			logrus.Println("[Test approval Deposito]")
 
-			res, err := depositoClient.CreateDeposito(ctx, data, grpc.Header(&header), grpc.Trailer(&trailer))
+			_, err = depositoClient.CreateDeposito(ctx, data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Failed when CreateDeposito:", err)
 				return nil, err
 			}
-			logrus.Printf("[create deposito data] data : %v", res)
 
 		case "Account":
-
-			// data := &dataPublish{
-			// 	DataType: "create-account",
-			// 	Data:     task.Data,
-			// }
-
-			// out, err := json.Marshal(data)
-			// if err != nil {
-			// 	panic(err)
-			// }
-
-			// amqpConfig := amqp.NewDurableQueueConfig(getEnv("AMQP_URI", "amqp://user:bitnami@localhost:5672"))
-
-			// publisher, err := amqp.NewPublisher(amqpConfig, watermill.NewStdLogger(false, false))
-			// if err != nil {
-			// 	logrus.Errorf("Failed to create publisher: %s", err)
-			// 	return nil, status.Errorf(codes.Internal, "Failed to create publisher: %s", err)
-			// }
-
-			// msg := message.NewMessage(watermill.NewUUID(), out)
-
-			// if err := publisher.Publish("account.topic", msg); err != nil {
-			// 	logrus.Errorf("Failed to publish: %s", err)
-			// 	return nil, status.Errorf(codes.Internal, "Failed to publish: %s", err)
-			// }
 
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
 			accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9093"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Account Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Account Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect Account Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer accountConn.Close()
@@ -2446,30 +2667,46 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			accountClient := account_pb.NewApiServiceClient(accountConn)
 
 			if isParent {
+
 				for i := range task.Childs {
+
 					if task.Childs[i].IsParentActive {
+
 						data := account_pb.CreateAccountRequest{}
-						// account := account_pb.AccountTaskDataString{}
 						account := account_pb.Account{}
-						json.Unmarshal([]byte(task.Childs[i].Data), &account)
+
+						err = json.Unmarshal([]byte(task.Childs[i].Data), &account)
+						if err != nil {
+							logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
 
 						data.Data = &account
 						data.TaskID = task.Childs[i].TaskID
 
-						res, err := accountClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+						_, err := accountClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
+							logrus.Errorln("[api][func: SetTask] Failed when CreateAccount:", err)
 							return nil, err
 						}
-						logrus.Println(res)
 
 						task.Childs[i].IsParentActive = false
 						reUpdate = true
+
 					}
+
 				}
+
 			} else {
+
 				data := account_pb.CreateAccountRequest{}
 				account := account_pb.Account{}
-				json.Unmarshal([]byte(task.Data), &account)
+
+				err = json.Unmarshal([]byte(task.Data), &account)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				data.Data = &account_pb.Account{
 					AccountID:        account.AccountID,
@@ -2495,19 +2732,22 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 				data.TaskID = task.TaskID
 
-				logrus.Printf("Task Account for save ===>: %v", data)
 				if task.Status == 7 {
-					res, err := accountClient.DeleteAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+
+					_, err := accountClient.DeleteAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 					if err != nil {
+						logrus.Errorln("[api][func: SetTask] Failed when DeleteAccount:", err)
 						return nil, err
 					}
-					logrus.Println(res)
+
 				} else {
-					res, err := accountClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+
+					_, err := accountClient.CreateAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 					if err != nil {
+						logrus.Errorln("[api][func: SetTask] Failed when CreateAccount:", err)
 						return nil, err
 					}
-					logrus.Println(res)
+
 				}
 
 			}
@@ -2519,9 +2759,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			notificationConn, err := grpc.Dial(getEnv("NOTIFICATION_SERVICE", ":9094"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Notification Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Notification Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect Notification Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer notificationConn.Close()
@@ -2529,23 +2767,35 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			companyClient := notification_pb.NewApiServiceClient(notificationConn)
 
 			data := notification_pb.CreateNotificationRequest{}
-			json.Unmarshal([]byte(task.Data), &data)
+
+			err = json.Unmarshal([]byte(task.Data), &data)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
 
 			data.TaskID = task.TaskID
+
 			if task.Status == 7 {
+
 				deleteReq := &notification_pb.CreateNotificationRequest{NotificationID: task.FeatureID}
-				res, err := companyClient.DeleteNotification(ctx, deleteReq, grpc.Header(&header), grpc.Trailer(&trailer))
+
+				_, err := companyClient.DeleteNotification(ctx, deleteReq, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when DeleteNotification:", err)
 					return nil, err
 				}
-				logrus.Printf("[Delete Notification] data : %v", res)
+
 			} else {
+
 				data.NotificationID = task.FeatureID
-				res, err := companyClient.CreateNotification(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+
+				_, err := companyClient.CreateNotification(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when CreateNotification:", err)
 					return nil, err
 				}
-				logrus.Println(res)
+
 			}
 
 		case "User":
@@ -2590,9 +2840,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			menuConn, err := grpc.Dial(getEnv("MENU_SERVICE", ":9093"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Menu Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Menu Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect Menu Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer menuConn.Close()
@@ -2600,14 +2848,21 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			menuClient := menu_pb.NewApiServiceClient(menuConn)
 
 			if strings.Contains(task.Data, `"isParent": true`) {
-				// isParent = true
+
 				beforeSave := true
 
 				for i := range task.Childs {
+
 					if task.Childs[i].IsParentActive {
+
 						data := menu_pb.SaveMenuAppearanceReq{}
 						menu := menu_pb.MenuAppearance{}
-						json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+
+						err = json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+						if err != nil {
+							logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
 
 						if beforeSave {
 
@@ -2615,9 +2870,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 								UserType: menu.UserType,
 							}, grpc.Header(&header), grpc.Trailer(&trailer))
 							if err != nil {
+								logrus.Errorln("[api][func: SetTask] Failed when BeforeSaveMenuAppearance:", err)
 								return nil, err
 							}
+
 							beforeSave = false
+
 						}
 
 						data.Data = &menu
@@ -2625,99 +2883,124 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 						_, err = menuClient.SaveMenuAppearance(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
+							logrus.Errorln("[api][func: SetTask] Failed when SaveMenuAppearance:", err)
 							return nil, err
 						}
 
-						// logrus.Println(res)
-
-						// task.Childs[i].IsParentActive = false
-						// reUpdate = true
 					}
+
 				}
+
 			} else {
+
 				data := menu_pb.SaveMenuAppearanceReq{}
 				menu := menu_pb.MenuAppearance{}
-				json.Unmarshal([]byte(task.Data), &menu)
+
+				err = json.Unmarshal([]byte(task.Data), &menu)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				data.Data = &menu
 				data.TaskID = task.TaskID
 
 				_, err = menuClient.SaveMenuAppearance(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when SaveMenuAppearance:", err)
 					return nil, err
 				}
 
-				// logrus.Println(res)
 			}
 
 		case "Menu:License":
 
-			fmt.Println("Menu:License")
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
 			menuConn, err := grpc.Dial(getEnv("MENU_SERVICE", ":9096"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Menu Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Menu Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect Menu Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer menuConn.Close()
 
 			menuClient := menu_pb.NewApiServiceClient(menuConn)
 
-			fmt.Println("result", strings.Contains(task.Data, `"isParent": true`))
 			isDeleted := false
+
 			if strings.Contains(task.Data, `"isParent": true`) {
-				// isParent = true
+
 				for i := range task.Childs {
+
 					if task.Childs[i].IsParentActive {
+
 						data := menu_pb.SaveMenuLicenseReq{}
 						menu := menu_pb.MenuLicenseSave{}
-						json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+
+						err = json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+						if err != nil {
+							logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
 
 						data.Data = &menu
 						data.TaskID = task.Childs[i].TaskID
-						fmt.Println("data ", data.TaskID)
+
 						if !isDeleted {
+
 							_, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 							if err != nil {
+								logrus.Errorln("[api][func: SetTask] Failed when DeleteMenuLicenseCompany:", err)
 								return nil, err
 							}
+
 							isDeleted = true
+
 						}
-						res, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+
+						_, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 						if err != nil {
+							logrus.Errorln("[api][func: SetTask] Failed when SaveMenuLicense:", err)
 							return nil, err
 						}
-						logrus.Println(res)
 
-						// task.Childs[i].IsParentActive = false
-						// reUpdate = true
 					}
+
 				}
+
 			} else {
+
 				data := menu_pb.SaveMenuLicenseReq{}
 				menu := menu_pb.MenuLicenseSave{}
-				json.Unmarshal([]byte(task.Data), &menu)
+
+				err = json.Unmarshal([]byte(task.Data), &menu)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				data.Data = &menu
 				data.TaskID = task.TaskID
 
 				if !isDeleted {
+
 					_, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 					if err != nil {
+						logrus.Errorln("[api][func: SetTask] Failed when DeleteMenuLicenseCompany:", err)
 						return nil, err
 					}
+
 					isDeleted = true
+
 				}
 
-				res, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				_, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when SaveMenuLicense:", err)
 					return nil, err
 				}
-				logrus.Println(res)
+
 			}
 
 		case "Role":
@@ -2727,9 +3010,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9098"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Role Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Role Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect Role Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer roleConn.Close()
@@ -2737,29 +3018,44 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			client := role_pb.NewApiServiceClient(roleConn)
 
 			data := role_pb.CreateRoleRequest{}
-			json.Unmarshal([]byte(task.Data), &data.Data)
+
+			err = json.Unmarshal([]byte(task.Data), &data.Data)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
 
 			data.TaskID = task.TaskID
 			data.Data.RoleID = task.FeatureID
 
-			logrus.Println("==> 0create role: %s", data)
 			if task.Status == 7 {
-				res, err := client.DeleteRole(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+
+				_, err := client.DeleteRole(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when DeleteRole:", err)
 					return nil, err
 				}
-				logrus.Printf("[Delete User] data : %v", res)
+
 			} else {
+
 				res, err := client.CreateRole(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when CreateRole:", err)
 					return nil, err
 				}
+
 				task.FeatureID = res.Data.RoleID
-				Role, _ := json.Marshal(res.Data)
+
+				Role, err := json.Marshal(res.Data)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Marshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
+
 				task.Data = string(Role)
-				logrus.Println(task.Data, "hasil Data")
-				logrus.Println(res, "hasil res")
+
 				reUpdate = true
+
 			}
 
 		case "Workflow":
@@ -2769,8 +3065,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Workflow Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
+				logrus.Errorln("[api][func: SetTask] Unable to connect Workflow Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer workflowConn.Close()
@@ -2779,7 +3074,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			data := workflow_pb.CreateWorkflowRequest{}
 			workflowTask := workflow_pb.WorkflowTask{}
-			json.Unmarshal([]byte(task.Data), &workflowTask)
+
+			err = json.Unmarshal([]byte(task.Data), &workflowTask)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
 			workflowTask.Workflow.WorkflowID = task.FeatureID
 			workflowTask.Task = &workflow_pb.Task{
 				TaskID: task.TaskID,
@@ -2807,20 +3108,23 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Logics:                []*workflow_pb.WorkflowLogic{},
 			}
 			data.TaskID = task.TaskID
+
 			if task.Status == 7 {
-				res, err := client.DeleteWorkflow(ctx, &workflowTask, grpc.Header(&header), grpc.Trailer(&trailer))
+
+				_, err := client.DeleteWorkflow(ctx, &workflowTask, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
-					logrus.Errorln("[failed deleted workflow]")
+					logrus.Errorln("[api][func: SetTask] Failed when DeleteWorkflow:", err)
 					return nil, err
 				}
-				logrus.Println(res)
+
 			} else {
-				res, err := client.CreateWorkflow(ctx, &workflowTask, grpc.Header(&header), grpc.Trailer(&trailer))
+
+				_, err := client.CreateWorkflow(ctx, &workflowTask, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
-					logrus.Errorln("[failed created workflow]")
+					logrus.Errorln("[api][func: SetTask] Failed when CreateWorkflow:", err)
 					return nil, err
 				}
-				logrus.Println(res)
+
 			}
 
 		case "Liquidity":
@@ -2831,8 +3135,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			liquidityConn, err := grpc.Dial(getEnv("LIQUIDITY_SERVICE", ":9010"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Liquidity Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Liquidity Service: %v", err))
+				logrus.Errorln("[api][func: SetTask] Unable to connect Liquidity Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer liquidityConn.Close()
@@ -2841,16 +3144,21 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			data := liquidity_pb.CreateLiquidityRequest{}
 			liquidityTask := liquidity_pb.CreateTaskLiquidityRequest{}
-			json.Unmarshal([]byte(task.Data), &liquidityTask)
+
+			err = json.Unmarshal([]byte(task.Data), &liquidityTask)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
 
 			data.Data = &liquidityTask
 			data.TaskID = task.TaskID
 
-			res, err := client.CreateLiquidity(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			_, err = client.CreateLiquidity(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Failed when CreateLiquidity:", err)
 				return nil, err
 			}
-			logrus.Println(res)
 
 		case "SSO:User":
 
@@ -2859,8 +3167,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			ssoConn, err := grpc.Dial(getEnv("SSO_SERVICE", ":9106"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to SSO Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to SSO Service: %v", err))
+				logrus.Errorln("[api][func: SetTask] Unable to connect SSO Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer ssoConn.Close()
@@ -2868,18 +3175,28 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			ssoClient := sso_pb.NewApiServiceClient(ssoConn)
 
 			data := sso_pb.WriteSyncUserTask{}
-			json.Unmarshal([]byte(task.Data), &data)
+
+			err = json.Unmarshal([]byte(task.Data), &data)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
 			send := &sso_pb.CreateSyncUserTaskReq{
 				Data:   &data,
 				TaskID: task.TaskID,
 			}
+
 			if task.Status == 7 {
+
 				send.Data.User.UserSyncID = task.FeatureID
-				res, err := ssoClient.DeleteSyncUser(ctx, send.Data, grpc.Header(&header), grpc.Trailer(&trailer))
+
+				_, err := ssoClient.DeleteSyncUser(ctx, send.Data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when DeleteSyncUser:", err)
 					return nil, err
 				}
-				logrus.Println(res)
+
 			}
 
 		case "SSO:Company":
@@ -2889,9 +3206,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			ssoConn, err := grpc.Dial(getEnv("SSO_SERVICE", ":9106"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to SSO Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to SSO Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect SSO Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer ssoConn.Close()
@@ -2899,32 +3214,38 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			ssoClient := sso_pb.NewApiServiceClient(ssoConn)
 
 			data := sso_pb.WriteSyncCompanyTask{}
-			json.Unmarshal([]byte(task.Data), &data)
+
+			err = json.Unmarshal([]byte(task.Data), &data)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
 			send := &sso_pb.CreateSyncCompanyTaskReq{
 				Data:   &data,
 				TaskID: task.TaskID,
 			}
+
 			if task.Status == 7 {
+
 				send.Data.Company.CompanySyncID = task.FeatureID
-				res, err := ssoClient.DeleteSyncCompany(ctx, send.Data, grpc.Header(&header), grpc.Trailer(&trailer))
+
+				_, err := ssoClient.DeleteSyncCompany(ctx, send.Data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when DeleteSyncCompany:", err)
 					return nil, err
 				}
-				logrus.Println(res)
+
 			}
 
 		case "System":
 
-			logrus.Println("System Creataion Triggered ========>")
-			logrus.Println()
 			var opts []grpc.DialOption
 			opts = append(opts, grpc.WithInsecure())
 
 			systemConn, err := grpc.Dial(getEnv("SYSTEM_SERVICE", ":9101"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to system Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to system Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect System Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer systemConn.Close()
@@ -2932,13 +3253,19 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			systemClient := system_pb.NewApiServiceClient(systemConn)
 
 			data := system_pb.CreateRequest{}
-			json.Unmarshal([]byte(task.Data), &data.Data)
+
+			err = json.Unmarshal([]byte(task.Data), &data.Data)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
 			data.TaskID = task.TaskID
-			res, err := systemClient.CreateSystem(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+
+			_, err = systemClient.CreateSystem(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err
 			}
-			logrus.Println(res)
 
 		case "Subscription":
 
@@ -2947,9 +3274,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			abonnementConn, err := grpc.Dial(getEnv("ABONNEMENT_SERVICE", ":9100"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Abonnement Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Abonnement Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect Abonnement Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer abonnementConn.Close()
@@ -2957,47 +3282,57 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			abonnementClient := abonnement_pb.NewApiServiceClient(abonnementConn)
 
 			data := abonnement_pb.CreateAbonnementRequest{}
-			json.Unmarshal([]byte(task.Data), &data.Data)
+
+			err = json.Unmarshal([]byte(task.Data), &data.Data)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
 			data.TaskID = task.TaskID
+
 			isFirst := false
+
 			if len(data.Data.BillingStatus) < 1 {
+
 				isFirst = true
 				data.Data.BillingStatus = "Waiting Schedule"
+
 			}
 
 			if task.Status == 7 {
-				logrus.Println("[Delete Subscription] data : %v", &data)
 
-				res, err := abonnementClient.DeleteAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+				_, err := abonnementClient.DeleteAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when DeleteAbonnement:", err)
 					return nil, err
 				}
-				logrus.Println(res)
-				logrus.Printf("[Delete Subscription] data : %v", res)
+
 			} else {
 
 				res, err := abonnementClient.CreateAbonnement(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when CreateAbonnement:", err)
 					return nil, err
 				}
-				logrus.Println(res)
 
-				// update task billing status
 				data.Data.Id = res.Data.Id
+
 				dataUpdate, err := json.Marshal(data.Data)
 				if err != nil {
-					logrus.Errorln("Failed to marshal data: %v", err)
+					logrus.Errorln("[api][func: SetTask] Unable to Marshal Data:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
+
 				task.Data = string(dataUpdate)
-				logrus.Println("Abod task======>, %s", task.Data)
+
 				if isFirst {
 					task.DataBak = task.Data
-					logrus.Println("Abod task======>, %s", task.DataBak)
 				}
-				logrus.Println("Abod task======>, %s", task.DataBak)
+
 				task.FeatureID = res.Data.Id
 				reUpdate = true
+
 			}
 
 		case "Beneficiary Account":
@@ -3007,9 +3342,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			beneficiaryAccountConn, err := grpc.Dial(getEnv("BENEFICIARY_ACCOUNT_SERVICE", ":9107"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Account Service: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Account Service: %v", err))
-
+				logrus.Errorln("[api][func: SetTask] Unable to connect Beneficiary Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer beneficiaryAccountConn.Close()
@@ -3017,28 +3350,36 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			beneficiaryAccountClient := beneficiary_account_pb.NewApiServiceClient(beneficiaryAccountConn)
 
 			data := beneficiary_account_pb.CreateBeneficiaryAccountRequest{}
-			json.Unmarshal([]byte(task.Data), &data.Data)
+
+			err = json.Unmarshal([]byte(task.Data), &data.Data)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
 			data.TaskID = task.TaskID
 
 			if task.Status == 7 {
-				// deleteReq := data.
+
 				data.Data.BeneficiaryAccountID = task.FeatureID
-				res, err := beneficiaryAccountClient.DeleteBeneficiaryAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+
+				_, err := beneficiaryAccountClient.DeleteBeneficiaryAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when DeleteBeneficiaryAccount:", err)
 					return nil, err
 				}
-				logrus.Println(res)
-				logrus.Printf("[Delete Bneficiary] data : %v", res)
+
 			} else {
 
 				res, err := beneficiaryAccountClient.CreateBeneficiaryAccount(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Failed when CreateBeneficiaryAccount:", err)
 					return nil, err
 				}
-				logrus.Println(res)
-				// update task billing status
+
 				task.FeatureID = res.Data.BeneficiaryAccountID
 				reUpdate = true
+
 			}
 
 		case "BG Mapping":
@@ -3048,7 +3389,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to BG Service: %v", err)
+				logrus.Errorln("[api][func: SetTask] Unable to connect BG Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer bgConn.Close()
@@ -3056,27 +3397,36 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
 			taskData := []*bg_pb.MappingData{}
-			json.Unmarshal([]byte(currentData), &taskData)
+
+			err = json.Unmarshal([]byte(currentData), &taskData)
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
 			taskDataBak := []*bg_pb.MappingData{}
-			json.Unmarshal([]byte(currentDataBak), &taskDataBak)
+			err = json.Unmarshal([]byte(currentDataBak), &taskDataBak)
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
 			if task.Status == 7 {
+
 				_, err = bgClient.DeleteTransaction(ctx, &bg_pb.DeleteTransactionRequest{Type: "BG Mapping", MappingData: taskData, MappingDataBackup: taskDataBak})
 				if err != nil {
-					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+					logrus.Errorln("[api][func: SetTask] Failed when DeleteTransaction:", err)
+					return nil, err
 				}
+
 			} else {
+
 				_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{Type: "BG Mapping", MappingData: taskData, MappingDataBackup: taskDataBak})
 				if err != nil {
-					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+					logrus.Errorln("[api][func: SetTask] Failed when CreateTransaction:", err)
+					return nil, err
 				}
+
 			}
 
 		case "BG Mapping Digital":
@@ -3086,7 +3436,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to BG Service: %v", err)
+				logrus.Errorln("[api][func: SetTask] Unable to connect BG Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer bgConn.Close()
@@ -3094,27 +3444,37 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
 			taskData := []*bg_pb.MappingDigitalData{}
-			json.Unmarshal([]byte(currentData), &taskData)
+
+			err = json.Unmarshal([]byte(currentData), &taskData)
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
 			taskDataBak := []*bg_pb.MappingDigitalData{}
-			json.Unmarshal([]byte(currentDataBak), &taskDataBak)
+
+			err = json.Unmarshal([]byte(currentDataBak), &taskDataBak)
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
 			if task.Status == 7 {
+
 				_, err = bgClient.DeleteTransaction(ctx, &bg_pb.DeleteTransactionRequest{Type: "BG Mapping Digital", MappingDigitalData: taskData, MappingDigitalDataBackup: taskDataBak})
 				if err != nil {
-					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+					logrus.Errorln("[api][func: SetTask] Failed when DeleteTransaction:", err)
+					return nil, err
 				}
+
 			} else {
+
 				_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{Type: "BG Mapping Digital", MappingDigitalData: taskData, MappingDigitalDataBackup: taskDataBak})
 				if err != nil {
-					return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+					logrus.Errorln("[api][func: SetTask] Failed when CreateTransaction:", err)
+					return nil, err
 				}
+
 			}
 
 		case "Internal Fund Transfer":
@@ -3124,7 +3484,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
 			if err != nil {
-				logrus.Errorln("Failed connect to Transfer Service: %v", err)
+				logrus.Errorln("[api][func: SetTask] Unable to connect Transfer Service:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 			defer transferConn.Close()
@@ -3132,9 +3492,11 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			transferClient := transfer_pb.NewApiServiceClient(transferConn)
 
 			taskData := transfer_pb.InternalTransferData{}
+
 			err = json.Unmarshal([]byte(currentData), &taskData)
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
 			_, err = transferClient.CreateInternalTransferTransaction(ctx, &transfer_pb.CreateInternalTransferTransactionRequest{
@@ -3142,7 +3504,8 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				Data:   &taskData,
 			})
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+				logrus.Errorln("[api][func: SetTask] Failed when CreateInternalTransferTransaction:", err)
+				return nil, err
 			}
 
 		}
@@ -3150,33 +3513,39 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 	}
 
 	if reUpdate {
-		// logrus.Println(task.Data)
+
 		updatedTask, err = s.provider.UpdateTask(ctx, task, false)
 		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Failed when UpdateTask:", err)
 			return nil, err
 		}
+
 	}
+
 	if updatedTask.Reasons != "" && req.Action == "approve" {
 		updatedTask.Reasons = ""
 	}
-	logrus.Println("Save LOG task 'update', type: ", task.Type)
+
 	// Save activity Log
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
-		logrus.Println("Set to save log")
+
 		activityLog, err := GenerateActivityLog(task, currentUser, req.Action, "Update")
 		if err != nil {
-			logrus.Errorln("Failed to generate activity log: %v", err)
+			logrus.Errorln("[api][func: SetTask] Failed when GenerateActivityLog:", err)
 			return nil, err
 		}
+
 		err = s.provider.SaveLog(ctx, activityLog)
 		if err != nil {
-			logrus.Errorln("Error SaveActivityLog: ", err)
+			logrus.Errorln("[api][func: SetTask] Failed when SaveLog:", err)
 		}
+
 	}
 
 	go TaskNotification(ctx, task, req.Action, sendTask, currentStatus, currentStep)
 
 	return result, nil
+
 }
 
 func getEnv(key, fallback string) string {
