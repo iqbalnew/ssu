@@ -3486,15 +3486,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-			taskData := []*bg_pb.MappingData{}
-
+			var taskData []*bg_pb.MappingData
 			err = json.Unmarshal([]byte(currentData), &taskData)
 			if err != nil {
 				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
-			taskDataBak := []*bg_pb.MappingData{}
+			var taskDataBak []*bg_pb.MappingData
 			err = json.Unmarshal([]byte(currentDataBak), &taskDataBak)
 			if err != nil {
 				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
@@ -3533,16 +3532,14 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-			taskData := []*bg_pb.MappingDigitalData{}
-
+			var taskData []*bg_pb.MappingDigitalData
 			err = json.Unmarshal([]byte(currentData), &taskData)
 			if err != nil {
 				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
 
-			taskDataBak := []*bg_pb.MappingDigitalData{}
-
+			var taskDataBak []*bg_pb.MappingDigitalData
 			err = json.Unmarshal([]byte(currentDataBak), &taskDataBak)
 			if err != nil {
 				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
