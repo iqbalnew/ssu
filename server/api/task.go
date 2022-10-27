@@ -1165,6 +1165,126 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 
 }
 
+func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
+
+	result := &pb.SetTaskResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Success",
+	}
+
+	var err error
+
+	_, userMD, err := s.manager.GetMeFromMD(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var newCtx context.Context
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		newCtx = metadata.NewOutgoingContext(context.Background(), md)
+	}
+	var trailer metadata.MD
+
+	task, err := s.provider.FindTaskById(ctx, req.TaskID)
+	if err != nil {
+		return nil, err
+	}
+
+	taskPB, err := task.ToPB(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+
+	if task.Type == "Internal Fund Transfer" {
+
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Unable to connect Transfer Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer transferConn.Close()
+
+		transferClient := transfer_pb.NewApiServiceClient(transferConn)
+
+		_, err = transferClient.SetTaskInternalTransfer(newCtx, &transfer_pb.SetTaskInternalTransferRequest{
+			TaskID:  req.GetTaskID(),
+			Action:  req.GetAction(),
+			Comment: req.GetComment(),
+			Reasons: req.GetReasons(),
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			return nil, err
+		}
+
+	} else if task.Type == "External Fund Transfer" {
+
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Unable to connect Transfer Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer transferConn.Close()
+
+		transferClient := transfer_pb.NewApiServiceClient(transferConn)
+
+		_, err = transferClient.SetTaskExternalTransfer(newCtx, &transfer_pb.SetTaskExternalTransferRequest{
+			TaskID:  req.GetTaskID(),
+			Action:  req.GetAction(),
+			Comment: req.GetComment(),
+			Reasons: req.GetReasons(),
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			return nil, err
+		}
+
+	} else if task.Type == "Payroll Transfer" {
+
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Unable to connect Transfer Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer transferConn.Close()
+
+		transferClient := transfer_pb.NewApiServiceClient(transferConn)
+
+		_, err = transferClient.SetTaskPayroll(newCtx, &transfer_pb.SetTaskPayrollRequest{
+			TaskID:  req.GetTaskID(),
+			Action:  req.GetAction(),
+			Comment: req.GetComment(),
+			Reasons: req.GetReasons(),
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			return nil, err
+		}
+
+	} else {
+
+		_, err = s.SetTask(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	result.Data = &taskPB
+
+	return result, nil
+
+}
+
 func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
 
 	var err error
