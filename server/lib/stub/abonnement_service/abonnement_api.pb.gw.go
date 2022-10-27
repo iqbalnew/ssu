@@ -798,7 +798,7 @@ var (
 )
 
 func request_ApiService_GenerateBulkInvoice_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GenerateBulkInvoiceReq
+	var protoReq BulkInvoiceRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -814,7 +814,7 @@ func request_ApiService_GenerateBulkInvoice_0(ctx context.Context, marshaler run
 }
 
 func local_request_ApiService_GenerateBulkInvoice_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GenerateBulkInvoiceReq
+	var protoReq BulkInvoiceRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
