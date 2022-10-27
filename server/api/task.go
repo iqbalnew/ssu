@@ -3494,10 +3494,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 			var taskDataBak []*bg_pb.MappingData
-			err = json.Unmarshal([]byte(currentDataBak), &taskDataBak)
-			if err != nil {
-				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
+			if currentDataBak != "" && currentDataBak != "{}" {
+				err = json.Unmarshal([]byte(currentDataBak), &taskDataBak)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 			}
 
 			if task.Status == 7 {
@@ -3540,10 +3542,12 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			}
 
 			var taskDataBak []*bg_pb.MappingDigitalData
-			err = json.Unmarshal([]byte(currentDataBak), &taskDataBak)
-			if err != nil {
-				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
+			if currentDataBak != "" && currentDataBak != "{}" {
+				err = json.Unmarshal([]byte(currentDataBak), &taskDataBak)
+				if err != nil {
+					logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 			}
 
 			if task.Status == 7 {
