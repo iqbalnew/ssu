@@ -860,7 +860,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	product := productData.Data[0]
 
 	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Import LC", "Internal Fund Transfer", "External Fund Transfer", "Payroll Transfer",
-	"Amend Cancel LC"}
+		"Amend Cancel LC"}
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
 		if req.Task.Type == "Swift" {
@@ -1875,45 +1875,45 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 		task.LastRejectedByID = 0
 		task.LastRejectedByName = ""
 
-		if task.Type == "BG Issuing" {
+		// if task.Type == "BG Issuing" {
 
-			var opts []grpc.DialOption
-			opts = append(opts, grpc.WithInsecure())
+		// 	var opts []grpc.DialOption
+		// 	opts = append(opts, grpc.WithInsecure())
 
-			bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
-			if err != nil {
-				logrus.Errorln("[api][func: SetTask] Unable to connect BG Service:", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-			defer bgConn.Close()
+		// 	bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
+		// 	if err != nil {
+		// 		logrus.Errorln("[api][func: SetTask] Unable to connect BG Service:", err)
+		// 		return nil, status.Errorf(codes.Internal, "Internal Error")
+		// 	}
+		// 	defer bgConn.Close()
 
-			bgClient := bg_pb.NewApiServiceClient(bgConn)
+		// 	bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-			taskData := bg_pb.IssuingData{}
-			err = json.Unmarshal([]byte(currentData), &taskData)
-			if err != nil {
-				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error", err)
-			}
+		// 	taskData := bg_pb.IssuingData{}
+		// 	err = json.Unmarshal([]byte(currentData), &taskData)
+		// 	if err != nil {
+		// 		logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+		// 		return nil, status.Errorf(codes.Internal, "Internal Error", err)
+		// 	}
 
-			bgGrpcReq := &bg_pb.CreateIssuingRequest{
-				TaskID: task.TaskID,
-				Data:   &taskData,
-			}
+		// 	bgGrpcReq := &bg_pb.CreateIssuingRequest{
+		// 		TaskID: task.TaskID,
+		// 		Data:   &taskData,
+		// 	}
 
-			result, err := bgClient.CreateIssuing(ctx, bgGrpcReq, grpc.Header(&header), grpc.Trailer(&trailer))
-			if err != nil {
-				logrus.Errorln("[api][func: SetTask] Failed when CreateIssuing:", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
-			}
+		// 	result, err := bgClient.CreateIssuing(ctx, bgGrpcReq, grpc.Header(&header), grpc.Trailer(&trailer))
+		// 	if err != nil {
+		// 		logrus.Errorln("[api][func: SetTask] Failed when CreateIssuing:", err)
+		// 		return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+		// 	}
 
-			taskData.RegistrationNo = result.Data.GetRegistrationNo()
-			taskData.ReferenceNo = result.Data.GetReferenceNo()
+		// 	taskData.RegistrationNo = result.Data.GetRegistrationNo()
+		// 	taskData.ReferenceNo = result.Data.GetReferenceNo()
 
-			data, _ := json.Marshal(&taskData)
-			task.Data = string(data)
+		// 	data, _ := json.Marshal(&taskData)
+		// 	task.Data = string(data)
 
-		}
+		// }
 
 		if currentStep == 2 {
 
@@ -2533,37 +2533,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 				task.Status = 7
 				task.Step = 1
-
-			}
-
-		}
-
-		if task.Type == "Internal Fund Transafer" {
-
-			if req.Comment == "cancel" {
-
-				task.Status = 4
-				task.Step = 3
-
-				var opts []grpc.DialOption
-				opts = append(opts, grpc.WithInsecure())
-
-				transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
-				if err != nil {
-					logrus.Errorln("[api][func: SetTask] Unable to connect Transfer Service:", err)
-					return nil, status.Errorf(codes.Internal, "Internal Error")
-				}
-				defer transferConn.Close()
-
-				transferClient := transfer_pb.NewApiServiceClient(transferConn)
-
-				_, err = transferClient.CancelInternalTransferTransaction(ctx, &transfer_pb.CancelInternalTransferTransactionRequest{
-					TaskID: req.GetTaskID(),
-				})
-				if err != nil {
-					logrus.Errorln("[api][func: SetTask] Failed when CancelInternalTransferTransaction:", err)
-					return nil, status.Errorf(codes.Internal, "Internal Error")
-				}
 
 			}
 
@@ -3534,7 +3503,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			if task.Status == 7 {
 
-				_, err = bgClient.DeleteTransaction(ctx, &bg_pb.DeleteTransactionRequest{Type: "BG Mapping", MappingData: taskData, MappingDataBackup: taskDataBak})
+				_, err = bgClient.DeleteTransaction(ctx, &bg_pb.DeleteTransactionRequest{Type: "BG Mapping", MappingData: taskData, MappingDataBackup: taskDataBak}, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					logrus.Errorln("[api][func: SetTask] Failed when DeleteTransaction:", err)
 					return nil, err
@@ -3542,7 +3511,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			} else {
 
-				_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{Type: "BG Mapping", MappingData: taskData, MappingDataBackup: taskDataBak})
+				_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{Type: "BG Mapping", MappingData: taskData, MappingDataBackup: taskDataBak}, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					logrus.Errorln("[api][func: SetTask] Failed when CreateTransaction:", err)
 					return nil, err
@@ -3582,7 +3551,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			if task.Status == 7 {
 
-				_, err = bgClient.DeleteTransaction(ctx, &bg_pb.DeleteTransactionRequest{Type: "BG Mapping Digital", MappingDigitalData: taskData, MappingDigitalDataBackup: taskDataBak})
+				_, err = bgClient.DeleteTransaction(ctx, &bg_pb.DeleteTransactionRequest{Type: "BG Mapping Digital", MappingDigitalData: taskData, MappingDigitalDataBackup: taskDataBak}, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					logrus.Errorln("[api][func: SetTask] Failed when DeleteTransaction:", err)
 					return nil, err
@@ -3590,7 +3559,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			} else {
 
-				_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{Type: "BG Mapping Digital", MappingDigitalData: taskData, MappingDigitalDataBackup: taskDataBak})
+				_, err = bgClient.CreateTransaction(ctx, &bg_pb.CreateTransactionRequest{Type: "BG Mapping Digital", MappingDigitalData: taskData, MappingDigitalDataBackup: taskDataBak}, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					logrus.Errorln("[api][func: SetTask] Failed when CreateTransaction:", err)
 					return nil, err
