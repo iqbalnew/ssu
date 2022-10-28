@@ -928,27 +928,6 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 		workflowClient := workflow_pb.NewApiServiceClient(workflowConn)
 
-		getWorkflow, err := workflowClient.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
-			ProductID:           product.ProductID,
-			CompanyID:           currentUser.CompanyID,
-			TransactionalNumber: uint64(req.TransactionAmount),
-			Currency:            req.GetTransactionCurrency(),
-		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
-		if err != nil {
-			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute GenerateWorkflow", err)
-			return nil, err
-		}
-
-		if getWorkflow.Data == nil {
-			return nil, status.Errorf(codes.NotFound, "workflow for this task type not found")
-		}
-
-		workflow, err := json.Marshal(getWorkflow.Data)
-		if err != nil {
-			logrus.Errorln("[api][func: SaveTaskWithData] Unable to Marshal Data:", err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
-		}
-
 		// Implement Workflow STP Here -- Start
 
 		companyWorkflow, err := workflowClient.GetCompanyWorkflow(ctx, &workflow_pb.GetCompanyWorkflowRequest{
@@ -960,6 +939,27 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 
 		if !companyWorkflow.Data.IsTransactionSTP {
+
+			getWorkflow, err := workflowClient.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
+				ProductID:           product.ProductID,
+				CompanyID:           currentUser.CompanyID,
+				TransactionalNumber: uint64(req.TransactionAmount),
+				Currency:            req.GetTransactionCurrency(),
+			}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+			if err != nil {
+				logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute GenerateWorkflow", err)
+				return nil, err
+			}
+
+			if getWorkflow.Data == nil {
+				return nil, status.Errorf(codes.NotFound, "workflow for this task type not found")
+			}
+
+			workflow, err := json.Marshal(getWorkflow.Data)
+			if err != nil {
+				logrus.Errorln("[api][func: SaveTaskWithData] Unable to Marshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
 
 			task.WorkflowDoc = string(workflow)
 
