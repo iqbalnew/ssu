@@ -949,7 +949,23 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 
-		task.WorkflowDoc = string(workflow)
+		// Implement Workflow STP Here -- Start
+
+		companyWorkflow, err := workflowClient.GetCompanyWorkflow(ctx, &workflow_pb.GetCompanyWorkflowRequest{
+			CompanyID: currentUser.CompanyID,
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute GetCompanyWorkflow", err)
+			return nil, err
+		}
+
+		if !companyWorkflow.Data.IsTransactionSTP {
+
+			task.WorkflowDoc = string(workflow)
+
+		}
+
+		// Implement Workflow STP Here -- End
 
 		logrus.Println("[api][func: SaveTaskWithData] Step 5")
 
