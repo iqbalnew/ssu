@@ -512,41 +512,22 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 }
 
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
-	logrus.Println("SaveTaskWithData Task Type:", req.Task.Type)
 
-	if req.Task.Type == "Swift" {
-		logrus.Println("SaveTaskWithData =================> 1")
-	}
-	task, _ := req.Task.ToORM(ctx)
+	logrus.Println("[api][func: SaveTaskWithData] Task Type:", req.Task.Type)
+
 	var err error
 
-	// logrus.Println("==> 01: ", task.Type)
-	// logrus.Println("==> taskID: ", task.TaskID)
-	// if len(task.Childs) > 0 {
-	// 	for i, v := range task.Childs {
-	// 		logrus.Println("==> 01: ", i, ": ", v.Type)
-	// 		logrus.Println("ParentID: ", v.ParentID)
-	// 	}
-	// }
+	task, err := req.Task.ToORM(ctx)
+	if err != nil {
+		logrus.Errorln("[api][func: SaveTaskWithData] Unable to convert PB to ORM:", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
 
 	currentUser, userMD, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		return nil, err
 	} else {
 		ctx = metadata.NewOutgoingContext(context.Background(), userMD)
-		// me, err := s.manager.GetMeFromJWT(ctx, "")
-
-		// if err == nil {
-		// 	if getEnv("ENV", "DEV") != "LOCAL" {
-		// 		logrus.Println("Send Log to fluentd")
-		// 		s.logger.InfoUser(
-		// 			"task-save",
-		// 			me.UserID,
-		// 			me.CompanyID,
-		// 			fmt.Sprintf("taskID: %d", req.TaskID),
-		// 		)
-		// 	}
-		// }
 	}
 	var trailer metadata.MD
 
@@ -558,9 +539,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	task.LastRejectedByName = ""
 	task.DataBak = "{}"
 
-	if req.Task.Type == "Swift" {
-		logrus.Println("SaveTaskWithData =================> 2")
-	}
+	logrus.Println("[api][func: SaveTaskWithData] Step 2")
 
 	if task.CompanyID < 1 {
 		if currentUser.UserType != "ba" {
@@ -573,265 +552,338 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		}
 	}
 
-	//test start here
-
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
+
 	companyConn, err := grpc.Dial(getEnv("COMPANY_SERVICE", ":9092"), opts...)
 	if err != nil {
-		logrus.Errorln("Failed connect to Company Service: %v", err)
-		// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Company Service: %v", err))
-
+		logrus.Errorln("[api][func: SaveTaskWithData] Unable to connect Company Service:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 	defer companyConn.Close()
 
 	companyClient := company_pb.NewApiServiceClient(companyConn)
 
-	// Check task types that need company ID
 	if task.Type == "Menu:License" {
+
 		if strings.Contains(task.Data, `"isParent": true`) {
-			// isParent = true
 
 			for i := range task.Childs {
+
 				menu := menu_pb.MenuLicenseSave{}
-				json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+
+				err = json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+				if err != nil {
+					logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 					CompanyID: menu.CompanyID,
 				})
 				if err != nil {
-					logrus.Errorln("Failed to get company data: %v", err)
-					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+					logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
+
 				if len(company.Data) == 0 {
-					logrus.Infoln("Company does not exist")
+					logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
 					return nil, status.Errorf(codes.NotFound, "Company does not exist")
 				}
 
 			}
+
 		} else {
+
 			menu := menu_pb.MenuLicenseSave{}
+
 			json.Unmarshal([]byte(task.Data), &menu)
+			if err != nil {
+				logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
 
 			company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 				CompanyID: menu.CompanyID,
 			})
 			if err != nil {
-				logrus.Errorln("Failed to get company data: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+				logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
+
 			if len(company.Data) == 0 {
-				logrus.Infoln("Company does not exist")
+				logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
 				return nil, status.Errorf(codes.NotFound, "Company does not exist")
 			}
 
 		}
 	}
+
 	if task.Type == "Account" {
+
 		if strings.Contains(task.Data, `"isParent": true`) {
 
 			for i := range task.Childs {
+
 				account := account_pb.Account{}
-				json.Unmarshal([]byte(task.Childs[i].Data), &account)
+				err = json.Unmarshal([]byte(task.Childs[i].Data), &account)
+				if err != nil {
+					logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+					return nil, status.Errorf(codes.Internal, "Internal Error")
+				}
 
 				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 					CompanyID: account.CompanyID,
 				})
 				if err != nil {
-					logrus.Errorln("Failed to get company data: %v", err)
-					// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+					logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
 					return nil, status.Errorf(codes.Internal, "Internal Error")
 				}
+
 				if len(company.Data) == 0 {
-					logrus.Infoln("Company does not exist")
+					logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
 					return nil, status.Errorf(codes.NotFound, "Company does not exist")
 				}
 
 			}
+
 		} else {
+
 			account := account_pb.Account{}
+
 			json.Unmarshal([]byte(task.Data), &account)
+			if err != nil {
+				logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
 
 			company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 				CompanyID: account.CompanyID,
 			})
 			if err != nil {
-				logrus.Errorln("Failed to get company data: %v", err)
-				// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+				logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
+
 			if len(company.Data) == 0 {
-				logrus.Infoln("Company does not exist")
+				logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
 				return nil, status.Errorf(codes.NotFound, "Company does not exist")
 			}
+
 		}
+
 	}
+
 	if task.Type == "Subscription" {
+
 		abonnement := abonnement_pb.ListTaskAbonnementRes{}
-		json.Unmarshal([]byte(task.Data), &abonnement)
+
+		err = json.Unmarshal([]byte(task.Data), &abonnement)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
 
 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 			CompanyID: abonnement.CompanyID,
 		})
 		if err != nil {
-			logrus.Errorln("Failed to get company data: %v", err)
-			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
 		if len(company.Data) == 0 {
-			logrus.Infoln("Company does not exist")
+			logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
 		}
+
 	}
+
 	if task.Type == "Beneficiary Account" {
+
 		beneficiaryAccount := beneficiary_account_pb.BeneficiaryAccount{}
-		json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
+
+		err = json.Unmarshal([]byte(task.Data), &beneficiaryAccount)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
 
 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 			CompanyID: beneficiaryAccount.CompanyID,
 		})
 		if err != nil {
-			logrus.Errorln("Failed to get company data: %v", err)
-			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
 		if len(company.Data) == 0 {
-			logrus.Infoln("Company does not exist")
+			logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
 		}
+
 	}
+
 	if task.Type == "Role" {
+
 		role := role_pb.Role{}
-		json.Unmarshal([]byte(task.Data), &role)
+
+		err = json.Unmarshal([]byte(task.Data), &role)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
 
 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 			CompanyID: role.CompanyID,
 		})
 		if err != nil {
-			logrus.Errorln("Failed to get company data: %v", err)
-			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
 		if len(company.Data) == 0 {
-			logrus.Infoln("Company does not exist")
+			logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
 		}
+
 	}
+
 	if task.Type == "Workflow" {
+
 		workflow := workflow_pb.WorkflowTask{}
-		json.Unmarshal([]byte(task.Data), &workflow)
+		err = json.Unmarshal([]byte(task.Data), &workflow)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+
 		companyID, _ := strconv.ParseUint(workflow.Company.CompanyID, 10, 64)
 
 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 			CompanyID: companyID,
 		})
 		if err != nil {
-			logrus.Errorln("Failed to get company data: %v", err)
-			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
 		if len(company.Data) == 0 {
-			logrus.Infoln("Company does not exist")
+			logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
 		}
+
 	}
+
 	if task.Type == "User" {
+
 		users := users_pb.UserTaskData{}
-		json.Unmarshal([]byte(task.Data), &users)
+
+		err = json.Unmarshal([]byte(task.Data), &users)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
 
 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 			CompanyID: users.User.CompanyID,
 		})
 		if err != nil {
-			logrus.Errorln("Failed to get company data: %v", err)
-			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
 		if len(company.Data) == 0 {
-			logrus.Infoln("Company does not exist")
+			logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
 		}
+
 	}
+
 	if task.Type == "Notification" {
+
 		notification := notification_pb.NotificationCompany{}
-		json.Unmarshal([]byte(task.Data), &notification)
+
+		err = json.Unmarshal([]byte(task.Data), &notification)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
 
 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 			CompanyID: notification.CompanyID,
 		})
 		if err != nil {
-			logrus.Errorln("Failed to get company data: %v", err)
-			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
 		if len(company.Data) == 0 {
-			logrus.Infoln("Company does not exist")
+			logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
 		}
+
 	}
 
 	if task.Type == "Company" {
+
 		company := company_pb.CreateCompanyTaskReq{}
-		json.Unmarshal([]byte(task.Data), &company)
+
+		err = json.Unmarshal([]byte(task.Data), &company)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
 
 		companyBRICaMS, err := companyClient.BRICaMSgetCustomerByIDV2(ctx, &company_pb.BricamsGetCustomerByIdReq{
 			Id: fmt.Sprintf("%v", company.Company.CompanyID),
 		})
 		if err != nil {
-			logrus.Errorln("Failed to get BRICaMS data", err)
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute BRICaMSgetCustomerByIDV2:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
 		if companyBRICaMS.ResponseCode == "0002" {
+			logrus.Errorln("[api][func: SaveTaskWithData] Company Data Not Found From BRICaMS")
 			return nil, status.Errorf(codes.NotFound, "Company Data Not Found From BRICaMS")
 		}
+
 	}
 
 	if task.Type == "Announcement" {
+
 		announcement := announcement_pb.Announcement{}
-		json.Unmarshal([]byte(task.Data), &announcement)
+
+		err = json.Unmarshal([]byte(task.Data), &announcement)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
 
 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 			CompanyID: announcement.CompanyID,
 		})
 		if err != nil {
-			logrus.Errorln("Failed to get company data: %v", err)
-			// s.logger.Error("SetTask", fmt.Sprintf("Failed to get company data: %v", err))
-
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
 		if len(company.Data) == 0 {
-			logrus.Infoln("Company does not exist")
+			logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
 		}
-	}
-	//test end here
 
-	// var opts []grpc.DialOption
-	// opts = append(opts, grpc.WithInsecure())
+	}
 
 	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9097"), opts...)
 	if err != nil {
-		logrus.Errorln("Failed connect to Product Service: %v", err)
-		// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Announcement Service: %v", err))
-
+		logrus.Errorln("[api][func: SaveTaskWithData] Unable to connect Product Service:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 	defer productConn.Close()
 
 	productClient := product_pb.NewApiServiceClient(productConn)
+
 	productData, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
 		Limit: 1,
 		Page:  1,
@@ -840,20 +892,17 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		},
 	})
 	if err != nil {
-		logrus.Errorln("[api][func: SaveTaskWithData] Failed to get product data: %v", err)
+		logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListProduct:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 
-	if req.Task.Type == "Swift" {
-		logrus.Println("SaveTaskWithData =================> 3")
-	}
+	logrus.Println("[api][func: SaveTaskWithData] Step 3")
 
-	errorProduct := status.Errorf(codes.NotFound, "This task type product, not found")
 	if len(productData.Data) < 1 {
-		return nil, errorProduct
+		return nil, status.Errorf(codes.NotFound, "This task type product, not found")
 	} else {
 		if productData.Data[0].Name != task.Type {
-			return nil, errorProduct
+			return nil, status.Errorf(codes.NotFound, "This task type product, not found")
 		}
 	}
 
@@ -863,32 +912,30 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		"Amend Cancel LC"}
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
-		if req.Task.Type == "Swift" {
-			logrus.Println("SaveTaskWithData =================> 4")
-		}
+
+		logrus.Println("[api][func: SaveTaskWithData] Step 4")
+
 		if req.TransactionAmount == 0 {
 			return nil, status.Errorf(codes.InvalidArgument, "Transaction amount is required")
 		}
-		var opts []grpc.DialOption
-		opts = append(opts, grpc.WithInsecure())
 
 		workflowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
 		if err != nil {
-			logrus.Errorln("Failed connect to Workflow Service: %v", err)
-			// s.logger.Error("SetTask", fmt.Sprintf("Failed connect to Workflow Service: %v", err))
+			logrus.Errorln("[api][func: SaveTaskWithData] Unable to connect Workflow Service:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 		defer workflowConn.Close()
 
-		client := workflow_pb.NewApiServiceClient(workflowConn)
-		getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
+		workflowClient := workflow_pb.NewApiServiceClient(workflowConn)
+
+		getWorkflow, err := workflowClient.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
 			ProductID:           product.ProductID,
 			CompanyID:           currentUser.CompanyID,
 			TransactionalNumber: uint64(req.TransactionAmount),
 			Currency:            req.GetTransactionCurrency(),
 		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 		if err != nil {
-			logrus.Errorln("[api][func: SaveTaskWithData] Failed to generate workflow: %v", err)
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute GenerateWorkflow", err)
 			return nil, err
 		}
 
@@ -898,23 +945,30 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 		workflow, err := json.Marshal(getWorkflow.Data)
 		if err != nil {
-			logrus.Errorln("[api][func: SaveTaskWithData] Failed to marshal workflow: %v", err)
+			logrus.Errorln("[api][func: SaveTaskWithData] Unable to Marshal Data:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
 		task.WorkflowDoc = string(workflow)
-		if req.Task.Type == "Swift" {
-			logrus.Println("SaveTaskWithData =================> 5")
-		}
+
+		logrus.Println("[api][func: SaveTaskWithData] Step 5")
+
 	}
 
 	if req.TaskID > 0 {
+
 		findTask, err := s.provider.FindTaskById(ctx, req.TaskID)
 		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute FindTaskById:", err)
 			return nil, err
 		}
+
 		if findTask.DataBak != "{}" || findTask.Data != "" {
+
 			task.DataBak = findTask.DataBak
+
 		}
+
 	}
 
 	if task.DataBak == "" {
@@ -922,20 +976,20 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	}
 
 	if len(task.Childs) > 0 {
+
 		for i := range task.Childs {
+
 			if task.Childs[i].DataBak == "" {
+
 				task.Childs[i].DataBak = "{}"
+
 			}
+
 		}
+
 	}
 
-	if req.Task.Type == "Swift" {
-		logrus.Println("SaveTaskWithData =================> 6")
-	}
-
-	// if req.Task.Type == "Announcement" || req.Task.Type == "Notification" || req.Task.Type == "Menu:Appearance" || req.Task.Type == "Menu:License" {
-	// 	task.Step = 3
-	// }
+	logrus.Println("[api][func: SaveTaskWithData] Step 6")
 
 	if req.IsDraft {
 		task.Step = 1
@@ -944,33 +998,39 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	command := "Create"
 
-	logrus.Println("Task save ==> Task Type: ", task.Type)
-	logrus.Println("Task save ==> Task ID: ", task.TaskID)
+	logrus.Println("[api][func: SaveTaskWithData] Task Type:", task.Type)
+	logrus.Println("[api][func: SaveTaskWithData] Task ID:", task.TaskID)
 
 	var savedTask *pb.TaskORM
+
 	if req.TaskID > 0 {
+
 		command = "Update"
 		task.TaskID = req.TaskID
 		task.UpdatedByID = currentUser.UserID
 		task.UpdatedByName = currentUser.Username
 
 		savedTask, err = s.provider.UpdateTask(ctx, &task, true)
+
 	} else {
+
 		task.CreatedByID = currentUser.UserID
 		task.CreatedByName = currentUser.Username
 		task.UpdatedByID = currentUser.UserID
 		task.UpdatedByName = currentUser.Username
 
 		savedTask, err = s.provider.CreateTask(ctx, &task)
+
 	}
 
 	if err != nil {
+		logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute UpdateTask or CreateTask:", err)
 		return nil, err
 	}
 
 	saved, err := savedTask.ToPB(ctx)
 	if err != nil {
-		logrus.Errorln("Error save task with data to pb", err)
+		logrus.Errorln("[api][func: SaveTaskWithData] Unable to convert ORM to PB:", err)
 	}
 
 	res := &pb.SaveTaskResponse{
@@ -987,18 +1047,18 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		},
 	}
 
-	if req.Task.Type == "Swift" {
-		logrus.Println("SaveTaskWithData =================> 7")
-	}
+	logrus.Println("[api][func: SaveTaskWithData] Step 7")
 
-	logrus.Println("Save LOG task, type: ", task.Type)
-	// Save activity Log
+	logrus.Println("[api][func: SaveTaskWithData] Save Log for Task Type:", task.Type)
+
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
+
 		action := "save"
 		if req.IsDraft {
 			action = "draft"
 		}
-		logrus.Println("Set to save log")
+
+		logrus.Println("[api][func: SaveTaskWithData] Set Save Log for Task Type:", task.Type)
 
 		activityLog, err := GenerateActivityLog(&task, currentUser, action, command)
 		if err != nil {
@@ -1008,17 +1068,17 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 		err = s.provider.SaveLog(ctx, activityLog)
 		if err != nil {
-			logrus.Errorln("Error SaveActivityLog: ", err)
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute SaveLog:", err)
 		}
+
 	}
 
-	if req.Task.Type == "Swift" {
-		logrus.Println("SaveTaskWithData =================> 8")
-	}
+	logrus.Println("[api][func: SaveTaskWithData] Step 8")
 
 	go TaskNotificationCreateOrUpdate(ctx, &task, command, task.Step, task.Status)
 
 	return res, nil
+
 }
 
 func (s *Server) AssignTypeIDEV(ctx context.Context, req *pb.AssignaTypeIDRequestEV) (*pb.AssignaTypeIDResponse, error) {

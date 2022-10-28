@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Fri Oct 28 01:29:57 2022
+# Make data base, printed on Fri Oct 28 10:52:23 2022
 
 # Variables
 
@@ -53,7 +53,7 @@ INFOPATH = /opt/homebrew/share/info:
 # environment
 P9K_SSH = 0
 # environment
-VSCODE_CWD = /Users/farizrachmanyusuf/Codes/addons-transfer-service
+VSCODE_CWD = /Users/farizrachmanyusuf/Codes/thefirstrefresh
 # environment
 GOPROXY = https://proxy.golang.org,direct
 # environment
@@ -102,6 +102,7 @@ ZSH = /Users/farizrachmanyusuf/.oh-my-zsh
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
+ 
 # environment
 XPC_FLAGS = 0x0
 # default
@@ -119,7 +120,7 @@ USER = farizrachmanyusuf
 # makefile (from `Makefile', line 4)
 DOCKER_CONTAINER_IMAGE = addons-task-service:latest
 # environment
-TERM_SESSION_ID = EBF870F8-7B43-4C12-9C1A-1129A5A767BE
+TERM_SESSION_ID = A5C22541-95CE-4719-A29B-8A6A13AA5B6B
 # environment
 LESS = -R
 # automatic
@@ -153,7 +154,7 @@ TERM_PROGRAM_VERSION = 447
 # environment
 NVM_DIR = /Users/farizrachmanyusuf/.nvm
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.6815738.6815744.664FE1EA-55C4-4377-8CE2-2C94B45C4119
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.6815738.6815744.E39DAE96-9F88-4A49-A460-D955BEFBE077
 # environment
 HOMEBREW_PREFIX = /opt/homebrew
 # automatic
@@ -195,7 +196,7 @@ TERM = xterm-256color
 # environment
 _P9K_TTY = /dev/ttys000
 # environment
-VSCODE_PID = 68620
+VSCODE_PID = 75065
 # variable set hash-table stats:
 # Load=92/1024=9%, Rehash=0, Collisions=3/123=2%
 
@@ -261,7 +262,6 @@ Makefile:
 
 generates:
 #  Phony target (prerequisite of .PHONY).
- 
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
@@ -408,6 +408,6 @@ install: depend build
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Fri Oct 28 01:29:57 2022
+# Finished Make data base on Fri Oct 28 10:52:23 2022
 
  
