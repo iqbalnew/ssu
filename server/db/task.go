@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -404,9 +405,13 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		query = query.Debug()
 	}
 
-	logrus.Println("[db][GetListTask] filter:", filter)
-	logrus.Println("[db][GetListTask] pagination:", pagination)
-	logrus.Println("[db][GetListTask] sql:", sql)
+	filterByte, _ := json.Marshal(filter)
+	paginationByte, _ := json.Marshal(pagination)
+	sqlByte, _ := json.Marshal(sql)
+
+	logrus.Println("[db][GetListTask] filter:", string(filterByte))
+	logrus.Println("[db][GetListTask] pagination:", string(paginationByte))
+	logrus.Println("[db][GetListTask] sql:", string(sqlByte))
 	logrus.Println("[db][GetListTask] workflowRoleIDFilter:", workflowRoleIDFilter)
 
 	query = query.Select("*", "CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
@@ -422,6 +427,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		value = strings.ReplaceAll(value, "]", "'")
 		customQuery = fmt.Sprintf("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && array[%s]", value)
 	}
+
+	logrus.Println("[db][GetListTask] customQuery:", customQuery)
 
 	query = query.Scopes(FilterScoope(sql.Filter))
 	query = query.Scopes(FilterOrScoope(sql.FilterOr, customQuery))
