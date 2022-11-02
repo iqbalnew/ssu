@@ -409,7 +409,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	paginationByte, _ := json.Marshal(pagination)
 	sqlByte, _ := json.Marshal(sql)
 
-	logrus.Println("[db][GetListTask] filter:", string(filterByte))
+	logrus.Println("[db][GetListTask] 🥲 filter:", string(filterByte))
 	logrus.Println("[db][GetListTask] pagination:", string(paginationByte))
 	logrus.Println("[db][GetListTask] sql:", string(sqlByte))
 	logrus.Println("[db][GetListTask] workflowRoleIDFilter:", workflowRoleIDFilter)
@@ -427,7 +427,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		value = strings.ReplaceAll(value, "]", "'")
 		customQuery = fmt.Sprintf("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && array[%s]", value)
 		if workflowUserIDFilter != 0 {
-			customQuery = customQuery + "AND (select jsonb_array_elements_text(workflow_doc->'workflow'->'records'->'flows')) NOT LIKE '%\"userID\": " + fmt.Sprint(workflowUserIDFilter) + "%"
+			customQuery = customQuery + "AND (select jsonb_array_elements_text(workflow_doc->'workflow'->'records'->'flows')) NOT LIKE '%\"userID\": " + fmt.Sprint(workflowUserIDFilter) + "%'"
 		}
 	}
 
