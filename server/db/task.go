@@ -398,7 +398,7 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowRoleIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowRoleIDFilter []uint64, workflowUserIDFilter uint64) (tasks []*pb.TaskORM, err error) {
 
 	query := p.db_main
 	if filter.Type != "" {
@@ -426,6 +426,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		value = strings.ReplaceAll(value, "[", "'")
 		value = strings.ReplaceAll(value, "]", "'")
 		customQuery = fmt.Sprintf("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && array[%s]", value)
+		if workflowUserIDFilter != 0 {
+			customQuery = customQuery + "AND (select jsonb_array_elements_text(workflow_doc->'workflow'->'records'->'flows')) NOT LIKE '%\"userID\": " + fmt.Sprint(workflowUserIDFilter) + "%"
+		}
 	}
 
 	logrus.Println("[db][GetListTask] customQuery:", customQuery)

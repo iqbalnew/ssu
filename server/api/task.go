@@ -89,7 +89,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, []uint64{})
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, []uint64{}, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -206,7 +206,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	logrus.Print(sqlBuilder)
 
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, []uint64{})
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, []uint64{}, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -227,6 +227,14 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
 	// logrus.Println("After %v", pb)
+
+	currentUser, _, _ := s.manager.GetMeFromMD(ctx)
+
+	userIDFilter := uint64(0)
+
+	if currentUser != nil {
+		userIDFilter = currentUser.UserID
+	}
 
 	var dataorm pb.TaskORM
 	if req.Task != nil {
@@ -253,7 +261,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 	}
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter)
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter, userIDFilter)
 	if err != nil {
 		return nil, err
 	}
@@ -2576,7 +2584,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			mappingDigitalTask, err := s.provider.GetListTask(ctx, &pb.TaskORM{
 				Type:      "BG Mapping Digital",
 				CompanyID: task.CompanyID,
-			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, []uint64{})
+			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, []uint64{}, 0)
 			if err != nil {
 				logrus.Errorln("[api][func: SetTask] Failed when GetListTask:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -3765,7 +3773,7 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, []uint64{})
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, []uint64{}, 0)
 	if err != nil {
 		return nil, err
 	}
