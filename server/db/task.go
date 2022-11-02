@@ -414,7 +414,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	logrus.Println("[db][GetListTask] sql:", string(sqlByte))
 	logrus.Println("[db][GetListTask] workflowRoleIDFilter:", workflowRoleIDFilter)
 
-	query = query.Select("*", "CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
+	query = query.Select("*", " CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
 	if filter != nil {
 		query = query.Where(&filter)
 	}
@@ -427,7 +427,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		value = strings.ReplaceAll(value, "]", "'")
 		customQuery = fmt.Sprintf("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && array[%s]", value)
 		if workflowUserIDFilter != 0 {
-			customQuery = customQuery + " AND (select jsonb_array_elements_text(workflow_doc->'workflow'->'participantUserIDs')) NOT LIKE '%" + fmt.Sprint(workflowUserIDFilter) + "%'"
+			customQuery = customQuery + " OR (select jsonb_array_elements_text(workflow_doc->'workflow'->'participantUserIDs')) NOT LIKE '%" + fmt.Sprint(workflowUserIDFilter) + "%'"
 		}
 	}
 
