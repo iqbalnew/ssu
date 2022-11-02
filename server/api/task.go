@@ -367,12 +367,21 @@ func (s *Server) GraphStatusColumnType(ctx context.Context, req *pb.GraphStatusC
 }
 
 func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest) (*pb.GraphStepResponse, error) {
+
+	res := &pb.GraphStepResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Graph Data",
+	}
+
 	me, err := s.manager.GetMeFromJWT(ctx, "", "")
 	if err != nil {
 		return nil, err
 	}
+
 	step := req.Step.Number()
 	stat := req.Status.Number()
+
 	if me.UserType == "ba" {
 		me.CompanyID = ""
 	}
@@ -381,10 +390,7 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 	if err != nil {
 		return nil, err
 	}
-	res := &pb.GraphStepResponse{}
-	res.Code = 200
-	res.Error = false
-	res.Message = "Graph Data"
+
 	for _, v := range data {
 		val := &pb.GraphStep{
 			Step:  pb.Steps(v.Name),

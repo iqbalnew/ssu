@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
@@ -397,10 +398,17 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 }
 
 func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowRoleIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
+
 	query := p.db_main
 	if filter.Type != "" {
 		query = query.Debug()
 	}
+
+	logrus.Println("[db][GetListTask] filter:", filter)
+	logrus.Println("[db][GetListTask] pagination:", pagination)
+	logrus.Println("[db][GetListTask] sql:", sql)
+	logrus.Println("[db][GetListTask] workflowRoleIDFilter:", workflowRoleIDFilter)
+
 	query = query.Select("*", "CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
 	if filter != nil {
 		query = query.Where(&filter)
@@ -432,7 +440,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			return nil, status.Errorf(codes.Internal, "Internal Server Error")
 		}
 	}
+
 	return tasks, nil
+
 }
 
 func (p *GormProvider) GetListTaskPluck(ctx context.Context, key string, filter *pb.TaskORM, sql *QueryBuilder) ([]string, error) {
