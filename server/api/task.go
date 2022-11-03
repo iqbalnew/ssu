@@ -1210,7 +1210,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"Internal Fund Transfer", "External Fund Transfer", "Payroll Transfer"}
+	skipProduct := []string{"BG Mapping", "BG Mapping Digital", "Internal Fund Transfer", "External Fund Transfer", "Payroll Transfer"}
 
 	logrus.Print(taskType)
 
