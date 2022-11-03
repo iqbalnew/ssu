@@ -427,7 +427,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		value = strings.ReplaceAll(value, "]", "'")
 		customQuery = fmt.Sprintf("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && array[%s]", value)
 		if workflowUserIDFilter != 0 {
-			customQuery = customQuery + " OR (select jsonb_array_elements_text(workflow_doc->'workflow'->'participantUserIDs')) NOT LIKE '%" + fmt.Sprint(workflowUserIDFilter) + "%'"
+			customQuery = customQuery + " AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDFilter) + "%')"
 		}
 	}
 
