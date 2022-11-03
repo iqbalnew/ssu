@@ -293,3 +293,9 @@ func (this *UpdateTaskRawReq) Validate() error {
 	}
 	return nil
 }
+func (this *DeleteDraftTaskRequest) Validate() error {
+	return nil
+}
+func (this *DeleteDraftTaskResponse) Validate() error {
+	return nil
+}

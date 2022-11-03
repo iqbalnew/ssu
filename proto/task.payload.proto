@@ -412,3 +412,11 @@ message RejectBySystemRes {
     string action = 3;
     bool updateChild = 4;
  }
+
+ message DeleteDraftTaskRequest {
+    uint64 taskID = 1;
+ }
+
+ message DeleteDraftTaskResponse {
+    bool success = 1;
+ }

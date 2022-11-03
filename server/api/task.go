@@ -4061,3 +4061,56 @@ func (s *Server) UpdateTaskRaw(ctx context.Context, req *pb.UpdateTaskRawReq) (*
 
 	return result, nil
 }
+
+func (s *Server) DeleteDraftTask(ctx context.Context, req *pb.DeleteDraftTaskRequest) (*pb.DeleteDraftTaskResponse, error) {
+	if req.GetTaskID() < 1 {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid task id")
+	}
+	var err error
+	currentUser, _, err := s.manager.GetMeFromMD(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	allowedProducts := []string{"Swift"}
+
+	task, err := s.provider.FindTaskById(ctx, req.GetTaskID())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "error find task, error:", err.Error())
+	}
+	if task == nil {
+		return nil, status.Errorf(codes.NotFound, "task not found")
+	}
+
+	isAllowedProduct := false
+	for _, v := range allowedProducts {
+		if v == task.Type {
+			isAllowedProduct = true
+		}
+	}
+	if !isAllowedProduct {
+		return nil, status.Errorf(codes.InvalidArgument, "task type not allowed")
+	}
+
+	if task.Status != int32(pb.Statuses_Draft) {
+		return nil, status.Errorf(codes.PermissionDenied, "task status is not draft")
+
+	}
+
+	if task.CreatedByID != currentUser.UserID {
+		return nil, status.Errorf(codes.PermissionDenied, "task not allowed to delete")
+	}
+
+	task.Status = int32(pb.Statuses_Deleted)
+
+	_, err = s.provider.UpdateTask(ctx, task, true)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "error delete task, error:", err.Error())
+
+	}
+
+	return &pb.DeleteDraftTaskResponse{
+		Success: true,
+	}, nil
+
+}

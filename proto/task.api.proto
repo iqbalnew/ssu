@@ -192,6 +192,7 @@ service TaskService {
     rpc UpdateTaskRaw(UpdateTaskRawReq) returns (SetTaskResponse){
     }
 
+    rpc DeleteDraftTask(DeleteDraftTaskRequest) returns (DeleteDraftTaskResponse);
 }
 
 
