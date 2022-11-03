@@ -152,7 +152,14 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 }
 
 func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
-	// logrus.Println("After %v", pb)
+
+	currentUser, _, _ := s.manager.GetMeFromMD(ctx)
+
+	userIDFilter := uint64(0)
+
+	if currentUser != nil {
+		userIDFilter = currentUser.UserID
+	}
 
 	module := ""
 	if req.Task != nil {
@@ -206,7 +213,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	logrus.Print(sqlBuilder)
 
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, []uint64{}, 0)
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter, userIDFilter)
 	if err != nil {
 		return nil, err
 	}
