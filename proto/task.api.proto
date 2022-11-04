@@ -149,6 +149,8 @@ service TaskService {
     rpc GetTaskByID(GetTaskByIDReq) returns (GetTaskByIDRes);
     rpc GetTaskByTypeID(GetTaskByTypeIDReq) returns (GetTaskByTypeIDRes);
 
+    rpc GetTaskByIDNoFilter(GetTaskByIDReq) returns (GetTaskByIDRes);
+
     rpc RejectBySystem(RejectBySystemReq) returns (RejectBySystemRes);
 
     rpc GetActivityLogs(GetActivityLogsReq) returns (GetActivityLogsRes){

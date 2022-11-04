@@ -3757,6 +3757,24 @@ func (s *Server) RejectBySystem(ctx context.Context, req *pb.RejectBySystemReq) 
 	return res, nil
 }
 
+func (s *Server) GetTaskByIDNoFilter(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.GetTaskByIDRes, error) {
+	find, err := s.provider.FindTaskById(ctx, req.GetID())
+	if err != nil {
+		return nil, err
+	}
+
+	resData, err := find.ToPB(ctx)
+	if err != nil {
+		logrus.Errorln(err)
+		err = nil
+	}
+
+	return &pb.GetTaskByIDRes{
+		Found: false,
+		Data:  &resData,
+	}, err
+}
+
 func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.GetTaskByIDRes, error) {
 	res := &pb.GetTaskByIDRes{
 		Found: false,
