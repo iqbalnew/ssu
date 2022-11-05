@@ -2040,27 +2040,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			if currentStep == 3 {
 
-				task.Status = 1
-				task.Status = 4
-				task.Step = 3
-				sendTask = true
-
-				if currentStatus == 6 {
-
-					if task.Type == "Company" {
-
-						err := s.DeleteCompany(originalCtx, task.Data)
-						if err != nil {
-							logrus.Errorln("[api][func: SetTask] Failed when DeleteCompany:", err)
-							return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
-						}
-
-					}
-
-					task.Status = 7
-
-				}
-
 				if currentStatus == 1 {
 					if task.Type == "Company" {
 						company := &company_pb.CreateCompanyTaskReq{}
@@ -2068,13 +2047,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 						companyWorkflow := company.Workflow.TansactionalStpStep
 						assignedStep := []string{}
-						if companyWorkflow.Approver == true {
+						if companyWorkflow.Approver {
 							assignedStep = append(assignedStep, "signer")
 						}
-						if companyWorkflow.Releaser == true {
+						if companyWorkflow.Releaser {
 							assignedStep = append(assignedStep, "releaser")
 						}
-						if companyWorkflow.Verifier == true {
+						if companyWorkflow.Verifier {
 							assignedStep = append(assignedStep, "checker")
 						}
 
@@ -2121,6 +2100,27 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 							}, grpc.Header(&header), grpc.Trailer(&trailer))
 						}
 					}
+				}
+
+				task.Status = 1
+				task.Status = 4
+				task.Step = 3
+				sendTask = true
+
+				if currentStatus == 6 {
+
+					if task.Type == "Company" {
+
+						err := s.DeleteCompany(originalCtx, task.Data)
+						if err != nil {
+							logrus.Errorln("[api][func: SetTask] Failed when DeleteCompany:", err)
+							return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+						}
+
+					}
+
+					task.Status = 7
+
 				}
 
 			}
@@ -3893,6 +3893,7 @@ func (s *Server) UpdateTaskData(ctx context.Context, req *pb.UpdateTaskDataReq) 
 	}
 
 	task.Data = req.Data
+	task.DataBak = req.Data
 	_, err = s.provider.UpdateTask(ctx, task, false)
 	if err != nil {
 		return nil, err
