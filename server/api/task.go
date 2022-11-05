@@ -2098,7 +2098,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 							workflowClient.DeleteRequirement(ctx, &workflow_pb.DeleteRequirementRequest{
 								RequirementID: deletedID,
 								CompanyID: company.Company.CompanyID,
-								DeletedSteps: assignedStep,
+								AssignedSteps: assignedStep,
 							}, grpc.Header(&header), grpc.Trailer(&trailer))
 						}
 					}
