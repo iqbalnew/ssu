@@ -3484,381 +3484,20 @@ func (x *GetAvailableCurrencyResponse) GetData() []*Currency {
 	return nil
 }
 
-type GetWorkflowWithLogicRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CompanyID    uint64 `protobuf:"varint,1,opt,name=companyID,proto3" json:"companyID,omitempty"`
-	ModulID      uint64 `protobuf:"varint,2,opt,name=modulID,proto3" json:"modulID,omitempty"`
-	CurrencyCode string `protobuf:"bytes,3,opt,name=currencyCode,proto3" json:"currencyCode,omitempty"`
-}
-
-func (x *GetWorkflowWithLogicRequest) Reset() {
-	*x = GetWorkflowWithLogicRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_workflow_payload_proto_msgTypes[38]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GetWorkflowWithLogicRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetWorkflowWithLogicRequest) ProtoMessage() {}
-
-func (x *GetWorkflowWithLogicRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_workflow_payload_proto_msgTypes[38]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetWorkflowWithLogicRequest.ProtoReflect.Descriptor instead.
-func (*GetWorkflowWithLogicRequest) Descriptor() ([]byte, []int) {
-	return file_workflow_payload_proto_rawDescGZIP(), []int{38}
-}
-
-func (x *GetWorkflowWithLogicRequest) GetCompanyID() uint64 {
-	if x != nil {
-		return x.CompanyID
-	}
-	return 0
-}
-
-func (x *GetWorkflowWithLogicRequest) GetModulID() uint64 {
-	if x != nil {
-		return x.ModulID
-	}
-	return 0
-}
-
-func (x *GetWorkflowWithLogicRequest) GetCurrencyCode() string {
-	if x != nil {
-		return x.CurrencyCode
-	}
-	return ""
-}
-
-type GetWorkflowWithLogicResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Error   bool                     `protobuf:"varint,1,opt,name=error,proto3" json:"error,omitempty"`
-	Code    uint32                   `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
-	Message string                   `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
-	Data    *GetWorkflowWithLogicRes `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
-}
-
-func (x *GetWorkflowWithLogicResponse) Reset() {
-	*x = GetWorkflowWithLogicResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_workflow_payload_proto_msgTypes[39]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GetWorkflowWithLogicResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetWorkflowWithLogicResponse) ProtoMessage() {}
-
-func (x *GetWorkflowWithLogicResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_workflow_payload_proto_msgTypes[39]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetWorkflowWithLogicResponse.ProtoReflect.Descriptor instead.
-func (*GetWorkflowWithLogicResponse) Descriptor() ([]byte, []int) {
-	return file_workflow_payload_proto_rawDescGZIP(), []int{39}
-}
-
-func (x *GetWorkflowWithLogicResponse) GetError() bool {
-	if x != nil {
-		return x.Error
-	}
-	return false
-}
-
-func (x *GetWorkflowWithLogicResponse) GetCode() uint32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *GetWorkflowWithLogicResponse) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
-func (x *GetWorkflowWithLogicResponse) GetData() *GetWorkflowWithLogicRes {
-	if x != nil {
-		return x.Data
-	}
-	return nil
-}
-
-type GetWorkflowWithLogicRes struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CompanyID    uint64      `protobuf:"varint,1,opt,name=companyID,proto3" json:"companyID,omitempty"`
-	ModulID      uint64      `protobuf:"varint,2,opt,name=modulID,proto3" json:"modulID,omitempty"`
-	CurrencyID   uint64      `protobuf:"varint,3,opt,name=currencyID,proto3" json:"currencyID,omitempty"`
-	CurrencyCode string      `protobuf:"bytes,4,opt,name=currencyCode,proto3" json:"currencyCode,omitempty"`
-	WorkflowID   uint64      `protobuf:"varint,6,opt,name=workflowID,proto3" json:"workflowID,omitempty"`
-	Logics       []*LogicRes `protobuf:"bytes,5,rep,name=logics,proto3" json:"logics,omitempty"`
-}
-
-func (x *GetWorkflowWithLogicRes) Reset() {
-	*x = GetWorkflowWithLogicRes{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_workflow_payload_proto_msgTypes[40]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GetWorkflowWithLogicRes) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetWorkflowWithLogicRes) ProtoMessage() {}
-
-func (x *GetWorkflowWithLogicRes) ProtoReflect() protoreflect.Message {
-	mi := &file_workflow_payload_proto_msgTypes[40]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetWorkflowWithLogicRes.ProtoReflect.Descriptor instead.
-func (*GetWorkflowWithLogicRes) Descriptor() ([]byte, []int) {
-	return file_workflow_payload_proto_rawDescGZIP(), []int{40}
-}
-
-func (x *GetWorkflowWithLogicRes) GetCompanyID() uint64 {
-	if x != nil {
-		return x.CompanyID
-	}
-	return 0
-}
-
-func (x *GetWorkflowWithLogicRes) GetModulID() uint64 {
-	if x != nil {
-		return x.ModulID
-	}
-	return 0
-}
-
-func (x *GetWorkflowWithLogicRes) GetCurrencyID() uint64 {
-	if x != nil {
-		return x.CurrencyID
-	}
-	return 0
-}
-
-func (x *GetWorkflowWithLogicRes) GetCurrencyCode() string {
-	if x != nil {
-		return x.CurrencyCode
-	}
-	return ""
-}
-
-func (x *GetWorkflowWithLogicRes) GetWorkflowID() uint64 {
-	if x != nil {
-		return x.WorkflowID
-	}
-	return 0
-}
-
-func (x *GetWorkflowWithLogicRes) GetLogics() []*LogicRes {
-	if x != nil {
-		return x.Logics
-	}
-	return nil
-}
-
-type LogicRes struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	WorkflowLogicID uint64            `protobuf:"varint,1,opt,name=workflowLogicID,proto3" json:"workflowLogicID,omitempty"`
-	BottomRange     uint64            `protobuf:"varint,3,opt,name=bottomRange,proto3" json:"bottomRange,omitempty"`
-	TopRange        uint64            `protobuf:"varint,4,opt,name=topRange,proto3" json:"topRange,omitempty"`
-	CreatedByID     uint64            `protobuf:"varint,5,opt,name=createdByID,proto3" json:"createdByID,omitempty"`
-	UpdatedByID     uint64            `protobuf:"varint,6,opt,name=updatedByID,proto3" json:"updatedByID,omitempty"`
-	Requirements    []*RequirementRes `protobuf:"bytes,7,rep,name=requirements,proto3" json:"requirements,omitempty"`
-}
-
-func (x *LogicRes) Reset() {
-	*x = LogicRes{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_workflow_payload_proto_msgTypes[41]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *LogicRes) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LogicRes) ProtoMessage() {}
-
-func (x *LogicRes) ProtoReflect() protoreflect.Message {
-	mi := &file_workflow_payload_proto_msgTypes[41]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LogicRes.ProtoReflect.Descriptor instead.
-func (*LogicRes) Descriptor() ([]byte, []int) {
-	return file_workflow_payload_proto_rawDescGZIP(), []int{41}
-}
-
-func (x *LogicRes) GetWorkflowLogicID() uint64 {
-	if x != nil {
-		return x.WorkflowLogicID
-	}
-	return 0
-}
-
-func (x *LogicRes) GetBottomRange() uint64 {
-	if x != nil {
-		return x.BottomRange
-	}
-	return 0
-}
-
-func (x *LogicRes) GetTopRange() uint64 {
-	if x != nil {
-		return x.TopRange
-	}
-	return 0
-}
-
-func (x *LogicRes) GetCreatedByID() uint64 {
-	if x != nil {
-		return x.CreatedByID
-	}
-	return 0
-}
-
-func (x *LogicRes) GetUpdatedByID() uint64 {
-	if x != nil {
-		return x.UpdatedByID
-	}
-	return 0
-}
-
-func (x *LogicRes) GetRequirements() []*RequirementRes {
-	if x != nil {
-		return x.Requirements
-	}
-	return nil
-}
-
-type RequirementRes struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Step   string `protobuf:"bytes,1,opt,name=step,proto3" json:"step,omitempty"`
-	RoleID uint64 `protobuf:"varint,2,opt,name=roleID,proto3" json:"roleID,omitempty"`
-}
-
-func (x *RequirementRes) Reset() {
-	*x = RequirementRes{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_workflow_payload_proto_msgTypes[42]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *RequirementRes) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RequirementRes) ProtoMessage() {}
-
-func (x *RequirementRes) ProtoReflect() protoreflect.Message {
-	mi := &file_workflow_payload_proto_msgTypes[42]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RequirementRes.ProtoReflect.Descriptor instead.
-func (*RequirementRes) Descriptor() ([]byte, []int) {
-	return file_workflow_payload_proto_rawDescGZIP(), []int{42}
-}
-
-func (x *RequirementRes) GetStep() string {
-	if x != nil {
-		return x.Step
-	}
-	return ""
-}
-
-func (x *RequirementRes) GetRoleID() uint64 {
-	if x != nil {
-		return x.RoleID
-	}
-	return 0
-}
-
 type DeleteRequirementRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	RequirementID []uint64 `protobuf:"varint,1,rep,packed,name=requirementID,proto3" json:"requirementID,omitempty"`
+	CompanyID     uint64   `protobuf:"varint,2,opt,name=companyID,proto3" json:"companyID,omitempty"`
+	DeletedSteps  []string `protobuf:"bytes,3,rep,name=deletedSteps,proto3" json:"deletedSteps,omitempty"`
 }
 
 func (x *DeleteRequirementRequest) Reset() {
 	*x = DeleteRequirementRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_workflow_payload_proto_msgTypes[43]
+		mi := &file_workflow_payload_proto_msgTypes[38]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3871,7 +3510,7 @@ func (x *DeleteRequirementRequest) String() string {
 func (*DeleteRequirementRequest) ProtoMessage() {}
 
 func (x *DeleteRequirementRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_workflow_payload_proto_msgTypes[43]
+	mi := &file_workflow_payload_proto_msgTypes[38]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3884,12 +3523,26 @@ func (x *DeleteRequirementRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRequirementRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRequirementRequest) Descriptor() ([]byte, []int) {
-	return file_workflow_payload_proto_rawDescGZIP(), []int{43}
+	return file_workflow_payload_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *DeleteRequirementRequest) GetRequirementID() []uint64 {
 	if x != nil {
 		return x.RequirementID
+	}
+	return nil
+}
+
+func (x *DeleteRequirementRequest) GetCompanyID() uint64 {
+	if x != nil {
+		return x.CompanyID
+	}
+	return 0
+}
+
+func (x *DeleteRequirementRequest) GetDeletedSteps() []string {
+	if x != nil {
+		return x.DeletedSteps
 	}
 	return nil
 }
@@ -4453,65 +4106,16 @@ var file_workflow_payload_proto_rawDesc = []byte{
 	0x61, 0x67, 0x65, 0x12, 0x31, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20, 0x03, 0x28,
 	0x0b, 0x32, 0x1d, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x73, 0x65, 0x72,
 	0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79,
-	0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x79, 0x0a, 0x1b, 0x47, 0x65, 0x74, 0x57, 0x6f, 0x72,
-	0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x57, 0x69, 0x74, 0x68, 0x4c, 0x6f, 0x67, 0x69, 0x63, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1c, 0x0a, 0x09, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x6e, 0x79,
-	0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x6e,
-	0x79, 0x49, 0x44, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x49, 0x44, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x49, 0x44, 0x12, 0x22, 0x0a,
-	0x0c, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x43, 0x6f, 0x64, 0x65, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x0c, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x43, 0x6f, 0x64,
-	0x65, 0x22, 0xa4, 0x01, 0x0a, 0x1c, 0x47, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f,
-	0x77, 0x57, 0x69, 0x74, 0x68, 0x4c, 0x6f, 0x67, 0x69, 0x63, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x08, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x18, 0x0a, 0x07,
-	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x40, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x2e,
-	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x57, 0x6f,
-	0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x57, 0x69, 0x74, 0x68, 0x4c, 0x6f, 0x67, 0x69, 0x63, 0x52,
-	0x65, 0x73, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0xec, 0x01, 0x0a, 0x17, 0x47, 0x65, 0x74,
-	0x57, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x57, 0x69, 0x74, 0x68, 0x4c, 0x6f, 0x67, 0x69,
-	0x63, 0x52, 0x65, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x6e, 0x79, 0x49,
-	0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x6e, 0x79,
-	0x49, 0x44, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x49, 0x44, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x07, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x49, 0x44, 0x12, 0x1e, 0x0a, 0x0a,
-	0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x49, 0x44, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x0a, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x49, 0x44, 0x12, 0x22, 0x0a, 0x0c,
-	0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x43, 0x6f, 0x64, 0x65, 0x18, 0x04, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0c, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x43, 0x6f, 0x64, 0x65,
-	0x12, 0x1e, 0x0a, 0x0a, 0x77, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x49, 0x44, 0x18, 0x06,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x77, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x49, 0x44,
-	0x12, 0x35, 0x0a, 0x06, 0x6c, 0x6f, 0x67, 0x69, 0x63, 0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x1d, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x73, 0x65, 0x72, 0x76,
-	0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x63, 0x52, 0x65, 0x73, 0x52,
-	0x06, 0x6c, 0x6f, 0x67, 0x69, 0x63, 0x73, 0x22, 0xff, 0x01, 0x0a, 0x08, 0x4c, 0x6f, 0x67, 0x69,
-	0x63, 0x52, 0x65, 0x73, 0x12, 0x28, 0x0a, 0x0f, 0x77, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77,
-	0x4c, 0x6f, 0x67, 0x69, 0x63, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x77,
-	0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x4c, 0x6f, 0x67, 0x69, 0x63, 0x49, 0x44, 0x12, 0x20,
-	0x0a, 0x0b, 0x62, 0x6f, 0x74, 0x74, 0x6f, 0x6d, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x0b, 0x62, 0x6f, 0x74, 0x74, 0x6f, 0x6d, 0x52, 0x61, 0x6e, 0x67, 0x65,
-	0x12, 0x1a, 0x0a, 0x08, 0x74, 0x6f, 0x70, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x18, 0x04, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x08, 0x74, 0x6f, 0x70, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x12, 0x20, 0x0a, 0x0b,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x42, 0x79, 0x49, 0x44, 0x18, 0x05, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x0b, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x42, 0x79, 0x49, 0x44, 0x12, 0x20,
-	0x0a, 0x0b, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x42, 0x79, 0x49, 0x44, 0x18, 0x06, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x0b, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x42, 0x79, 0x49, 0x44,
-	0x12, 0x47, 0x0a, 0x0c, 0x72, 0x65, 0x71, 0x75, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x73,
-	0x18, 0x07, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f,
-	0x77, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x71,
-	0x75, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x52, 0x0c, 0x72, 0x65, 0x71,
-	0x75, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x22, 0x3c, 0x0a, 0x0e, 0x52, 0x65, 0x71,
-	0x75, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x73,
-	0x74, 0x65, 0x70, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x73, 0x74, 0x65, 0x70, 0x12,
-	0x16, 0x0a, 0x06, 0x72, 0x6f, 0x6c, 0x65, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x06, 0x72, 0x6f, 0x6c, 0x65, 0x49, 0x44, 0x22, 0x40, 0x0a, 0x18, 0x44, 0x65, 0x6c, 0x65, 0x74,
+	0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x82, 0x01, 0x0a, 0x18, 0x44, 0x65, 0x6c, 0x65, 0x74,
 	0x65, 0x52, 0x65, 0x71, 0x75, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75,
 	0x65, 0x73, 0x74, 0x12, 0x24, 0x0a, 0x0d, 0x72, 0x65, 0x71, 0x75, 0x69, 0x72, 0x65, 0x6d, 0x65,
 	0x6e, 0x74, 0x49, 0x44, 0x18, 0x01, 0x20, 0x03, 0x28, 0x04, 0x52, 0x0d, 0x72, 0x65, 0x71, 0x75,
-	0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x44, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70,
-	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x44, 0x12, 0x1c, 0x0a, 0x09, 0x63, 0x6f, 0x6d,
+	0x70, 0x61, 0x6e, 0x79, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x63, 0x6f,
+	0x6d, 0x70, 0x61, 0x6e, 0x79, 0x49, 0x44, 0x12, 0x22, 0x0a, 0x0c, 0x64, 0x65, 0x6c, 0x65, 0x74,
+	0x65, 0x64, 0x53, 0x74, 0x65, 0x70, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0c, 0x64,
+	0x65, 0x6c, 0x65, 0x74, 0x65, 0x64, 0x53, 0x74, 0x65, 0x70, 0x73, 0x42, 0x06, 0x5a, 0x04, 0x2e,
+	0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -4527,7 +4131,7 @@ func file_workflow_payload_proto_rawDescGZIP() []byte {
 }
 
 var file_workflow_payload_proto_enumTypes = make([]protoimpl.EnumInfo, 12)
-var file_workflow_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 44)
+var file_workflow_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 39)
 var file_workflow_payload_proto_goTypes = []interface{}{
 	(ListWorkflowRequestDirection)(0),               // 0: workflow.service.v1.ListWorkflowRequest.direction
 	(ListWorkflowTaskFilterStatuses)(0),             // 1: workflow.service.v1.ListWorkflowTaskFilter.statuses
@@ -4579,31 +4183,26 @@ var file_workflow_payload_proto_goTypes = []interface{}{
 	(*CreateCompanyWorkflowResponse)(nil),           // 47: workflow.service.v1.CreateCompanyWorkflowResponse
 	(*GetAvailableCurrencyRequest)(nil),             // 48: workflow.service.v1.GetAvailableCurrencyRequest
 	(*GetAvailableCurrencyResponse)(nil),            // 49: workflow.service.v1.GetAvailableCurrencyResponse
-	(*GetWorkflowWithLogicRequest)(nil),             // 50: workflow.service.v1.GetWorkflowWithLogicRequest
-	(*GetWorkflowWithLogicResponse)(nil),            // 51: workflow.service.v1.GetWorkflowWithLogicResponse
-	(*GetWorkflowWithLogicRes)(nil),                 // 52: workflow.service.v1.GetWorkflowWithLogicRes
-	(*LogicRes)(nil),                                // 53: workflow.service.v1.LogicRes
-	(*RequirementRes)(nil),                          // 54: workflow.service.v1.RequirementRes
-	(*DeleteRequirementRequest)(nil),                // 55: workflow.service.v1.DeleteRequirementRequest
-	(*Workflow)(nil),                                // 56: workflow.service.v1.Workflow
-	(*timestamppb.Timestamp)(nil),                   // 57: google.protobuf.Timestamp
-	(*WorkflowLogic)(nil),                           // 58: workflow.service.v1.WorkflowLogic
-	(*CompanyWorkflows)(nil),                        // 59: workflow.service.v1.CompanyWorkflows
+	(*DeleteRequirementRequest)(nil),                // 50: workflow.service.v1.DeleteRequirementRequest
+	(*Workflow)(nil),                                // 51: workflow.service.v1.Workflow
+	(*timestamppb.Timestamp)(nil),                   // 52: google.protobuf.Timestamp
+	(*WorkflowLogic)(nil),                           // 53: workflow.service.v1.WorkflowLogic
+	(*CompanyWorkflows)(nil),                        // 54: workflow.service.v1.CompanyWorkflows
 }
 var file_workflow_payload_proto_depIdxs = []int32{
-	56, // 0: workflow.service.v1.ListWorkflowRequest.workflow:type_name -> workflow.service.v1.Workflow
+	51, // 0: workflow.service.v1.ListWorkflowRequest.workflow:type_name -> workflow.service.v1.Workflow
 	0,  // 1: workflow.service.v1.ListWorkflowRequest.dir:type_name -> workflow.service.v1.ListWorkflowRequest.direction
-	56, // 2: workflow.service.v1.ListWorkflowResponse.data:type_name -> workflow.service.v1.Workflow
+	51, // 2: workflow.service.v1.ListWorkflowResponse.data:type_name -> workflow.service.v1.Workflow
 	39, // 3: workflow.service.v1.ListWorkflowResponse.pagination:type_name -> workflow.service.v1.PaginationResponse
-	56, // 4: workflow.service.v1.CreateWorkflowRequest.data:type_name -> workflow.service.v1.Workflow
+	51, // 4: workflow.service.v1.CreateWorkflowRequest.data:type_name -> workflow.service.v1.Workflow
 	25, // 5: workflow.service.v1.CreateWorkflowTaskRequest.data:type_name -> workflow.service.v1.WorkflowWrite
-	57, // 6: workflow.service.v1.WorkflowWrite.createdAt:type_name -> google.protobuf.Timestamp
-	57, // 7: workflow.service.v1.WorkflowWrite.updatedAt:type_name -> google.protobuf.Timestamp
-	57, // 8: workflow.service.v1.WorkflowWrite.deletedAt:type_name -> google.protobuf.Timestamp
-	58, // 9: workflow.service.v1.WorkflowWrite.logics:type_name -> workflow.service.v1.WorkflowLogic
+	52, // 6: workflow.service.v1.WorkflowWrite.createdAt:type_name -> google.protobuf.Timestamp
+	52, // 7: workflow.service.v1.WorkflowWrite.updatedAt:type_name -> google.protobuf.Timestamp
+	52, // 8: workflow.service.v1.WorkflowWrite.deletedAt:type_name -> google.protobuf.Timestamp
+	53, // 9: workflow.service.v1.WorkflowWrite.logics:type_name -> workflow.service.v1.WorkflowLogic
 	25, // 10: workflow.service.v1.CreateWorkflowResponse.data:type_name -> workflow.service.v1.WorkflowWrite
-	57, // 11: workflow.service.v1.Task.createdAt:type_name -> google.protobuf.Timestamp
-	57, // 12: workflow.service.v1.Task.updatedAt:type_name -> google.protobuf.Timestamp
+	52, // 11: workflow.service.v1.Task.createdAt:type_name -> google.protobuf.Timestamp
+	52, // 12: workflow.service.v1.Task.updatedAt:type_name -> google.protobuf.Timestamp
 	25, // 13: workflow.service.v1.WorkflowTask.workflow:type_name -> workflow.service.v1.WorkflowWrite
 	27, // 14: workflow.service.v1.WorkflowTask.task:type_name -> workflow.service.v1.Task
 	29, // 15: workflow.service.v1.WorkflowTask.company:type_name -> workflow.service.v1.Company
@@ -4622,22 +4221,19 @@ var file_workflow_payload_proto_depIdxs = []int32{
 	10, // 28: workflow.service.v1.DownloadListWorkflowTaskRequest.fileFormat:type_name -> workflow.service.v1.DownloadListWorkflowTaskRequest.Formats
 	28, // 29: workflow.service.v1.ListWorkflowTaskResponse.data:type_name -> workflow.service.v1.WorkflowTask
 	39, // 30: workflow.service.v1.ListWorkflowTaskResponse.pagination:type_name -> workflow.service.v1.PaginationResponse
-	59, // 31: workflow.service.v1.ListCompanyWorkflowRequest.workflow:type_name -> workflow.service.v1.CompanyWorkflows
+	54, // 31: workflow.service.v1.ListCompanyWorkflowRequest.workflow:type_name -> workflow.service.v1.CompanyWorkflows
 	11, // 32: workflow.service.v1.ListCompanyWorkflowRequest.dir:type_name -> workflow.service.v1.ListCompanyWorkflowRequest.direction
-	59, // 33: workflow.service.v1.ListCompanyWorkflowResponse.data:type_name -> workflow.service.v1.CompanyWorkflows
+	54, // 33: workflow.service.v1.ListCompanyWorkflowResponse.data:type_name -> workflow.service.v1.CompanyWorkflows
 	39, // 34: workflow.service.v1.ListCompanyWorkflowResponse.pagination:type_name -> workflow.service.v1.PaginationResponse
-	59, // 35: workflow.service.v1.GetCompanyWorkflowResponse.data:type_name -> workflow.service.v1.CompanyWorkflows
-	59, // 36: workflow.service.v1.CreateCompanyWorkflowRequest.data:type_name -> workflow.service.v1.CompanyWorkflows
-	59, // 37: workflow.service.v1.CreateCompanyWorkflowResponse.data:type_name -> workflow.service.v1.CompanyWorkflows
+	54, // 35: workflow.service.v1.GetCompanyWorkflowResponse.data:type_name -> workflow.service.v1.CompanyWorkflows
+	54, // 36: workflow.service.v1.CreateCompanyWorkflowRequest.data:type_name -> workflow.service.v1.CompanyWorkflows
+	54, // 37: workflow.service.v1.CreateCompanyWorkflowResponse.data:type_name -> workflow.service.v1.CompanyWorkflows
 	30, // 38: workflow.service.v1.GetAvailableCurrencyResponse.data:type_name -> workflow.service.v1.Currency
-	52, // 39: workflow.service.v1.GetWorkflowWithLogicResponse.data:type_name -> workflow.service.v1.GetWorkflowWithLogicRes
-	53, // 40: workflow.service.v1.GetWorkflowWithLogicRes.logics:type_name -> workflow.service.v1.LogicRes
-	54, // 41: workflow.service.v1.LogicRes.requirements:type_name -> workflow.service.v1.RequirementRes
-	42, // [42:42] is the sub-list for method output_type
-	42, // [42:42] is the sub-list for method input_type
-	42, // [42:42] is the sub-list for extension type_name
-	42, // [42:42] is the sub-list for extension extendee
-	0,  // [0:42] is the sub-list for field type_name
+	39, // [39:39] is the sub-list for method output_type
+	39, // [39:39] is the sub-list for method input_type
+	39, // [39:39] is the sub-list for extension type_name
+	39, // [39:39] is the sub-list for extension extendee
+	0,  // [0:39] is the sub-list for field type_name
 }
 
 func init() { file_workflow_payload_proto_init() }
@@ -5104,66 +4700,6 @@ func file_workflow_payload_proto_init() {
 			}
 		}
 		file_workflow_payload_proto_msgTypes[38].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetWorkflowWithLogicRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_workflow_payload_proto_msgTypes[39].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetWorkflowWithLogicResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_workflow_payload_proto_msgTypes[40].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetWorkflowWithLogicRes); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_workflow_payload_proto_msgTypes[41].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*LogicRes); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_workflow_payload_proto_msgTypes[42].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RequirementRes); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_workflow_payload_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DeleteRequirementRequest); i {
 			case 0:
 				return &v.state
@@ -5182,7 +4718,7 @@ func file_workflow_payload_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_workflow_payload_proto_rawDesc,
 			NumEnums:      12,
-			NumMessages:   44,
+			NumMessages:   39,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

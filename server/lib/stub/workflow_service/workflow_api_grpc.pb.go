@@ -39,7 +39,6 @@ type ApiServiceClient interface {
 	GetCompanyWorkflow(ctx context.Context, in *GetCompanyWorkflowRequest, opts ...grpc.CallOption) (*GetCompanyWorkflowResponse, error)
 	CreateCompanyWorkflow(ctx context.Context, in *CreateCompanyWorkflowRequest, opts ...grpc.CallOption) (*CreateCompanyWorkflowResponse, error)
 	GetAvailableCurrency(ctx context.Context, in *GetAvailableCurrencyRequest, opts ...grpc.CallOption) (*GetAvailableCurrencyResponse, error)
-	GetWorkflowWithLogic(ctx context.Context, in *GetWorkflowWithLogicRequest, opts ...grpc.CallOption) (*GetWorkflowWithLogicResponse, error)
 	DeleteRequirement(ctx context.Context, in *DeleteRequirementRequest, opts ...grpc.CallOption) (*Empty, error)
 }
 
@@ -195,15 +194,6 @@ func (c *apiServiceClient) GetAvailableCurrency(ctx context.Context, in *GetAvai
 	return out, nil
 }
 
-func (c *apiServiceClient) GetWorkflowWithLogic(ctx context.Context, in *GetWorkflowWithLogicRequest, opts ...grpc.CallOption) (*GetWorkflowWithLogicResponse, error) {
-	out := new(GetWorkflowWithLogicResponse)
-	err := c.cc.Invoke(ctx, "/workflow.service.v1.ApiService/GetWorkflowWithLogic", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *apiServiceClient) DeleteRequirement(ctx context.Context, in *DeleteRequirementRequest, opts ...grpc.CallOption) (*Empty, error) {
 	out := new(Empty)
 	err := c.cc.Invoke(ctx, "/workflow.service.v1.ApiService/DeleteRequirement", in, out, opts...)
@@ -233,7 +223,6 @@ type ApiServiceServer interface {
 	GetCompanyWorkflow(context.Context, *GetCompanyWorkflowRequest) (*GetCompanyWorkflowResponse, error)
 	CreateCompanyWorkflow(context.Context, *CreateCompanyWorkflowRequest) (*CreateCompanyWorkflowResponse, error)
 	GetAvailableCurrency(context.Context, *GetAvailableCurrencyRequest) (*GetAvailableCurrencyResponse, error)
-	GetWorkflowWithLogic(context.Context, *GetWorkflowWithLogicRequest) (*GetWorkflowWithLogicResponse, error)
 	DeleteRequirement(context.Context, *DeleteRequirementRequest) (*Empty, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
@@ -289,9 +278,6 @@ func (UnimplementedApiServiceServer) CreateCompanyWorkflow(context.Context, *Cre
 }
 func (UnimplementedApiServiceServer) GetAvailableCurrency(context.Context, *GetAvailableCurrencyRequest) (*GetAvailableCurrencyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAvailableCurrency not implemented")
-}
-func (UnimplementedApiServiceServer) GetWorkflowWithLogic(context.Context, *GetWorkflowWithLogicRequest) (*GetWorkflowWithLogicResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetWorkflowWithLogic not implemented")
 }
 func (UnimplementedApiServiceServer) DeleteRequirement(context.Context, *DeleteRequirementRequest) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRequirement not implemented")
@@ -597,24 +583,6 @@ func _ApiService_GetAvailableCurrency_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApiService_GetWorkflowWithLogic_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetWorkflowWithLogicRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ApiServiceServer).GetWorkflowWithLogic(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/workflow.service.v1.ApiService/GetWorkflowWithLogic",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).GetWorkflowWithLogic(ctx, req.(*GetWorkflowWithLogicRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ApiService_DeleteRequirement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRequirementRequest)
 	if err := dec(in); err != nil {
@@ -703,10 +671,6 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAvailableCurrency",
 			Handler:    _ApiService_GetAvailableCurrency_Handler,
-		},
-		{
-			MethodName: "GetWorkflowWithLogic",
-			Handler:    _ApiService_GetWorkflowWithLogic_Handler,
 		},
 		{
 			MethodName: "DeleteRequirement",
