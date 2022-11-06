@@ -2041,6 +2041,70 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			if currentStep == 3 {
 
+				if currentStatus == 1 {
+					if task.Type == "Company" {
+						company := &company_pb.CreateCompanyTaskReq{}
+						json.Unmarshal([]byte(task.Data), &company)
+
+						companyWorkflow := company.Workflow.TansactionalStpStep
+						assignedStep := []string{}
+						if companyWorkflow.Approver {
+							assignedStep = append(assignedStep, "signer")
+						}
+						if companyWorkflow.Releaser {
+							assignedStep = append(assignedStep, "releaser")
+						}
+						if companyWorkflow.Verifier {
+							assignedStep = append(assignedStep, "checker")
+						}
+
+						var opts []grpc.DialOption
+						opts = append(opts, grpc.WithInsecure())
+
+						workFlowConn, err := grpc.Dial(getEnv("WORKFLOW_SERVICE", ":9099"), opts...)
+						if err != nil {
+							logrus.Errorln("[api][func: SetTask] Unable to connect Workflow Service:", err)
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
+						defer workFlowConn.Close()
+
+						workflowClient := workflow_pb.NewApiServiceClient(workFlowConn)
+						resWorkflow, err := workflowClient.ListWorkflow(ctx, &workflow_pb.ListWorkflowRequest{
+							Workflow: &workflow_pb.Workflow{
+								CompanyID: company.Company.CompanyID,
+							},
+						}, grpc.Header(&header), grpc.Trailer(&trailer))
+						if err != nil {
+							return nil, err
+						}
+						deletedID := []uint64{}
+						if len(resWorkflow.Data) > 0 {
+							for _, w := range resWorkflow.Data {
+								for _, l := range w.Logics {
+									for _, r := range l.Requirements {
+										deleted := true
+										for _, s := range assignedStep {
+											if r.Step == s {
+												deleted = false
+											}
+										}
+										if deleted {
+											deletedID = append(deletedID, r.WorkflowRequirementID)
+										}
+									}
+								}
+							}
+						}
+						if len(deletedID) > 0 {
+							workflowClient.DeleteRequirement(ctx, &workflow_pb.DeleteRequirementRequest{
+								RequirementID: deletedID,
+								CompanyID: company.Company.CompanyID,
+								AssignedSteps: assignedStep,
+							}, grpc.Header(&header), grpc.Trailer(&trailer))
+						}
+					}
+				}
+
 				task.Status = 1
 				task.Status = 4
 				task.Step = 3
@@ -3832,6 +3896,7 @@ func (s *Server) UpdateTaskData(ctx context.Context, req *pb.UpdateTaskDataReq) 
 	}
 
 	task.Data = req.Data
+	task.DataBak = req.Data
 	_, err = s.provider.UpdateTask(ctx, task, false)
 	if err != nil {
 		return nil, err
