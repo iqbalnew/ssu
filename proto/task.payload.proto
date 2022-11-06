@@ -54,6 +54,7 @@ message SaveTaskRequest {
     uint64 companyID = 5;
     uint64 holdingID = 6;
     string transactionCurrency = 7;
+    uint64 selectedAccountID = 8;
 }
 
 message SaveTaskResponse {

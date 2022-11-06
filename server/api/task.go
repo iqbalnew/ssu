@@ -966,6 +966,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 				CompanyID:           currentUser.CompanyID,
 				TransactionalNumber: uint64(req.TransactionAmount),
 				Currency:            req.GetTransactionCurrency(),
+				SelectedAccountID:   req.GetSelectedAccountID(),
 			}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 			if err != nil {
 				logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute GenerateWorkflow", err)
@@ -3915,6 +3916,7 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 			ProductID:           product.ProductID,
 			TransactionalNumber: uint64(req.TransactionAmount),
 			Currency:            req.GetTransactionCurrency(),
+			SelectedAccountID:   req.GetSelectedAccountID(),
 		})
 		if err != nil {
 			logrus.Errorln("[api][func: UpdateTaskPlain] Failed to generate workflow: %v", err)
