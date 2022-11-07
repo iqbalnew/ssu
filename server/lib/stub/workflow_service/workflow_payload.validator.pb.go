@@ -290,6 +290,3 @@ func (this *GetAvailableCurrencyResponse) Validate() error {
 	}
 	return nil
 }
-func (this *DeleteRequirementRequest) Validate() error {
-	return nil
-}
