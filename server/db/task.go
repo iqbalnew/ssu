@@ -100,6 +100,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 		} else {
 			whereOpt = fmt.Sprintf("%s OR ( created_by_id = %d AND status IN (1,2,3,5))", whereOpt, createdByID)
 		}
+		// whereOpt = fmt.Sprintf("%s OR ( created_by_id = %d AND status IN (1,2,3,5))", whereOpt, createdByID)
 	}
 
 	if whereOpt != "" {

@@ -420,6 +420,7 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 }
 
 func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.GetMyPendingTaskWithWorkflowGraphRequest) (*pb.GetMyPendingTaskWithWorkflowGraphResponse, error) {
+
 	currentUser, _, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		return nil, err
