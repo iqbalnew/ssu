@@ -267,6 +267,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		In:            req.GetIn(),
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
+		FilterNot:     req.GetFilterNot(),
 	}
 	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter, userIDFilter)
 	if err != nil {
@@ -2099,7 +2100,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						if len(deletedID) > 0 {
 							workflowClient.DeleteRequirement(ctx, &workflow_pb.DeleteRequirementRequest{
 								RequirementID: deletedID,
-								CompanyID: company.Company.CompanyID,
+								CompanyID:     company.Company.CompanyID,
 								AssignedSteps: assignedStep,
 							}, grpc.Header(&header), grpc.Trailer(&trailer))
 						}

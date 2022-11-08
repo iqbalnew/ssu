@@ -19,6 +19,7 @@ type QueryBuilder struct {
 	CustomOrder   string
 	Sort          *pb.Sort
 	CompanyID     string
+	FilterNot     string
 }
 
 func Paginate(value interface{}, v *pb.PaginationResponse, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
@@ -200,6 +201,38 @@ func reviewedByHandler(val string, expresion string, db *gorm.DB) *gorm.DB {
 
 	db = db.Where(query.Where(approved).Or(rejected)).Where("\"status\" != '1' AND \"status\" != '2' AND \"status\" != '6'")
 	return db
+}
+
+func NotConditionalScoope(v string) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if v == "" {
+			return db
+		}
+
+		query := strings.Split(v, ",")
+		if len(query) < 3 {
+			return db
+		}
+
+		column := columnNameBuilder(query[0])
+		symbol := query[1]
+		value := query[1]
+
+		allowedSymbols := []string{"?"}
+		isAllowed := false
+		for _, v := range allowedSymbols {
+			if v == symbol {
+				isAllowed = true
+			}
+		}
+		if !isAllowed {
+			return db
+		}
+
+		db = db.Where(fmt.Sprintf("NOT %s %s ?", column, symbol), value)
+
+		return db
+	}
 }
 
 func FilterScoope(v string) func(db *gorm.DB) *gorm.DB {

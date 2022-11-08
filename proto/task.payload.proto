@@ -196,6 +196,7 @@ message ListTaskRequest {
     string customOrder = 10;
     string distinctKey = 11;
     repeated uint64 roleIDFilter = 12;
+    string filterNot = 13;
 }
 
 message ListTaskPluckRequest {

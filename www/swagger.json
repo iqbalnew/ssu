@@ -915,6 +915,12 @@
               "format": "uint64"
             },
             "collectionFormat": "multi"
+          },
+          {
+            "name": "filterNot",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
