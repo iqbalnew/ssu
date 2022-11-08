@@ -214,7 +214,7 @@ func NotConditionalScoope(v string) func(db *gorm.DB) *gorm.DB {
 			return db
 		}
 
-		column := columnNameBuilder(query[0])
+		column := columnNameBuilder(query[0], true)
 		symbol := query[1]
 		value := query[1]
 
