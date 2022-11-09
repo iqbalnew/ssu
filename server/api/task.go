@@ -177,10 +177,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		currentUser.CompanyID = 0
 	}
 
-	var dataorm pb.TaskORM
-	if req.Task != nil {
-		dataorm, _ = req.Task.ToORM(ctx)
-	}
+	var dataORM pb.TaskORM
 
 	sort := &pb.Sort{
 		Column:    req.GetSort(),
@@ -189,33 +186,35 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	filter := []string{}
 
-	if currentUser.UserType == "cu" {
+	if req.Task != nil {
 
-		if contains(currentUser.Authorities, "maker") {
+		if strings.ToLower(req.Task.Type) == "maker" {
 
 			filter = []string{"status:<>0", "status:<>7"}
 
-		} else if contains(currentUser.Authorities, "checker") || contains(currentUser.Authorities, "signer") || contains(currentUser.Authorities, "releaser") {
+		} else if strings.ToLower(req.Task.Type) == "checker" || strings.ToLower(req.Task.Type) == "signer" || strings.ToLower(req.Task.Type) == "releaser" {
 
-			if contains(currentUser.Authorities, "maker") {
+			filter = []string{"status:<>0", "status:<>2", "status:<>3", "status:<>7"}
 
-				filter = []string{"status:<>0", "status:<>7"}
+			if req.IsTransactional {
 
-			} else {
+				if strings.ToLower(req.Task.Type) == "checker" {
+					filter = append(filter, "workflow_doc.workflow.currentStep:checker")
+				} else if strings.ToLower(req.Task.Type) == "signer" {
+					filter = append(filter, "workflow_doc.workflow.currentStep:signer")
+				} else if strings.ToLower(req.Task.Type) == "releaser" {
+					filter = append(filter, "workflow_doc.workflow.currentStep:releaser")
+				}
 
-				filter = []string{"status:<>0", "status:<>2", "status:<>3", "status:<>7"}
+				req.Task.Type = ""
 
-			}
-
-			if contains(currentUser.Authorities, "checker") {
-				filter = append(filter, "workflow_doc.workflow.currentStep:checker")
-			} else if contains(currentUser.Authorities, "signer") {
-				filter = append(filter, "workflow_doc.workflow.currentStep:signer")
-			} else if contains(currentUser.Authorities, "releaser") {
-				filter = append(filter, "workflow_doc.workflow.currentStep:releaser")
 			}
 
 		}
+
+	}
+
+	if currentUser.UserType == "cu" {
 
 		if req.FilterOr != "" {
 			req.FilterOr = req.FilterOr + ",created_by_id:" + fmt.Sprint(currentUser.UserID)
@@ -235,7 +234,13 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		CompanyID:     fmt.Sprint(currentUser.CompanyID),
 	}
 
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter, currentUser.UserID)
+	dataORM, err = req.Task.ToORM(ctx)
+	if err != nil {
+		logrus.Errorln("[api][GetListTask] Failed convert PB to ORM:", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+
+	list, err := s.provider.GetListTask(ctx, &dataORM, result.Pagination, sqlBuilder, req.RoleIDFilter, currentUser.UserID)
 	if err != nil {
 		logrus.Errorln("[api][GetListTask] Failed when execute GetListTask:", err)
 		return nil, err
