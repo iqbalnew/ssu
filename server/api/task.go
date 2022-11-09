@@ -93,7 +93,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 
 	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, []uint64{}, 0)
 	if err != nil {
-		logrus.Errorln("[api][GetTaskByTypeID] Failed when execute GetListTask:", err)
+		logrus.Errorln("[api][func: GetTaskByTypeID] Failed when execute GetListTask:", err)
 		return nil, err
 	}
 
@@ -103,7 +103,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 
 		data, err := list[0].ToPB(ctx)
 		if err != nil {
-			logrus.Errorln("[api][GetTaskByTypeID] Failed convert ORM to PB:", err)
+			logrus.Errorln("[api][func: GetTaskByTypeID] Failed convert ORM to PB:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 
@@ -121,7 +121,7 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 
 	taskPB, err := taskEVtoPB(req.Task, aes)
 	if err != nil {
-		logrus.Errorln("[api][GetListTaskEV] Failed when execute taskEVtoPB:", err)
+		logrus.Errorln("[api][func: GetListTaskEV] Failed when execute taskEVtoPB:", err)
 		return nil, err
 	}
 
@@ -139,7 +139,7 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 
 	resPB, err := s.GetListTask(ctx, reqPB)
 	if err != nil {
-		logrus.Errorln("[api][GetListTaskEV] Failed when execute GetListTask:", err)
+		logrus.Errorln("[api][func: GetListTaskEV] Failed when execute GetListTask:", err)
 		return nil, err
 	}
 
@@ -154,7 +154,7 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 
 		task, err := taskPBtoEV(v, aes)
 		if err != nil {
-			logrus.Errorln("[api][GetListTaskEV] Failed when execute taskPBtoEV:", err)
+			logrus.Errorln("[api][func: GetListTaskEV] Failed when execute taskPBtoEV:", err)
 			return nil, err
 		}
 
@@ -249,7 +249,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	dataORM, err = req.Task.ToORM(ctx)
 	if err != nil {
-		logrus.Errorln("[api][GetListTask] Failed convert PB to ORM:", err)
+		logrus.Errorln("[api][func: GetListTask] Failed convert PB to ORM:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 
@@ -257,7 +257,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	list, err := s.provider.GetListTask(ctx, &dataORM, result.Pagination, sqlBuilder, req.RoleIDFilter, currentUser.UserID)
 	if err != nil {
-		logrus.Errorln("[api][GetListTask] Failed when execute GetListTask:", err)
+		logrus.Errorln("[api][func: GetListTask] Failed when execute GetListTask:", err)
 		return nil, err
 	}
 
@@ -265,7 +265,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 		task, err := v.ToPB(ctx)
 		if err != nil {
-			logrus.Errorln("[api][GetListTask] Failed convert ORM to PB:", err)
+			logrus.Errorln("[api][func: GetListTask] Failed convert ORM to PB:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 
@@ -325,7 +325,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 		task, err := v.ToPB(ctx)
 		if err != nil {
-			logrus.Errorln("[api][GetListTask] Failed convert ORM to PB:", err)
+			logrus.Errorln("[api][func: GetListTask] Failed convert ORM to PB:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 
@@ -354,7 +354,7 @@ func (s *Server) GetListTaskPluck(ctx context.Context, req *pb.ListTaskPluckRequ
 
 		dataORM, err = req.Task.ToORM(ctx)
 		if err != nil {
-			logrus.Errorln("[api][GetListTaskPluck] Failed when convert PB to ORM:", err)
+			logrus.Errorln("[api][func: GetListTaskPluck] Failed when convert PB to ORM:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 
@@ -370,7 +370,7 @@ func (s *Server) GetListTaskPluck(ctx context.Context, req *pb.ListTaskPluckRequ
 
 	list, err := s.provider.GetListTaskPluck(ctx, req.GetPluckKey(), &dataORM, sqlBuilder)
 	if err != nil {
-		logrus.Errorln("[api][GetListTaskPluck] Failed when execute GetListTaskPluck:", err)
+		logrus.Errorln("[api][func: GetListTaskPluck] Failed when execute GetListTaskPluck:", err)
 		return nil, err
 	}
 
@@ -392,7 +392,7 @@ func (s *Server) GetTaskGraphStatus(ctx context.Context, req *pb.GraphStatusRequ
 
 	data, err := s.provider.GetGraphStatus(ctx, req.Service, uint(stat))
 	if err != nil {
-		logrus.Errorln("[api][GetTaskGraphStatus] Failed when execute GetGraphStatus:", err)
+		logrus.Errorln("[api][func: GetTaskGraphStatus] Failed when execute GetGraphStatus:", err)
 		return nil, err
 	}
 
@@ -424,7 +424,7 @@ func (s *Server) GraphStatusColumnType(ctx context.Context, req *pb.GraphStatusC
 
 	data, err := s.provider.GetGraphServiceType(ctx, req.Service, uint(stat), req.Column)
 	if err != nil {
-		logrus.Errorln("[api][GraphStatusColumnType] Failed when execute GetGraphServiceType:", err)
+		logrus.Errorln("[api][func: GraphStatusColumnType] Failed when execute GetGraphServiceType:", err)
 		return nil, err
 	}
 
@@ -454,7 +454,7 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 
 	me, err := s.manager.GetMeFromJWT(ctx, "", "")
 	if err != nil {
-		logrus.Errorln("[api][GetTaskGraphStep] Failed when execute GetMeFromJWT:", err)
+		logrus.Errorln("[api][func: GetTaskGraphStep] Failed when execute GetMeFromJWT:", err)
 		return nil, err
 	}
 
@@ -467,7 +467,7 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 
 	data, err := s.provider.GetGraphStep(ctx, me.CompanyID, req.Service, uint(step), uint(stat), req.IsIncludeApprove, req.IsIncludeReject, me.UserType)
 	if err != nil {
-		logrus.Errorln("[api][GetTaskGraphStep] Failed when execute GetGraphStep:", err)
+		logrus.Errorln("[api][func: GetTaskGraphStep] Failed when execute GetGraphStep:", err)
 		return nil, err
 	}
 
@@ -497,13 +497,13 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 	currentUser, _, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
-		logrus.Errorln("[api][GetMyPendingTaskWithWorkflowGraph] Failed when execute GetMeFromMD:", err)
+		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetMeFromMD:", err)
 		return nil, err
 	}
 
 	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, 1, currentUser.UserID)
 	if err != nil {
-		logrus.Errorln("[api][GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
+		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
 		return nil, err
 	}
 
@@ -548,7 +548,7 @@ func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (
 
 	list, err := s.provider.GetListTaskWithFilter(ctx, &pb.TaskORM{Type: "Announcement"}, nil, nil)
 	if err != nil {
-		logrus.Errorln("[api][GetListAnnouncement] Failed when execute GetListTaskWithFilter:", err)
+		logrus.Errorln("[api][func: GetListAnnouncement] Failed when execute GetListTaskWithFilter:", err)
 		return nil, err
 	}
 
@@ -556,7 +556,7 @@ func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (
 
 		task, err := v.ToPB(ctx)
 		if err != nil {
-			logrus.Errorln("[api][GetListAnnouncement] Failed when convert ORM to PB:", err)
+			logrus.Errorln("[api][func: GetListAnnouncement] Failed when convert ORM to PB:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
 
@@ -575,19 +575,19 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 
 	text, err := aes.Decrypt(req.TaskID)
 	if err != nil {
-		logrus.Errorln("[api][SaveTaskWithDataEV] Failed when execute Decrypt:", err)
+		logrus.Errorln("[api][func: SaveTaskWithDataEV] Failed when execute Decrypt:", err)
 		return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
 	}
 
 	taskID, err := strconv.Atoi(text)
 	if err != nil {
-		logrus.Errorln("[api][SaveTaskWithDataEV] Failed when execute Atoi:", err)
+		logrus.Errorln("[api][func: SaveTaskWithDataEV] Failed when execute Atoi:", err)
 		return nil, status.Errorf(codes.Internal, "Failed to decrypt taskID")
 	}
 
 	taskPB, err := taskEVtoPB(req.Task, aes)
 	if err != nil {
-		logrus.Errorln("[api][SaveTaskWithDataEV] Failed when execute taskEVtoPB:", err)
+		logrus.Errorln("[api][func: SaveTaskWithDataEV] Failed when execute taskEVtoPB:", err)
 		return nil, err
 	}
 
@@ -600,13 +600,13 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 
 	response, err := s.SaveTaskWithData(ctx, request)
 	if err != nil {
-		logrus.Errorln("[api][SaveTaskWithDataEV] Failed when execute SaveTaskWithData:", err)
+		logrus.Errorln("[api][func: SaveTaskWithDataEV] Failed when execute SaveTaskWithData:", err)
 		return nil, err
 	}
 
 	taskEV, err := taskPBtoEV(response.Data, aes)
 	if err != nil {
-		logrus.Errorln("[api][SaveTaskWithDataEV] Failed when execute taskPBtoEV:", err)
+		logrus.Errorln("[api][func: SaveTaskWithDataEV] Failed when execute taskPBtoEV:", err)
 		return nil, err
 	}
 
