@@ -200,11 +200,11 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 		if req.Task.Step == pb.Steps_Maker {
 
-			filter = []string{"status:2", "status:3"}
+			filter = []string{"status:<>0", "status:<>1", "status:<>4", "status:<>5", "status:<>6", "status:<>7"}
 
 		} else if req.Task.Step == pb.Steps_Checker || req.Task.Step == pb.Steps_Signer || req.Task.Step == pb.Steps_Releaser {
 
-			filter = []string{"status:1", "status:6"}
+			filter = []string{"status:<>0", "status:<>2", "status:<>3", "status:<>4", "status:<>5", "status:<>7"}
 
 			if req.IsTransactional {
 
@@ -216,7 +216,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 					filter = append(filter, "workflow_doc.workflow.currentStep:releaser")
 				}
 
-				req.Task.Type = ""
+				req.Task.Step = pb.Steps_NullStep
 
 			}
 
@@ -243,7 +243,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		Sort:          sort,
 	}
 
-	if currentUser.UserType == "ba" {
+	if currentUser.UserType != "ba" {
 		sqlBuilder.CompanyID = fmt.Sprint(currentUser.CompanyID)
 	}
 
