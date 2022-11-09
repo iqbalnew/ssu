@@ -1383,7 +1383,8 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskRequest
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 
-	if task.Type == "Internal Fund Transfer" {
+	switch task.Type {
+	case "Internal Fund Transfer":
 
 		var opts []grpc.DialOption
 		opts = append(opts, grpc.WithInsecure())
@@ -1407,21 +1408,29 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskRequest
 			return nil, err
 		}
 
-	} else if task.Type == "External Fund Transfer" {
+	case "External Fund Transfer":
+
+		// TODO: Implement workflow approval
+
+	case "Payroll Transfer":
+
+		// TODO: Implement workflow approval
+
+	case "BG Issuing":
 
 		var opts []grpc.DialOption
 		opts = append(opts, grpc.WithInsecure())
 
-		transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
+		bgConn, err := grpc.Dial(getEnv("BG_SERVICE", ":9124"), opts...)
 		if err != nil {
 			logrus.Errorln("[api][func: SetTask] Unable to connect Transfer Service:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
-		defer transferConn.Close()
+		defer bgConn.Close()
 
-		transferClient := transfer_pb.NewApiServiceClient(transferConn)
+		bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-		_, err = transferClient.SetTaskExternalTransfer(newCtx, &transfer_pb.SetTaskExternalTransferRequest{
+		_, err = bgClient.TaskAction(newCtx, &bg_pb.TaskActionRequest{
 			TaskID:  req.GetTaskID(),
 			Action:  req.GetAction(),
 			Comment: req.GetComment(),
@@ -1431,31 +1440,7 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskRequest
 			return nil, err
 		}
 
-	} else if task.Type == "Payroll Transfer" {
-
-		var opts []grpc.DialOption
-		opts = append(opts, grpc.WithInsecure())
-
-		transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
-		if err != nil {
-			logrus.Errorln("[api][func: SetTask] Unable to connect Transfer Service:", err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
-		}
-		defer transferConn.Close()
-
-		transferClient := transfer_pb.NewApiServiceClient(transferConn)
-
-		_, err = transferClient.SetTaskPayroll(newCtx, &transfer_pb.SetTaskPayrollRequest{
-			TaskID:  req.GetTaskID(),
-			Action:  req.GetAction(),
-			Comment: req.GetComment(),
-			Reasons: req.GetReasons(),
-		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
-		if err != nil {
-			return nil, err
-		}
-
-	} else {
+	default:
 
 		_, err = s.SetTask(ctx, req)
 		if err != nil {

@@ -32,55 +32,6 @@ func (this *InternalTransferTransaction) Validate() error {
 	}
 	return nil
 }
-func (this *ExternalTransferTransaction) Validate() error {
-	if this.CreatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
-		}
-	}
-	if this.UpdatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	return nil
-}
-func (this *MassInquiryJob) Validate() error {
-	if this.RunAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RunAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("RunAt", err)
-		}
-	}
-	if this.CreatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
-		}
-	}
-	if this.UpdatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	return nil
-}
-func (this *MassTransferJob) Validate() error {
-	if this.RunAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RunAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("RunAt", err)
-		}
-	}
-	if this.CreatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
-		}
-	}
-	if this.UpdatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	return nil
-}
 func (this *InternalTransferSingleTemplate) Validate() error {
 	if !(this.Amount >= 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Amount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Amount))
@@ -104,55 +55,6 @@ func (this *InternalTransferSingleTemplate) Validate() error {
 	if this.ScheduledAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
-		}
-	}
-	if this.CreatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
-		}
-	}
-	if this.UpdatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	return nil
-}
-func (this *MassTransferList) Validate() error {
-	if this.CreatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
-		}
-	}
-	if this.UpdatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	return nil
-}
-func (this *MassTransferScheduledJob) Validate() error {
-	if this.RunAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RunAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("RunAt", err)
-		}
-	}
-	if this.CreatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
-		}
-	}
-	if this.UpdatedAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
-		}
-	}
-	return nil
-}
-func (this *PayrollFileCheckingJob) Validate() error {
-	if this.RunAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RunAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("RunAt", err)
 		}
 	}
 	if this.CreatedAt != nil {
