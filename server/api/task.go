@@ -190,11 +190,11 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 		if strings.ToLower(req.Task.Type) == "maker" {
 
-			filter = []string{"status:<>0", "status:<>7"}
+			filter = []string{"status:2", "status:3"}
 
 		} else if strings.ToLower(req.Task.Type) == "checker" || strings.ToLower(req.Task.Type) == "signer" || strings.ToLower(req.Task.Type) == "releaser" {
 
-			filter = []string{"status:<>0", "status:<>2", "status:<>3", "status:<>7"}
+			filter = []string{"status:1", "status:6"}
 
 			if req.IsTransactional {
 
