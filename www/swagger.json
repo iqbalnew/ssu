@@ -917,6 +917,17 @@
             "collectionFormat": "multi"
           },
           {
+            "name": "accountIDFilter",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uint64"
+            },
+            "collectionFormat": "multi"
+          },
+          {
             "name": "filterNot",
             "in": "query",
             "required": false,

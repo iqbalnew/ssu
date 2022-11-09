@@ -196,6 +196,7 @@ message ListTaskRequest {
     string customOrder = 10;
     string distinctKey = 11;
     repeated uint64 roleIDFilter = 12;
+    repeated uint64 accountIDFilter = 15;
     string filterNot = 13;
     bool isTransactional = 14;
 }
