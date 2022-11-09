@@ -7,7 +7,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 
 # This program built for i386-apple-darwin11.3.0
 
-# Make data base, printed on Mon Nov  7 08:40:44 2022
+# Make data base, printed on Wed Nov  9 11:27:03 2022
 
 # Variables
 
@@ -68,7 +68,7 @@ ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.l4XX6Ndlwz/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.9rEblcWXno/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -118,7 +118,7 @@ USER = farizrachmanyusuf
 # makefile (from `Makefile', line 4)
 DOCKER_CONTAINER_IMAGE = addons-task-service:latest
 # environment
-TERM_SESSION_ID = 36D2B1A1-BE83-4965-B434-BE63BC41ACA3
+TERM_SESSION_ID = D9EF72B5-DBFE-4BC2-9653-728817E5EA5B
 # environment
 LESS = -R
 # automatic
@@ -152,7 +152,7 @@ TERM_PROGRAM_VERSION = 447
 # environment
 NVM_DIR = /Users/farizrachmanyusuf/.nvm
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.11296235.11296241.3FE35831-346D-4FEA-99FE-76D476E123FE
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.11296235.11296241.C5A072E6-54EE-4AE5-8EEE-DC07C488A6D8
 # environment
 HOMEBREW_PREFIX = /opt/homebrew
 # automatic
@@ -192,9 +192,9 @@ LANG = C
 # environment
 TERM = xterm-256color
 # environment
-_P9K_TTY = /dev/ttys003
+_P9K_TTY = /dev/ttys000
 # environment
-VSCODE_PID = 35705
+VSCODE_PID = 7502
 # variable set hash-table stats:
 # Load=92/1024=9%, Rehash=0, Collisions=3/123=2%
 
@@ -204,7 +204,7 @@ VSCODE_PID = 35705
 
 # Directories
 
-# . (device 16777233, inode 1768050): 25 files, no impossibilities.
+# . (device 16777230, inode 1768050): 25 files, no impossibilities.
 
 # 25 files, no impossibilities in 1 directories.
 
@@ -256,7 +256,6 @@ Makefile:
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
- 
 # Load=0/32=0%, Rehash=0, Collisions=0/0=0%
 
 generates:
@@ -293,6 +292,7 @@ default: depend
 #  File has not been updated.
 
 generate:
+ 
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -407,6 +407,6 @@ install: depend build
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Mon Nov  7 08:40:44 2022
+# Finished Make data base on Wed Nov  9 11:27:03 2022
 
  

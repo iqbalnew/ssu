@@ -153,37 +153,113 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 
 func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
 
-	currentUser, _, _ := s.manager.GetMeFromMD(ctx)
-
-	userIDFilter := uint64(0)
-
-	if currentUser != nil {
-		userIDFilter = currentUser.UserID
+	result := pb.ListTaskResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Task List",
+		Data:    []*pb.Task{},
 	}
 
-	module := ""
-	if req.Task != nil {
-		if len(req.Task.Type) > 0 {
-			module = req.Task.Type
-		}
-	}
-
-	me, err := s.manager.GetMeFromJWT(ctx, "", module)
+	currentUser, _, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	logrus.Print(me.TaskFilter)
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "Permission Denied")
+	}
 
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
 
+	if currentUser.UserType == "ba" {
+		currentUser.CompanyID = 0
+	}
+
 	var dataorm pb.TaskORM
 	if req.Task != nil {
 		dataorm, _ = req.Task.ToORM(ctx)
 	}
+
+	sort := &pb.Sort{
+		Column:    req.GetSort(),
+		Direction: req.GetDir().Enum().String(),
+	}
+
+	filter := []string{}
+
+	if currentUser.UserType == "cu" {
+
+		if contains(currentUser.Authorities, "maker") {
+
+			filter = []string{"status:<>0", "status:<>7"}
+
+		} else if contains(currentUser.Authorities, "checker") || contains(currentUser.Authorities, "signer") || contains(currentUser.Authorities, "releaser") {
+
+			if contains(currentUser.Authorities, "maker") {
+
+				filter = []string{"status:<>0", "status:<>7"}
+
+			} else {
+
+				filter = []string{"status:<>0", "status:<>2", "status:<>3", "status:<>7"}
+
+			}
+
+			if contains(currentUser.Authorities, "checker") {
+				filter = append(filter, "workflow_doc.workflow.currentStep:checker")
+			} else if contains(currentUser.Authorities, "signer") {
+				filter = append(filter, "workflow_doc.workflow.currentStep:signer")
+			} else if contains(currentUser.Authorities, "releaser") {
+				filter = append(filter, "workflow_doc.workflow.currentStep:releaser")
+			}
+
+		}
+
+		if req.FilterOr != "" {
+			req.FilterOr = req.FilterOr + ",created_by_id:" + fmt.Sprint(currentUser.UserID)
+		} else {
+			req.FilterOr = "created_by_id:" + fmt.Sprint(currentUser.UserID)
+		}
+
+	}
+
+	sqlBuilder := &db.QueryBuilder{
+		Filter:        strings.Join(filter, ","),
+		FilterOr:      req.GetFilterOr(),
+		CollectiveAnd: req.GetQuery(),
+		In:            req.GetIn(),
+		CustomOrder:   req.GetCustomOrder(),
+		Sort:          sort,
+		CompanyID:     fmt.Sprint(currentUser.CompanyID),
+	}
+
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter, currentUser.UserID)
+	if err != nil {
+		logrus.Errorln("[api][GetListTask] Failed when execute GetListTask:", err)
+		return nil, err
+	}
+
+	for _, v := range list {
+
+		task, err := v.ToPB(ctx)
+		if err != nil {
+			logrus.Errorln("[api][GetListTask] Failed convert ORM to PB:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+
+		result.Data = append(result.Data, &task)
+
+	}
+
+	result.Pagination = setPagination(req)
+
+	return &result, err
+
+}
+
+func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
 
 	result := pb.ListTaskResponse{
 		Error:   false,
@@ -191,49 +267,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		Message: "Task List",
 		Data:    []*pb.Task{},
 	}
-
-	result.Pagination = setPagination(req)
-	sort := &pb.Sort{
-		Column:    req.GetSort(),
-		Direction: req.GetDir().Enum().String(),
-	}
-	if me.UserType == "ba" {
-		me.CompanyID = ""
-	}
-	sqlBuilder := &db.QueryBuilder{
-		Filter:        req.GetFilter(),
-		FilterOr:      req.GetFilterOr(),
-		CollectiveAnd: req.GetQuery(),
-		In:            req.GetIn(),
-		// MeFilterIn:    me.TaskFilter,
-		CustomOrder: req.GetCustomOrder(),
-		Sort:        sort,
-		CompanyID:   me.CompanyID,
-	}
-
-	logrus.Print(sqlBuilder)
-
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter, userIDFilter)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, v := range list {
-		task, err := v.ToPB(ctx)
-		if err != nil {
-			logrus.Errorln(err)
-			// s.logger.Error("GetListTask", fmt.Sprintf("%v", err))
-			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
-		}
-		result.Data = append(result.Data, &task)
-	}
-
-	return &result, err
-
-}
-
-func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
-	// logrus.Println("After %v", pb)
 
 	currentUser, _, _ := s.manager.GetMeFromMD(ctx)
 
@@ -248,18 +281,11 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		dataorm, _ = req.Task.ToORM(ctx)
 	}
 
-	result := pb.ListTaskResponse{
-		Error:   false,
-		Code:    200,
-		Message: "Task List",
-		Data:    []*pb.Task{},
-	}
-
-	result.Pagination = setPagination(req)
 	sort := &pb.Sort{
 		Column:    req.GetSort(),
 		Direction: req.GetDir().Enum().String(),
 	}
+
 	sqlBuilder := &db.QueryBuilder{
 		Filter:        req.GetFilter(),
 		FilterOr:      req.GetFilterOr(),
@@ -269,38 +295,27 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		Sort:          sort,
 		FilterNot:     req.GetFilterNot(),
 	}
+
 	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter, userIDFilter)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, v := range list {
+
 		task, err := v.ToPB(ctx)
 		if err != nil {
-			logrus.Errorln(err)
-			// s.logger.Error("GetListTask", fmt.Sprintf("%v", err))
-			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			logrus.Errorln("[api][GetListTask] Failed convert ORM to PB:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
 		result.Data = append(result.Data, &task)
+
 	}
 
+	result.Pagination = setPagination(req)
+
 	return &result, err
-
-	// list, err := s.provider.GetListTaskWithFilter(ctx)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// for _, v := range list {
-	// 	task, err := v.ToPB(ctx)
-	// 	if err != nil {
-	// 		logrus.Errorln(err)
-	// 		return nil, status.Errorf(codes.Internal, "Internal Error")
-	// 	}
-	// 	result.Data = append(result.Data, &task)
-	// }
-
-	// return &result, nil
 
 }
 

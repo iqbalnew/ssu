@@ -197,6 +197,7 @@ message ListTaskRequest {
     string distinctKey = 11;
     repeated uint64 roleIDFilter = 12;
     string filterNot = 13;
+    bool isTransactional = 14;
 }
 
 message ListTaskPluckRequest {

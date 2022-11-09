@@ -921,6 +921,12 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "isTransactional",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "tags": [
