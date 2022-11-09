@@ -2,13 +2,11 @@ package db
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
-	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
@@ -406,15 +404,6 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		query = query.Debug()
 	}
 
-	filterByte, _ := json.Marshal(filter)
-	paginationByte, _ := json.Marshal(pagination)
-	sqlByte, _ := json.Marshal(sql)
-
-	logrus.Println("[db][GetListTask] filter:", string(filterByte))
-	logrus.Println("[db][GetListTask] pagination:", string(paginationByte))
-	logrus.Println("[db][GetListTask] sql:", string(sqlByte))
-	logrus.Println("[db][GetListTask] workflowRoleIDFilter:", workflowRoleIDFilter)
-
 	query = query.Select("*", " CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
 	if filter != nil {
 		query = query.Where(&filter)
@@ -441,8 +430,6 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			customQuery = customQuery + " AND (workflow_doc->'workflow'->'header'->'uaID' in (" + valueAccount + "))"
 		}
 	}
-
-	logrus.Println("[db][GetListTask] customQuery:", customQuery)
 
 	query = query.Scopes(FilterScoope(sql.Filter))
 	query = query.Scopes(FilterOrScoope(sql.FilterOr, customQuery))

@@ -30,6 +30,7 @@ type ActivityLog struct {
 }
 
 func (p *GormProvider) SaveLog(ctx context.Context, log *ActivityLog) error {
+
 	if log.Type == "" && log.Data != nil {
 		log.Type = log.Data.Type
 	}
@@ -59,6 +60,7 @@ func (p *GormProvider) SaveLog(ctx context.Context, log *ActivityLog) error {
 	}
 
 	return nil
+
 }
 
 type ActivityLogFindRes struct {
@@ -85,7 +87,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	var logs []*ActivityLog
 
 	if p.mongo == nil {
-		logrus.Println("Mongo Connection is nil")
+		logrus.Println("[log][func: GetActivityLogs] Mongo Connection is nil")
 		return &ActivityLogFindRes{
 			Logs: logs,
 			Paginate: &bongo.PaginationInfo{
@@ -167,9 +169,12 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 		}
 	}
 
-	logrus.Println("===<Mongo Find Filter>===")
+	logrus.Println("[log][func: GetActivityLogs] Mongo Find Filter ***")
+
 	queryS, _ := bson.Marshal(query)
-	logrus.Println(string(queryS))
+	logrus.Println("[log][func: GetActivityLogs]", string(queryS))
+
+	logrus.Println("[log][func: GetActivityLogs] Mongo Find Filter ***")
 
 	results := p.mongo.Collection.Find(query)
 	if req.Sort == "" {
@@ -187,7 +192,7 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	// }
 	pagination, err := results.Paginate(req.Limit, req.Page)
 	if err != nil {
-		logrus.Errorf("Failed to paginate data log: %v", err)
+		logrus.Errorln("[log][func: GetActivityLogs] Failed to paginate data log:", err)
 		return nil, err
 	}
 
@@ -217,9 +222,10 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 		}
 
 		if log.Key != "" {
-			logrus.Println("===<Mongo Find Filter>===")
-			logrus.Println(log.Type, data.Type)
-			logrus.Println(log.Key, data.Key)
+			logrus.Println("[log][func: GetActivityLogs] Mongo Find Filter ***")
+			logrus.Println("[log][func: GetActivityLogs] Type:", log.Type, data.Type)
+			logrus.Println("[log][func: GetActivityLogs] Key:", log.Key, data.Key)
+			logrus.Println("[log][func: GetActivityLogs] Mongo Find Filter ***")
 		}
 
 		result.Logs = append(result.Logs, data)

@@ -12,12 +12,14 @@ import (
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
 	beneficiary_account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/beneficiary_account_service"
 	bg_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/bg_service"
+	bifast_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/bifast_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	cut_off_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/cut_off_service"
 	deposito_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/deposito_service"
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
+	payroll_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/payroll_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
 	swift_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/swift_service"
@@ -326,8 +328,8 @@ func TaskDataInternalTransferToPB(data string, taskID uint64) (val *transfer_pb.
 	return internal, fmt.Sprintf("IFT%v", taskID), nil
 }
 
-func TaskDataExternalTransferToPB(data string, taskID uint64) (val *transfer_pb.ExternalTransferData, key string, err error) {
-	external := &transfer_pb.ExternalTransferData{}
+func TaskDataExternalTransferToPB(data string, taskID uint64) (val *bifast_pb.ExternalTransferData, key string, err error) {
+	external := &bifast_pb.ExternalTransferData{}
 	err = json.Unmarshal([]byte(data), &external)
 	if err != nil {
 		return nil, "", err
@@ -336,8 +338,8 @@ func TaskDataExternalTransferToPB(data string, taskID uint64) (val *transfer_pb.
 	return external, fmt.Sprintf("EFT%v", taskID), nil
 }
 
-func TaskDataPayrollTransferToPB(data string, taskID uint64) (val *transfer_pb.PayrollData, key string, err error) {
-	payroll := &transfer_pb.PayrollData{}
+func TaskDataPayrollTransferToPB(data string, taskID uint64) (val *payroll_pb.PayrollData, key string, err error) {
+	payroll := &payroll_pb.PayrollData{}
 	err = json.Unmarshal([]byte(data), &payroll)
 	if err != nil {
 		return nil, "", err
