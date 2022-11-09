@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -405,15 +404,6 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	if filter.Type != "" {
 		query = query.Debug()
 	}
-
-	filterByte, _ := json.Marshal(filter)
-	paginationByte, _ := json.Marshal(pagination)
-	sqlByte, _ := json.Marshal(sql)
-
-	logrus.Println("[db][GetListTask] filter:", string(filterByte))
-	logrus.Println("[db][GetListTask] pagination:", string(paginationByte))
-	logrus.Println("[db][GetListTask] sql:", string(sqlByte))
-	logrus.Println("[db][GetListTask] workflowRoleIDFilter:", workflowRoleIDFilter)
 
 	query = query.Select("*", " CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
 	if filter != nil {

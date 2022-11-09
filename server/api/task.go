@@ -67,6 +67,7 @@ func setPagination(v *pb.ListTaskRequest) *pb.PaginationResponse {
 }
 
 func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq) (*pb.GetTaskByTypeIDRes, error) {
+
 	res := &pb.GetTaskByTypeIDRes{
 		Found: false,
 		Data:  nil,
@@ -89,30 +90,38 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
+
 	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, []uint64{}, 0)
 	if err != nil {
+		logrus.Errorln("[api][GetTaskByTypeID] Failed when execute GetListTask:", err)
 		return nil, err
 	}
+
 	if len(list) > 0 {
+
 		res.Found = true
+
 		data, err := list[0].ToPB(ctx)
 		if err != nil {
-			logrus.Errorln(err)
-			// s.logger.Error("GetTaskByTypeID", fmt.Sprintf("%v", err))
-			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
+			logrus.Errorln("[api][GetTaskByTypeID] Failed convert ORM to PB:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
 		res.Data = &data
+
 	}
 
 	return res, nil
 }
 
 func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (*pb.ListTaskResponseEV, error) {
+
 	key := getEnv("AES_KEY", "Odj12345*12345678901234567890123")
 	aes := customAES.NewCustomAES(key)
 
 	taskPB, err := taskEVtoPB(req.Task, aes)
 	if err != nil {
+		logrus.Errorln("[api][GetListTaskEV] Failed when execute taskEVtoPB:", err)
 		return nil, err
 	}
 
@@ -130,6 +139,7 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 
 	resPB, err := s.GetListTask(ctx, reqPB)
 	if err != nil {
+		logrus.Errorln("[api][GetListTaskEV] Failed when execute GetListTask:", err)
 		return nil, err
 	}
 
@@ -141,11 +151,15 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 	}
 
 	for _, v := range resPB.Data {
+
 		task, err := taskPBtoEV(v, aes)
 		if err != nil {
+			logrus.Errorln("[api][GetListTaskEV] Failed when execute taskPBtoEV:", err)
 			return nil, err
 		}
+
 		res.Data = append(res.Data, task)
+
 	}
 
 	return res, nil
@@ -324,6 +338,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 }
 
 func (s *Server) GetListTaskPluck(ctx context.Context, req *pb.ListTaskPluckRequest) (*pb.ListTaskPluckResponse, error) {
+
 	result := &pb.ListTaskPluckResponse{
 		Data: []string{},
 	}
@@ -332,9 +347,17 @@ func (s *Server) GetListTaskPluck(ctx context.Context, req *pb.ListTaskPluckRequ
 		return result, nil
 	}
 
-	var dataorm pb.TaskORM
+	var dataORM pb.TaskORM
+	var err error
+
 	if req.Task != nil {
-		dataorm, _ = req.Task.ToORM(ctx)
+
+		dataORM, err = req.Task.ToORM(ctx)
+		if err != nil {
+			logrus.Errorln("[api][GetListTaskPluck] Failed when convert PB to ORM:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+
 	}
 
 	sqlBuilder := &db.QueryBuilder{
@@ -345,27 +368,36 @@ func (s *Server) GetListTaskPluck(ctx context.Context, req *pb.ListTaskPluckRequ
 		Distinct:      req.GetDistinctKey(),
 	}
 
-	list, err := s.provider.GetListTaskPluck(ctx, req.GetPluckKey(), &dataorm, sqlBuilder)
+	list, err := s.provider.GetListTaskPluck(ctx, req.GetPluckKey(), &dataORM, sqlBuilder)
 	if err != nil {
+		logrus.Errorln("[api][GetListTaskPluck] Failed when execute GetListTaskPluck:", err)
 		return nil, err
 	}
 
 	result.Data = list
 
 	return result, nil
+
 }
 
 func (s *Server) GetTaskGraphStatus(ctx context.Context, req *pb.GraphStatusRequest) (*pb.GraphStatusResponse, error) {
+
+	res := &pb.GraphStatusResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Graph Data",
+	}
+
 	stat := req.Status.Number()
+
 	data, err := s.provider.GetGraphStatus(ctx, req.Service, uint(stat))
 	if err != nil {
+		logrus.Errorln("[api][GetTaskGraphStatus] Failed when execute GetGraphStatus:", err)
 		return nil, err
 	}
-	res := &pb.GraphStatusResponse{}
-	res.Code = 200
-	res.Error = false
-	res.Message = "Graph Data"
+
 	for _, v := range data {
+
 		val := &pb.GraphStatus{
 			Status: pb.Statuses(v.Name),
 			Type:   v.Type,
@@ -373,22 +405,31 @@ func (s *Server) GetTaskGraphStatus(ctx context.Context, req *pb.GraphStatusRequ
 		}
 
 		res.Data = append(res.Data, val)
+
 	}
 
 	return res, nil
+
 }
 
 func (s *Server) GraphStatusColumnType(ctx context.Context, req *pb.GraphStatusColumnTypeRequest) (*pb.GraphStatusColumnTypeResponse, error) {
+
+	res := &pb.GraphStatusColumnTypeResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Graph Data",
+	}
+
 	stat := req.Status.Number()
+
 	data, err := s.provider.GetGraphServiceType(ctx, req.Service, uint(stat), req.Column)
 	if err != nil {
+		logrus.Errorln("[api][GraphStatusColumnType] Failed when execute GetGraphServiceType:", err)
 		return nil, err
 	}
-	res := &pb.GraphStatusColumnTypeResponse{}
-	res.Code = 200
-	res.Error = false
-	res.Message = "Graph Data"
+
 	for _, v := range data {
+
 		val := &pb.GraphStatusColumnType{
 			Status: v.Name,
 			Type:   v.Type,
@@ -396,9 +437,11 @@ func (s *Server) GraphStatusColumnType(ctx context.Context, req *pb.GraphStatusC
 		}
 
 		res.Data = append(res.Data, val)
+
 	}
 
 	return res, nil
+
 }
 
 func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest) (*pb.GraphStepResponse, error) {
@@ -411,6 +454,7 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 
 	me, err := s.manager.GetMeFromJWT(ctx, "", "")
 	if err != nil {
+		logrus.Errorln("[api][GetTaskGraphStep] Failed when execute GetMeFromJWT:", err)
 		return nil, err
 	}
 
@@ -423,10 +467,12 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 
 	data, err := s.provider.GetGraphStep(ctx, me.CompanyID, req.Service, uint(step), uint(stat), req.IsIncludeApprove, req.IsIncludeReject, me.UserType)
 	if err != nil {
+		logrus.Errorln("[api][GetTaskGraphStep] Failed when execute GetGraphStep:", err)
 		return nil, err
 	}
 
 	for _, v := range data {
+
 		val := &pb.GraphStep{
 			Step:  pb.Steps(v.Name),
 			Type:  v.Type,
@@ -434,22 +480,14 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 		}
 
 		res.Data = append(res.Data, val)
+
 	}
 
 	return res, nil
+
 }
 
 func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.GetMyPendingTaskWithWorkflowGraphRequest) (*pb.GetMyPendingTaskWithWorkflowGraphResponse, error) {
-
-	currentUser, _, err := s.manager.GetMeFromMD(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, 1, currentUser.UserID)
-	if err != nil {
-		return nil, err
-	}
 
 	res := &pb.GetMyPendingTaskWithWorkflowGraphResponse{
 		Code:    200,
@@ -457,7 +495,20 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		Message: "Graph Data",
 	}
 
+	currentUser, _, err := s.manager.GetMeFromMD(ctx)
+	if err != nil {
+		logrus.Errorln("[api][GetMyPendingTaskWithWorkflowGraph] Failed when execute GetMeFromMD:", err)
+		return nil, err
+	}
+
+	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, 1, currentUser.UserID)
+	if err != nil {
+		logrus.Errorln("[api][GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
+		return nil, err
+	}
+
 	for _, v := range data {
+
 		switch v.Name {
 		case "verifier":
 			v.Name = "Checker"
@@ -466,9 +517,11 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		case "releaser":
 			v.Name = "Releaser"
 		}
+
 		if v.Status > 1 {
 			v.Name = "Maker"
 		}
+
 		val := &pb.GraphStepWorkflow{
 			Step:   v.Name,
 			Type:   v.Type,
@@ -477,6 +530,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		}
 
 		res.Data = append(res.Data, val)
+
 	}
 
 	return res, nil
@@ -484,6 +538,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 }
 
 func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (*pb.ListTaskResponse, error) {
+
 	result := pb.ListTaskResponse{
 		Error:   false,
 		Code:    200,
@@ -493,41 +548,46 @@ func (s *Server) GetListAnnouncement(ctx context.Context, req *pb.ListRequest) (
 
 	list, err := s.provider.GetListTaskWithFilter(ctx, &pb.TaskORM{Type: "Announcement"}, nil, nil)
 	if err != nil {
+		logrus.Errorln("[api][GetListAnnouncement] Failed when execute GetListTaskWithFilter:", err)
 		return nil, err
 	}
 
 	for _, v := range list {
+
 		task, err := v.ToPB(ctx)
 		if err != nil {
-			logrus.Errorln(err)
-			// s.logger.Error("GetListAnnouncement", fmt.Sprintf("%v", err))
+			logrus.Errorln("[api][GetListAnnouncement] Failed when convert ORM to PB:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
 		result.Data = append(result.Data, &task)
+
 	}
 
 	return &result, nil
+
 }
 
 func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequestEV) (*pb.SaveTaskResponseEV, error) {
+
 	key := getEnv("AES_KEY", "Odj12345*12345678901234567890123")
 	aes := customAES.NewCustomAES(key)
 
 	text, err := aes.Decrypt(req.TaskID)
 	if err != nil {
-		logrus.Errorf("val: %v | %v", req.TaskID, err)
-		// s.logger.Error("SaveTaskWithDataEV", fmt.Sprintf("Failed to decrypt taskID, val: %v | %v", req.TaskID, err))
+		logrus.Errorln("[api][SaveTaskWithDataEV] Failed when execute Decrypt:", err)
 		return nil, status.Errorf(codes.Internal, "Failed to decrypt TaskID")
 	}
+
 	taskID, err := strconv.Atoi(text)
 	if err != nil {
-		// handle error
-		// s.logger.Error("SaveTaskWithDataEV", fmt.Sprintf("failed to convert to int: %v", err))
+		logrus.Errorln("[api][SaveTaskWithDataEV] Failed when execute Atoi:", err)
 		return nil, status.Errorf(codes.Internal, "Failed to decrypt taskID")
 	}
 
 	taskPB, err := taskEVtoPB(req.Task, aes)
 	if err != nil {
+		logrus.Errorln("[api][SaveTaskWithDataEV] Failed when execute taskEVtoPB:", err)
 		return nil, err
 	}
 
@@ -540,10 +600,15 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 
 	response, err := s.SaveTaskWithData(ctx, request)
 	if err != nil {
+		logrus.Errorln("[api][SaveTaskWithDataEV] Failed when execute SaveTaskWithData:", err)
 		return nil, err
 	}
 
-	taskEV, _ := taskPBtoEV(response.Data, aes)
+	taskEV, err := taskPBtoEV(response.Data, aes)
+	if err != nil {
+		logrus.Errorln("[api][SaveTaskWithDataEV] Failed when execute taskPBtoEV:", err)
+		return nil, err
+	}
 
 	res := &pb.SaveTaskResponseEV{
 		Success: response.Success,
@@ -551,6 +616,7 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 	}
 
 	return res, nil
+
 }
 
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
