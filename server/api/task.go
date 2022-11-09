@@ -17,11 +17,13 @@ import (
 	announcement_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/announcement_service"
 	beneficiary_account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/beneficiary_account_service"
 	bg_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/bg_service"
+	bifast_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/bifast_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	deposito_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/deposito_service"
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
+	payroll_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/payroll_service"
 	product_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/product_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
@@ -1410,11 +1412,51 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskRequest
 
 	case "External Fund Transfer":
 
-		// TODO: Implement workflow approval
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		bifastConn, err := grpc.Dial(getEnv("BIFAST_SERVICE", ":9127"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Unable to connect BiFast Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer bifastConn.Close()
+
+		bifastClient := bifast_pb.NewApiServiceClient(bifastConn)
+
+		_, err = bifastClient.SetTaskExternalTransfer(newCtx, &bifast_pb.SetTaskExternalTransferRequest{
+			TaskID:  req.GetTaskID(),
+			Action:  req.GetAction(),
+			Comment: req.GetComment(),
+			Reasons: req.GetReasons(),
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			return nil, err
+		}
 
 	case "Payroll Transfer":
 
-		// TODO: Implement workflow approval
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		payrollConn, err := grpc.Dial(getEnv("PAYROLL_SERVICE", ":9126"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Unable to connect Payroll Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer payrollConn.Close()
+
+		payrollClient := payroll_pb.NewApiServiceClient(payrollConn)
+
+		_, err = payrollClient.SetTaskPayroll(newCtx, &payroll_pb.SetTaskPayrollRequest{
+			TaskID:  req.GetTaskID(),
+			Action:  req.GetAction(),
+			Comment: req.GetComment(),
+			Reasons: req.GetReasons(),
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			return nil, err
+		}
 
 	case "BG Issuing":
 
