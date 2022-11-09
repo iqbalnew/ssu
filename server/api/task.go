@@ -173,10 +173,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
 
-	if currentUser.UserType == "ba" {
-		currentUser.CompanyID = 0
-	}
-
 	var dataORM pb.TaskORM
 
 	sort := &pb.Sort{
@@ -231,7 +227,10 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		In:            req.GetIn(),
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
-		CompanyID:     fmt.Sprint(currentUser.CompanyID),
+	}
+
+	if currentUser.UserType == "ba" {
+		sqlBuilder.CompanyID = fmt.Sprint(currentUser.CompanyID)
 	}
 
 	dataORM, err = req.Task.ToORM(ctx)
