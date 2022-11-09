@@ -240,6 +240,8 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 
+	result.Pagination = setPagination(req)
+
 	list, err := s.provider.GetListTask(ctx, &dataORM, result.Pagination, sqlBuilder, req.RoleIDFilter, currentUser.UserID)
 	if err != nil {
 		logrus.Errorln("[api][GetListTask] Failed when execute GetListTask:", err)
@@ -257,8 +259,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		result.Data = append(result.Data, &task)
 
 	}
-
-	result.Pagination = setPagination(req)
 
 	return &result, err
 
@@ -301,6 +301,8 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		FilterNot:     req.GetFilterNot(),
 	}
 
+	result.Pagination = setPagination(req)
+
 	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.RoleIDFilter, userIDFilter)
 	if err != nil {
 		return nil, err
@@ -317,8 +319,6 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		result.Data = append(result.Data, &task)
 
 	}
-
-	result.Pagination = setPagination(req)
 
 	return &result, err
 
