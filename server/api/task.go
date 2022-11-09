@@ -188,21 +188,21 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	if req.Task != nil {
 
-		if strings.ToLower(req.Task.Type) == "maker" {
+		if req.Task.Step == pb.Steps_Maker {
 
 			filter = []string{"status:2", "status:3"}
 
-		} else if strings.ToLower(req.Task.Type) == "checker" || strings.ToLower(req.Task.Type) == "signer" || strings.ToLower(req.Task.Type) == "releaser" {
+		} else if req.Task.Step == pb.Steps_Checker || req.Task.Step == pb.Steps_Signer || req.Task.Step == pb.Steps_Releaser {
 
 			filter = []string{"status:1", "status:6"}
 
 			if req.IsTransactional {
 
-				if strings.ToLower(req.Task.Type) == "checker" {
+				if req.Task.Step == pb.Steps_Checker {
 					filter = append(filter, "workflow_doc.workflow.currentStep:checker")
-				} else if strings.ToLower(req.Task.Type) == "signer" {
+				} else if req.Task.Step == pb.Steps_Signer {
 					filter = append(filter, "workflow_doc.workflow.currentStep:signer")
-				} else if strings.ToLower(req.Task.Type) == "releaser" {
+				} else if req.Task.Step == pb.Steps_Releaser {
 					filter = append(filter, "workflow_doc.workflow.currentStep:releaser")
 				}
 
