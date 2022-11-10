@@ -398,7 +398,7 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowRoleIDFilter []uint64, workflowUserIDFilter uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
 
 	query := p.db_main
 	if filter.Type != "" {
@@ -417,10 +417,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		value = strings.ReplaceAll(value, "[", "'")
 		value = strings.ReplaceAll(value, "]", "'")
 		customQuery = fmt.Sprintf("array(select jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && array[%s]", value)
-		if workflowUserIDFilter != 0 {
-			customQuery = customQuery + " AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDFilter) + "%')"
-		}
 	}
+
 	if len(workflowAccountIDFilter) > 0 {
 		valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
 		valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
@@ -430,6 +428,15 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		} else {
 			customQuery = customQuery + " AND (workflow_doc->'workflow'->'header'->'uaID' in (" + valueAccount + "))"
 		}
+	}
+
+	if workflowUserIDFilter > 0 {
+		if customQuery == "" {
+			customQuery = "(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDFilter) + "%')"
+		} else {
+			customQuery = customQuery + " AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDFilter) + "%')"
+		}
+
 	}
 
 	logrus.Println("Custom Query list: ==> %s", customQuery)
