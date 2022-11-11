@@ -474,6 +474,10 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			v.Name = "Maker"
 		}
 
+		if v.Status == 1 {
+			v.Name = "Maker"
+		}
+
 		val := &pb.GraphStepWorkflow{
 			Step:   v.Name,
 			Type:   v.Type,
@@ -501,6 +505,10 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		case "releaser":
 			v.Name = "Releaser"
 		case "maker":
+			v.Name = "Maker"
+		}
+
+		if v.Status == 1 {
 			v.Name = "Maker"
 		}
 
