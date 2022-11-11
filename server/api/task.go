@@ -197,57 +197,8 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		Direction: req.GetDir().Enum().String(),
 	}
 
-	filter := []string{}
-
-	if req.Task != nil {
-
-		if req.Task.Step == pb.Steps_Maker {
-
-			filter = []string{"status:<>0", "status:<>1", "status:<>4", "status:<>5", "status:<>6", "status:<>7"}
-
-		} else if req.Task.Step == pb.Steps_Checker || req.Task.Step == pb.Steps_Signer || req.Task.Step == pb.Steps_Releaser {
-
-			filter = []string{"status:<>0", "status:<>2", "status:<>3", "status:<>4", "status:<>5", "status:<>7"}
-
-			if req.IsTransactional {
-
-				if req.Task.Step == pb.Steps_Checker {
-					filter = append(filter, "workflow_doc.workflow.currentStep:checker")
-				} else if req.Task.Step == pb.Steps_Signer {
-					filter = append(filter, "workflow_doc.workflow.currentStep:signer")
-				} else if req.Task.Step == pb.Steps_Releaser {
-					filter = append(filter, "workflow_doc.workflow.currentStep:releaser")
-				}
-
-				req.Task.Step = pb.Steps_NullStep
-
-			}
-
-		}
-
-	}
-
-	if currentUser.UserType == "cu" {
-
-		if req.FilterOr != "" {
-			req.FilterOr = req.FilterOr + ",created_by_id:" + fmt.Sprint(currentUser.UserID)
-		} else {
-			req.FilterOr = "created_by_id:" + fmt.Sprint(currentUser.UserID)
-		}
-
-	}
-
 	sqlBuilder := &db.QueryBuilder{
-		Filter:        strings.Join(filter, ","),
-		FilterOr:      req.GetFilterOr(),
-		CollectiveAnd: req.GetQuery(),
-		In:            req.GetIn(),
-		CustomOrder:   req.GetCustomOrder(),
-		Sort:          sort,
-	}
-
-	if currentUser.UserType != "ba" {
-		sqlBuilder.CompanyID = fmt.Sprint(currentUser.CompanyID)
+		Sort: sort,
 	}
 
 	dataORM, err = req.Task.ToORM(ctx)
@@ -258,7 +209,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	result.Pagination = setPagination(req)
 
-	list, err := s.provider.GetListTask(ctx, &dataORM, result.Pagination, sqlBuilder, currentUser.UserID, currentUser.RoleIDs, req.AccountIDFilter)
+	list, err := s.provider.GetListTaskNormal(ctx, &dataORM, result.Pagination, sqlBuilder, currentUser.UserID, currentUser.RoleIDs, req.AccountIDFilter)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTask] Failed when execute GetListTask:", err)
 		return nil, err
@@ -504,7 +455,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		return nil, err
 	}
 
-	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, 1, currentUser.UserID)
+	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, true, currentUser.UserID)
 	if err != nil {
 		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
 		return nil, err
@@ -519,9 +470,37 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			v.Name = "Signer"
 		case "releaser":
 			v.Name = "Releaser"
+		case "maker":
+			v.Name = "Maker"
 		}
 
-		if v.Status > 1 {
+		val := &pb.GraphStepWorkflow{
+			Step:   v.Name,
+			Type:   v.Type,
+			Status: pb.Statuses(v.Status),
+			Total:  v.Total,
+		}
+
+		res.Data = append(res.Data, val)
+
+	}
+
+	data, err = s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, false, currentUser.UserID)
+	if err != nil {
+		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
+		return nil, err
+	}
+
+	for _, v := range data {
+
+		switch v.Name {
+		case "verifier":
+			v.Name = "Checker"
+		case "approver":
+			v.Name = "Signer"
+		case "releaser":
+			v.Name = "Releaser"
+		case "maker":
 			v.Name = "Maker"
 		}
 

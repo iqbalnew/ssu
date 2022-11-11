@@ -71,33 +71,75 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 	return result, nil
 }
 
-func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, roleids []uint64, stat int, createdByID uint64) (result []*GraphResultWorkflowType, err error) {
+func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, roleids []uint64, isMaker bool, createdByID uint64) (result []*GraphResultWorkflowType, err error) {
+
 	if len(roleids) < 1 {
 		return []*GraphResultWorkflowType{}, nil
 	}
 
 	selectOpt := `workflow_doc->'workflow'->>'currentStep' as name, "type", "status", count(*) as total`
+
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
-	whereOpt := fmt.Sprintf("workflow_doc != '{}' AND status = '%d'", stat)
-	if service != "" {
-		whereOpt = fmt.Sprintf("%s AND type = '%v'", whereOpt, service)
+
+	whereOpt := ""
+
+	if isMaker {
+
+		whereOpt = ""
+
+		statusFilter := []string{
+			"status != 0",
+			"status != 1",
+			"status != 4",
+			"status != 5",
+			"status != 6",
+			"status != 7",
+		}
+
+		whereOpt = strings.Join(statusFilter, " AND ")
+
+	} else {
+
+		whereOpt = "workflow_doc != '{}'"
+
+		statusFilter := []string{
+			"status != 0",
+			"status != 2",
+			"status != 3",
+			"status != 4",
+			"status != 5",
+			"status != 7",
+		}
+
+		whereOpt = whereOpt + " AND " + strings.Join(statusFilter, " AND ")
+
 	}
 
-	roleidstring := "["
-	for i, roleid := range roleids {
-		if i > 0 {
-			roleidstring = fmt.Sprintf("%s,%d", roleidstring, roleid)
-		} else {
-			roleidstring = fmt.Sprintf("%s%d", roleidstring, roleid)
-		}
+	if service != "" {
+
+		whereOpt = fmt.Sprintf("%s AND type = '%v'", whereOpt, service)
+
 	}
-	roleidstring = roleidstring + "]"
-	whereOpt = fmt.Sprintf("%s AND TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%s", whereOpt, roleidstring)
-	if createdByID > 0 {
-		if service != "" {
-			whereOpt = fmt.Sprintf("%s OR ( created_by_id = %d AND status IN (1,2,3,5) AND type = '%v' AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%s'))", whereOpt, createdByID, service, "%"+fmt.Sprintln(createdByID)+"%")
-		} else {
-			whereOpt = fmt.Sprintf("%s OR ( created_by_id = %d AND status IN (1,2,3,5) AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%s'))", whereOpt, createdByID, "%"+fmt.Sprintln(createdByID)+"%")
+
+	if isMaker {
+
+		whereOpt = fmt.Sprintf("%s AND created_by_id = '%d'", whereOpt, createdByID)
+
+	} else {
+
+		roleidstring := ""
+		for i, roleid := range roleids {
+			if i > 0 {
+				roleidstring = fmt.Sprintf("%s,%d", roleidstring, roleid)
+			} else {
+				roleidstring = fmt.Sprintf("%s%d", roleidstring, roleid)
+			}
+		}
+		roleidstring = "[" + roleidstring + "]"
+		whereOpt = fmt.Sprintf("%s AND TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%s", whereOpt, roleidstring)
+
+		if createdByID > 0 {
+			whereOpt = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%s')", whereOpt, "%"+fmt.Sprint(createdByID)+"%")
 		}
 
 	}
@@ -457,6 +499,95 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, status.Errorf(codes.Internal, "Internal Server Error")
 		}
+	}
+
+	return tasks, nil
+
+}
+
+func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
+
+	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select("*", " CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by")
+
+	whereOpt := ""
+
+	if filter.Step == int32(pb.Steps_Maker) {
+
+		whereOpt = ""
+
+		statusFilter := []string{
+			"status != 0",
+			"status != 1",
+			"status != 4",
+			"status != 5",
+			"status != 6",
+			"status != 7",
+		}
+
+		whereOpt = strings.Join(statusFilter, " AND ")
+
+	} else {
+
+		whereOpt = "workflow_doc != '{}'"
+
+		statusFilter := []string{
+			"status != 0",
+			"status != 2",
+			"status != 3",
+			"status != 4",
+			"status != 5",
+			"status != 7",
+		}
+
+		whereOpt = whereOpt + " AND " + strings.Join(statusFilter, " AND ")
+
+	}
+
+	if filter.Type != "" {
+
+		whereOpt = fmt.Sprintf("%s AND type = '%v'", whereOpt, filter.Type)
+
+	}
+
+	if filter.Step == int32(pb.Steps_Maker) {
+
+		whereOpt = fmt.Sprintf("%s AND created_by_id = '%d'", whereOpt, workflowUserIDFilter)
+
+	} else {
+
+		roleidstring := ""
+		for i, roleid := range workflowRoleIDFilter {
+			if i > 0 {
+				roleidstring = fmt.Sprintf("%s,%d", roleidstring, roleid)
+			} else {
+				roleidstring = fmt.Sprintf("%s%d", roleidstring, roleid)
+			}
+		}
+		roleidstring = "[" + roleidstring + "]"
+		whereOpt = fmt.Sprintf("%s AND TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%s", whereOpt, roleidstring)
+
+		if workflowUserIDFilter > 0 {
+			whereOpt = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%s')", whereOpt, "%"+fmt.Sprint(workflowUserIDFilter)+"%")
+		}
+
+		if filter.Step == int32(pb.Steps_Checker) {
+			whereOpt = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'currentStep' = 'checker'", whereOpt)
+		} else if filter.Step == int32(pb.Steps_Signer) {
+			whereOpt = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'currentStep' = 'signer'", whereOpt)
+		} else if filter.Step == int32(pb.Steps_Releaser) {
+			whereOpt = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'currentStep' = 'releaser'", whereOpt)
+		}
+
+	}
+
+	if whereOpt != "" {
+		query = query.Where(whereOpt)
+	}
+
+	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
+
+	if err = query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
+		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 
 	return tasks, nil
