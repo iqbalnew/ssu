@@ -474,7 +474,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			v.Name = "Maker"
 		}
 
-		if v.Status == 1 {
+		if v.Status == 2 {
 			v.Name = "Maker"
 		}
 
@@ -508,7 +508,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			v.Name = "Maker"
 		}
 
-		if v.Status == 1 {
+		if v.Status == 2 {
 			v.Name = "Maker"
 		}
 
