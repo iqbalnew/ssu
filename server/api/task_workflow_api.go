@@ -54,11 +54,26 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 		}
 	case "maker":
 		// isSave = true
-		task.Step = pb.Steps_Maker
-		if workflow.NextStatus == "rejected" {
-			task.Status = pb.Statuses_Rejected
-		} else if workflow.NextStatus == "returned" {
-			task.Status = pb.Statuses_Returned
+		if task.Type == "Deposito" {
+			if task.DataBak != "" && task.DataBak != "{}" {
+				task.Status = pb.Statuses_Approved
+				task.Step = pb.Steps_Releaser
+				//task.Data = task.DataBak
+			} else {
+				task.Step = pb.Steps_Maker
+				if workflow.NextStatus == "rejected" {
+					task.Status = pb.Statuses_Rejected
+				} else if workflow.NextStatus == "returned" {
+					task.Status = pb.Statuses_Returned
+				}
+			}
+		} else {
+			task.Step = pb.Steps_Maker
+			if workflow.NextStatus == "rejected" {
+				task.Status = pb.Statuses_Rejected
+			} else if workflow.NextStatus == "returned" {
+				task.Status = pb.Statuses_Returned
+			}
 		}
 	default:
 		if task.Status != pb.Statuses_Pending {
