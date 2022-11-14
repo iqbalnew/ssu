@@ -2144,7 +2144,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			if currentStep == 3 {
 
 				if currentStatus == 1 {
+
 					if task.Type == "Company" {
+
 						company := &company_pb.CreateCompanyTaskReq{}
 						json.Unmarshal([]byte(task.Data), &company)
 
@@ -2204,7 +2206,9 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 								AssignedSteps: assignedStep,
 							}, grpc.Header(&header), grpc.Trailer(&trailer))
 						}
+
 					}
+
 				}
 
 				task.Status = 1
@@ -3830,37 +3834,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					return nil, err
 				}
 
-			}
-
-		case "Internal Fund Transfer":
-
-			var opts []grpc.DialOption
-			opts = append(opts, grpc.WithInsecure())
-
-			transferConn, err := grpc.Dial(getEnv("TRANSFER_SERVICE", ":9125"), opts...)
-			if err != nil {
-				logrus.Errorln("[api][func: SetTask] Unable to connect Transfer Service:", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-			defer transferConn.Close()
-
-			transferClient := transfer_pb.NewApiServiceClient(transferConn)
-
-			taskData := transfer_pb.InternalTransferData{}
-
-			err = json.Unmarshal([]byte(currentData), &taskData)
-			if err != nil {
-				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-
-			_, err = transferClient.CreateInternalTransferTransaction(ctx, &transfer_pb.CreateInternalTransferTransactionRequest{
-				TaskID: task.TaskID,
-				Data:   &taskData,
-			})
-			if err != nil {
-				logrus.Errorln("[api][func: SetTask] Failed when CreateInternalTransferTransaction:", err)
-				return nil, err
 			}
 
 		}
