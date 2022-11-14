@@ -476,7 +476,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		if customQuery == "" {
 			customQuery = "(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDFilter) + "%')"
 		} else {
-			customQuery = customQuery + " AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDFilter) + "%')"
+			customQuery = customQuery + " AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDFilter) + "%') and workflow_doc != '{}' "
 		}
 
 	}
