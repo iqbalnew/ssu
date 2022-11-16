@@ -1470,6 +1470,29 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskRequest
 			return nil, err
 		}
 
+	case "Deposito":
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		depositoConn, err := grpc.Dial(getEnv("DEPOSITO_SERVICE", ":9202"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Unable to connect Transfer Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer depositoConn.Close()
+
+		depositoClient := deposito_pb.NewDepositoServiceClient(depositoConn)
+
+		depositoClient.DepositoActionTask(newCtx, &deposito_pb.TaskActionRequest{
+			TaskID:  req.GetTaskID(),
+			Action:  req.GetAction(),
+			Comment: req.GetComment(),
+			Reasons: req.GetReasons(),
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			return nil, err
+		}
+
 	default:
 
 		_, err = s.SetTask(ctx, req)
