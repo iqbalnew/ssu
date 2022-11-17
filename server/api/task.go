@@ -1062,6 +1062,12 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 			task.WorkflowDoc = string(workflow)
 
+		} else {
+
+			// Auto approve task if Workflow STP
+
+			task.Status = 4
+
 		}
 
 		// Implement Workflow STP Here -- End
