@@ -2820,6 +2820,13 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Step = 3
 				task.Data = task.DataBak
 
+				if contains([]string{"Internal Fund Transfer", "Payroll Transfer", "BI-Fast"}, task.Type) {
+
+					task.Status = 7
+					task.Step = 1
+
+				}
+
 			} else {
 
 				task.Status = 7
