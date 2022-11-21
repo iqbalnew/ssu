@@ -1467,7 +1467,7 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 
 		bgClient := bg_pb.NewApiServiceClient(bgConn)
 
-		_, err = bgClient.TaskAction(newCtx, &bg_pb.TaskActionRequest{
+		_, err = bgClient.TaskIssuingAction(newCtx, &bg_pb.TaskIssuingActionRequest{
 			TaskID:   req.GetTaskID(),
 			Action:   req.GetAction(),
 			Comment:  req.GetComment(),
