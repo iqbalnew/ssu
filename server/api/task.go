@@ -1346,7 +1346,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 
 }
 
-func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTaskResponse, error) {
+func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWorkflowRequest) (*pb.SetTaskResponse, error) {
 
 	result := &pb.SetTaskResponse{
 		Error:   false,
@@ -1395,10 +1395,11 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskRequest
 		transferClient := transfer_pb.NewApiServiceClient(transferConn)
 
 		_, err = transferClient.SetTaskInternalTransfer(newCtx, &transfer_pb.SetTaskInternalTransferRequest{
-			TaskID:  req.GetTaskID(),
-			Action:  req.GetAction(),
-			Comment: req.GetComment(),
-			Reasons: req.GetReasons(),
+			TaskID:   req.GetTaskID(),
+			Action:   req.GetAction(),
+			Comment:  req.GetComment(),
+			Reasons:  req.GetReasons(),
+			PassCode: req.GetPassCode(),
 		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 		if err != nil {
 			return nil, err
@@ -1467,16 +1468,18 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskRequest
 		bgClient := bg_pb.NewApiServiceClient(bgConn)
 
 		_, err = bgClient.TaskAction(newCtx, &bg_pb.TaskActionRequest{
-			TaskID:  req.GetTaskID(),
-			Action:  req.GetAction(),
-			Comment: req.GetComment(),
-			Reasons: req.GetReasons(),
+			TaskID:   req.GetTaskID(),
+			Action:   req.GetAction(),
+			Comment:  req.GetComment(),
+			Reasons:  req.GetReasons(),
+			PassCode: req.GetPassCode(),
 		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 		if err != nil {
 			return nil, err
 		}
 
 	case "Deposito":
+
 		var opts []grpc.DialOption
 		opts = append(opts, grpc.WithInsecure())
 
@@ -1501,7 +1504,12 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskRequest
 
 	default:
 
-		_, err = s.SetTask(ctx, req)
+		_, err = s.SetTask(ctx, &pb.SetTaskRequest{
+			TaskID:  req.GetTaskID(),
+			Action:  req.GetAction(),
+			Comment: req.GetComment(),
+			Reasons: req.GetReasons(),
+		})
 		if err != nil {
 			return nil, err
 		}
@@ -4191,9 +4199,16 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 }
 
 func (s *Server) UpdateTaskRaw(ctx context.Context, req *pb.UpdateTaskRawReq) (*pb.SetTaskResponse, error) {
-	var err error
-	currentUser, userMd, err := s.manager.GetMeFromMD(ctx)
 
+	result := &pb.SetTaskResponse{
+		Error:   false,
+		Code:    200,
+		Message: "Task Updated",
+	}
+
+	var err error
+
+	currentUser, userMd, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -4229,33 +4244,35 @@ func (s *Server) UpdateTaskRaw(ctx context.Context, req *pb.UpdateTaskRawReq) (*
 
 	taskPb, _ := newestTask.ToPB(ctx)
 
-	result := &pb.SetTaskResponse{
-		Error:   false,
-		Code:    200,
-		Message: "Task Updated",
-		Data:    &taskPb,
-	}
+	result.Data = &taskPb
 
 	logrus.Println("Save LOG task 'update', type: ", task.Type)
+
 	// Save activity Log
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
+
 		logrus.Println("Set to save log")
+
 		taskORM, err := req.Task.ToORM(ctx)
 		if err != nil {
 			return nil, err
 		}
+
 		activityLog, err := GenerateActivityLog(&taskORM, currentUser, req.Action, "Update")
 		if err != nil {
 			logrus.Errorln("Failed to generate activity log: %v", err)
 			return nil, err
 		}
+
 		err = s.provider.SaveLog(ctx, activityLog)
 		if err != nil {
 			logrus.Errorln("Error SaveActivityLog: ", err)
 		}
+
 	}
 
 	return result, nil
+
 }
 
 func (s *Server) DeleteDraftTask(ctx context.Context, req *pb.DeleteDraftTaskRequest) (*pb.DeleteDraftTaskResponse, error) {

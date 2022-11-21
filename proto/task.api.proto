@@ -57,7 +57,7 @@ service TaskService {
             description: "This API is used for set task by action \n Actions: \n - approve \n - rework \n - reject"
         };
     };
-    rpc SetTaskWithWorkflow(SetTaskRequest) returns (SetTaskResponse) {
+    rpc SetTaskWithWorkflow(SetTaskWithWorkflowRequest) returns (SetTaskResponse) {
         option (google.api.http) = {
             post: "/api/task/workflow/{taskID}"
             body: "*"
