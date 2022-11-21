@@ -1628,6 +1628,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			companyClient := company_pb.NewApiServiceClient(companyConn)
 
 			if task.Type == "Menu:License" {
+				logrus.Printf("child menu =======> %v", task.Childs)
 
 				if strings.Contains(task.Data, `"isParent": true`) {
 
@@ -3330,6 +3331,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			menuClient := menu_pb.NewApiServiceClient(menuConn)
 
 			isDeleted := false
+			logrus.Printf("child menu 2 =======> %v", task.Childs)
 
 			if strings.Contains(task.Data, `"isParent": true`) {
 
