@@ -1136,6 +1136,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	} else {
 
 		if req.GetTask().GetCreatedByID() > 0 {
+			logrus.Println("[api][func: SaveTaskWithData] Created by IDs:", req.GetTask().GetCreatedByID())
 
 			userConn, err := grpc.Dial(getEnv("USER_SERVICE", ":9095"), opts...)
 			if err != nil {
