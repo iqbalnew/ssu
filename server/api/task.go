@@ -449,15 +449,15 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		Message: "Graph Data",
 	}
 
-	md, ok := metadata.FromIncomingContext(ctx)
-	if ok {
-		ctx = metadata.NewOutgoingContext(context.Background(), md)
-	}
-
 	currentUser, _, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetMeFromMD:", err)
 		return nil, err
+	}
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
 
 	var opts []grpc.DialOption
