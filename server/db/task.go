@@ -146,7 +146,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 				accountidstring = fmt.Sprintf("%s%d", accountidstring, accountid)
 			}
 		}
-		whereOpt = fmt.Sprintf("%s AND (workflow_doc->'workflow'->'header'->'uaID' in (%s))", whereOpt, accountidstring)
+		whereOpt = fmt.Sprintf("%s AND ((workflow_doc->'workflow'->'header'->'uaID')::INT in (%s))", whereOpt, accountidstring)
 
 		if createdByID > 0 {
 			whereOpt = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%s')", whereOpt, "%"+fmt.Sprint(createdByID)+"%")
