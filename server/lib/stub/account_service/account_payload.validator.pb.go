@@ -281,3 +281,14 @@ func (this *CekAccountAvaibilityRes) Validate() error {
 func (this *CekAccountUsedRes) Validate() error {
 	return nil
 }
+func (this *AccountNotificationData) Validate() error {
+	return nil
+}
+func (this *ListAccountByRoleRPCRequest) Validate() error {
+	if this.Account != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Account); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Account", err)
+		}
+	}
+	return nil
+}
