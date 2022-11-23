@@ -3569,7 +3569,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			}
 
-		case "Liquidity":
+		case "Cash Pooling":
 
 			logrus.Println("Liquidity")
 			var opts []grpc.DialOption
