@@ -664,57 +664,57 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	if task.Type == "Menu:License" {
 
-		if strings.Contains(task.Data, `"isParent": true`) {
+		// if strings.Contains(task.Data, `"isParent": true`) {
 
-			for i := range task.Childs {
+		// 	for i := range task.Childs {
 
-				menu := menu_pb.MenuLicenseSave{}
+		// 		menu := menu_pb.MenuLicenseSave{}
 
-				err = json.Unmarshal([]byte(task.Childs[i].Data), &menu)
-				if err != nil {
-					logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
-					return nil, status.Errorf(codes.Internal, "Internal Error")
-				}
+		// 		err = json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+		// 		if err != nil {
+		// 			logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+		// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+		// 		}
 
-				company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-					CompanyID: menu.CompanyID,
-				})
-				if err != nil {
-					logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
-					return nil, status.Errorf(codes.Internal, "Internal Error")
-				}
+		// 		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+		// 			CompanyID: menu.CompanyID,
+		// 		})
+		// 		if err != nil {
+		// 			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
+		// 			return nil, status.Errorf(codes.Internal, "Internal Error")
+		// 		}
 
-				if len(company.Data) == 0 {
-					logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
-					return nil, status.Errorf(codes.NotFound, "Company does not exist")
-				}
+		// 		if len(company.Data) == 0 {
+		// 			logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
+		// 			return nil, status.Errorf(codes.NotFound, "Company does not exist")
+		// 		}
 
-			}
+		// 	}
 
-		} else {
+		// } else {
 
-			menu := menu_pb.MenuLicenseSave{}
+		menu := menu_pb.MenuLicenseSave{}
 
-			json.Unmarshal([]byte(task.Data), &menu)
-			if err != nil {
-				logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-
-			company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-				CompanyID: menu.CompanyID,
-			})
-			if err != nil {
-				logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-
-			if len(company.Data) == 0 {
-				logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
-				return nil, status.Errorf(codes.NotFound, "Company does not exist")
-			}
-
+		json.Unmarshal([]byte(task.Data), &menu)
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Unable Unmarshal Data:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
+
+		company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+			CompanyID: menu.CompanyID,
+		})
+		if err != nil {
+			logrus.Errorln("[api][func: SaveTaskWithData] Failed when execute ListCompanyData:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+
+		if len(company.Data) == 0 {
+			logrus.Errorln("[api][func: SaveTaskWithData] Company does not exist")
+			return nil, status.Errorf(codes.NotFound, "Company does not exist")
+		}
+
+		// }
 	}
 
 	if task.Type == "Account" {
