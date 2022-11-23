@@ -35,6 +35,8 @@ type ApiServiceClient interface {
 	DeleteLiquidity(ctx context.Context, in *DeleteLiquidityRequest, opts ...grpc.CallOption) (*DeleteLiquidityResponse, error)
 	GetListData(ctx context.Context, in *ListDataRequest, opts ...grpc.CallOption) (*ListDataResponse, error)
 	GetListTBAValue(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListTBAValueResponse, error)
+	CreateLiquiditySchedules(ctx context.Context, in *CreateLiquiditySchedulesRequest, opts ...grpc.CallOption) (*CreateLiquiditySchedulesResponse, error)
+	RunDailySchedule(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RunDailyScheduleResponse, error)
 	RunLiquidityScheme(ctx context.Context, in *RunLiquidityTaskRequest, opts ...grpc.CallOption) (*RunLiquidityTaskResponse, error)
 	ValidateDate(ctx context.Context, in *ValidateDateRequest, opts ...grpc.CallOption) (*ValidateDateResponse, error)
 	ListLiquidityAuthorize(ctx context.Context, in *ListTaskLiquidityRequest, opts ...grpc.CallOption) (*ListLiquidityTaskResponse, error)
@@ -156,6 +158,24 @@ func (c *apiServiceClient) GetListTBAValue(ctx context.Context, in *Empty, opts 
 	return out, nil
 }
 
+func (c *apiServiceClient) CreateLiquiditySchedules(ctx context.Context, in *CreateLiquiditySchedulesRequest, opts ...grpc.CallOption) (*CreateLiquiditySchedulesResponse, error) {
+	out := new(CreateLiquiditySchedulesResponse)
+	err := c.cc.Invoke(ctx, "/liquidity.service.v1.ApiService/CreateLiquiditySchedules", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) RunDailySchedule(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RunDailyScheduleResponse, error) {
+	out := new(RunDailyScheduleResponse)
+	err := c.cc.Invoke(ctx, "/liquidity.service.v1.ApiService/RunDailySchedule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) RunLiquidityScheme(ctx context.Context, in *RunLiquidityTaskRequest, opts ...grpc.CallOption) (*RunLiquidityTaskResponse, error) {
 	out := new(RunLiquidityTaskResponse)
 	err := c.cc.Invoke(ctx, "/liquidity.service.v1.ApiService/RunLiquidityScheme", in, out, opts...)
@@ -199,6 +219,8 @@ type ApiServiceServer interface {
 	DeleteLiquidity(context.Context, *DeleteLiquidityRequest) (*DeleteLiquidityResponse, error)
 	GetListData(context.Context, *ListDataRequest) (*ListDataResponse, error)
 	GetListTBAValue(context.Context, *Empty) (*ListTBAValueResponse, error)
+	CreateLiquiditySchedules(context.Context, *CreateLiquiditySchedulesRequest) (*CreateLiquiditySchedulesResponse, error)
+	RunDailySchedule(context.Context, *Empty) (*RunDailyScheduleResponse, error)
 	RunLiquidityScheme(context.Context, *RunLiquidityTaskRequest) (*RunLiquidityTaskResponse, error)
 	ValidateDate(context.Context, *ValidateDateRequest) (*ValidateDateResponse, error)
 	ListLiquidityAuthorize(context.Context, *ListTaskLiquidityRequest) (*ListLiquidityTaskResponse, error)
@@ -244,6 +266,12 @@ func (UnimplementedApiServiceServer) GetListData(context.Context, *ListDataReque
 }
 func (UnimplementedApiServiceServer) GetListTBAValue(context.Context, *Empty) (*ListTBAValueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListTBAValue not implemented")
+}
+func (UnimplementedApiServiceServer) CreateLiquiditySchedules(context.Context, *CreateLiquiditySchedulesRequest) (*CreateLiquiditySchedulesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateLiquiditySchedules not implemented")
+}
+func (UnimplementedApiServiceServer) RunDailySchedule(context.Context, *Empty) (*RunDailyScheduleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunDailySchedule not implemented")
 }
 func (UnimplementedApiServiceServer) RunLiquidityScheme(context.Context, *RunLiquidityTaskRequest) (*RunLiquidityTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunLiquidityScheme not implemented")
@@ -483,6 +511,42 @@ func _ApiService_GetListTBAValue_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_CreateLiquiditySchedules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateLiquiditySchedulesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CreateLiquiditySchedules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/liquidity.service.v1.ApiService/CreateLiquiditySchedules",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CreateLiquiditySchedules(ctx, req.(*CreateLiquiditySchedulesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_RunDailySchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).RunDailySchedule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/liquidity.service.v1.ApiService/RunDailySchedule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).RunDailySchedule(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_RunLiquidityScheme_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RunLiquidityTaskRequest)
 	if err := dec(in); err != nil {
@@ -591,6 +655,14 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetListTBAValue",
 			Handler:    _ApiService_GetListTBAValue_Handler,
+		},
+		{
+			MethodName: "CreateLiquiditySchedules",
+			Handler:    _ApiService_CreateLiquiditySchedules_Handler,
+		},
+		{
+			MethodName: "RunDailySchedule",
+			Handler:    _ApiService_RunDailySchedule_Handler,
 		},
 		{
 			MethodName: "RunLiquidityScheme",

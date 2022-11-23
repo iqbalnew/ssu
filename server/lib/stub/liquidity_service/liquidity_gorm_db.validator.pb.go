@@ -153,6 +153,14 @@ func (this *LiquidityBeneficiaries) Validate() error {
 	}
 	return nil
 }
+func (this *LiquiditySchedules) Validate() error {
+	if this.ScheduleTime != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduleTime); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("ScheduleTime", err)
+		}
+	}
+	return nil
+}
 func (this *TBAValue) Validate() error {
 	return nil
 }
