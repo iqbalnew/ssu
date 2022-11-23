@@ -1135,10 +1135,47 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	} else {
 
-		task.CreatedByID = currentUser.UserID
-		task.CreatedByName = currentUser.Username
-		task.UpdatedByID = currentUser.UserID
-		task.UpdatedByName = currentUser.Username
+		if req.GetTask().GetCreatedByID() > 0 {
+
+			userConn, err := grpc.Dial(getEnv("USER_SERVICE", ":9095"), opts...)
+			if err != nil {
+				logrus.Errorln("[api][func: SaveTaskWithData] Unable to connect User Service:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer userConn.Close()
+
+			userClient := users_pb.NewApiServiceClient(userConn)
+
+			userRes, err := userClient.GetUserByUserID(ctx, &users_pb.GetUserIDArrayRequest{
+				UserID: []uint64{req.GetTask().GetCreatedByID()},
+			})
+			if err != nil {
+				logrus.Errorln("[api][func: SaveTaskWithData] Unable to Get User By User ID:", err)
+				return nil, err
+			}
+
+			if len(userRes.GetData()) > 0 {
+
+				task.CreatedByID = userRes.GetData()[0].UserID
+				task.CreatedByName = userRes.GetData()[0].Username
+				task.UpdatedByID = userRes.GetData()[0].UserID
+				task.UpdatedByName = userRes.GetData()[0].Username
+
+			} else {
+
+				logrus.Errorln("[api][func: SaveTaskWithData] User not found")
+				return nil, status.Errorf(codes.NotFound, "User not found")
+
+			}
+
+		} else {
+
+			task.CreatedByID = currentUser.UserID
+			task.CreatedByName = currentUser.Username
+			task.UpdatedByID = currentUser.UserID
+			task.UpdatedByName = currentUser.Username
+
+		}
 
 		savedTask, err = s.provider.CreateTask(ctx, &task)
 
