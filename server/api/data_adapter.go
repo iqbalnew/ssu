@@ -27,6 +27,7 @@ import (
 	transfer_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/transfer_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
 	workflow_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/workflow_service"
+	"github.com/sirupsen/logrus"
 )
 
 // generate activity log then Assign TaskID, Type, Description, Data and Key from input task data
@@ -64,7 +65,7 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 	case "Workflow":
 		_, key, err = TaskDataWorkflowToPB(task.Data)
 
-	case "Liquidity":
+	case "Cash Pooling":
 		_, key, err = TaskDataLiquidityToPB(task.Data)
 
 	case "SSO:User":
@@ -205,6 +206,7 @@ func TaskDataLiquidityToPB(data string) (val *liquidity_pb.CreateTaskLiquidityRe
 		return nil, "", err
 	}
 
+	logrus.Println("code =====>", liquidity.GetCode())
 	return &liquidity, liquidity.GetCode(), nil
 }
 
