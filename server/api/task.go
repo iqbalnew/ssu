@@ -3434,79 +3434,82 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			isDeleted := false
 			logrus.Printf("child menu 2 =======> %v", task.Childs)
 
-			if strings.Contains(task.Data, `"isParent": true`) {
+			// if strings.Contains(task.Data, `"isParent": true`) {
 
-				for i := range task.Childs {
+			// 	for i := range task.Childs {
 
-					if task.Childs[i].IsParentActive {
+			// 		if task.Childs[i].IsParentActive {
 
-						data := menu_pb.SaveMenuLicenseReq{}
-						menu := menu_pb.MenuLicenseSave{}
+			// 			data := menu_pb.SaveMenuLicenseReq{}
+			// 			menu := menu_pb.MenuLicenseSave{}
 
-						err = json.Unmarshal([]byte(task.Childs[i].Data), &menu)
-						if err != nil {
-							logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
-							return nil, status.Errorf(codes.Internal, "Internal Error")
-						}
+			// 			err = json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+			// 			if err != nil {
+			// 				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+			// 				return nil, status.Errorf(codes.Internal, "Internal Error")
+			// 			}
 
-						data.Data = &menu
-						data.TaskID = task.Childs[i].TaskID
+			// 			data.Data = &menu
+			// 			data.TaskID = task.Childs[i].TaskID
 
-						if !isDeleted {
+			// 			if !isDeleted {
 
-							_, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-							if err != nil {
-								logrus.Errorln("[api][func: SetTask] Failed when DeleteMenuLicenseCompany:", err)
-								return nil, err
-							}
+			// 				_, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			// 				if err != nil {
+			// 					logrus.Errorln("[api][func: SetTask] Failed when DeleteMenuLicenseCompany:", err)
+			// 					return nil, err
+			// 				}
 
-							isDeleted = true
+			// 				isDeleted = true
 
-						}
+			// 			}
 
-						_, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-						if err != nil {
-							logrus.Errorln("[api][func: SetTask] Failed when SaveMenuLicense:", err)
-							return nil, err
-						}
+			// 			_, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			// 			if err != nil {
+			// 				logrus.Errorln("[api][func: SetTask] Failed when SaveMenuLicense:", err)
+			// 				return nil, err
+			// 			}
 
-					}
+			// 		}
 
-				}
+			// 	}
 
-			} else {
+			// } else {
 
-				data := menu_pb.SaveMenuLicenseReq{}
-				menu := menu_pb.MenuLicenseSave{}
+			data := menu_pb.SaveMenuLicenseReq{}
+			// menu := []menu_pb.MenuLicenseSave{}
+			parent := menu_pb.MenuParent{}
 
-				err = json.Unmarshal([]byte(task.Data), &menu)
+			err = json.Unmarshal([]byte(task.Data), &parent)
+
+			// err = json.Unmarshal([]byte(task.Data), &menu)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
+			data.Data = parent.Menus
+			data.TaskID = task.TaskID
+
+			if !isDeleted {
+
+				_, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
-					logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err)
-					return nil, status.Errorf(codes.Internal, "Internal Error")
-				}
-
-				data.Data = &menu
-				data.TaskID = task.TaskID
-
-				if !isDeleted {
-
-					_, err := menuClient.DeleteMenuLicenseCompany(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-					if err != nil {
-						logrus.Errorln("[api][func: SetTask] Failed when DeleteMenuLicenseCompany:", err)
-						return nil, err
-					}
-
-					isDeleted = true
-
-				}
-
-				_, err := menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
-				if err != nil {
-					logrus.Errorln("[api][func: SetTask] Failed when SaveMenuLicense:", err)
+					logrus.Errorln("[api][func: SetTask] Failed when DeleteMenuLicenseCompany:", err)
 					return nil, err
 				}
 
+				isDeleted = true
+
 			}
+
+			_, err = menuClient.SaveMenuLicense(ctx, &data, grpc.Header(&header), grpc.Trailer(&trailer))
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Failed when SaveMenuLicense:", err)
+				return nil, err
+			}
+
+			// }
 
 		case "Role":
 

@@ -531,6 +531,7 @@ type MenuLicenseORM struct {
 	Label            string
 	MenuID           uint64
 	MenuLicenseID    uint64 `gorm:"primary_key;not null"`
+	ModuleID         uint64
 	Name             string `gorm:"type:varchar(255)"`
 	OrderNumber      string
 	ProductID        uint64
@@ -586,6 +587,7 @@ func (m *MenuLicense) ToORM(ctx context.Context) (MenuLicenseORM, error) {
 	to.OrderNumber = m.OrderNumber
 	to.AccountAlias = m.AccountAlias
 	to.IsTransactional = m.IsTransactional
+	to.ModuleID = m.ModuleID
 	if posthook, ok := interface{}(m).(MenuLicenseWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -631,6 +633,7 @@ func (m *MenuLicenseORM) ToPB(ctx context.Context) (MenuLicense, error) {
 	to.OrderNumber = m.OrderNumber
 	to.AccountAlias = m.AccountAlias
 	to.IsTransactional = m.IsTransactional
+	to.ModuleID = m.ModuleID
 	if posthook, ok := interface{}(m).(MenuLicenseWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -3067,6 +3070,10 @@ func DefaultApplyFieldMaskMenuLicense(ctx context.Context, patchee *MenuLicense,
 		}
 		if f == prefix+"IsTransactional" {
 			patchee.IsTransactional = patcher.IsTransactional
+			continue
+		}
+		if f == prefix+"ModuleID" {
+			patchee.ModuleID = patcher.ModuleID
 			continue
 		}
 	}
