@@ -1265,11 +1265,13 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 			CreatedAt:     saved.CreatedAt,
 			UpdatedAt:     saved.UpdatedAt,
 		},
+
 	}
 
 	logrus.Println("[api][func: SaveTaskWithData] Step 7")
 
 	logrus.Println("[api][func: SaveTaskWithData] Save Log for Task Type:", task.Type)
+
 
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
 
