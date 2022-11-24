@@ -4185,7 +4185,6 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 	product := productData.Data[0]
 
 	taskType := []string{"Swift", "Cash Pooling"}
-	var getWorkflow *workflow_pb.ValidateWorkflowResponse
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
 		if req.TransactionAmount == 0 {
@@ -4203,7 +4202,7 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 		defer workflowConn.Close()
 
 		client := workflow_pb.NewApiServiceClient(workflowConn)
-		getWorkflow, err = client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
+		getWorkflow, err := client.GenerateWorkflow(ctx, &workflow_pb.GenerateWorkflowRequest{
 			ProductID:           product.ProductID,
 			TransactionalNumber: uint64(req.TransactionAmount),
 			Currency:            req.GetTransactionCurrency(),
@@ -4255,12 +4254,6 @@ func (s *Server) UpdateTaskPlain(ctx context.Context, req *pb.SaveTaskRequest) (
 	if req.IsDraft {
 		task.Step = 1
 		task.Status = 2
-	} else {
-		if getWorkflow.Data != nil {
-			if getWorkflow.Data.GetNextStatus() == "stp" {
-				task.Status = 4
-			}
-		}
 	}
 
 	command := "Create"
