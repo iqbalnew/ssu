@@ -71,7 +71,7 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 	return result, nil
 }
 
-func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, roleids []uint64, isMaker bool, createdByID uint64) (result []*GraphResultWorkflowType, err error) {
+func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, roleids []uint64, accountids []uint64, isMaker bool, createdByID uint64) (result []*GraphResultWorkflowType, err error) {
 
 	if len(roleids) < 1 {
 		return []*GraphResultWorkflowType{}, nil
@@ -137,6 +137,16 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 		}
 		roleidstring = "[" + roleidstring + "]"
 		whereOpt = fmt.Sprintf("%s AND TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%s", whereOpt, roleidstring)
+
+		accountidstring := ""
+		for i, accountid := range accountids {
+			if i > 0 {
+				accountidstring = fmt.Sprintf("%s,%d", accountidstring, accountid)
+			} else {
+				accountidstring = fmt.Sprintf("%s%d", accountidstring, accountid)
+			}
+		}
+		whereOpt = fmt.Sprintf("%s AND ((workflow_doc->'workflow'->'header'->'uaID')::INT in (%s))", whereOpt, accountidstring)
 
 		if createdByID > 0 {
 			whereOpt = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%s')", whereOpt, "%"+fmt.Sprint(createdByID)+"%")
