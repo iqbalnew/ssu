@@ -476,12 +476,10 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
 		valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
 		valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
-		if valueAccount != "" {
-			if customQuery == "" {
-				customQuery = fmt.Sprintf("workflow_doc->'workflow'->'header'->'uaID' in (%s)", valueAccount)
-			} else {
-				customQuery = customQuery + " AND (workflow_doc->'workflow'->'header'->'uaID' in (" + valueAccount + "))"
-			}
+		if customQuery == "" {
+			customQuery = fmt.Sprintf("workflow_doc->'workflow'->'header'->'uaID' in (%s)", valueAccount)
+		} else {
+			customQuery = customQuery + " AND (workflow_doc->'workflow'->'header'->'uaID' in (" + valueAccount + "))"
 		}
 	}
 
