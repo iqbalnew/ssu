@@ -27,6 +27,7 @@ import (
 	product_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/product_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
+	swift_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/swift_service"
 	system_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/system_service"
 	transfer_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/transfer_service"
 	users_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/user_service"
@@ -1265,16 +1266,13 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 			CreatedAt:     saved.CreatedAt,
 			UpdatedAt:     saved.UpdatedAt,
 		},
-
 	}
 
 	logrus.Println("[api][func: SaveTaskWithData] Step 7")
 
 	logrus.Println("[api][func: SaveTaskWithData] Save Log for Task Type:", task.Type)
 
-
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
-
 		action := "save"
 		if req.IsDraft {
 			action = "draft"
@@ -1545,6 +1543,30 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 		payrollClient := payroll_pb.NewApiServiceClient(payrollConn)
 
 		_, err = payrollClient.SetTaskPayroll(newCtx, &payroll_pb.SetTaskPayrollRequest{
+			TaskID:  req.GetTaskID(),
+			Action:  req.GetAction(),
+			Comment: req.GetComment(),
+			Reasons: req.GetReasons(),
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			return nil, err
+		}
+
+	case "Swift":
+
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		swiftConn, err := grpc.Dial(getEnv("SWIFT_SERVICE", ":9211"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Unable to connect Swift Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer swiftConn.Close()
+
+		swiftClient := swift_pb.NewSwiftServiceClient(swiftConn)
+
+		_, err = swiftClient.TaskAction(newCtx, &swift_pb.TaskActionRequest{
 			TaskID:  req.GetTaskID(),
 			Action:  req.GetAction(),
 			Comment: req.GetComment(),

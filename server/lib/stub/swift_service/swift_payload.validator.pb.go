@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/mwitkow/go-proto-validators"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -108,14 +108,9 @@ func (this *KursBRIEFXResponse) Validate() error {
 	return nil
 }
 func (this *SwiftRoutePartnerData) Validate() error {
-	if this.ENUMERATED_VALUE != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ENUMERATED_VALUE); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ENUMERATED_VALUE", err)
-		}
-	}
 	return nil
 }
-func (this *SwiftRoutePartnerDataEnumeratedValue) Validate() error {
+func (this *EnumeratedValue) Validate() error {
 	return nil
 }
 func (this *SwiftRoutePartner) Validate() error {
@@ -402,5 +397,102 @@ func (this *ApprovalCacheReq) Validate() error {
 	return nil
 }
 func (this *ApprovalCacheRes) Validate() error {
+	return nil
+}
+func (this *SwiftNotificationData) Validate() error {
+	return nil
+}
+func (this *RemittanceTransactionTemplateData) Validate() error {
+	return nil
+}
+func (this *RemittanceTemplateData) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *RemittanceTemplateDataRes) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	return nil
+}
+func (this *SaveRemittanceTemplateRequest) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *SaveRemittanceTemplateResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *RemittanceTemplateListRequest) Validate() error {
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+		}
+	}
+	return nil
+}
+func (this *RemittanceTemplateListRequest_RemittanceTemplateListFilter) Validate() error {
+	return nil
+}
+func (this *RemittanceTemplateListResponse) Validate() error {
+	for _, item := range this.Data {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+			}
+		}
+	}
+	if this.Pagination != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Pagination); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Pagination", err)
+		}
+	}
+	return nil
+}
+func (this *DetailRemittanceTemplateRequest) Validate() error {
+	return nil
+}
+func (this *DetailRemittanceTemplateResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *DeleteRemittanceTemplateRequest) Validate() error {
+	return nil
+}
+func (this *DeleteRemittanceTemplateResponse) Validate() error {
+	return nil
+}
+func (this *DeleteTaskReq) Validate() error {
+	return nil
+}
+func (this *DeleteTaskRes) Validate() error {
 	return nil
 }

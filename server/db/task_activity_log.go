@@ -85,7 +85,7 @@ type ActivityLogFindReq struct {
 func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFindReq) (*ActivityLogFindRes, error) {
 
 	var logs []*ActivityLog
-
+	logrus.Println("mongoooo =====>", p.mongo)
 	if p.mongo == nil {
 		logrus.Println("[log][func: GetActivityLogs] Mongo Connection is nil")
 		return &ActivityLogFindRes{

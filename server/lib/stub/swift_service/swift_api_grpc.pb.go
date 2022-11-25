@@ -46,6 +46,11 @@ type SwiftServiceClient interface {
 	DelayedHandler(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*DelayedHandlerRes, error)
 	ExecTransaction(ctx context.Context, in *ExecTransactionReq, opts ...grpc.CallOption) (*ExecTransactionRes, error)
 	IsApprovalExist(ctx context.Context, in *ApprovalCacheReq, opts ...grpc.CallOption) (*ApprovalCacheRes, error)
+	GetListRemittanceTemplate(ctx context.Context, in *RemittanceTemplateListRequest, opts ...grpc.CallOption) (*RemittanceTemplateListResponse, error)
+	SaveRemittanceTemplate(ctx context.Context, in *SaveRemittanceTemplateRequest, opts ...grpc.CallOption) (*SaveRemittanceTemplateResponse, error)
+	DetailRemittanceTemplate(ctx context.Context, in *DetailRemittanceTemplateRequest, opts ...grpc.CallOption) (*DetailRemittanceTemplateResponse, error)
+	DeleteRemittanceTemplate(ctx context.Context, in *DeleteRemittanceTemplateRequest, opts ...grpc.CallOption) (*DeleteRemittanceTemplateResponse, error)
+	DeleteTask(ctx context.Context, in *DeleteTaskReq, opts ...grpc.CallOption) (*DeleteTaskRes, error)
 }
 
 type swiftServiceClient struct {
@@ -263,6 +268,51 @@ func (c *swiftServiceClient) IsApprovalExist(ctx context.Context, in *ApprovalCa
 	return out, nil
 }
 
+func (c *swiftServiceClient) GetListRemittanceTemplate(ctx context.Context, in *RemittanceTemplateListRequest, opts ...grpc.CallOption) (*RemittanceTemplateListResponse, error) {
+	out := new(RemittanceTemplateListResponse)
+	err := c.cc.Invoke(ctx, "/swift.service.v1.SwiftService/GetListRemittanceTemplate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *swiftServiceClient) SaveRemittanceTemplate(ctx context.Context, in *SaveRemittanceTemplateRequest, opts ...grpc.CallOption) (*SaveRemittanceTemplateResponse, error) {
+	out := new(SaveRemittanceTemplateResponse)
+	err := c.cc.Invoke(ctx, "/swift.service.v1.SwiftService/SaveRemittanceTemplate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *swiftServiceClient) DetailRemittanceTemplate(ctx context.Context, in *DetailRemittanceTemplateRequest, opts ...grpc.CallOption) (*DetailRemittanceTemplateResponse, error) {
+	out := new(DetailRemittanceTemplateResponse)
+	err := c.cc.Invoke(ctx, "/swift.service.v1.SwiftService/DetailRemittanceTemplate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *swiftServiceClient) DeleteRemittanceTemplate(ctx context.Context, in *DeleteRemittanceTemplateRequest, opts ...grpc.CallOption) (*DeleteRemittanceTemplateResponse, error) {
+	out := new(DeleteRemittanceTemplateResponse)
+	err := c.cc.Invoke(ctx, "/swift.service.v1.SwiftService/DeleteRemittanceTemplate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *swiftServiceClient) DeleteTask(ctx context.Context, in *DeleteTaskReq, opts ...grpc.CallOption) (*DeleteTaskRes, error) {
+	out := new(DeleteTaskRes)
+	err := c.cc.Invoke(ctx, "/swift.service.v1.SwiftService/DeleteTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SwiftServiceServer is the server API for SwiftService service.
 // All implementations must embed UnimplementedSwiftServiceServer
 // for forward compatibility
@@ -290,6 +340,11 @@ type SwiftServiceServer interface {
 	DelayedHandler(context.Context, *Empty) (*DelayedHandlerRes, error)
 	ExecTransaction(context.Context, *ExecTransactionReq) (*ExecTransactionRes, error)
 	IsApprovalExist(context.Context, *ApprovalCacheReq) (*ApprovalCacheRes, error)
+	GetListRemittanceTemplate(context.Context, *RemittanceTemplateListRequest) (*RemittanceTemplateListResponse, error)
+	SaveRemittanceTemplate(context.Context, *SaveRemittanceTemplateRequest) (*SaveRemittanceTemplateResponse, error)
+	DetailRemittanceTemplate(context.Context, *DetailRemittanceTemplateRequest) (*DetailRemittanceTemplateResponse, error)
+	DeleteRemittanceTemplate(context.Context, *DeleteRemittanceTemplateRequest) (*DeleteRemittanceTemplateResponse, error)
+	DeleteTask(context.Context, *DeleteTaskReq) (*DeleteTaskRes, error)
 	mustEmbedUnimplementedSwiftServiceServer()
 }
 
@@ -365,6 +420,21 @@ func (UnimplementedSwiftServiceServer) ExecTransaction(context.Context, *ExecTra
 }
 func (UnimplementedSwiftServiceServer) IsApprovalExist(context.Context, *ApprovalCacheReq) (*ApprovalCacheRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsApprovalExist not implemented")
+}
+func (UnimplementedSwiftServiceServer) GetListRemittanceTemplate(context.Context, *RemittanceTemplateListRequest) (*RemittanceTemplateListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListRemittanceTemplate not implemented")
+}
+func (UnimplementedSwiftServiceServer) SaveRemittanceTemplate(context.Context, *SaveRemittanceTemplateRequest) (*SaveRemittanceTemplateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveRemittanceTemplate not implemented")
+}
+func (UnimplementedSwiftServiceServer) DetailRemittanceTemplate(context.Context, *DetailRemittanceTemplateRequest) (*DetailRemittanceTemplateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DetailRemittanceTemplate not implemented")
+}
+func (UnimplementedSwiftServiceServer) DeleteRemittanceTemplate(context.Context, *DeleteRemittanceTemplateRequest) (*DeleteRemittanceTemplateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRemittanceTemplate not implemented")
+}
+func (UnimplementedSwiftServiceServer) DeleteTask(context.Context, *DeleteTaskReq) (*DeleteTaskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTask not implemented")
 }
 func (UnimplementedSwiftServiceServer) mustEmbedUnimplementedSwiftServiceServer() {}
 
@@ -793,6 +863,96 @@ func _SwiftService_IsApprovalExist_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SwiftService_GetListRemittanceTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemittanceTemplateListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SwiftServiceServer).GetListRemittanceTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/swift.service.v1.SwiftService/GetListRemittanceTemplate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SwiftServiceServer).GetListRemittanceTemplate(ctx, req.(*RemittanceTemplateListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SwiftService_SaveRemittanceTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveRemittanceTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SwiftServiceServer).SaveRemittanceTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/swift.service.v1.SwiftService/SaveRemittanceTemplate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SwiftServiceServer).SaveRemittanceTemplate(ctx, req.(*SaveRemittanceTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SwiftService_DetailRemittanceTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DetailRemittanceTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SwiftServiceServer).DetailRemittanceTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/swift.service.v1.SwiftService/DetailRemittanceTemplate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SwiftServiceServer).DetailRemittanceTemplate(ctx, req.(*DetailRemittanceTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SwiftService_DeleteRemittanceTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRemittanceTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SwiftServiceServer).DeleteRemittanceTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/swift.service.v1.SwiftService/DeleteRemittanceTemplate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SwiftServiceServer).DeleteRemittanceTemplate(ctx, req.(*DeleteRemittanceTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SwiftService_DeleteTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTaskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SwiftServiceServer).DeleteTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/swift.service.v1.SwiftService/DeleteTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SwiftServiceServer).DeleteTask(ctx, req.(*DeleteTaskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SwiftService_ServiceDesc is the grpc.ServiceDesc for SwiftService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -891,6 +1051,26 @@ var SwiftService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IsApprovalExist",
 			Handler:    _SwiftService_IsApprovalExist_Handler,
+		},
+		{
+			MethodName: "GetListRemittanceTemplate",
+			Handler:    _SwiftService_GetListRemittanceTemplate_Handler,
+		},
+		{
+			MethodName: "SaveRemittanceTemplate",
+			Handler:    _SwiftService_SaveRemittanceTemplate_Handler,
+		},
+		{
+			MethodName: "DetailRemittanceTemplate",
+			Handler:    _SwiftService_DetailRemittanceTemplate_Handler,
+		},
+		{
+			MethodName: "DeleteRemittanceTemplate",
+			Handler:    _SwiftService_DeleteRemittanceTemplate_Handler,
+		},
+		{
+			MethodName: "DeleteTask",
+			Handler:    _SwiftService_DeleteTask_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
