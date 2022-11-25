@@ -25,6 +25,9 @@ const _ = grpc.SupportPackageIsVersion7
 type ApiServiceClient interface {
 	HealthCheck(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	ListBeneficiaryAccount(ctx context.Context, in *ListBeneficiaryAccountRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountResponse, error)
+	ListBeneficiaryAccountByRole(ctx context.Context, in *ListBeneficiaryAccountRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountResponse, error)
+	ListBeneficiaryAccountDataByRole(ctx context.Context, in *ListBeneficiaryAccountDataByRoleRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountResponse, error)
+	TaskAction(ctx context.Context, in *TaskActionRequest, opts ...grpc.CallOption) (*TaskActionResponse, error)
 	CreateBeneficiaryAccount(ctx context.Context, in *CreateBeneficiaryAccountRequest, opts ...grpc.CallOption) (*CreateBeneficiaryAccountResponse, error)
 	CreateBeneficiaryAccountTask(ctx context.Context, in *CreateBeneficiaryAccountTaskRequest, opts ...grpc.CallOption) (*CreateBeneficiaryAccountTaskResponse, error)
 	CreateBeneficiaryAccountTaskMultiple(ctx context.Context, in *CreateBeneficiaryAccountTaskBulkRequest, opts ...grpc.CallOption) (*CreateBeneficiaryAccountTaskResponse, error)
@@ -34,14 +37,20 @@ type ApiServiceClient interface {
 	DeleteBeneficiaryAccount(ctx context.Context, in *CreateBeneficiaryAccountRequest, opts ...grpc.CallOption) (*DeleteBeneficiaryRes, error)
 	RequestDeleteBeneficiaryAccountTask(ctx context.Context, in *GetBeneficiaryAccountTaskByIDRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountTaskResponse, error)
 	ValidateBeneficiaryAccount(ctx context.Context, in *ValidateBeneficiaryAccountRequest, opts ...grpc.CallOption) (*ValidateBeneficiaryAccountResponse, error)
+	ValidateBeneficiaryAccountHTTP(ctx context.Context, in *ValidateBeneficiaryAccountRequest, opts ...grpc.CallOption) (*ValidateBeneficiaryAccountResponseHTTP, error)
+	ValidateBeneficiaryAccountEnquiry(ctx context.Context, in *ValidateBeneficiaryAccountEnquiryRequest, opts ...grpc.CallOption) (*ValidateBeneficiaryAccountEnquiryResponse, error)
 	BeneficiaryAccountDetail(ctx context.Context, in *BeneficiaryAccountDetailRequest, opts ...grpc.CallOption) (*BeneficiaryAccountDetailResponse, error)
 	UpdateBeneficiaryAccountRoleRPC(ctx context.Context, in *UpdateBeneficiaryAccountRoleRequest, opts ...grpc.CallOption) (*UpdateBeneficiaryAccountRoleResponse, error)
 	UpdateBeneficiaryAccountRole(ctx context.Context, in *UpdateBeneficiaryAccountRoleRequest, opts ...grpc.CallOption) (*UpdateBeneficiaryAccountRoleResponse, error)
 	DownloadListBeneficiaryAccountTasks(ctx context.Context, in *FileListBeneficiaryAccountTaskRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	DownloadTemplate(ctx context.Context, in *FileListTemplateRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	CekBeneficiaryAccountAvaibility(ctx context.Context, in *CekBeneficiaryAccountAvaibilityReq, opts ...grpc.CallOption) (*CekBeneficiaryAccountAvaibilityRes, error)
+	CekBeneficiaryAccountUsed(ctx context.Context, in *CekBeneficiaryAccountAvaibilityReq, opts ...grpc.CallOption) (*CekBeneficiaryAccountUsedRes, error)
 	ListBank(ctx context.Context, in *ListBankReq, opts ...grpc.CallOption) (*ListBankRes, error)
 	BankDetail(ctx context.Context, in *BankDetailRequest, opts ...grpc.CallOption) (*BankDetailResponse, error)
+	ListBeneficiaryAccountByRoleRPC(ctx context.Context, in *ListBeneficiaryAccountByRoleRPCRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountResponse, error)
+	ListBeneficiaryAccountRPC(ctx context.Context, in *ListBeneficiaryAccountRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountResponse, error)
+	ValidateBeneficiaryAccountRPC(ctx context.Context, in *ValidateBeneficiaryAccountRequest, opts ...grpc.CallOption) (*ValidateBeneficiaryAccountResponse, error)
 }
 
 type apiServiceClient struct {
@@ -64,6 +73,33 @@ func (c *apiServiceClient) HealthCheck(ctx context.Context, in *Empty, opts ...g
 func (c *apiServiceClient) ListBeneficiaryAccount(ctx context.Context, in *ListBeneficiaryAccountRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountResponse, error) {
 	out := new(ListBeneficiaryAccountResponse)
 	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/ListBeneficiaryAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ListBeneficiaryAccountByRole(ctx context.Context, in *ListBeneficiaryAccountRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountResponse, error) {
+	out := new(ListBeneficiaryAccountResponse)
+	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/ListBeneficiaryAccountByRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ListBeneficiaryAccountDataByRole(ctx context.Context, in *ListBeneficiaryAccountDataByRoleRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountResponse, error) {
+	out := new(ListBeneficiaryAccountResponse)
+	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/ListBeneficiaryAccountDataByRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) TaskAction(ctx context.Context, in *TaskActionRequest, opts ...grpc.CallOption) (*TaskActionResponse, error) {
+	out := new(TaskActionResponse)
+	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/TaskAction", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -151,6 +187,24 @@ func (c *apiServiceClient) ValidateBeneficiaryAccount(ctx context.Context, in *V
 	return out, nil
 }
 
+func (c *apiServiceClient) ValidateBeneficiaryAccountHTTP(ctx context.Context, in *ValidateBeneficiaryAccountRequest, opts ...grpc.CallOption) (*ValidateBeneficiaryAccountResponseHTTP, error) {
+	out := new(ValidateBeneficiaryAccountResponseHTTP)
+	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/ValidateBeneficiaryAccountHTTP", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ValidateBeneficiaryAccountEnquiry(ctx context.Context, in *ValidateBeneficiaryAccountEnquiryRequest, opts ...grpc.CallOption) (*ValidateBeneficiaryAccountEnquiryResponse, error) {
+	out := new(ValidateBeneficiaryAccountEnquiryResponse)
+	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/ValidateBeneficiaryAccountEnquiry", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) BeneficiaryAccountDetail(ctx context.Context, in *BeneficiaryAccountDetailRequest, opts ...grpc.CallOption) (*BeneficiaryAccountDetailResponse, error) {
 	out := new(BeneficiaryAccountDetailResponse)
 	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/BeneficiaryAccountDetail", in, out, opts...)
@@ -205,6 +259,15 @@ func (c *apiServiceClient) CekBeneficiaryAccountAvaibility(ctx context.Context, 
 	return out, nil
 }
 
+func (c *apiServiceClient) CekBeneficiaryAccountUsed(ctx context.Context, in *CekBeneficiaryAccountAvaibilityReq, opts ...grpc.CallOption) (*CekBeneficiaryAccountUsedRes, error) {
+	out := new(CekBeneficiaryAccountUsedRes)
+	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/CekBeneficiaryAccountUsed", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) ListBank(ctx context.Context, in *ListBankReq, opts ...grpc.CallOption) (*ListBankRes, error) {
 	out := new(ListBankRes)
 	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/ListBank", in, out, opts...)
@@ -223,12 +286,42 @@ func (c *apiServiceClient) BankDetail(ctx context.Context, in *BankDetailRequest
 	return out, nil
 }
 
+func (c *apiServiceClient) ListBeneficiaryAccountByRoleRPC(ctx context.Context, in *ListBeneficiaryAccountByRoleRPCRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountResponse, error) {
+	out := new(ListBeneficiaryAccountResponse)
+	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/ListBeneficiaryAccountByRoleRPC", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ListBeneficiaryAccountRPC(ctx context.Context, in *ListBeneficiaryAccountRequest, opts ...grpc.CallOption) (*ListBeneficiaryAccountResponse, error) {
+	out := new(ListBeneficiaryAccountResponse)
+	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/ListBeneficiaryAccountRPC", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ValidateBeneficiaryAccountRPC(ctx context.Context, in *ValidateBeneficiaryAccountRequest, opts ...grpc.CallOption) (*ValidateBeneficiaryAccountResponse, error) {
+	out := new(ValidateBeneficiaryAccountResponse)
+	err := c.cc.Invoke(ctx, "/beneficiary.account.service.v1.ApiService/ValidateBeneficiaryAccountRPC", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
 type ApiServiceServer interface {
 	HealthCheck(context.Context, *Empty) (*HealthCheckResponse, error)
 	ListBeneficiaryAccount(context.Context, *ListBeneficiaryAccountRequest) (*ListBeneficiaryAccountResponse, error)
+	ListBeneficiaryAccountByRole(context.Context, *ListBeneficiaryAccountRequest) (*ListBeneficiaryAccountResponse, error)
+	ListBeneficiaryAccountDataByRole(context.Context, *ListBeneficiaryAccountDataByRoleRequest) (*ListBeneficiaryAccountResponse, error)
+	TaskAction(context.Context, *TaskActionRequest) (*TaskActionResponse, error)
 	CreateBeneficiaryAccount(context.Context, *CreateBeneficiaryAccountRequest) (*CreateBeneficiaryAccountResponse, error)
 	CreateBeneficiaryAccountTask(context.Context, *CreateBeneficiaryAccountTaskRequest) (*CreateBeneficiaryAccountTaskResponse, error)
 	CreateBeneficiaryAccountTaskMultiple(context.Context, *CreateBeneficiaryAccountTaskBulkRequest) (*CreateBeneficiaryAccountTaskResponse, error)
@@ -238,14 +331,20 @@ type ApiServiceServer interface {
 	DeleteBeneficiaryAccount(context.Context, *CreateBeneficiaryAccountRequest) (*DeleteBeneficiaryRes, error)
 	RequestDeleteBeneficiaryAccountTask(context.Context, *GetBeneficiaryAccountTaskByIDRequest) (*ListBeneficiaryAccountTaskResponse, error)
 	ValidateBeneficiaryAccount(context.Context, *ValidateBeneficiaryAccountRequest) (*ValidateBeneficiaryAccountResponse, error)
+	ValidateBeneficiaryAccountHTTP(context.Context, *ValidateBeneficiaryAccountRequest) (*ValidateBeneficiaryAccountResponseHTTP, error)
+	ValidateBeneficiaryAccountEnquiry(context.Context, *ValidateBeneficiaryAccountEnquiryRequest) (*ValidateBeneficiaryAccountEnquiryResponse, error)
 	BeneficiaryAccountDetail(context.Context, *BeneficiaryAccountDetailRequest) (*BeneficiaryAccountDetailResponse, error)
 	UpdateBeneficiaryAccountRoleRPC(context.Context, *UpdateBeneficiaryAccountRoleRequest) (*UpdateBeneficiaryAccountRoleResponse, error)
 	UpdateBeneficiaryAccountRole(context.Context, *UpdateBeneficiaryAccountRoleRequest) (*UpdateBeneficiaryAccountRoleResponse, error)
 	DownloadListBeneficiaryAccountTasks(context.Context, *FileListBeneficiaryAccountTaskRequest) (*httpbody.HttpBody, error)
 	DownloadTemplate(context.Context, *FileListTemplateRequest) (*httpbody.HttpBody, error)
 	CekBeneficiaryAccountAvaibility(context.Context, *CekBeneficiaryAccountAvaibilityReq) (*CekBeneficiaryAccountAvaibilityRes, error)
+	CekBeneficiaryAccountUsed(context.Context, *CekBeneficiaryAccountAvaibilityReq) (*CekBeneficiaryAccountUsedRes, error)
 	ListBank(context.Context, *ListBankReq) (*ListBankRes, error)
 	BankDetail(context.Context, *BankDetailRequest) (*BankDetailResponse, error)
+	ListBeneficiaryAccountByRoleRPC(context.Context, *ListBeneficiaryAccountByRoleRPCRequest) (*ListBeneficiaryAccountResponse, error)
+	ListBeneficiaryAccountRPC(context.Context, *ListBeneficiaryAccountRequest) (*ListBeneficiaryAccountResponse, error)
+	ValidateBeneficiaryAccountRPC(context.Context, *ValidateBeneficiaryAccountRequest) (*ValidateBeneficiaryAccountResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -258,6 +357,15 @@ func (UnimplementedApiServiceServer) HealthCheck(context.Context, *Empty) (*Heal
 }
 func (UnimplementedApiServiceServer) ListBeneficiaryAccount(context.Context, *ListBeneficiaryAccountRequest) (*ListBeneficiaryAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListBeneficiaryAccount not implemented")
+}
+func (UnimplementedApiServiceServer) ListBeneficiaryAccountByRole(context.Context, *ListBeneficiaryAccountRequest) (*ListBeneficiaryAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListBeneficiaryAccountByRole not implemented")
+}
+func (UnimplementedApiServiceServer) ListBeneficiaryAccountDataByRole(context.Context, *ListBeneficiaryAccountDataByRoleRequest) (*ListBeneficiaryAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListBeneficiaryAccountDataByRole not implemented")
+}
+func (UnimplementedApiServiceServer) TaskAction(context.Context, *TaskActionRequest) (*TaskActionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TaskAction not implemented")
 }
 func (UnimplementedApiServiceServer) CreateBeneficiaryAccount(context.Context, *CreateBeneficiaryAccountRequest) (*CreateBeneficiaryAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBeneficiaryAccount not implemented")
@@ -286,6 +394,12 @@ func (UnimplementedApiServiceServer) RequestDeleteBeneficiaryAccountTask(context
 func (UnimplementedApiServiceServer) ValidateBeneficiaryAccount(context.Context, *ValidateBeneficiaryAccountRequest) (*ValidateBeneficiaryAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateBeneficiaryAccount not implemented")
 }
+func (UnimplementedApiServiceServer) ValidateBeneficiaryAccountHTTP(context.Context, *ValidateBeneficiaryAccountRequest) (*ValidateBeneficiaryAccountResponseHTTP, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateBeneficiaryAccountHTTP not implemented")
+}
+func (UnimplementedApiServiceServer) ValidateBeneficiaryAccountEnquiry(context.Context, *ValidateBeneficiaryAccountEnquiryRequest) (*ValidateBeneficiaryAccountEnquiryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateBeneficiaryAccountEnquiry not implemented")
+}
 func (UnimplementedApiServiceServer) BeneficiaryAccountDetail(context.Context, *BeneficiaryAccountDetailRequest) (*BeneficiaryAccountDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BeneficiaryAccountDetail not implemented")
 }
@@ -304,11 +418,23 @@ func (UnimplementedApiServiceServer) DownloadTemplate(context.Context, *FileList
 func (UnimplementedApiServiceServer) CekBeneficiaryAccountAvaibility(context.Context, *CekBeneficiaryAccountAvaibilityReq) (*CekBeneficiaryAccountAvaibilityRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CekBeneficiaryAccountAvaibility not implemented")
 }
+func (UnimplementedApiServiceServer) CekBeneficiaryAccountUsed(context.Context, *CekBeneficiaryAccountAvaibilityReq) (*CekBeneficiaryAccountUsedRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CekBeneficiaryAccountUsed not implemented")
+}
 func (UnimplementedApiServiceServer) ListBank(context.Context, *ListBankReq) (*ListBankRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListBank not implemented")
 }
 func (UnimplementedApiServiceServer) BankDetail(context.Context, *BankDetailRequest) (*BankDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BankDetail not implemented")
+}
+func (UnimplementedApiServiceServer) ListBeneficiaryAccountByRoleRPC(context.Context, *ListBeneficiaryAccountByRoleRPCRequest) (*ListBeneficiaryAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListBeneficiaryAccountByRoleRPC not implemented")
+}
+func (UnimplementedApiServiceServer) ListBeneficiaryAccountRPC(context.Context, *ListBeneficiaryAccountRequest) (*ListBeneficiaryAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListBeneficiaryAccountRPC not implemented")
+}
+func (UnimplementedApiServiceServer) ValidateBeneficiaryAccountRPC(context.Context, *ValidateBeneficiaryAccountRequest) (*ValidateBeneficiaryAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateBeneficiaryAccountRPC not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -355,6 +481,60 @@ func _ApiService_ListBeneficiaryAccount_Handler(srv interface{}, ctx context.Con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).ListBeneficiaryAccount(ctx, req.(*ListBeneficiaryAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ListBeneficiaryAccountByRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBeneficiaryAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListBeneficiaryAccountByRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/beneficiary.account.service.v1.ApiService/ListBeneficiaryAccountByRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListBeneficiaryAccountByRole(ctx, req.(*ListBeneficiaryAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ListBeneficiaryAccountDataByRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBeneficiaryAccountDataByRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListBeneficiaryAccountDataByRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/beneficiary.account.service.v1.ApiService/ListBeneficiaryAccountDataByRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListBeneficiaryAccountDataByRole(ctx, req.(*ListBeneficiaryAccountDataByRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_TaskAction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskActionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).TaskAction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/beneficiary.account.service.v1.ApiService/TaskAction",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).TaskAction(ctx, req.(*TaskActionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -521,6 +701,42 @@ func _ApiService_ValidateBeneficiaryAccount_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_ValidateBeneficiaryAccountHTTP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateBeneficiaryAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ValidateBeneficiaryAccountHTTP(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/beneficiary.account.service.v1.ApiService/ValidateBeneficiaryAccountHTTP",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ValidateBeneficiaryAccountHTTP(ctx, req.(*ValidateBeneficiaryAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ValidateBeneficiaryAccountEnquiry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateBeneficiaryAccountEnquiryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ValidateBeneficiaryAccountEnquiry(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/beneficiary.account.service.v1.ApiService/ValidateBeneficiaryAccountEnquiry",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ValidateBeneficiaryAccountEnquiry(ctx, req.(*ValidateBeneficiaryAccountEnquiryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_BeneficiaryAccountDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BeneficiaryAccountDetailRequest)
 	if err := dec(in); err != nil {
@@ -629,6 +845,24 @@ func _ApiService_CekBeneficiaryAccountAvaibility_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_CekBeneficiaryAccountUsed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CekBeneficiaryAccountAvaibilityReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CekBeneficiaryAccountUsed(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/beneficiary.account.service.v1.ApiService/CekBeneficiaryAccountUsed",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CekBeneficiaryAccountUsed(ctx, req.(*CekBeneficiaryAccountAvaibilityReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_ListBank_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListBankReq)
 	if err := dec(in); err != nil {
@@ -665,6 +899,60 @@ func _ApiService_BankDetail_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_ListBeneficiaryAccountByRoleRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBeneficiaryAccountByRoleRPCRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListBeneficiaryAccountByRoleRPC(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/beneficiary.account.service.v1.ApiService/ListBeneficiaryAccountByRoleRPC",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListBeneficiaryAccountByRoleRPC(ctx, req.(*ListBeneficiaryAccountByRoleRPCRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ListBeneficiaryAccountRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBeneficiaryAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ListBeneficiaryAccountRPC(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/beneficiary.account.service.v1.ApiService/ListBeneficiaryAccountRPC",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ListBeneficiaryAccountRPC(ctx, req.(*ListBeneficiaryAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ValidateBeneficiaryAccountRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateBeneficiaryAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ValidateBeneficiaryAccountRPC(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/beneficiary.account.service.v1.ApiService/ValidateBeneficiaryAccountRPC",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ValidateBeneficiaryAccountRPC(ctx, req.(*ValidateBeneficiaryAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -679,6 +967,18 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListBeneficiaryAccount",
 			Handler:    _ApiService_ListBeneficiaryAccount_Handler,
+		},
+		{
+			MethodName: "ListBeneficiaryAccountByRole",
+			Handler:    _ApiService_ListBeneficiaryAccountByRole_Handler,
+		},
+		{
+			MethodName: "ListBeneficiaryAccountDataByRole",
+			Handler:    _ApiService_ListBeneficiaryAccountDataByRole_Handler,
+		},
+		{
+			MethodName: "TaskAction",
+			Handler:    _ApiService_TaskAction_Handler,
 		},
 		{
 			MethodName: "CreateBeneficiaryAccount",
@@ -717,6 +1017,14 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_ValidateBeneficiaryAccount_Handler,
 		},
 		{
+			MethodName: "ValidateBeneficiaryAccountHTTP",
+			Handler:    _ApiService_ValidateBeneficiaryAccountHTTP_Handler,
+		},
+		{
+			MethodName: "ValidateBeneficiaryAccountEnquiry",
+			Handler:    _ApiService_ValidateBeneficiaryAccountEnquiry_Handler,
+		},
+		{
 			MethodName: "BeneficiaryAccountDetail",
 			Handler:    _ApiService_BeneficiaryAccountDetail_Handler,
 		},
@@ -741,12 +1049,28 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApiService_CekBeneficiaryAccountAvaibility_Handler,
 		},
 		{
+			MethodName: "CekBeneficiaryAccountUsed",
+			Handler:    _ApiService_CekBeneficiaryAccountUsed_Handler,
+		},
+		{
 			MethodName: "ListBank",
 			Handler:    _ApiService_ListBank_Handler,
 		},
 		{
 			MethodName: "BankDetail",
 			Handler:    _ApiService_BankDetail_Handler,
+		},
+		{
+			MethodName: "ListBeneficiaryAccountByRoleRPC",
+			Handler:    _ApiService_ListBeneficiaryAccountByRoleRPC_Handler,
+		},
+		{
+			MethodName: "ListBeneficiaryAccountRPC",
+			Handler:    _ApiService_ListBeneficiaryAccountRPC_Handler,
+		},
+		{
+			MethodName: "ValidateBeneficiaryAccountRPC",
+			Handler:    _ApiService_ValidateBeneficiaryAccountRPC_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -47,6 +47,9 @@ func (this *ListBeneficiaryAccountRequest) Validate() error {
 	}
 	return nil
 }
+func (this *ListBeneficiaryAccountDataByRoleRequest) Validate() error {
+	return nil
+}
 func (this *Sort) Validate() error {
 	return nil
 }
@@ -268,6 +271,9 @@ func (this *CekBeneficiaryAccountAvaibilityReq) Validate() error {
 func (this *CekBeneficiaryAccountAvaibilityRes) Validate() error {
 	return nil
 }
+func (this *CekBeneficiaryAccountUsedRes) Validate() error {
+	return nil
+}
 func (this *ListBankReq) Validate() error {
 	if this.BeneficiaryBank != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.BeneficiaryBank); err != nil {
@@ -303,5 +309,41 @@ func (this *BankDetailResponse) Validate() error {
 	return nil
 }
 func (this *DeleteBeneficiaryRes) Validate() error {
+	return nil
+}
+func (this *BeneficiaryNotificationData) Validate() error {
+	return nil
+}
+func (this *TaskActionRequest) Validate() error {
+	return nil
+}
+func (this *TaskActionResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *ListBeneficiaryAccountByRoleRPCRequest) Validate() error {
+	if this.BeneficiaryAccount != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.BeneficiaryAccount); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("BeneficiaryAccount", err)
+		}
+	}
+	return nil
+}
+func (this *ValidateBeneficiaryAccountEnquiryRequest) Validate() error {
+	return nil
+}
+func (this *ValidateBeneficiaryAccountEnquiryResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *ValidateBeneficiaryAccountEnquiryResponseData) Validate() error {
 	return nil
 }
