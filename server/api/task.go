@@ -673,11 +673,13 @@ func (s *Server) SaveTaskWithDataEV(ctx context.Context, req *pb.SaveTaskRequest
 
 func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) (*pb.SaveTaskResponse, error) {
 
+	logrus.Printf("first req =======> %v", req)
 	logrus.Println("[api][func: SaveTaskWithData] Task Type:", req.Task.Type)
 
 	var err error
 
 	task, err := req.Task.ToORM(ctx)
+	logrus.Printf("req after orm =======> %v", task)
 	if err != nil {
 		logrus.Errorln("[api][func: SaveTaskWithData] Unable to convert PB to ORM:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
