@@ -55,7 +55,7 @@ func (s *Server) SaveTaskWithWorkflow(ctx context.Context, req *pb.SaveTaskReque
 	case "maker":
 		// isSave = true
 		if task.Type == "Deposito" {
-			if task.DataBak != "" && task.DataBak != "{}" {
+			if task.DataBak != "{}" && workflow.NextStatus == "rejected" {
 				task.Status = pb.Statuses_Approved
 				task.Step = pb.Steps_Releaser
 				//task.Data = task.DataBak
