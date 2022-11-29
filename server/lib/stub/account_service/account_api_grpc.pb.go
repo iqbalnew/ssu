@@ -49,6 +49,7 @@ type ApiServiceClient interface {
 	ListAccountByRoleRPC(ctx context.Context, in *ListAccountByRoleRPCRequest, opts ...grpc.CallOption) (*ListAccountResponse, error)
 	ListAccountRPC(ctx context.Context, in *ListAccountRequest, opts ...grpc.CallOption) (*ListAccountResponse, error)
 	ValidateAccountRPC(ctx context.Context, in *ValidateAccountRequest, opts ...grpc.CallOption) (*ValidateAccountResponse, error)
+	MyAllowedAccount(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*MyAllowedAccountResponse, error)
 }
 
 type apiServiceClient struct {
@@ -293,6 +294,15 @@ func (c *apiServiceClient) ValidateAccountRPC(ctx context.Context, in *ValidateA
 	return out, nil
 }
 
+func (c *apiServiceClient) MyAllowedAccount(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*MyAllowedAccountResponse, error) {
+	out := new(MyAllowedAccountResponse)
+	err := c.cc.Invoke(ctx, "/account.service.v1.ApiService/MyAllowedAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServiceServer is the server API for ApiService service.
 // All implementations must embed UnimplementedApiServiceServer
 // for forward compatibility
@@ -323,6 +333,7 @@ type ApiServiceServer interface {
 	ListAccountByRoleRPC(context.Context, *ListAccountByRoleRPCRequest) (*ListAccountResponse, error)
 	ListAccountRPC(context.Context, *ListAccountRequest) (*ListAccountResponse, error)
 	ValidateAccountRPC(context.Context, *ValidateAccountRequest) (*ValidateAccountResponse, error)
+	MyAllowedAccount(context.Context, *Empty) (*MyAllowedAccountResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
 
@@ -407,6 +418,9 @@ func (UnimplementedApiServiceServer) ListAccountRPC(context.Context, *ListAccoun
 }
 func (UnimplementedApiServiceServer) ValidateAccountRPC(context.Context, *ValidateAccountRequest) (*ValidateAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateAccountRPC not implemented")
+}
+func (UnimplementedApiServiceServer) MyAllowedAccount(context.Context, *Empty) (*MyAllowedAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MyAllowedAccount not implemented")
 }
 func (UnimplementedApiServiceServer) mustEmbedUnimplementedApiServiceServer() {}
 
@@ -889,6 +903,24 @@ func _ApiService_ValidateAccountRPC_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_MyAllowedAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).MyAllowedAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/account.service.v1.ApiService/MyAllowedAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).MyAllowedAccount(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiService_ServiceDesc is the grpc.ServiceDesc for ApiService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -999,6 +1031,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidateAccountRPC",
 			Handler:    _ApiService_ValidateAccountRPC_Handler,
+		},
+		{
+			MethodName: "MyAllowedAccount",
+			Handler:    _ApiService_MyAllowedAccount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

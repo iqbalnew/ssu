@@ -50,6 +50,9 @@ func (this *ListAccountRequest) Validate() error {
 func (this *Sort) Validate() error {
 	return nil
 }
+func (this *MyAllowedAccountResponse) Validate() error {
+	return nil
+}
 func (this *ListAccountResponse) Validate() error {
 	for _, item := range this.Data {
 		if item != nil {
