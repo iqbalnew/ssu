@@ -7,10 +7,9 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "github.com/mwitkow/go-proto-validators"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -20,11 +19,6 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 func (this *PayrollDataJob) Validate() error {
-	if this.ScheduledAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
-		}
-	}
 	if this.InquiryResult != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.InquiryResult); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("InquiryResult", err)
@@ -38,27 +32,12 @@ func (this *PayrollDataJob) Validate() error {
 	return nil
 }
 func (this *PayrollData) Validate() error {
-	if this.ScheduledAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
-		}
-	}
 	return nil
 }
 func (this *PayrollDataList) Validate() error {
-	if this.ScheduledAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
-		}
-	}
 	return nil
 }
 func (this *PayrollDataDetail) Validate() error {
-	if this.ScheduledAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
-		}
-	}
 	for _, item := range this.Items {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
@@ -209,11 +188,6 @@ func (this *GetTaskPayrollDetailResponse) Validate() error {
 	return nil
 }
 func (this *CreateTaskPayrollRequest) Validate() error {
-	if this.ScheduledAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
-		}
-	}
 	return nil
 }
 func (this *CreateTaskPayrollResponse) Validate() error {
@@ -227,16 +201,28 @@ func (this *CreateTaskPayrollResponse) Validate() error {
 func (this *CreateTaskPayrollResponseData) Validate() error {
 	return nil
 }
-func (this *CancelTransferPayrollRequest) Validate() error {
+func (this *CreatePayrollTransactionRequest) Validate() error {
 	return nil
 }
-func (this *CancelTransferPayrollResponse) Validate() error {
+func (this *CreatePayrollTransactionResponse) Validate() error {
 	return nil
 }
-func (this *RunMassInquiryJobRequest) Validate() error {
+func (this *CancelPayrollTransactionRequest) Validate() error {
 	return nil
 }
-func (this *RunMassInquiryJobResponse) Validate() error {
+func (this *CancelPayrollTransactionResponse) Validate() error {
+	return nil
+}
+func (this *ExecPayrollTransferRequest) Validate() error {
+	return nil
+}
+func (this *ExecPayrollTransferResponse) Validate() error {
+	return nil
+}
+func (this *ExecFailedPayrollTransferRequest) Validate() error {
+	return nil
+}
+func (this *ExecFailedPayrollTransferResponse) Validate() error {
 	return nil
 }
 func (this *RunMassTransferJobRequest) Validate() error {
@@ -251,16 +237,22 @@ func (this *RunCreateMassTransferJobRequest) Validate() error {
 func (this *RunCreateMassTransferJobResponse) Validate() error {
 	return nil
 }
-func (this *RunFileCheckingPayrollJobRequest) Validate() error {
-	return nil
-}
-func (this *RunFileCheckingPayrollJobResponse) Validate() error {
-	return nil
-}
 func (this *ExecFileCheckingPayrollJobRequest) Validate() error {
 	return nil
 }
 func (this *ExecFileCheckingPayrollJobResponse) Validate() error {
+	return nil
+}
+func (this *ExecMassInquiryJobRequest) Validate() error {
+	return nil
+}
+func (this *ExecMassInquiryJobResponse) Validate() error {
+	return nil
+}
+func (this *ExecMassTransferJobRequest) Validate() error {
+	return nil
+}
+func (this *ExecMassTransferJobResponse) Validate() error {
 	return nil
 }
 func (this *SetTaskPayrollRequest) Validate() error {

@@ -31,7 +31,7 @@ func (this *PayrollTransferTransaction) Validate() error {
 	}
 	return nil
 }
-func (this *MassTransferList) Validate() error {
+func (this *PayrollTransferItem) Validate() error {
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
@@ -98,7 +98,7 @@ func (this *CreateMassTransferJob) Validate() error {
 	}
 	return nil
 }
-func (this *CheckPayrollTransferFileJob) Validate() error {
+func (this *FileCheckingJob) Validate() error {
 	if this.RunAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RunAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("RunAt", err)
