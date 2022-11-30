@@ -154,6 +154,10 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 
 	}
 
+	if service == "Payroll Transfer" {
+		query = query.Where("AND (data->'status' = 'Ready to Submit')")
+	}
+
 	if whereOpt != "" {
 		query = query.Where(whereOpt)
 	}
@@ -594,6 +598,8 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	if whereOpt != "" {
 		query = query.Where(whereOpt)
 	}
+
+	query = query.Where(FilterScoope(sql.Filter))
 
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
 

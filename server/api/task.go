@@ -199,7 +199,9 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	}
 
 	sqlBuilder := &db.QueryBuilder{
-		Sort: sort,
+		Filter:   req.Filter,
+		FilterOr: req.FilterOr,
+		Sort:     sort,
 	}
 
 	dataORM, err = req.Task.ToORM(ctx)
