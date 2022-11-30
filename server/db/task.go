@@ -520,13 +520,13 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 }
 
-func (p *GormProvider) GetListTaskNormal(ctx context.Context, userType string, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTaskNormal(ctx context.Context, isTransactional bool, userType string, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
 
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select("*", " CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by")
 
 	whereOpt := ""
 
-	if filter.Step == int32(pb.Steps_Maker) {
+	if filter.Step == int32(pb.Steps_Maker.Number()) {
 
 		whereOpt = ""
 
@@ -542,9 +542,11 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, userType string, f
 		whereOpt = strings.Join(statusFilter, " AND ")
 
 	} else {
-
-		whereOpt = "workflow_doc != '{}'"
-
+		if isTransactional {
+			whereOpt = "workflow_doc != '{}'"
+		} else {
+			whereOpt = "workflow_doc = '{}'"
+		}
 		statusFilter := []string{
 			"status != 0",
 			"status != 2",

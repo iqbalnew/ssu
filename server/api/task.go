@@ -212,7 +212,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	result.Pagination = setPagination(req)
 
-	list, err := s.provider.GetListTaskNormal(ctx, currentUser.UserType, &dataORM, result.Pagination, sqlBuilder, currentUser.UserID, currentUser.RoleIDs, req.AccountIDFilter)
+	list, err := s.provider.GetListTaskNormal(ctx, req.IsTransactional, currentUser.UserType, &dataORM, result.Pagination, sqlBuilder, currentUser.UserID, currentUser.RoleIDs, req.AccountIDFilter)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTask] Failed when execute GetListTask:", err)
 		return nil, err
@@ -1645,10 +1645,10 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 		depositoClient := deposito_pb.NewDepositoServiceClient(depositoConn)
 
 		depositoClient.DepositoActionTask(newCtx, &deposito_pb.TaskActionRequest{
-			TaskID:  req.GetTaskID(),
-			Action:  req.GetAction(),
-			Comment: req.GetComment(),
-			Reasons: req.GetReasons(),
+			TaskID:   req.GetTaskID(),
+			Action:   req.GetAction(),
+			Comment:  req.GetComment(),
+			Reasons:  req.GetReasons(),
 			PassCode: req.GetPassCode(),
 		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 		if err != nil {
