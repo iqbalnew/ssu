@@ -1649,6 +1649,7 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 			Action:  req.GetAction(),
 			Comment: req.GetComment(),
 			Reasons: req.GetReasons(),
+			PassCode: req.GetPassCode(),
 		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 		if err != nil {
 			return nil, err

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.20.1
-// source: api.proto
+// source: deposito_api.proto
 
 package pb
 
@@ -23,8 +23,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DepositoServiceClient interface {
+	TimeDepositActive(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ErrorBodyResponse, error)
+	TimeDepositAutoWithdraw(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ErrorBodyResponse, error)
+	ExecTransactionDeposito(ctx context.Context, in *ExecTransactionDepositoReq, opts ...grpc.CallOption) (*ExecTransactionDepositoRes, error)
 	CreateDepositoTask(ctx context.Context, in *CreateDepositoTaskRequest, opts ...grpc.CallOption) (*CreateDepositoTaskResponse, error)
-	SendForDepositoTask(ctx context.Context, in *GetDepositoTaskByIDRequest, opts ...grpc.CallOption) (*GetDepositoTaskByIDResponse, error)
+	ManageDepositoTask(ctx context.Context, in *ManageDepositTaskRequest, opts ...grpc.CallOption) (*CreateDepositoTaskResponse, error)
+	WithdrawDepositoTask(ctx context.Context, in *WithdrawDepositTaskRequest, opts ...grpc.CallOption) (*CreateDepositoTaskResponse, error)
+	SendForDeleteDepositoTask(ctx context.Context, in *GetDepositoTaskByIDRequest, opts ...grpc.CallOption) (*GetDepositoTaskByIDResponse, error)
 	DepositoActionTask(ctx context.Context, in *TaskActionRequest, opts ...grpc.CallOption) (*TaskActionResponse, error)
 	DepositoListTask(ctx context.Context, in *DepositoListTaskRequest, opts ...grpc.CallOption) (*DepositoListTaskResponse, error)
 	GetDepositoTaskByID(ctx context.Context, in *GetDepositoTaskByIDRequest, opts ...grpc.CallOption) (*GetDepositoTaskByIDResponse, error)
@@ -33,10 +38,18 @@ type DepositoServiceClient interface {
 	ListDeposito(ctx context.Context, in *DepositoDataListRequest, opts ...grpc.CallOption) (*DepositoDataListResponse, error)
 	DepositoDetail(ctx context.Context, in *DepositoDataDetailRequest, opts ...grpc.CallOption) (*DepositoDataDetailResponse, error)
 	CreateDeposito(ctx context.Context, in *CreateDepositoRequest, opts ...grpc.CallOption) (*CreateDepositoResponse, error)
+	CreateDepositoTransaction(ctx context.Context, in *CreateDepositoRequest, opts ...grpc.CallOption) (*CreateDepositoResponse, error)
+	GetProductDeposito(ctx context.Context, in *GetProductDepositoRequest, opts ...grpc.CallOption) (*GetProductDepositoRespons, error)
 	DepositInquiryRate(ctx context.Context, in *DepositInquiryRateRequest, opts ...grpc.CallOption) (*DepositInquiryRateRespons, error)
+	DepositInquiryCif(ctx context.Context, in *DepositInquiryCIFRequest, opts ...grpc.CallOption) (*DepositInquiryCIFRespons, error)
+	DepositInquiryRateNego(ctx context.Context, in *DepositInquiryRateNegoRequest, opts ...grpc.CallOption) (*DepositInquiryRateNegoRespons, error)
+	DepositInquiryVoucher(ctx context.Context, in *DepositVoucherNegoRequest, opts ...grpc.CallOption) (*DepositInquiryRateNegoRespons, error)
 	DepositoMaintanance(ctx context.Context, in *DepositoMaintananceRequest, opts ...grpc.CallOption) (*DepositoMaintananceRespons, error)
 	DepositoCreateAccount(ctx context.Context, in *DepositoCreateAccountRequest, opts ...grpc.CallOption) (*DepositoCreateAccountRespons, error)
 	DepositoPlacement(ctx context.Context, in *DepositoPlacementRequest, opts ...grpc.CallOption) (*DepositoPlacementRespons, error)
+	DepositoInquiryTDPinalti(ctx context.Context, in *DepositInquiryTDPinaltiRequest, opts ...grpc.CallOption) (*DepositInquiryTDPinaltiResponse, error)
+	DepositoInquiryTD(ctx context.Context, in *DepositInquiryTDRequest, opts ...grpc.CallOption) (*DepositInquiryTDRespons, error)
+	DepositoWithdrawESB(ctx context.Context, in *DepositWithdrawRequest, opts ...grpc.CallOption) (*DepositWithdrawRespons, error)
 }
 
 type depositoServiceClient struct {
@@ -45,6 +58,33 @@ type depositoServiceClient struct {
 
 func NewDepositoServiceClient(cc grpc.ClientConnInterface) DepositoServiceClient {
 	return &depositoServiceClient{cc}
+}
+
+func (c *depositoServiceClient) TimeDepositActive(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ErrorBodyResponse, error) {
+	out := new(ErrorBodyResponse)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/TimeDepositActive", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depositoServiceClient) TimeDepositAutoWithdraw(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ErrorBodyResponse, error) {
+	out := new(ErrorBodyResponse)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/TimeDepositAutoWithdraw", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depositoServiceClient) ExecTransactionDeposito(ctx context.Context, in *ExecTransactionDepositoReq, opts ...grpc.CallOption) (*ExecTransactionDepositoRes, error) {
+	out := new(ExecTransactionDepositoRes)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/ExecTransactionDeposito", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *depositoServiceClient) CreateDepositoTask(ctx context.Context, in *CreateDepositoTaskRequest, opts ...grpc.CallOption) (*CreateDepositoTaskResponse, error) {
@@ -56,9 +96,27 @@ func (c *depositoServiceClient) CreateDepositoTask(ctx context.Context, in *Crea
 	return out, nil
 }
 
-func (c *depositoServiceClient) SendForDepositoTask(ctx context.Context, in *GetDepositoTaskByIDRequest, opts ...grpc.CallOption) (*GetDepositoTaskByIDResponse, error) {
+func (c *depositoServiceClient) ManageDepositoTask(ctx context.Context, in *ManageDepositTaskRequest, opts ...grpc.CallOption) (*CreateDepositoTaskResponse, error) {
+	out := new(CreateDepositoTaskResponse)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/ManageDepositoTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depositoServiceClient) WithdrawDepositoTask(ctx context.Context, in *WithdrawDepositTaskRequest, opts ...grpc.CallOption) (*CreateDepositoTaskResponse, error) {
+	out := new(CreateDepositoTaskResponse)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/WithdrawDepositoTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depositoServiceClient) SendForDeleteDepositoTask(ctx context.Context, in *GetDepositoTaskByIDRequest, opts ...grpc.CallOption) (*GetDepositoTaskByIDResponse, error) {
 	out := new(GetDepositoTaskByIDResponse)
-	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/SendForDepositoTask", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/SendForDeleteDepositoTask", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,9 +195,54 @@ func (c *depositoServiceClient) CreateDeposito(ctx context.Context, in *CreateDe
 	return out, nil
 }
 
+func (c *depositoServiceClient) CreateDepositoTransaction(ctx context.Context, in *CreateDepositoRequest, opts ...grpc.CallOption) (*CreateDepositoResponse, error) {
+	out := new(CreateDepositoResponse)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/createDepositoTransaction", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depositoServiceClient) GetProductDeposito(ctx context.Context, in *GetProductDepositoRequest, opts ...grpc.CallOption) (*GetProductDepositoRespons, error) {
+	out := new(GetProductDepositoRespons)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/GetProductDeposito", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *depositoServiceClient) DepositInquiryRate(ctx context.Context, in *DepositInquiryRateRequest, opts ...grpc.CallOption) (*DepositInquiryRateRespons, error) {
 	out := new(DepositInquiryRateRespons)
 	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/DepositInquiryRate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depositoServiceClient) DepositInquiryCif(ctx context.Context, in *DepositInquiryCIFRequest, opts ...grpc.CallOption) (*DepositInquiryCIFRespons, error) {
+	out := new(DepositInquiryCIFRespons)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/DepositInquiryCif", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depositoServiceClient) DepositInquiryRateNego(ctx context.Context, in *DepositInquiryRateNegoRequest, opts ...grpc.CallOption) (*DepositInquiryRateNegoRespons, error) {
+	out := new(DepositInquiryRateNegoRespons)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/DepositInquiryRateNego", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depositoServiceClient) DepositInquiryVoucher(ctx context.Context, in *DepositVoucherNegoRequest, opts ...grpc.CallOption) (*DepositInquiryRateNegoRespons, error) {
+	out := new(DepositInquiryRateNegoRespons)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/DepositInquiryVoucher", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -173,12 +276,44 @@ func (c *depositoServiceClient) DepositoPlacement(ctx context.Context, in *Depos
 	return out, nil
 }
 
+func (c *depositoServiceClient) DepositoInquiryTDPinalti(ctx context.Context, in *DepositInquiryTDPinaltiRequest, opts ...grpc.CallOption) (*DepositInquiryTDPinaltiResponse, error) {
+	out := new(DepositInquiryTDPinaltiResponse)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/DepositoInquiryTDPinalti", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depositoServiceClient) DepositoInquiryTD(ctx context.Context, in *DepositInquiryTDRequest, opts ...grpc.CallOption) (*DepositInquiryTDRespons, error) {
+	out := new(DepositInquiryTDRespons)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/DepositoInquiryTD", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *depositoServiceClient) DepositoWithdrawESB(ctx context.Context, in *DepositWithdrawRequest, opts ...grpc.CallOption) (*DepositWithdrawRespons, error) {
+	out := new(DepositWithdrawRespons)
+	err := c.cc.Invoke(ctx, "/deposito.service.v1.DepositoService/DepositoWithdrawESB", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DepositoServiceServer is the server API for DepositoService service.
 // All implementations must embed UnimplementedDepositoServiceServer
 // for forward compatibility
 type DepositoServiceServer interface {
+	TimeDepositActive(context.Context, *Empty) (*ErrorBodyResponse, error)
+	TimeDepositAutoWithdraw(context.Context, *Empty) (*ErrorBodyResponse, error)
+	ExecTransactionDeposito(context.Context, *ExecTransactionDepositoReq) (*ExecTransactionDepositoRes, error)
 	CreateDepositoTask(context.Context, *CreateDepositoTaskRequest) (*CreateDepositoTaskResponse, error)
-	SendForDepositoTask(context.Context, *GetDepositoTaskByIDRequest) (*GetDepositoTaskByIDResponse, error)
+	ManageDepositoTask(context.Context, *ManageDepositTaskRequest) (*CreateDepositoTaskResponse, error)
+	WithdrawDepositoTask(context.Context, *WithdrawDepositTaskRequest) (*CreateDepositoTaskResponse, error)
+	SendForDeleteDepositoTask(context.Context, *GetDepositoTaskByIDRequest) (*GetDepositoTaskByIDResponse, error)
 	DepositoActionTask(context.Context, *TaskActionRequest) (*TaskActionResponse, error)
 	DepositoListTask(context.Context, *DepositoListTaskRequest) (*DepositoListTaskResponse, error)
 	GetDepositoTaskByID(context.Context, *GetDepositoTaskByIDRequest) (*GetDepositoTaskByIDResponse, error)
@@ -187,10 +322,18 @@ type DepositoServiceServer interface {
 	ListDeposito(context.Context, *DepositoDataListRequest) (*DepositoDataListResponse, error)
 	DepositoDetail(context.Context, *DepositoDataDetailRequest) (*DepositoDataDetailResponse, error)
 	CreateDeposito(context.Context, *CreateDepositoRequest) (*CreateDepositoResponse, error)
+	CreateDepositoTransaction(context.Context, *CreateDepositoRequest) (*CreateDepositoResponse, error)
+	GetProductDeposito(context.Context, *GetProductDepositoRequest) (*GetProductDepositoRespons, error)
 	DepositInquiryRate(context.Context, *DepositInquiryRateRequest) (*DepositInquiryRateRespons, error)
+	DepositInquiryCif(context.Context, *DepositInquiryCIFRequest) (*DepositInquiryCIFRespons, error)
+	DepositInquiryRateNego(context.Context, *DepositInquiryRateNegoRequest) (*DepositInquiryRateNegoRespons, error)
+	DepositInquiryVoucher(context.Context, *DepositVoucherNegoRequest) (*DepositInquiryRateNegoRespons, error)
 	DepositoMaintanance(context.Context, *DepositoMaintananceRequest) (*DepositoMaintananceRespons, error)
 	DepositoCreateAccount(context.Context, *DepositoCreateAccountRequest) (*DepositoCreateAccountRespons, error)
 	DepositoPlacement(context.Context, *DepositoPlacementRequest) (*DepositoPlacementRespons, error)
+	DepositoInquiryTDPinalti(context.Context, *DepositInquiryTDPinaltiRequest) (*DepositInquiryTDPinaltiResponse, error)
+	DepositoInquiryTD(context.Context, *DepositInquiryTDRequest) (*DepositInquiryTDRespons, error)
+	DepositoWithdrawESB(context.Context, *DepositWithdrawRequest) (*DepositWithdrawRespons, error)
 	mustEmbedUnimplementedDepositoServiceServer()
 }
 
@@ -198,11 +341,26 @@ type DepositoServiceServer interface {
 type UnimplementedDepositoServiceServer struct {
 }
 
+func (UnimplementedDepositoServiceServer) TimeDepositActive(context.Context, *Empty) (*ErrorBodyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TimeDepositActive not implemented")
+}
+func (UnimplementedDepositoServiceServer) TimeDepositAutoWithdraw(context.Context, *Empty) (*ErrorBodyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TimeDepositAutoWithdraw not implemented")
+}
+func (UnimplementedDepositoServiceServer) ExecTransactionDeposito(context.Context, *ExecTransactionDepositoReq) (*ExecTransactionDepositoRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecTransactionDeposito not implemented")
+}
 func (UnimplementedDepositoServiceServer) CreateDepositoTask(context.Context, *CreateDepositoTaskRequest) (*CreateDepositoTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDepositoTask not implemented")
 }
-func (UnimplementedDepositoServiceServer) SendForDepositoTask(context.Context, *GetDepositoTaskByIDRequest) (*GetDepositoTaskByIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendForDepositoTask not implemented")
+func (UnimplementedDepositoServiceServer) ManageDepositoTask(context.Context, *ManageDepositTaskRequest) (*CreateDepositoTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ManageDepositoTask not implemented")
+}
+func (UnimplementedDepositoServiceServer) WithdrawDepositoTask(context.Context, *WithdrawDepositTaskRequest) (*CreateDepositoTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WithdrawDepositoTask not implemented")
+}
+func (UnimplementedDepositoServiceServer) SendForDeleteDepositoTask(context.Context, *GetDepositoTaskByIDRequest) (*GetDepositoTaskByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendForDeleteDepositoTask not implemented")
 }
 func (UnimplementedDepositoServiceServer) DepositoActionTask(context.Context, *TaskActionRequest) (*TaskActionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DepositoActionTask not implemented")
@@ -228,8 +386,23 @@ func (UnimplementedDepositoServiceServer) DepositoDetail(context.Context, *Depos
 func (UnimplementedDepositoServiceServer) CreateDeposito(context.Context, *CreateDepositoRequest) (*CreateDepositoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDeposito not implemented")
 }
+func (UnimplementedDepositoServiceServer) CreateDepositoTransaction(context.Context, *CreateDepositoRequest) (*CreateDepositoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDepositoTransaction not implemented")
+}
+func (UnimplementedDepositoServiceServer) GetProductDeposito(context.Context, *GetProductDepositoRequest) (*GetProductDepositoRespons, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProductDeposito not implemented")
+}
 func (UnimplementedDepositoServiceServer) DepositInquiryRate(context.Context, *DepositInquiryRateRequest) (*DepositInquiryRateRespons, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DepositInquiryRate not implemented")
+}
+func (UnimplementedDepositoServiceServer) DepositInquiryCif(context.Context, *DepositInquiryCIFRequest) (*DepositInquiryCIFRespons, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DepositInquiryCif not implemented")
+}
+func (UnimplementedDepositoServiceServer) DepositInquiryRateNego(context.Context, *DepositInquiryRateNegoRequest) (*DepositInquiryRateNegoRespons, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DepositInquiryRateNego not implemented")
+}
+func (UnimplementedDepositoServiceServer) DepositInquiryVoucher(context.Context, *DepositVoucherNegoRequest) (*DepositInquiryRateNegoRespons, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DepositInquiryVoucher not implemented")
 }
 func (UnimplementedDepositoServiceServer) DepositoMaintanance(context.Context, *DepositoMaintananceRequest) (*DepositoMaintananceRespons, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DepositoMaintanance not implemented")
@@ -239,6 +412,15 @@ func (UnimplementedDepositoServiceServer) DepositoCreateAccount(context.Context,
 }
 func (UnimplementedDepositoServiceServer) DepositoPlacement(context.Context, *DepositoPlacementRequest) (*DepositoPlacementRespons, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DepositoPlacement not implemented")
+}
+func (UnimplementedDepositoServiceServer) DepositoInquiryTDPinalti(context.Context, *DepositInquiryTDPinaltiRequest) (*DepositInquiryTDPinaltiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DepositoInquiryTDPinalti not implemented")
+}
+func (UnimplementedDepositoServiceServer) DepositoInquiryTD(context.Context, *DepositInquiryTDRequest) (*DepositInquiryTDRespons, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DepositoInquiryTD not implemented")
+}
+func (UnimplementedDepositoServiceServer) DepositoWithdrawESB(context.Context, *DepositWithdrawRequest) (*DepositWithdrawRespons, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DepositoWithdrawESB not implemented")
 }
 func (UnimplementedDepositoServiceServer) mustEmbedUnimplementedDepositoServiceServer() {}
 
@@ -251,6 +433,60 @@ type UnsafeDepositoServiceServer interface {
 
 func RegisterDepositoServiceServer(s grpc.ServiceRegistrar, srv DepositoServiceServer) {
 	s.RegisterService(&DepositoService_ServiceDesc, srv)
+}
+
+func _DepositoService_TimeDepositActive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).TimeDepositActive(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/TimeDepositActive",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).TimeDepositActive(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepositoService_TimeDepositAutoWithdraw_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).TimeDepositAutoWithdraw(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/TimeDepositAutoWithdraw",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).TimeDepositAutoWithdraw(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepositoService_ExecTransactionDeposito_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExecTransactionDepositoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).ExecTransactionDeposito(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/ExecTransactionDeposito",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).ExecTransactionDeposito(ctx, req.(*ExecTransactionDepositoReq))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _DepositoService_CreateDepositoTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -271,20 +507,56 @@ func _DepositoService_CreateDepositoTask_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DepositoService_SendForDepositoTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DepositoService_ManageDepositoTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ManageDepositTaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).ManageDepositoTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/ManageDepositoTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).ManageDepositoTask(ctx, req.(*ManageDepositTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepositoService_WithdrawDepositoTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WithdrawDepositTaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).WithdrawDepositoTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/WithdrawDepositoTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).WithdrawDepositoTask(ctx, req.(*WithdrawDepositTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepositoService_SendForDeleteDepositoTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetDepositoTaskByIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DepositoServiceServer).SendForDepositoTask(ctx, in)
+		return srv.(DepositoServiceServer).SendForDeleteDepositoTask(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/deposito.service.v1.DepositoService/SendForDepositoTask",
+		FullMethod: "/deposito.service.v1.DepositoService/SendForDeleteDepositoTask",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DepositoServiceServer).SendForDepositoTask(ctx, req.(*GetDepositoTaskByIDRequest))
+		return srv.(DepositoServiceServer).SendForDeleteDepositoTask(ctx, req.(*GetDepositoTaskByIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -433,6 +705,42 @@ func _DepositoService_CreateDeposito_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DepositoService_CreateDepositoTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDepositoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).CreateDepositoTransaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/createDepositoTransaction",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).CreateDepositoTransaction(ctx, req.(*CreateDepositoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepositoService_GetProductDeposito_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProductDepositoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).GetProductDeposito(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/GetProductDeposito",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).GetProductDeposito(ctx, req.(*GetProductDepositoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DepositoService_DepositInquiryRate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DepositInquiryRateRequest)
 	if err := dec(in); err != nil {
@@ -447,6 +755,60 @@ func _DepositoService_DepositInquiryRate_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DepositoServiceServer).DepositInquiryRate(ctx, req.(*DepositInquiryRateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepositoService_DepositInquiryCif_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DepositInquiryCIFRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).DepositInquiryCif(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/DepositInquiryCif",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).DepositInquiryCif(ctx, req.(*DepositInquiryCIFRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepositoService_DepositInquiryRateNego_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DepositInquiryRateNegoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).DepositInquiryRateNego(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/DepositInquiryRateNego",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).DepositInquiryRateNego(ctx, req.(*DepositInquiryRateNegoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepositoService_DepositInquiryVoucher_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DepositVoucherNegoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).DepositInquiryVoucher(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/DepositInquiryVoucher",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).DepositInquiryVoucher(ctx, req.(*DepositVoucherNegoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -505,6 +867,60 @@ func _DepositoService_DepositoPlacement_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DepositoService_DepositoInquiryTDPinalti_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DepositInquiryTDPinaltiRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).DepositoInquiryTDPinalti(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/DepositoInquiryTDPinalti",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).DepositoInquiryTDPinalti(ctx, req.(*DepositInquiryTDPinaltiRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepositoService_DepositoInquiryTD_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DepositInquiryTDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).DepositoInquiryTD(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/DepositoInquiryTD",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).DepositoInquiryTD(ctx, req.(*DepositInquiryTDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DepositoService_DepositoWithdrawESB_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DepositWithdrawRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DepositoServiceServer).DepositoWithdrawESB(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/deposito.service.v1.DepositoService/DepositoWithdrawESB",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DepositoServiceServer).DepositoWithdrawESB(ctx, req.(*DepositWithdrawRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DepositoService_ServiceDesc is the grpc.ServiceDesc for DepositoService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -513,12 +929,32 @@ var DepositoService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*DepositoServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "TimeDepositActive",
+			Handler:    _DepositoService_TimeDepositActive_Handler,
+		},
+		{
+			MethodName: "TimeDepositAutoWithdraw",
+			Handler:    _DepositoService_TimeDepositAutoWithdraw_Handler,
+		},
+		{
+			MethodName: "ExecTransactionDeposito",
+			Handler:    _DepositoService_ExecTransactionDeposito_Handler,
+		},
+		{
 			MethodName: "CreateDepositoTask",
 			Handler:    _DepositoService_CreateDepositoTask_Handler,
 		},
 		{
-			MethodName: "SendForDepositoTask",
-			Handler:    _DepositoService_SendForDepositoTask_Handler,
+			MethodName: "ManageDepositoTask",
+			Handler:    _DepositoService_ManageDepositoTask_Handler,
+		},
+		{
+			MethodName: "WithdrawDepositoTask",
+			Handler:    _DepositoService_WithdrawDepositoTask_Handler,
+		},
+		{
+			MethodName: "SendForDeleteDepositoTask",
+			Handler:    _DepositoService_SendForDeleteDepositoTask_Handler,
 		},
 		{
 			MethodName: "DepositoActionTask",
@@ -553,8 +989,28 @@ var DepositoService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _DepositoService_CreateDeposito_Handler,
 		},
 		{
+			MethodName: "createDepositoTransaction",
+			Handler:    _DepositoService_CreateDepositoTransaction_Handler,
+		},
+		{
+			MethodName: "GetProductDeposito",
+			Handler:    _DepositoService_GetProductDeposito_Handler,
+		},
+		{
 			MethodName: "DepositInquiryRate",
 			Handler:    _DepositoService_DepositInquiryRate_Handler,
+		},
+		{
+			MethodName: "DepositInquiryCif",
+			Handler:    _DepositoService_DepositInquiryCif_Handler,
+		},
+		{
+			MethodName: "DepositInquiryRateNego",
+			Handler:    _DepositoService_DepositInquiryRateNego_Handler,
+		},
+		{
+			MethodName: "DepositInquiryVoucher",
+			Handler:    _DepositoService_DepositInquiryVoucher_Handler,
 		},
 		{
 			MethodName: "DepositoMaintanance",
@@ -568,7 +1024,19 @@ var DepositoService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "DepositoPlacement",
 			Handler:    _DepositoService_DepositoPlacement_Handler,
 		},
+		{
+			MethodName: "DepositoInquiryTDPinalti",
+			Handler:    _DepositoService_DepositoInquiryTDPinalti_Handler,
+		},
+		{
+			MethodName: "DepositoInquiryTD",
+			Handler:    _DepositoService_DepositoInquiryTD_Handler,
+		},
+		{
+			MethodName: "DepositoWithdrawESB",
+			Handler:    _DepositoService_DepositoWithdrawESB_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api.proto",
+	Metadata: "deposito_api.proto",
 }
