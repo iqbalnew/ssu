@@ -573,30 +573,30 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, isTransactional bo
 	} else {
 
 		if userType != "ba" {
+			if isTransactional {
+				roleidstring := ""
+				for i, roleid := range workflowRoleIDFilter {
+					if i > 0 {
+						roleidstring = fmt.Sprintf("%s,%d", roleidstring, roleid)
+					} else {
+						roleidstring = fmt.Sprintf("%s%d", roleidstring, roleid)
+					}
+				}
+				roleidstring = "[" + roleidstring + "]"
+				whereOpt = fmt.Sprintf("%s AND TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%s", whereOpt, roleidstring)
 
-			roleidstring := ""
-			for i, roleid := range workflowRoleIDFilter {
-				if i > 0 {
-					roleidstring = fmt.Sprintf("%s,%d", roleidstring, roleid)
-				} else {
-					roleidstring = fmt.Sprintf("%s%d", roleidstring, roleid)
+				if workflowUserIDFilter > 0 {
+					whereOpt = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%s')", whereOpt, "%"+fmt.Sprint(workflowUserIDFilter)+"%")
+				}
+
+				if filter.Step == int32(pb.Steps_Checker) {
+					whereOpt = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'currentStep' = 'checker'", whereOpt)
+				} else if filter.Step == int32(pb.Steps_Signer) {
+					whereOpt = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'currentStep' = 'signer'", whereOpt)
+				} else if filter.Step == int32(pb.Steps_Releaser) {
+					whereOpt = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'currentStep' = 'releaser'", whereOpt)
 				}
 			}
-			roleidstring = "[" + roleidstring + "]"
-			whereOpt = fmt.Sprintf("%s AND TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%s", whereOpt, roleidstring)
-
-			if workflowUserIDFilter > 0 {
-				whereOpt = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%s')", whereOpt, "%"+fmt.Sprint(workflowUserIDFilter)+"%")
-			}
-
-			if filter.Step == int32(pb.Steps_Checker) {
-				whereOpt = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'currentStep' = 'checker'", whereOpt)
-			} else if filter.Step == int32(pb.Steps_Signer) {
-				whereOpt = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'currentStep' = 'signer'", whereOpt)
-			} else if filter.Step == int32(pb.Steps_Releaser) {
-				whereOpt = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'currentStep' = 'releaser'", whereOpt)
-			}
-
 		}
 
 	}
