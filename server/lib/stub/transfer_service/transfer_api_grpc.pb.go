@@ -26,7 +26,7 @@ type ApiServiceClient interface {
 	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	GetTaskInternalTransferSingleTemplate(ctx context.Context, in *GetTaskInternalTransferSingleTemplateRequest, opts ...grpc.CallOption) (*GetTaskInternalTransferSingleTemplateResponse, error)
 	GetTaskInternalTransferSingleTemplateDetail(ctx context.Context, in *GetTaskInternalTransferSingleTemplateDetailRequest, opts ...grpc.CallOption) (*GetTaskInternalTransferSingleTemplateDetailResponse, error)
-	CreateTaskInternalTransferSingleTemplate(ctx context.Context, in *InternalTransferSingleTemplate, opts ...grpc.CallOption) (*CreateTaskInternalTransferSingleTemplateResponse, error)
+	CreateTaskInternalTransferSingleTemplate(ctx context.Context, in *CreateTaskInternalTransferSingleTemplateRequest, opts ...grpc.CallOption) (*CreateTaskInternalTransferSingleTemplateResponse, error)
 	DeleteTaskInternalTransferSingleTemplate(ctx context.Context, in *DeleteTaskInternalTransferSingleTemplateRequest, opts ...grpc.CallOption) (*DeleteTaskInternalTransferSingleTemplateResponse, error)
 	GetTaskInternalTransferFile(ctx context.Context, in *GetTaskInternalTransferFileRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	GetTaskInternalTransfer(ctx context.Context, in *GetTaskInternalTransferRequest, opts ...grpc.CallOption) (*GetTaskInternalTransferResponse, error)
@@ -75,7 +75,7 @@ func (c *apiServiceClient) GetTaskInternalTransferSingleTemplateDetail(ctx conte
 	return out, nil
 }
 
-func (c *apiServiceClient) CreateTaskInternalTransferSingleTemplate(ctx context.Context, in *InternalTransferSingleTemplate, opts ...grpc.CallOption) (*CreateTaskInternalTransferSingleTemplateResponse, error) {
+func (c *apiServiceClient) CreateTaskInternalTransferSingleTemplate(ctx context.Context, in *CreateTaskInternalTransferSingleTemplateRequest, opts ...grpc.CallOption) (*CreateTaskInternalTransferSingleTemplateResponse, error) {
 	out := new(CreateTaskInternalTransferSingleTemplateResponse)
 	err := c.cc.Invoke(ctx, "/transfer.service.v1.ApiService/CreateTaskInternalTransferSingleTemplate", in, out, opts...)
 	if err != nil {
@@ -190,7 +190,7 @@ type ApiServiceServer interface {
 	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
 	GetTaskInternalTransferSingleTemplate(context.Context, *GetTaskInternalTransferSingleTemplateRequest) (*GetTaskInternalTransferSingleTemplateResponse, error)
 	GetTaskInternalTransferSingleTemplateDetail(context.Context, *GetTaskInternalTransferSingleTemplateDetailRequest) (*GetTaskInternalTransferSingleTemplateDetailResponse, error)
-	CreateTaskInternalTransferSingleTemplate(context.Context, *InternalTransferSingleTemplate) (*CreateTaskInternalTransferSingleTemplateResponse, error)
+	CreateTaskInternalTransferSingleTemplate(context.Context, *CreateTaskInternalTransferSingleTemplateRequest) (*CreateTaskInternalTransferSingleTemplateResponse, error)
 	DeleteTaskInternalTransferSingleTemplate(context.Context, *DeleteTaskInternalTransferSingleTemplateRequest) (*DeleteTaskInternalTransferSingleTemplateResponse, error)
 	GetTaskInternalTransferFile(context.Context, *GetTaskInternalTransferFileRequest) (*httpbody.HttpBody, error)
 	GetTaskInternalTransfer(context.Context, *GetTaskInternalTransferRequest) (*GetTaskInternalTransferResponse, error)
@@ -218,7 +218,7 @@ func (UnimplementedApiServiceServer) GetTaskInternalTransferSingleTemplate(conte
 func (UnimplementedApiServiceServer) GetTaskInternalTransferSingleTemplateDetail(context.Context, *GetTaskInternalTransferSingleTemplateDetailRequest) (*GetTaskInternalTransferSingleTemplateDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskInternalTransferSingleTemplateDetail not implemented")
 }
-func (UnimplementedApiServiceServer) CreateTaskInternalTransferSingleTemplate(context.Context, *InternalTransferSingleTemplate) (*CreateTaskInternalTransferSingleTemplateResponse, error) {
+func (UnimplementedApiServiceServer) CreateTaskInternalTransferSingleTemplate(context.Context, *CreateTaskInternalTransferSingleTemplateRequest) (*CreateTaskInternalTransferSingleTemplateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskInternalTransferSingleTemplate not implemented")
 }
 func (UnimplementedApiServiceServer) DeleteTaskInternalTransferSingleTemplate(context.Context, *DeleteTaskInternalTransferSingleTemplateRequest) (*DeleteTaskInternalTransferSingleTemplateResponse, error) {
@@ -322,7 +322,7 @@ func _ApiService_GetTaskInternalTransferSingleTemplateDetail_Handler(srv interfa
 }
 
 func _ApiService_CreateTaskInternalTransferSingleTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InternalTransferSingleTemplate)
+	in := new(CreateTaskInternalTransferSingleTemplateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -334,7 +334,7 @@ func _ApiService_CreateTaskInternalTransferSingleTemplate_Handler(srv interface{
 		FullMethod: "/transfer.service.v1.ApiService/CreateTaskInternalTransferSingleTemplate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiServiceServer).CreateTaskInternalTransferSingleTemplate(ctx, req.(*InternalTransferSingleTemplate))
+		return srv.(ApiServiceServer).CreateTaskInternalTransferSingleTemplate(ctx, req.(*CreateTaskInternalTransferSingleTemplateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

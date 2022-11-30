@@ -10,7 +10,6 @@ import (
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/infobloxopen/protoc-gen-gorm/options"
-	_ "github.com/mwitkow/go-proto-validators"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -33,30 +32,6 @@ func (this *InternalTransferTransaction) Validate() error {
 	return nil
 }
 func (this *InternalTransferSingleTemplate) Validate() error {
-	if !(this.Amount >= 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Amount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Amount))
-	}
-	if !(this.ExchangeRate >= 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("ExchangeRate", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.ExchangeRate))
-	}
-	if !(this.ReceivedAmount >= 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("ReceivedAmount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.ReceivedAmount))
-	}
-	if this.RecurringPeriodStart != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RecurringPeriodStart); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("RecurringPeriodStart", err)
-		}
-	}
-	if this.RecurringPeriodEnd != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RecurringPeriodEnd); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("RecurringPeriodEnd", err)
-		}
-	}
-	if this.ScheduledAt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
-		}
-	}
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)

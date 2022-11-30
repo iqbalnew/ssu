@@ -138,7 +138,7 @@ func local_request_ApiService_GetTaskInternalTransferSingleTemplateDetail_0(ctx 
 }
 
 func request_ApiService_CreateTaskInternalTransferSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq InternalTransferSingleTemplate
+	var protoReq CreateTaskInternalTransferSingleTemplateRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -155,7 +155,7 @@ func request_ApiService_CreateTaskInternalTransferSingleTemplate_0(ctx context.C
 }
 
 func local_request_ApiService_CreateTaskInternalTransferSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq InternalTransferSingleTemplate
+	var protoReq CreateTaskInternalTransferSingleTemplateRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -172,7 +172,7 @@ func local_request_ApiService_CreateTaskInternalTransferSingleTemplate_0(ctx con
 }
 
 func request_ApiService_CreateTaskInternalTransferSingleTemplate_1(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq InternalTransferSingleTemplate
+	var protoReq CreateTaskInternalTransferSingleTemplateRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -206,7 +206,7 @@ func request_ApiService_CreateTaskInternalTransferSingleTemplate_1(ctx context.C
 }
 
 func local_request_ApiService_CreateTaskInternalTransferSingleTemplate_1(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq InternalTransferSingleTemplate
+	var protoReq CreateTaskInternalTransferSingleTemplateRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)

@@ -4114,6 +4114,7 @@ func (s *Server) GetTaskByIDNoFilter(ctx context.Context, req *pb.GetTaskByIDReq
 }
 
 func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.GetTaskByIDRes, error) {
+
 	res := &pb.GetTaskByIDRes{
 		Found: false,
 		Data:  nil,
@@ -4136,22 +4137,24 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
+
 	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{})
 	if err != nil {
 		return nil, err
 	}
+
 	if len(list) > 0 {
 		res.Found = true
 		data, err := list[0].ToPB(ctx)
 		if err != nil {
 			logrus.Errorln(err)
-			// s.logger.Error("GetTaskByID", fmt.Sprintf("Error: %v", err))
 			return nil, status.Errorf(codes.Internal, "Internal Error: %v", err)
 		}
 		res.Data = &data
 	}
 
 	return res, nil
+
 }
 
 func (s *Server) UpdateTaskData(ctx context.Context, req *pb.UpdateTaskDataReq) (*pb.UpdateTaskDataRes, error) {
