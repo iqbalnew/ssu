@@ -193,6 +193,21 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	var dataORM pb.TaskORM
 
+	filterIn := ""
+	if currentUser.UserType != "ba" {
+		stringHoldingID := ""
+		logrus.Println("group ID", currentUser.GroupIDs)
+		for i, v := range currentUser.GroupIDs {
+			if i == 0 {
+				stringHoldingID = strconv.FormatUint(v, 10)
+			} else {
+				stringHoldingID = stringHoldingID + "," + strconv.FormatUint(v, 10)
+			}
+		}
+		filterIn = fmt.Sprintf("company_id:%s", stringHoldingID)
+		logrus.Println("string holding id", stringHoldingID)
+	}
+
 	sort := &pb.Sort{
 		Column:    req.GetSort(),
 		Direction: req.GetDir().Enum().String(),
@@ -202,6 +217,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		Filter:   req.Filter,
 		FilterOr: req.FilterOr,
 		Sort:     sort,
+		In:       filterIn,
 	}
 
 	dataORM, err = req.Task.ToORM(ctx)
