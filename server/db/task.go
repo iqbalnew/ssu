@@ -603,7 +603,9 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, userType string, f
 		query = query.Where(whereOpt)
 	}
 
-	query = query.Where(FilterScoope(sql.Filter))
+	if sql.Filter != "" {
+		query = query.Where(FilterScoope(sql.Filter))
+	}
 
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
 
