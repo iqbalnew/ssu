@@ -212,7 +212,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	result.Pagination = setPagination(req)
 
-	list, err := s.provider.GetListTaskNormal(ctx, &dataORM, result.Pagination, sqlBuilder, currentUser.UserID, currentUser.RoleIDs, req.AccountIDFilter)
+	list, err := s.provider.GetListTaskNormal(ctx, currentUser.UserType, &dataORM, result.Pagination, sqlBuilder, currentUser.UserID, currentUser.RoleIDs, req.AccountIDFilter)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTask] Failed when execute GetListTask:", err)
 		return nil, err
