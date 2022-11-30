@@ -1593,10 +1593,11 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 		swiftClient := swift_pb.NewSwiftServiceClient(swiftConn)
 
 		_, err = swiftClient.TaskAction(newCtx, &swift_pb.TaskActionRequest{
-			TaskID:  req.GetTaskID(),
-			Action:  req.GetAction(),
-			Comment: req.GetComment(),
-			Reasons: req.GetReasons(),
+			TaskID:   req.GetTaskID(),
+			Action:   req.GetAction(),
+			Comment:  req.GetComment(),
+			Reasons:  req.GetReasons(),
+			PassCode: req.GetPassCode(),
 		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 		if err != nil {
 			return nil, err
