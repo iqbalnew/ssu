@@ -484,8 +484,6 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		}
 	}
 
-	// AND ( workflow_doc -> 'workflow' ->> 'participantUserIDs' IS NULL OR '5012813' = ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) )
-
 	if workflowUserIDNotInFilter > 0 {
 		if customQuery == "" {
 			customQuery = fmt.Sprintf("(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", workflowUserIDNotInFilter)
@@ -505,11 +503,15 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	logrus.Println("Custom Query list: ==> %s", customQuery)
 
 	query = query.Scopes(FilterScoope(sql.Filter))
-	query = query.Scopes(FilterOrScoope(sql.FilterOr, customQuery))
+	query = query.Scopes(FilterOrScoope(sql.FilterOr, ""))
+
+	if customQuery != "" {
+		query = query.Or(customQuery)
+	}
 
 	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn), NotConditionalScoope(sql.FilterNot))
 	if sql.CompanyID != "" {
-		query = query.Where(`("company_id" = ? OR "data" ->> 'companyID' = ?)`, sql.CompanyID, sql.CompanyID)
+		query = query.Where(`("company_id" = $1 OR "data" ->> 'companyID' = $2)`, sql.CompanyID, sql.CompanyID)
 	}
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
