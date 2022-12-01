@@ -515,8 +515,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	}
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
-	logrus.Println("Query list: ==> %s", query)
 	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
+		logrus.Errorln("[db][func: GetListTask] Failed:", err.Error())
 		if !errors.Is(err, gorm.ErrModelValueRequired) {
 			return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
 		}
