@@ -486,17 +486,17 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 	if workflowUserIDNotInFilter > 0 {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf("(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", workflowUserIDNotInFilter)
+			customQuery = fmt.Sprintf("workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", workflowUserIDNotInFilter)
 		} else {
-			customQuery = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", customQuery, workflowUserIDNotInFilter)
+			customQuery = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", customQuery, workflowUserIDNotInFilter)
 		}
 	}
 
 	if workflowUserIDInFilter > 0 {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf("(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' = ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", workflowUserIDInFilter)
+			customQuery = fmt.Sprintf("workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' = ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", workflowUserIDInFilter)
 		} else {
-			customQuery = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' = ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", customQuery, workflowUserIDInFilter)
+			customQuery = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' = ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", customQuery, workflowUserIDInFilter)
 		}
 	}
 
