@@ -484,23 +484,26 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		}
 	}
 
+	// AND ( workflow_doc -> 'workflow' ->> 'participantUserIDs' IS NULL OR '5012813' = ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) )
+
 	if workflowUserIDNotInFilter > 0 {
 		if customQuery == "" {
-			customQuery = "(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDNotInFilter) + "%') and workflow_doc != '{}' "
+			customQuery = fmt.Sprintf("(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", workflowUserIDNotInFilter)
 		} else {
-			customQuery = customQuery + " AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDNotInFilter) + "%') and workflow_doc != '{}' "
+			customQuery = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", customQuery, workflowUserIDNotInFilter)
 		}
 	}
 
 	if workflowUserIDInFilter > 0 {
 		if customQuery == "" {
-			customQuery = "(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' LIKE '%" + fmt.Sprint(workflowUserIDInFilter) + "%') and workflow_doc != '{}' "
+			customQuery = fmt.Sprintf("(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' = ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", workflowUserIDInFilter)
 		} else {
-			customQuery = customQuery + " AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' LIKE '%" + fmt.Sprint(workflowUserIDInFilter) + "%') and workflow_doc != '{}' "
+			customQuery = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' = ANY ( TRANSLATE ( workflow_doc -> 'workflow' ->> 'participantUserIDs', '[]', '{}' ) :: INT [] ) AND workflow_doc != '{}' ", customQuery, workflowUserIDInFilter)
 		}
 	}
 
 	logrus.Println("Custom Query list: ==> %s", customQuery)
+
 	query = query.Scopes(FilterScoope(sql.Filter))
 	query = query.Scopes(FilterOrScoope(sql.FilterOr, customQuery))
 
