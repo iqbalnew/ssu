@@ -503,11 +503,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	logrus.Println("Custom Query list: ==> %s", customQuery)
 
 	query = query.Scopes(FilterScoope(sql.Filter))
-	query = query.Scopes(FilterOrScoope(sql.FilterOr, ""))
-
-	if customQuery != "" {
-		query = query.Or(customQuery)
-	}
+	query = query.Scopes(FilterOrScoope(sql.FilterOr, customQuery))
 
 	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn), NotConditionalScoope(sql.FilterNot))
 	if sql.CompanyID != "" {
