@@ -934,6 +934,20 @@
             "type": "string"
           },
           {
+            "name": "userIDNotInFilter",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "userIDInFilter",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
             "name": "isTransactional",
             "in": "query",
             "required": false,

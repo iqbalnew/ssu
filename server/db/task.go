@@ -34,7 +34,8 @@ type GraphResultWorkflowType struct {
 }
 
 func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (result *GraphResult, err error) {
-	selectOpt := fmt.Sprintf("count(*) as total")
+
+	selectOpt := "count(*) as total"
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := ""
 	// if service != "" {
@@ -69,6 +70,7 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 	}
 
 	return result, nil
+
 }
 
 func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, roleids []uint64, accountids []uint64, isMaker bool, createdByID uint64) (result []*GraphResultWorkflowType, err error) {
@@ -152,10 +154,6 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 			whereOpt = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%s')", whereOpt, "%"+fmt.Sprint(createdByID)+"%")
 		}
 
-	}
-
-	if service == "Payroll Transfer" {
-		query = query.Where("AND (data->'status' = 'Ready to Submit')")
 	}
 
 	if whereOpt != "" {
@@ -454,7 +452,7 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDNotInFilter uint64, workflowUserIDInFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
 
 	query := p.db_main
 	if filter.Type != "" {
@@ -476,7 +474,6 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	}
 
 	if len(workflowAccountIDFilter) > 0 {
-
 		valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
 		valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
 		valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
@@ -487,13 +484,20 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		}
 	}
 
-	if workflowUserIDFilter > 0 {
+	if workflowUserIDNotInFilter > 0 {
 		if customQuery == "" {
-			customQuery = "(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDFilter) + "%') and workflow_doc != '{}' "
+			customQuery = "(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDNotInFilter) + "%') and workflow_doc != '{}' "
 		} else {
-			customQuery = customQuery + " AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDFilter) + "%') and workflow_doc != '{}' "
+			customQuery = customQuery + " AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%" + fmt.Sprint(workflowUserIDNotInFilter) + "%') and workflow_doc != '{}' "
 		}
+	}
 
+	if workflowUserIDInFilter > 0 {
+		if customQuery == "" {
+			customQuery = "(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' LIKE '%" + fmt.Sprint(workflowUserIDInFilter) + "%') and workflow_doc != '{}' "
+		} else {
+			customQuery = customQuery + " AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' LIKE '%" + fmt.Sprint(workflowUserIDInFilter) + "%') and workflow_doc != '{}' "
+		}
 	}
 
 	logrus.Println("Custom Query list: ==> %s", customQuery)

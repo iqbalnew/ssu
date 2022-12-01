@@ -95,7 +95,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{})
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, 0, []uint64{}, []uint64{})
 	if err != nil {
 		logrus.Errorln("[api][func: GetTaskByTypeID] Failed when execute GetListTask:", err)
 		return nil, err
@@ -259,14 +259,6 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		Data:    []*pb.Task{},
 	}
 
-	currentUser, _, _ := s.manager.GetMeFromMD(ctx)
-
-	userIDFilter := uint64(0)
-
-	if currentUser != nil {
-		userIDFilter = currentUser.UserID
-	}
-
 	var dataorm pb.TaskORM
 	if req.Task != nil {
 		dataorm, _ = req.Task.ToORM(ctx)
@@ -289,7 +281,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 	result.Pagination = setPagination(req)
 
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, userIDFilter, req.RoleIDFilter, req.AccountIDFilter)
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.UserIDNotInFilter, req.UserIDInFilter, req.RoleIDFilter, req.AccountIDFilter)
 	if err != nil {
 		return nil, err
 	}
@@ -2969,7 +2961,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			mappingDigitalTask, err := s.provider.GetListTask(ctx, &pb.TaskORM{
 				Type:      "BG Mapping Digital",
 				CompanyID: task.CompanyID,
-			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, 0, []uint64{}, []uint64{})
+			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, 0, 0, []uint64{}, []uint64{})
 			if err != nil {
 				logrus.Errorln("[api][func: SetTask] Failed when GetListTask:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -4158,7 +4150,7 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 		Sort:          &pb.Sort{},
 	}
 
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{})
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, 0, []uint64{}, []uint64{})
 	if err != nil {
 		return nil, err
 	}
