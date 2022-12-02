@@ -78,7 +78,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 		return []*GraphResultWorkflowType{}, nil
 	}
 
-	selectOpt := `CASE WHEN workflow_doc->'workflow'->>'currentStep' IS NULL THEN 'maker' ELSE workflow_doc->'workflow'->>'currentStep' END AS name, "type", "status", count(*) as total`
+	selectOpt := `CASE WHEN workflow_doc->'workflow'->>'currentStep' IS NULL THEN 'maker' ELSE workflow_doc->'workflow'->>'currentStep' END AS name, "type", count(*) as total`
 
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
 
@@ -122,7 +122,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 		query = query.Where(whereOpt)
 	}
 
-	query = query.Group("name, type, status")
+	query = query.Group("name, type")
 
 	if err = query.Find(&result).Error; err != nil {
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)

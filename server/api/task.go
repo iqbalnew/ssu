@@ -549,10 +549,9 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		}
 
 		val := &pb.GraphStepWorkflow{
-			Step:   v.Name,
-			Type:   v.Type,
-			Status: pb.Statuses(v.Status),
-			Total:  v.Total,
+			Step:  v.Name,
+			Type:  v.Type,
+			Total: v.Total,
 		}
 
 		res.Data = append(res.Data, val)
