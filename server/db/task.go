@@ -27,10 +27,9 @@ type GraphResultColumnType struct {
 }
 
 type GraphResultWorkflowType struct {
-	Name   string
-	Type   string
-	Status int
-	Total  uint64
+	Name  string
+	Type  string
+	Total uint64
 }
 
 func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (result *GraphResult, err error) {
