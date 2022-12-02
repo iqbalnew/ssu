@@ -169,14 +169,14 @@ func TaskDataAnnouncementToPB(data string) (val *announcement_pb.Announcement, k
 	return &announcement, announcement.GetCode(), nil
 }
 
-func TaskDataDepositoToPB(data string) (val *deposito_pb.CreateDepositoRequest, key string, err error) {
-	deposito := deposito_pb.CreateDepositoRequest{}
+func TaskDataDepositoToPB(data string) (val *deposito_pb.TaskData, key string, err error) {
+	deposito := deposito_pb.TaskData{}
 	err = json.Unmarshal([]byte(data), &deposito)
 	if err != nil {
 		return nil, "", err
 	}
 
-	return &deposito, deposito.GetData().GetDeposito().GetCode(), nil
+	return &deposito, deposito.GetDeposito().GetCode(), nil
 }
 
 func TaskDataMenuAppearanceToPB(data string) (val *menu_pb.MenuAppearance, key string, err error) {
