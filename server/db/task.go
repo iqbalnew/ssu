@@ -123,7 +123,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 		query = query.Where(whereOpt)
 	}
 
-	query = query.Group("workflow_doc->'workflow'->>'currentStep', type, status")
+	query = query.Group("name, type, status")
 
 	if err = query.Find(&result).Error; err != nil {
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
