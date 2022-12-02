@@ -527,7 +527,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		accountIDs = append(accountIDs, v.AccountID)
 	}
 
-	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, accountIDs, true, currentUser.UserID)
+	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, accountIDs, currentUser.UserID)
 	if err != nil {
 		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
 		return nil, err
@@ -543,44 +543,6 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		case "releaser":
 			v.Name = "Releaser"
 		case "maker":
-			v.Name = "Maker"
-		}
-
-		if v.Status == 2 {
-			v.Name = "Maker"
-		}
-
-		val := &pb.GraphStepWorkflow{
-			Step:   v.Name,
-			Type:   v.Type,
-			Status: pb.Statuses(v.Status),
-			Total:  v.Total,
-		}
-
-		res.Data = append(res.Data, val)
-
-	}
-
-	data, err = s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, accountIDs, false, currentUser.UserID)
-	if err != nil {
-		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
-		return nil, err
-	}
-
-	for _, v := range data {
-
-		switch v.Name {
-		case "verifier":
-			v.Name = "Checker"
-		case "approver":
-			v.Name = "Signer"
-		case "releaser":
-			v.Name = "Releaser"
-		case "maker":
-			v.Name = "Maker"
-		}
-
-		if v.Status == 2 {
 			v.Name = "Maker"
 		}
 
