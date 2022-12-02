@@ -112,7 +112,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 			TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]', '{}')::INT[] && ARRAY[%s] 
 			AND (workflow_doc->'workflow'->'header'->'uaID')::INT in (%s) 
 			AND ('%d' != ANY (TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))
-			OR (workflow_doc->'createdBy'->>'userID' = '%d')
+			OR (created_by_id = '%d')
 		)`, whereOpt, roleIDs, accountIDs, userID, userID)
 	}
 
