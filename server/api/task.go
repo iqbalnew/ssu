@@ -538,6 +538,8 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		switch v.Name {
 		case "verifier":
 			v.Name = "Checker"
+		case "checker":
+			v.Name = "Checker"
 		case "approver":
 			v.Name = "Signer"
 		case "releaser":
