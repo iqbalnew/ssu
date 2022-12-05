@@ -1510,29 +1510,29 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 			return nil, err
 		}
 
-	// case "Beneficiary Account":
+	case "Beneficiary Account":
+		logrus.Println("TEST masuk ga????")
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
 
-	// 	var opts []grpc.DialOption
-	// 	opts = append(opts, grpc.WithInsecure())
+		benefConn, err := grpc.Dial(getEnv("BENEFICIARY_ACCOUNT_SERVICE", ":9107"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Unable to connect Beneficiary Account Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer benefConn.Close()
 
-	// 	benefConn, err := grpc.Dial(getEnv("BENEFICIARY_ACCOUNT_SERVICE", ":9107"), opts...)
-	// 	if err != nil {
-	// 		logrus.Errorln("[api][func: SetTask] Unable to connect Beneficiary Account Service:", err)
-	// 		return nil, status.Errorf(codes.Internal, "Internal Error")
-	// 	}
-	// 	defer benefConn.Close()
+		benefClient := beneficiary_account_pb.NewApiServiceClient(benefConn)
 
-	// 	benefClient := beneficiary_account_pb.NewApiServiceClient(benefConn)
-
-	// 	_, err = benefClient.TaskAction(newCtx, &beneficiary_account_pb.TaskActionRequest{
-	// 		TaskID:  req.GetTaskID(),
-	// 		Action:  req.GetAction(),
-	// 		Comment: req.GetComment(),
-	// 		Reasons: req.GetReasons(),
-	// 	}, grpc.Header(&userMD), grpc.Trailer(&trailer))
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
+		_, err = benefClient.TaskAction(newCtx, &beneficiary_account_pb.TaskActionRequest{
+			TaskID:  req.GetTaskID(),
+			Action:  req.GetAction(),
+			Comment: req.GetComment(),
+			Reasons: req.GetReasons(),
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			return nil, err
+		}
 
 	case "Payroll Transfer":
 
