@@ -1044,7 +1044,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	product := productData.Data[0]
 
 	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Import LC", "Internal Fund Transfer", "BI-Fast", "Payroll Transfer",
-		"Amend Cancel LC", "Deposito"}
+		"Amend Cancel LC", "Deposito", "Online Transfer"}
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
 
