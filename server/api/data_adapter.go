@@ -19,6 +19,7 @@ import (
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
+	online_transfer_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/online_transfer_service"
 	payroll_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/payroll_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
@@ -94,6 +95,9 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 
 	case "External Fund Transfer":
 		_, key, err = TaskDataExternalTransferToPB(task.Data, task.TaskID)
+
+	case "Online Transfer":
+		_, key, err = TaskDataOnlineTransferToPB(task.Data, task.TaskID)
 
 	case "Payroll Transfer":
 		_, key, err = TaskDataPayrollTransferToPB(task.Data, task.TaskID)
@@ -338,6 +342,16 @@ func TaskDataExternalTransferToPB(data string, taskID uint64) (val *bifast_pb.Ex
 	}
 
 	return external, fmt.Sprintf("EFT%v", taskID), nil
+}
+
+func TaskDataOnlineTransferToPB(data string, taskID uint64) (val *online_transfer_pb.OnlineTransferData, key string, err error) {
+	online := &online_transfer_pb.OnlineTransferData{}
+	err = json.Unmarshal([]byte(data), &online)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return online, fmt.Sprintf("OFT%v", taskID), nil
 }
 
 func TaskDataPayrollTransferToPB(data string, taskID uint64) (val *payroll_pb.PayrollData, key string, err error) {
