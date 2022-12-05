@@ -95,7 +95,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, 0, []uint64{}, []uint64{})
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{})
 	if err != nil {
 		logrus.Errorln("[api][func: GetTaskByTypeID] Failed when execute GetListTask:", err)
 		return nil, err
@@ -281,7 +281,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 	result.Pagination = setPagination(req)
 
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.UserIDNotInFilter, req.UserIDInFilter, req.RoleIDFilter, req.AccountIDFilter)
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.UserIDFilter, req.RoleIDFilter, req.AccountIDFilter)
 	if err != nil {
 		return nil, err
 	}
@@ -1277,6 +1277,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 }
 
 func (s *Server) AssignTypeIDEV(ctx context.Context, req *pb.AssignaTypeIDRequestEV) (*pb.AssignaTypeIDResponse, error) {
+
 	key := getEnv("AES_KEY", "Odj12345*12345678901234567890123")
 	aes := customAES.NewCustomAES(key)
 
@@ -1301,9 +1302,11 @@ func (s *Server) AssignTypeIDEV(ctx context.Context, req *pb.AssignaTypeIDReques
 	}
 
 	return s.AssignTypeID(ctx, reqPB)
+
 }
 
 func (s *Server) AssignTypeID(ctx context.Context, req *pb.AssignaTypeIDRequest) (*pb.AssignaTypeIDResponse, error) {
+
 	data, err := s.provider.FindTaskById(ctx, req.TaskID)
 	if err != nil {
 		logrus.Errorln(err)
@@ -1320,9 +1323,11 @@ func (s *Server) AssignTypeID(ctx context.Context, req *pb.AssignaTypeIDRequest)
 		Code:    200,
 		Message: "Created",
 	}, nil
+
 }
 
 func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.SetTaskResponseEV, error) {
+
 	key := getEnv("AES_KEY", "Odj12345*12345678901234567890123")
 	aes := customAES.NewCustomAES(key)
 
@@ -1362,9 +1367,11 @@ func (s *Server) SetTaskEV(ctx context.Context, req *pb.SetTaskRequestEV) (*pb.S
 	}
 
 	return res, nil
+
 }
 
 func checkAllowedApproval(md metadata.MD, taskType string, permission string) bool {
+
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
@@ -2924,7 +2931,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			mappingDigitalTask, err := s.provider.GetListTask(ctx, &pb.TaskORM{
 				Type:      "BG Mapping Digital",
 				CompanyID: task.CompanyID,
-			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, 0, 0, []uint64{}, []uint64{})
+			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, 0, []uint64{}, []uint64{})
 			if err != nil {
 				logrus.Errorln("[api][func: SetTask] Failed when GetListTask:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -4050,13 +4057,16 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 }
 
 func getEnv(key, fallback string) string {
+
 	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}
 	return fallback
+
 }
 
 func (s *Server) RejectBySystem(ctx context.Context, req *pb.RejectBySystemReq) (res *pb.RejectBySystemRes, err error) {
+
 	res = &pb.RejectBySystemRes{
 		Success: true,
 		Code:    "200",
@@ -4068,9 +4078,11 @@ func (s *Server) RejectBySystem(ctx context.Context, req *pb.RejectBySystemReq) 
 	}
 
 	return res, nil
+
 }
 
 func (s *Server) GetTaskByIDNoFilter(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.GetTaskByIDRes, error) {
+
 	find, err := s.provider.FindTaskById(ctx, req.GetID())
 	if err != nil {
 		return nil, err
@@ -4086,6 +4098,7 @@ func (s *Server) GetTaskByIDNoFilter(ctx context.Context, req *pb.GetTaskByIDReq
 		Found: false,
 		Data:  &resData,
 	}, err
+
 }
 
 func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.GetTaskByIDRes, error) {
@@ -4113,7 +4126,7 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 		Sort:          &pb.Sort{},
 	}
 
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, 0, []uint64{}, []uint64{})
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{})
 	if err != nil {
 		return nil, err
 	}

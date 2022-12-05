@@ -928,24 +928,17 @@
             "collectionFormat": "multi"
           },
           {
+            "name": "userIDFilter",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
             "name": "filterNot",
             "in": "query",
             "required": false,
             "type": "string"
-          },
-          {
-            "name": "userIDNotInFilter",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "userIDInFilter",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
           },
           {
             "name": "isTransactional",
