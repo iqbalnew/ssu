@@ -23,6 +23,7 @@ import (
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
+	online_transfer_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/online_transfer_service"
 	payroll_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/payroll_service"
 	product_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/product_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
@@ -1628,6 +1629,30 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 			Comment:  req.GetComment(),
 			Reasons:  req.GetReasons(),
 			PassCode: req.GetPassCode(),
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			return nil, err
+		}
+
+	case "Online Transfer":
+
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		onlineTransferConn, err := grpc.Dial(getEnv("ONLINE_TRANSFER_SERVICE", ":9128"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Unable to connect Online Transfer Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer onlineTransferConn.Close()
+
+		onlineTransferClient := online_transfer_pb.NewApiServiceClient(onlineTransferConn)
+
+		_, err = onlineTransferClient.SetTaskOnlineTransfer(newCtx, &online_transfer_pb.SetTaskOnlineTransferRequest{
+			TaskID:  req.GetTaskID(),
+			Action:  req.GetAction(),
+			Comment: req.GetComment(),
+			Reasons: req.GetReasons(),
 		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 		if err != nil {
 			return nil, err
