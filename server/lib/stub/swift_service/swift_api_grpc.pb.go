@@ -28,6 +28,7 @@ type SwiftServiceClient interface {
 	TaskList(ctx context.Context, in *TaskListRequest, opts ...grpc.CallOption) (*TaskListResponse, error)
 	DownloadTaskList(ctx context.Context, in *FileTaskListRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	TaskDetail(ctx context.Context, in *TaskDetailRequest, opts ...grpc.CallOption) (*TaskDetailResponse, error)
+	TaskDetailGet(ctx context.Context, in *TaskDetailRequest, opts ...grpc.CallOption) (*TaskDetailResponse, error)
 	DataList(ctx context.Context, in *DataListRequest, opts ...grpc.CallOption) (*DataListResponse, error)
 	DataListDownload(ctx context.Context, in *DataListDownloadRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	DataDetail(ctx context.Context, in *DataDetailRequest, opts ...grpc.CallOption) (*DataDetailResponse, error)
@@ -100,6 +101,15 @@ func (c *swiftServiceClient) DownloadTaskList(ctx context.Context, in *FileTaskL
 func (c *swiftServiceClient) TaskDetail(ctx context.Context, in *TaskDetailRequest, opts ...grpc.CallOption) (*TaskDetailResponse, error) {
 	out := new(TaskDetailResponse)
 	err := c.cc.Invoke(ctx, "/swift.service.v1.SwiftService/TaskDetail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *swiftServiceClient) TaskDetailGet(ctx context.Context, in *TaskDetailRequest, opts ...grpc.CallOption) (*TaskDetailResponse, error) {
+	out := new(TaskDetailResponse)
+	err := c.cc.Invoke(ctx, "/swift.service.v1.SwiftService/TaskDetailGet", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -322,6 +332,7 @@ type SwiftServiceServer interface {
 	TaskList(context.Context, *TaskListRequest) (*TaskListResponse, error)
 	DownloadTaskList(context.Context, *FileTaskListRequest) (*httpbody.HttpBody, error)
 	TaskDetail(context.Context, *TaskDetailRequest) (*TaskDetailResponse, error)
+	TaskDetailGet(context.Context, *TaskDetailRequest) (*TaskDetailResponse, error)
 	DataList(context.Context, *DataListRequest) (*DataListResponse, error)
 	DataListDownload(context.Context, *DataListDownloadRequest) (*httpbody.HttpBody, error)
 	DataDetail(context.Context, *DataDetailRequest) (*DataDetailResponse, error)
@@ -366,6 +377,9 @@ func (UnimplementedSwiftServiceServer) DownloadTaskList(context.Context, *FileTa
 }
 func (UnimplementedSwiftServiceServer) TaskDetail(context.Context, *TaskDetailRequest) (*TaskDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TaskDetail not implemented")
+}
+func (UnimplementedSwiftServiceServer) TaskDetailGet(context.Context, *TaskDetailRequest) (*TaskDetailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TaskDetailGet not implemented")
 }
 func (UnimplementedSwiftServiceServer) DataList(context.Context, *DataListRequest) (*DataListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DataList not implemented")
@@ -535,6 +549,24 @@ func _SwiftService_TaskDetail_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SwiftServiceServer).TaskDetail(ctx, req.(*TaskDetailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SwiftService_TaskDetailGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskDetailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SwiftServiceServer).TaskDetailGet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/swift.service.v1.SwiftService/TaskDetailGet",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SwiftServiceServer).TaskDetailGet(ctx, req.(*TaskDetailRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -979,6 +1011,10 @@ var SwiftService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TaskDetail",
 			Handler:    _SwiftService_TaskDetail_Handler,
+		},
+		{
+			MethodName: "TaskDetailGet",
+			Handler:    _SwiftService_TaskDetailGet_Handler,
 		},
 		{
 			MethodName: "DataList",
