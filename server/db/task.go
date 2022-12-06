@@ -452,9 +452,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf("('%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]) OR '%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter, workflowUserIDFilter)
+			customQuery = fmt.Sprintf("('%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]) AND '%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter, workflowUserIDFilter)
 		} else {
-			customQuery = fmt.Sprintf("%s OR ('%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]) OR '%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", customQuery, workflowUserIDFilter, workflowUserIDFilter)
+			customQuery = fmt.Sprintf("%s OR ('%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]) AND '%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", customQuery, workflowUserIDFilter, workflowUserIDFilter)
 		}
 	}
 
