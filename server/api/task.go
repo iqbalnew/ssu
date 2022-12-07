@@ -540,26 +540,30 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 		for _, v := range data {
 
-			switch v.Name {
-			case "verifier":
-				v.Name = "Checker"
-			case "checker":
-				v.Name = "Checker"
-			case "approver":
-				v.Name = "Signer"
-			case "releaser":
-				v.Name = "Releaser"
-			case "maker":
-				v.Name = "Maker"
-			}
+			if v.Name == step {
 
-			val := &pb.GraphStepWorkflow{
-				Step:  v.Name,
-				Type:  v.Type,
-				Total: v.Total,
-			}
+				switch v.Name {
+				case "verifier":
+					v.Name = "Checker"
+				case "checker":
+					v.Name = "Checker"
+				case "approver":
+					v.Name = "Signer"
+				case "releaser":
+					v.Name = "Releaser"
+				case "maker":
+					v.Name = "Maker"
+				}
 
-			res.Data = append(res.Data, val)
+				val := &pb.GraphStepWorkflow{
+					Step:  v.Name,
+					Type:  v.Type,
+					Total: v.Total,
+				}
+
+				res.Data = append(res.Data, val)
+
+			}
 
 		}
 
