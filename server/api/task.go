@@ -1555,14 +1555,40 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 
 		payrollClient := payroll_pb.NewApiServiceClient(payrollConn)
 
-		_, err = payrollClient.SetTaskPayroll(newCtx, &payroll_pb.SetTaskPayrollRequest{
-			TaskID:  req.GetTaskID(),
-			Action:  req.GetAction(),
-			Comment: req.GetComment(),
-			Reasons: req.GetReasons(),
-		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
-		if err != nil {
-			return nil, err
+		if req.GetAction() == "submit" {
+
+			taskData := &payroll_pb.PayrollDataJob{}
+			err = json.Unmarshal([]byte(taskPB.Data), taskData)
+			if err != nil {
+				logrus.Errorln("[api][func: SetTask] Unable to Unmarshal Data:", err.Error())
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
+			_, err = payrollClient.CreateTaskPayroll(newCtx, &payroll_pb.CreateTaskPayrollRequest{
+				TaskID:              req.GetTaskID(),
+				FileName:            taskData.GetUploadFileName(),
+				FileDescription:     taskData.GetFileDescription(),
+				TransactionType:     taskData.GetTransactionType(),
+				TransactionSchedule: taskData.GetTransactionSchedule(),
+				ScheduledAt:         taskData.GetScheduledAt(),
+				IsDraft:             false,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+		} else {
+
+			_, err = payrollClient.SetTaskPayroll(newCtx, &payroll_pb.SetTaskPayrollRequest{
+				TaskID:  req.GetTaskID(),
+				Action:  req.GetAction(),
+				Comment: req.GetComment(),
+				Reasons: req.GetReasons(),
+			}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+			if err != nil {
+				return nil, err
+			}
+
 		}
 
 	case "Swift":
