@@ -426,15 +426,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		query = query.Where(&filter)
 	}
 
-	customQuery := "workflow_doc != '{}'"
-
-	if workflowUserIDFilter > 0 {
-		if customQuery == "" {
-			customQuery = fmt.Sprintf("('%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]) AND '%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter, workflowUserIDFilter)
-		} else {
-			customQuery = fmt.Sprintf("%s AND ('%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]) AND '%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", customQuery, workflowUserIDFilter, workflowUserIDFilter)
-		}
-	}
+	customQuery := ""
 
 	if len(workflowRoleIDFilter) > 0 {
 		value := strings.ReplaceAll(fmt.Sprint(workflowRoleIDFilter), " ", "','")
@@ -443,7 +435,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		if customQuery == "" {
 			customQuery = fmt.Sprintf("ARRAY(SELECT jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && ARRAY[%s]", value)
 		} else {
-			customQuery = fmt.Sprintf("%s OR ARRAY(SELECT jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && ARRAY[%s]", customQuery, value)
+			customQuery = fmt.Sprintf("%s AND ARRAY(SELECT jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && ARRAY[%s]", customQuery, value)
 		}
 	}
 
@@ -455,6 +447,26 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			customQuery = fmt.Sprintf("workflow_doc->'workflow'->'header'->'uaID' IN (%s)", valueAccount)
 		} else {
 			customQuery = fmt.Sprintf("%s AND workflow_doc->'workflow'->'header'->'uaID' IN (%s)", customQuery, valueAccount)
+		}
+	}
+
+	if workflowUserIDFilter > 0 {
+		if customQuery == "" {
+			customQuery = fmt.Sprintf("'%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])", workflowUserIDFilter)
+		} else {
+			customQuery = fmt.Sprintf("%s AND '%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])", customQuery, workflowUserIDFilter)
+		}
+	}
+
+	if customQuery != "" {
+		customQuery = fmt.Sprintf("(%s)", customQuery)
+	}
+
+	if workflowUserIDFilter > 0 {
+		if customQuery == "" {
+			customQuery = fmt.Sprintf("('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
+		} else {
+			customQuery = fmt.Sprintf("%s OR ('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", customQuery, workflowUserIDFilter)
 		}
 	}
 
