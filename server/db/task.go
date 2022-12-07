@@ -121,7 +121,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 					AND (workflow_doc->'workflow'->'header'->'uaID')::INT in (%s) 
 					AND (
 						workflow_doc->'workflow'->>'participantUserIDs' IS NULL
-						OR '%d' != ANY (TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))
+						OR '%d' != ANY (TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])
 					)
 				)
 			)`, whereOpt, userID, roleIDs, accountIDs, userID)
@@ -131,13 +131,13 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 				AND (workflow_doc->'workflow'->'header'->'uaID')::INT in (%s) 
 				AND (
 					workflow_doc->'workflow'->>'participantUserIDs' IS NULL
-					OR '%d' != ANY (TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))
+					OR '%d' != ANY (TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])
 				)
 			)`, whereOpt, roleIDs, accountIDs, userID)
 		}
 	}
 
-	// Customer Payroll Query
+	// Custom Payroll Query
 	whereOpt = fmt.Sprintf(`%s OR ("type" = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit')`, whereOpt, userID)
 
 	if whereOpt != "" {
