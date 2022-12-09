@@ -534,6 +534,7 @@ type MenuLicenseORM struct {
 	ModuleID         uint64
 	Name             string `gorm:"type:varchar(255)"`
 	OrderNumber      string
+	Penalty          uint64
 	ProductID        uint64
 	ProductName      string
 	TransactionLimit string `gorm:"type:jsonb"`
@@ -588,6 +589,7 @@ func (m *MenuLicense) ToORM(ctx context.Context) (MenuLicenseORM, error) {
 	to.AccountAlias = m.AccountAlias
 	to.IsTransactional = m.IsTransactional
 	to.ModuleID = m.ModuleID
+	to.Penalty = m.Penalty
 	if posthook, ok := interface{}(m).(MenuLicenseWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -634,6 +636,7 @@ func (m *MenuLicenseORM) ToPB(ctx context.Context) (MenuLicense, error) {
 	to.AccountAlias = m.AccountAlias
 	to.IsTransactional = m.IsTransactional
 	to.ModuleID = m.ModuleID
+	to.Penalty = m.Penalty
 	if posthook, ok := interface{}(m).(MenuLicenseWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -3074,6 +3077,10 @@ func DefaultApplyFieldMaskMenuLicense(ctx context.Context, patchee *MenuLicense,
 		}
 		if f == prefix+"ModuleID" {
 			patchee.ModuleID = patcher.ModuleID
+			continue
+		}
+		if f == prefix+"Penalty" {
+			patchee.Penalty = patcher.Penalty
 			continue
 		}
 	}
