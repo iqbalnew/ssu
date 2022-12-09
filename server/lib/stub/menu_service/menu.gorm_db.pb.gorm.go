@@ -534,7 +534,7 @@ type MenuLicenseORM struct {
 	ModuleID         uint64
 	Name             string `gorm:"type:varchar(255)"`
 	OrderNumber      string
-	Penalty          uint64
+	Penalty          string
 	ProductID        uint64
 	ProductName      string
 	TransactionLimit string `gorm:"type:jsonb"`
