@@ -529,7 +529,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		accountIDs = append(accountIDs, v.AccountID)
 	}
 
-	steps := []string{"maker", "verifier", "checker", "approver", "releaser"}
+	steps := []string{"maker", "verifier", "checker", "approver", "signer", "releaser"}
 
 	for _, step := range steps {
 
@@ -549,6 +549,8 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 				case "checker":
 					v.Name = "Checker"
 				case "approver":
+					v.Name = "Signer"
+				case "signer":
 					v.Name = "Signer"
 				case "releaser":
 					v.Name = "Releaser"
