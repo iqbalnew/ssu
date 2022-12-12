@@ -109,9 +109,9 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	if strings.Contains(req.TaskType, ",") {
 		taskTypeFilter := []interface{}{}
 		for _, v := range strings.Split(req.TaskType, ",") {
-			taskTypeFilter = append(taskTypeFilter, bson.M{"type": bson.M{"$regex": v, "$options": "i"}})
+			taskTypeFilter = append(taskTypeFilter, bson.M{"type": v})
 		}
-		query["$or"] = taskTypeFilter
+		query["$in"] = taskTypeFilter
 	} else {
 		query["type"] = req.TaskType
 	}
