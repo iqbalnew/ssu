@@ -564,8 +564,8 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, isTransactional bo
 	}
 
 	if filter.Step == int32(pb.Steps_Maker) {
-
-		whereOpt = fmt.Sprintf("%s AND created_by_id = '%d'", whereOpt, workflowUserIDFilter)
+		//anyone with status maker may change the task
+		// whereOpt = fmt.Sprintf("%s AND created_by_id = '%d'", whereOpt, workflowUserIDFilter)
 
 	} else {
 
