@@ -110,6 +110,10 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 
 	case "Cut Off":
 		_, key, err = TaskDataCutOffToPB(task.Data)
+
+	case "BI-Fast":
+		_, key, err = TaskDataBiFastToPB(task.Data, task.TaskID)
+
 	}
 
 	if err != nil {
@@ -392,4 +396,14 @@ func TaskDataCutOffToPB(data string) (val *cut_off_pb.CutOffData, key string, er
 	}
 
 	return cut_off, cut_off.GetScheduleName(), nil
+}
+
+func TaskDataBiFastToPB(data string, taskID uint64) (val *bifast_pb.ExternalTransferData, key string, err error) {
+	external := &bifast_pb.ExternalTransferData{}
+	err = json.Unmarshal([]byte(data), &external)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return external, fmt.Sprintf("BIF%v", taskID), nil
 }
