@@ -461,11 +461,12 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		Message: "Graph Data",
 	}
 
-	currentUser, _, err := s.manager.GetMeFromMD(ctx)
+	currentUser, userMD, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetMeFromMD:", err)
 		return nil, err
 	}
+	var trailer metadata.MD
 
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
@@ -517,7 +518,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 	}
 
-	listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq)
+	listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
 	if err != nil {
 		logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
 		return nil, err
