@@ -104,8 +104,16 @@ func (p *GormProvider) GetActivityLogs(ctx context.Context, req *ActivityLogFind
 	req.TaskType = strings.Replace(req.TaskType, " ", "_", -1)
 	req.TaskType = strings.ToLower(req.TaskType)
 
-	query := bson.M{
-		"type": req.TaskType,
+	query := bson.M{}
+
+	if strings.Contains(req.TaskType, ",") {
+		taskTypeFilter := []interface{}{}
+		for _, v := range strings.Split(req.TaskType, ",") {
+			taskTypeFilter = append(taskTypeFilter, bson.M{"type": bson.M{"$regex": v, "$options": "i"}})
+		}
+		query["$or"] = taskTypeFilter
+	} else {
+		query["type"] = req.TaskType
 	}
 
 	if req.DateFrom != "" && req.DateTo != "" {
