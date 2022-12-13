@@ -37,7 +37,7 @@ func UnaryInterceptors(
 	authI *AuthInterceptor,
 ) grpc.UnaryServerInterceptor {
 	return grpc_middleware.ChainUnaryServer(
-		apmgrpc.NewUnaryServerInterceptor(),
+		apmgrpc.NewUnaryServerInterceptor(apmgrpc.WithRecovery()),
 		LoggingInterceptor,
 		ErrorsInterceptor,
 		authI.Unary(),
@@ -50,7 +50,7 @@ func StreamInterceptors(
 	authI *AuthInterceptor,
 ) grpc.StreamServerInterceptor {
 	return grpc_middleware.ChainStreamServer(
-		apmgrpc.NewStreamServerInterceptor(),
+		apmgrpc.NewStreamServerInterceptor(apmgrpc.WithRecovery()),
 		authI.Stream(),
 	)
 }
