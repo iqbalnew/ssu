@@ -294,7 +294,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		stepFilterString := ""
 		switch req.GetTask().GetStep() {
 		case pb.Steps_Maker:
-			stepFilterString = "maker"
+			stepFilter = "status:<>0,status:<>1,status:<>4,status:<>5,status:<>6,status:<>7"
 		case pb.Steps_Checker:
 			stepFilterString = "checker"
 		case pb.Steps_Signer:
@@ -303,11 +303,11 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 			stepFilterString = "releaser"
 		}
 
-		if req.GetTask().GetStep() != pb.Steps_NullStep {
-			stepFilter = fmt.Sprintf("workflow_doc.workflow.currentStep:%s", stepFilterString)
+		if stepFilterString != "" {
+			stepFilter = fmt.Sprintf("status:<>0,status:<>2,status:<>3,status:<>4,status:<>5,status:<>7,workflow_doc.workflow.currentStep:%s", stepFilterString)
 		}
 
-		sqlBuilder.FilterOr = stepFilter
+		sqlBuilder.Filter = stepFilter
 
 	} else {
 
