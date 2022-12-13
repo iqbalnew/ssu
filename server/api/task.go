@@ -259,11 +259,12 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	}
 
-	dataORM, err := req.Task.ToORM(ctx)
-	if err != nil {
-		logrus.Errorln("[api][func: GetListTask] Failed convert PB to ORM:", err)
-		return nil, status.Errorf(codes.Internal, "Internal Error")
-	}
+	var dataORM *pb.TaskORM
+	// dataORM, err := req.Task.ToORM(ctx)
+	// if err != nil {
+	// 	logrus.Errorln("[api][func: GetListTask] Failed convert PB to ORM:", err)
+	// 	return nil, status.Errorf(codes.Internal, "Internal Error")
+	// }
 
 	sort := &pb.Sort{
 		Column:    req.GetSort(),
@@ -294,7 +295,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	result.Pagination = setPagination(req)
 
-	list, err := s.provider.GetListTask(ctx, &dataORM, result.Pagination, sqlBuilder, userID, roleIDs, accountIDs)
+	list, err := s.provider.GetListTask(ctx, dataORM, result.Pagination, sqlBuilder, userID, roleIDs, accountIDs)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTask] Failed when execute GetListTask:", err)
 		return nil, err
