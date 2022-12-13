@@ -183,6 +183,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	if err != nil {
 		return nil, err
 	}
+
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "Permission Denied")
 	}
@@ -208,6 +209,8 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	userID := uint64(0)
 	roleIDs := []uint64{}
 	accountIDs := []uint64{}
+
+	logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] User Type:", currentUser.UserType)
 
 	if currentUser.UserType != "ba" {
 
