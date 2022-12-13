@@ -502,97 +502,81 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 }
 
-func (p *GormProvider) GetListTaskNormal(ctx context.Context, isTransactional bool, userType string, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
 
-	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select("*", " CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by")
-
-	whereOpt := ""
-
-	if filter.Step == int32(pb.Steps_Maker.Number()) {
-
-		whereOpt = ""
-
-		statusFilter := []string{
-			"status != 0",
-			"status != 1",
-			"status != 4",
-			"status != 5",
-			"status != 6",
-			"status != 7",
-		}
-
-		whereOpt = strings.Join(statusFilter, " AND ")
-
-	} else {
-		if isTransactional {
-			whereOpt = "workflow_doc != '{}'"
-		} else {
-			whereOpt = "workflow_doc = '{}'"
-		}
-		statusFilter := []string{
-			"status != 0",
-			"status != 2",
-			"status != 3",
-			"status != 4",
-			"status != 5",
-			"status != 7",
-		}
-
-		whereOpt = whereOpt + " AND " + strings.Join(statusFilter, " AND ")
-
-	}
-
+	query := p.db_main
 	if filter.Type != "" {
-
-		whereOpt = fmt.Sprintf("%s AND type = '%v'", whereOpt, filter.Type)
-
+		query = query.Debug()
 	}
 
-	if filter.Step == int32(pb.Steps_Maker) {
-		//anyone with status maker may change the task
-		// whereOpt = fmt.Sprintf("%s AND created_by_id = '%d'", whereOpt, workflowUserIDFilter)
+	query = query.Select("*", " CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
+	if filter != nil {
+		query = query.Where(&filter)
+	}
 
-	} else {
+	customQuery := ""
 
-		if userType != "ba" {
-			if isTransactional {
-				roleidstring := ""
-				for i, roleid := range workflowRoleIDFilter {
-					if i > 0 {
-						roleidstring = fmt.Sprintf("%s,%d", roleidstring, roleid)
-					} else {
-						roleidstring = fmt.Sprintf("%s%d", roleidstring, roleid)
-					}
-				}
-				roleidstring = "[" + roleidstring + "]"
-				whereOpt = fmt.Sprintf("%s AND TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]','{}')::INT[] && ARRAY%s", whereOpt, roleidstring)
-
-				if workflowUserIDFilter > 0 {
-					whereOpt = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR workflow_doc->'workflow'->>'participantUserIDs' NOT LIKE '%s')", whereOpt, "%"+fmt.Sprint(workflowUserIDFilter)+"%")
-				}
-
-				if filter.Step == int32(pb.Steps_Checker) {
-					whereOpt = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'currentStep' = 'checker'", whereOpt)
-				} else if filter.Step == int32(pb.Steps_Signer) {
-					whereOpt = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'currentStep' = 'signer'", whereOpt)
-				} else if filter.Step == int32(pb.Steps_Releaser) {
-					whereOpt = fmt.Sprintf("%s AND workflow_doc->'workflow'->>'currentStep' = 'releaser'", whereOpt)
-				}
-			}
+	if len(workflowRoleIDFilter) > 0 {
+		value := strings.ReplaceAll(fmt.Sprint(workflowRoleIDFilter), " ", "','")
+		value = strings.ReplaceAll(value, "[", "'")
+		value = strings.ReplaceAll(value, "]", "'")
+		if customQuery == "" {
+			customQuery = fmt.Sprintf("ARRAY(SELECT jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && ARRAY[%s]", value)
+		} else {
+			customQuery = fmt.Sprintf("%s AND ARRAY(SELECT jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && ARRAY[%s]", customQuery, value)
 		}
-
 	}
 
-	if whereOpt != "" {
-		query = query.Where(whereOpt)
+	if len(workflowAccountIDFilter) > 0 {
+		valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
+		valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
+		valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
+		if customQuery == "" {
+			customQuery = fmt.Sprintf("workflow_doc->'workflow'->'header'->'uaID' IN (%s)", valueAccount)
+		} else {
+			customQuery = fmt.Sprintf("%s AND workflow_doc->'workflow'->'header'->'uaID' IN (%s)", customQuery, valueAccount)
+		}
 	}
 
-	query = query.Scopes(FilterScoope(sql.Filter), WhereInScoop(sql.In))
+	if workflowUserIDFilter > 0 {
+		if customQuery == "" {
+			customQuery = fmt.Sprintf("(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
+		} else {
+			customQuery = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", customQuery, workflowUserIDFilter)
+		}
+	}
 
+	if customQuery != "" {
+		customQuery = fmt.Sprintf("(%s AND created_by_id != '%d')", customQuery, workflowUserIDFilter)
+	}
+
+	if workflowUserIDFilter > 0 {
+		if customQuery == "" {
+			customQuery = fmt.Sprintf(`("type" = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit')`, workflowUserIDFilter)
+		} else {
+			customQuery = fmt.Sprintf(`%s OR ("type" = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit')`, customQuery, workflowUserIDFilter)
+		}
+	}
+
+	logrus.Println("[db][func: GetListTask] Custom Query list:", customQuery)
+
+	query = query.Scopes(FilterScoope(sql.Filter))
+	query = query.Scopes(FilterOrScoope(sql.FilterOr, customQuery))
+
+	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn), NotConditionalScoope(sql.FilterNot))
+	if sql.CompanyID != "" {
+		query = query.Where(`("company_id" = $1 OR "data" ->> 'companyID' = $2)`, sql.CompanyID, sql.CompanyID)
+	}
+	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
-
-	if err = query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
+	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
+		logrus.Errorln("[db][func: GetListTask] Failed:", err.Error())
+		if !errors.Is(err, gorm.ErrModelValueRequired) {
+			return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
+		}
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Errorf(codes.Internal, "Internal Server Error")
+		}
 	}
 
 	return tasks, nil
