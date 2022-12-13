@@ -259,12 +259,10 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	}
 
-	var dataORM *pb.TaskORM
-	// dataORM, err := req.Task.ToORM(ctx)
-	// if err != nil {
-	// 	logrus.Errorln("[api][func: GetListTask] Failed convert PB to ORM:", err)
-	// 	return nil, status.Errorf(codes.Internal, "Internal Error")
-	// }
+	dataORM := &pb.TaskORM{}
+	if req.GetTask() != nil {
+		dataORM.Type = req.GetTask().GetType()
+	}
 
 	sort := &pb.Sort{
 		Column:    req.GetSort(),
