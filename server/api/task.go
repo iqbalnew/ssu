@@ -275,6 +275,8 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		Sort:     sort,
 	}
 
+	stepFilter := ""
+
 	if currentUser.UserType != "ba" {
 
 		stringHoldingID := ""
@@ -288,6 +290,30 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		}
 
 		sqlBuilder.In = fmt.Sprintf("company_id:%s", stringHoldingID)
+
+		stepFilterString := ""
+		switch req.GetTask().GetStep() {
+		case pb.Steps_Maker:
+			stepFilterString = "maker"
+		case pb.Steps_Checker:
+			stepFilterString = "checker"
+		case pb.Steps_Signer:
+			stepFilterString = "signer"
+		case pb.Steps_Releaser:
+			stepFilterString = "releaser"
+		}
+
+		if req.GetTask().GetStep() != pb.Steps_NullStep {
+			stepFilter = fmt.Sprintf("workflow_doc.workflow.currentStep:%s", stepFilterString)
+		}
+
+		sqlBuilder.FilterOr = stepFilter
+
+	} else {
+
+		if req.GetTask().GetStep() != pb.Steps_NullStep {
+			dataORM.Step = int32(req.GetTask().GetStep())
+		}
 
 	}
 
