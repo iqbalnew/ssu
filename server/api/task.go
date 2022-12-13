@@ -594,46 +594,36 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		accountIDs = append(accountIDs, v.AccountID)
 	}
 
-	steps := []string{"maker", "verifier", "checker", "approver", "signer", "releaser"}
+	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, accountIDs, currentUser.UserID, currentUser.CompanyID)
+	if err != nil {
+		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
+		return nil, err
+	}
 
-	for _, step := range steps {
+	for _, v := range data {
 
-		data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, accountIDs, currentUser.UserID, step)
-		if err != nil {
-			logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
-			return nil, err
+		switch v.Name {
+		case "verifier":
+			v.Name = "Checker"
+		case "checker":
+			v.Name = "Checker"
+		case "approver":
+			v.Name = "Signer"
+		case "signer":
+			v.Name = "Signer"
+		case "releaser":
+			v.Name = "Releaser"
+		case "maker":
+			v.Name = "Maker"
 		}
 
-		for _, v := range data {
-
-			if v.Name == step {
-
-				switch v.Name {
-				case "verifier":
-					v.Name = "Checker"
-				case "checker":
-					v.Name = "Checker"
-				case "approver":
-					v.Name = "Signer"
-				case "signer":
-					v.Name = "Signer"
-				case "releaser":
-					v.Name = "Releaser"
-				case "maker":
-					v.Name = "Maker"
-				}
-
-				val := &pb.GraphStepWorkflow{
-					Step:  v.Name,
-					Type:  v.Type,
-					Total: v.Total,
-				}
-
-				res.Data = append(res.Data, val)
-
-			}
-
+		val := &pb.GraphStepWorkflow{
+			Step:  v.Name,
+			Type:  v.Type,
+			Total: v.Total,
 		}
+
+		res.Data = append(res.Data, val)
 
 	}
 

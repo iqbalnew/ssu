@@ -72,7 +72,7 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 
 }
 
-func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, workflowRoleIDs []uint64, workflowAccountIDs []uint64, userID uint64, currentStep string) (result []*GraphResultWorkflowType, err error) {
+func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, workflowRoleIDs []uint64, workflowAccountIDs []uint64, userID uint64, companyID uint64) (result []*GraphResultWorkflowType, err error) {
 
 	if len(workflowRoleIDs) < 1 {
 		return []*GraphResultWorkflowType{}, nil
@@ -82,12 +82,10 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
 
-	whereOpt := "workflow_doc != '{}' AND ( status != 0 AND status != 4 AND status != 5 AND status != 7 )"
+	whereOpt := "( status != 0 AND status != 4 AND status != 5 AND status != 7 )"
 
-	if currentStep == "maker" {
-		whereOpt = fmt.Sprintf("%s AND (workflow_doc -> 'workflow' ->> 'currentStep' IS NULL OR workflow_doc -> 'workflow' ->> 'currentStep' = '%s')", whereOpt, currentStep)
-	} else {
-		whereOpt = fmt.Sprintf("%s AND workflow_doc -> 'workflow' ->> 'currentStep' = '%s'", whereOpt, currentStep)
+	if companyID > 0 {
+		whereOpt = fmt.Sprintf("%s AND company_id = %d", whereOpt, companyID)
 	}
 
 	if service != "" {
@@ -113,32 +111,19 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 	}
 
 	if roleIDs != "" || accountIDs != "" || userID > 0 {
-		if currentStep == "maker" {
-			whereOpt = fmt.Sprintf(`%s AND (
-				created_by_id = '%d'
-				OR (
-					TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]', '{}')::INT[] && ARRAY[%s] 
-					AND (workflow_doc->'workflow'->'header'->'uaID')::INT in (%s) 
-					AND (
-						workflow_doc->'workflow'->>'participantUserIDs' IS NULL
-						OR '%d' != ANY (TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])
-					)
-				)
-			)`, whereOpt, userID, roleIDs, accountIDs, userID)
-		} else {
-			whereOpt = fmt.Sprintf(`%s AND (
+		whereOpt = fmt.Sprintf(`%s AND (
+			(
 				TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]', '{}')::INT[] && ARRAY[%s] 
-				AND (workflow_doc->'workflow'->'header'->'uaID')::INT in (%s) 
+				AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s) 
 				AND (
 					workflow_doc->'workflow'->>'participantUserIDs' IS NULL
 					OR '%d' != ANY (TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])
 				)
-			)`, whereOpt, roleIDs, accountIDs, userID)
-		}
+				created_by_id != '%d'
+			)
+			OR ("type" = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit')
+		)`, whereOpt, roleIDs, accountIDs, userID, userID, userID)
 	}
-
-	// Custom Payroll Query
-	whereOpt = fmt.Sprintf(`%s OR ("type" = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit')`, whereOpt, userID)
 
 	if whereOpt != "" {
 		query = query.Where(whereOpt)
