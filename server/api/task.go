@@ -179,7 +179,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		Data:    []*pb.Task{},
 	}
 
-	currentUser, _, err := s.manager.GetMeFromMD(ctx)
+	currentUser, userMD, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -191,22 +191,78 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
+	var trailer metadata.MD
 
-	var dataORM pb.TaskORM
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithInsecure())
 
-	filterIn := ""
+	accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9090"), opts...)
+	if err != nil {
+		logrus.Errorln("[api][func: GetListTaskWithToken] Unable to connect Account Service:", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	defer accountConn.Close()
+
+	accountClient := account_pb.NewApiServiceClient(accountConn)
+
+	userID := uint64(0)
+	roleIDs := []uint64{}
+	accountIDs := []uint64{}
+
 	if currentUser.UserType != "ba" {
-		stringHoldingID := ""
-		logrus.Println("group ID", currentUser.GroupIDs)
-		for i, v := range currentUser.GroupIDs {
-			if i == 0 {
-				stringHoldingID = strconv.FormatUint(v, 10)
-			} else {
-				stringHoldingID = stringHoldingID + "," + strconv.FormatUint(v, 10)
+
+		listAccountByRoleReq := &account_pb.ListAccountRequest{}
+
+		if req.GetTask() != nil && req.GetTask().GetType() != "" {
+
+			productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9090"), opts...)
+			if err != nil {
+				logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to connect Product Service:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
 			}
+			defer productConn.Close()
+
+			productClient := product_pb.NewApiServiceClient(productConn)
+
+			listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
+				Product: &product_pb.Product{
+					Name: req.GetTask().GetType(),
+				},
+			})
+			if err != nil {
+				logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get List Product:", err.Error())
+				return nil, err
+			}
+
+			if len(listProductRes.GetData()) < 1 {
+				return nil, status.Errorf(codes.NotFound, "Product Not Found")
+			}
+
+			listAccountByRoleReq = &account_pb.ListAccountRequest{
+				ProductID: listProductRes.GetData()[0].GetProductID(),
+			}
+
 		}
-		filterIn = fmt.Sprintf("company_id:%s", stringHoldingID)
-		logrus.Println("string holding id", stringHoldingID)
+
+		listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
+			return nil, err
+		}
+
+		for _, v := range listAccountRes.Data {
+			accountIDs = append(accountIDs, v.AccountID)
+		}
+
+		userID = currentUser.UserID
+		roleIDs = currentUser.RoleIDs
+
+	}
+
+	dataORM, err := req.Task.ToORM(ctx)
+	if err != nil {
+		logrus.Errorln("[api][func: GetListTask] Failed convert PB to ORM:", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 
 	sort := &pb.Sort{
@@ -215,21 +271,30 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	}
 
 	sqlBuilder := &db.QueryBuilder{
-		Filter:   req.Filter,
-		FilterOr: req.FilterOr,
+		Filter:   req.GetFilter(),
+		FilterOr: req.GetFilterOr(),
 		Sort:     sort,
-		In:       filterIn,
 	}
 
-	dataORM, err = req.Task.ToORM(ctx)
-	if err != nil {
-		logrus.Errorln("[api][func: GetListTask] Failed convert PB to ORM:", err)
-		return nil, status.Errorf(codes.Internal, "Internal Error")
+	if currentUser.UserType != "ba" {
+
+		stringHoldingID := ""
+
+		for i, v := range currentUser.GroupIDs {
+			if i == 0 {
+				stringHoldingID = strconv.FormatUint(v, 10)
+			} else {
+				stringHoldingID = stringHoldingID + "," + strconv.FormatUint(v, 10)
+			}
+		}
+
+		sqlBuilder.In = fmt.Sprintf("company_id:%s", stringHoldingID)
+
 	}
 
 	result.Pagination = setPagination(req)
 
-	list, err := s.provider.GetListTaskNormal(ctx, req.IsTransactional, currentUser.UserType, &dataORM, result.Pagination, sqlBuilder, currentUser.UserID, currentUser.RoleIDs, req.AccountIDFilter)
+	list, err := s.provider.GetListTask(ctx, &dataORM, result.Pagination, sqlBuilder, userID, roleIDs, accountIDs)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTask] Failed when execute GetListTask:", err)
 		return nil, err
@@ -466,12 +531,12 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetMeFromMD:", err)
 		return nil, err
 	}
-	var trailer metadata.MD
 
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
+	var trailer metadata.MD
 
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
