@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"time"
 
+	"go.elastic.co/apm/module/apmgrpc/v2"
 	"google.golang.org/grpc"
 
 	"fmt"
@@ -277,6 +278,8 @@ func httpGatewayServer(port int, grpcEndpoint string, authManager *manager.JWTMa
 	conn, err := grpc.Dial(
 		grpcEndpoint,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(apmgrpc.NewUnaryClientInterceptor()),
+		grpc.WithStreamInterceptor(apmgrpc.NewStreamClientInterceptor()),
 		grpc.WithUnaryInterceptor(clientInterceptor.UnaryIntercetoprSetUserData(authManager)),
 		grpc.WithStreamInterceptor(clientInterceptor.StreamIntercetoprSetUserData(authManager)),
 	)

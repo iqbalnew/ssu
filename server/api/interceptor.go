@@ -6,6 +6,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/sirupsen/logrus"
+	"go.elastic.co/apm/module/apmgrpc/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -36,6 +37,7 @@ func UnaryInterceptors(
 	authI *AuthInterceptor,
 ) grpc.UnaryServerInterceptor {
 	return grpc_middleware.ChainUnaryServer(
+		apmgrpc.NewUnaryServerInterceptor(),
 		LoggingInterceptor,
 		ErrorsInterceptor,
 		authI.Unary(),
@@ -48,6 +50,7 @@ func StreamInterceptors(
 	authI *AuthInterceptor,
 ) grpc.StreamServerInterceptor {
 	return grpc_middleware.ChainStreamServer(
+		apmgrpc.NewStreamServerInterceptor(),
 		authI.Stream(),
 	)
 }
