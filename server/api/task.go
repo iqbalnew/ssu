@@ -210,8 +210,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	roleIDs := []uint64{}
 	accountIDs := []uint64{}
 
-	logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] User Type:", currentUser.UserType)
-
 	if currentUser.UserType != "ba" {
 
 		listAccountByRoleReq := &account_pb.ListAccountRequest{}
@@ -311,6 +309,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		}
 
 		sqlBuilder.Filter = stepFilter
+		sqlBuilder.FilterOr = fmt.Sprintf("created_by_id:%d", userID)
 
 	} else {
 
@@ -321,10 +320,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	}
 
 	result.Pagination = setPagination(req)
-
-	logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] User ID Filter:", userID)
-	logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Role ID Filter:", roleIDs)
-	logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Account ID Filter:", accountIDs)
 
 	list, err := s.provider.GetListTask(ctx, dataORM, result.Pagination, sqlBuilder, userID, roleIDs, accountIDs)
 	if err != nil {
