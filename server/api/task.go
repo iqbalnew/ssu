@@ -322,6 +322,10 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	result.Pagination = setPagination(req)
 
+	logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] User ID Filter:", userID)
+	logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Role ID Filter:", roleIDs)
+	logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Account ID Filter:", accountIDs)
+
 	list, err := s.provider.GetListTask(ctx, dataORM, result.Pagination, sqlBuilder, userID, roleIDs, accountIDs)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTask] Failed when execute GetListTask:", err)
