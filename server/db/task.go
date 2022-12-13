@@ -558,10 +558,10 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		}
 	}
 
-	logrus.Println("[db][func: GetListTask] Custom Query list:", customQuery)
+	logrus.Println("[db][func: GetListTaskNormal] Custom Query list:", customQuery)
 
 	query = query.Scopes(FilterScoope(sql.Filter))
-	query = query.Scopes(FilterOrScoope(sql.FilterOr, customQuery))
+	query = query.Or(customQuery)
 
 	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn), NotConditionalScoope(sql.FilterNot))
 	if sql.CompanyID != "" {
@@ -570,7 +570,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
 	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
-		logrus.Errorln("[db][func: GetListTask] Failed:", err.Error())
+		logrus.Errorln("[db][func: GetListTaskNormal] Failed:", err.Error())
 		if !errors.Is(err, gorm.ErrModelValueRequired) {
 			return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument")
 		}

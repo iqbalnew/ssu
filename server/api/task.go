@@ -309,7 +309,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		}
 
 		sqlBuilder.Filter = stepFilter
-		sqlBuilder.FilterOr = fmt.Sprintf("created_by_id:%d", userID)
 
 	} else {
 
