@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"go.elastic.co/apm/module/apmgrpc/v2"
+	"go.elastic.co/apm/module/apmhttp/v2"
 	"google.golang.org/grpc"
 
 	"fmt"
@@ -311,7 +312,7 @@ func httpGatewayServer(port int, grpcEndpoint string, authManager *manager.JWTMa
 	// Start
 	logrus.Println("Starting JSON Gateway server on port %d...", port)
 
-	var handler http.Handler = mux
+	var handler http.Handler = apmhttp.Wrap(mux)
 
 	handler = setHeaderHandler(handler, sid)
 	handler = logRequestHandler(handler, logger)
