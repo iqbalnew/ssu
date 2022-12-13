@@ -308,7 +308,11 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 			stepFilter = fmt.Sprintf("status:<>0,status:<>2,status:<>3,status:<>4,status:<>5,status:<>7,workflow_doc.workflow.currentStep:%s", stepFilterString)
 		}
 
-		sqlBuilder.Filter = stepFilter
+		if sqlBuilder.Filter != "" {
+			sqlBuilder.Filter = fmt.Sprintf("%s,%s", sqlBuilder.Filter, stepFilter)
+		} else {
+			sqlBuilder.Filter = stepFilter
+		}
 
 	} else {
 
