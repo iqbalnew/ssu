@@ -210,7 +210,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	roleIDs := []uint64{}
 	accountIDs := []uint64{}
 
-	if currentUser.UserType != "ba" {
+	if currentUser.UserType == "cu" {
 
 		listAccountByRoleReq := &account_pb.ListAccountRequest{}
 
@@ -278,7 +278,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	stepFilter := ""
 
-	if currentUser.UserType != "ba" {
+	if currentUser.UserType == "cu" {
 
 		stringHoldingID := ""
 
@@ -312,6 +312,24 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 			sqlBuilder.Filter = fmt.Sprintf("%s,%s", sqlBuilder.Filter, stepFilter)
 		} else {
 			sqlBuilder.Filter = stepFilter
+		}
+
+	} else if currentUser.UserType == "ca" {
+
+		stringHoldingID := ""
+
+		for i, v := range currentUser.GroupIDs {
+			if i == 0 {
+				stringHoldingID = strconv.FormatUint(v, 10)
+			} else {
+				stringHoldingID = stringHoldingID + "," + strconv.FormatUint(v, 10)
+			}
+		}
+
+		sqlBuilder.In = fmt.Sprintf("company_id:%s", stringHoldingID)
+
+		if req.GetTask().GetStep() != pb.Steps_NullStep {
+			dataORM.Step = int32(req.GetTask().GetStep())
 		}
 
 	} else {
@@ -513,7 +531,7 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 		Message: "Graph Data",
 	}
 
-	me, err := s.manager.GetMeFromJWT(ctx, "", "")
+	me, _, err := s.manager.GetMeFromMD(ctx)
 	if err != nil {
 		logrus.Errorln("[api][func: GetTaskGraphStep] Failed when execute GetMeFromJWT:", err)
 		return nil, err
@@ -523,7 +541,7 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 	stat := req.Status.Number()
 
 	if me.UserType == "ba" {
-		me.CompanyID = ""
+		me.CompanyID = 0
 	}
 
 	data, err := s.provider.GetGraphStep(ctx, me.CompanyID, req.Service, uint(step), uint(stat), req.IsIncludeApprove, req.IsIncludeReject, me.UserType)

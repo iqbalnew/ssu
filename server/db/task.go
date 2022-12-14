@@ -138,20 +138,20 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 	return result, nil
 }
 
-func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany string, service string, step uint, stat uint, isIncludeApprove bool, isIncludeReject bool, userType string) (result []*GraphResult, err error) {
+func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany uint64, service string, step uint, stat uint, isIncludeApprove bool, isIncludeReject bool, userType string) (result []*GraphResult, err error) {
 	selectOpt := "step as name, type, count(*) as total"
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := ""
 	if service != "" {
 		whereOpt = fmt.Sprintf("type = '%v'", service)
 	}
-	if idCompany != "" {
+	if idCompany > 0 {
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
 		}
-		whereOpt = whereOpt + `( ("data" -> 'user'->> 'companyID' = '` + idCompany + `' OR "data" -> 'companyID' = '` + idCompany + `' OR "data" -> 'company' ->> 'companyID' = '` + idCompany + `'
-		OR  "data" @> '[{"companyID":` + idCompany + `}]') 
-		or ("type" IN ('BG Issuing', 'Internal Fund Transfer', 'External Fund Transfer', 'Payroll Transfer')  AND  company_id = '` + idCompany + `'))`
+		whereOpt = whereOpt + `( ("data" -> 'user'->> 'companyID' = '` + fmt.Sprint(idCompany) + `' OR "data" -> 'companyID' = '` + fmt.Sprint(idCompany) + `' OR "data" -> 'company' ->> 'companyID' = '` + fmt.Sprint(idCompany) + `'
+		OR  "data" @> '[{"companyID":` + fmt.Sprint(idCompany) + `}]') 
+		or ("type" IN ('BG Issuing', 'Internal Fund Transfer', 'External Fund Transfer', 'Payroll Transfer')  AND  company_id = '` + fmt.Sprint(idCompany) + `'))`
 	}
 
 	if userType == "ca" {
