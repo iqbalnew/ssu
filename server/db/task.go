@@ -155,8 +155,9 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany uint64, servi
 				OR "data" -> 'companyID' = '%d' 
 				OR "data" -> 'company' ->> 'companyID' = '%d'
 				OR  "data" @> '[{"companyID":%d}]'
+				OR "company_id" = '%d'
 			)
-		)`, whereOpt, idCompany, idCompany, idCompany, idCompany)
+		)`, whereOpt, idCompany, idCompany, idCompany, idCompany, idCompany)
 	}
 
 	if userType == "ca" {
@@ -529,8 +530,9 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 					OR "data" -> 'companyID' = '%d' 
 					OR "data" -> 'company' ->> 'companyID' = '%d'
 					OR  "data" @> '[{"companyID":%d}]'
+					OR "company_id" = '%d'
 				)
-			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
+			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
 		} else {
 			customQuery = fmt.Sprintf(`%s AND ( 
 				(
@@ -538,8 +540,9 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 					OR "data" -> 'companyID' = '%d' 
 					OR "data" -> 'company' ->> 'companyID' = '%d'
 					OR  "data" @> '[{"companyID":%d}]'
+					OR "company_id" = '%d'
 				)
-			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
+			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
 		}
 	}
 
