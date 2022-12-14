@@ -507,7 +507,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 }
 
-func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, companyIDFilter uint64, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
 
 	query := p.db_main
 	if filter.Type != "" {
@@ -521,25 +521,25 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 	customQuery := ""
 
-	if sql.CompanyID != "" {
+	if companyIDFilter > 0 {
 		if customQuery == "" {
 			customQuery = fmt.Sprintf(`%s ( 
 				(
-					"data" -> 'user'->> 'companyID' = '%s' 
-					OR "data" -> 'companyID' = '%s' 
-					OR "data" -> 'company' ->> 'companyID' = '%s'
-					OR  "data" @> '[{"companyID":%s}]'
+					"data" -> 'user'->> 'companyID' = '%d' 
+					OR "data" -> 'companyID' = '%d' 
+					OR "data" -> 'company' ->> 'companyID' = '%d'
+					OR  "data" @> '[{"companyID":%d}]'
 				)
-			)`, customQuery, sql.CompanyID, sql.CompanyID, sql.CompanyID, sql.CompanyID)
+			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
 		} else {
 			customQuery = fmt.Sprintf(`%s AND ( 
 				(
-					"data" -> 'user'->> 'companyID' = '%s' 
-					OR "data" -> 'companyID' = '%s' 
-					OR "data" -> 'company' ->> 'companyID' = '%s'
-					OR  "data" @> '[{"companyID":%s}]'
+					"data" -> 'user'->> 'companyID' = '%d' 
+					OR "data" -> 'companyID' = '%d' 
+					OR "data" -> 'company' ->> 'companyID' = '%d'
+					OR  "data" @> '[{"companyID":%d}]'
 				)
-			)`, customQuery, sql.CompanyID, sql.CompanyID, sql.CompanyID, sql.CompanyID)
+			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
 		}
 	}
 

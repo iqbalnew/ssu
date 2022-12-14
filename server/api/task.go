@@ -207,6 +207,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	accountClient := account_pb.NewApiServiceClient(accountConn)
 
 	userID := uint64(0)
+	companyID := uint64(0)
 	roleIDs := []uint64{}
 	accountIDs := []uint64{}
 
@@ -291,7 +292,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		}
 
 		sqlBuilder.In = fmt.Sprintf("company_id:%s", stringHoldingID)
-		sqlBuilder.CompanyID = fmt.Sprint(currentUser.CompanyID)
+		companyID = currentUser.CompanyID
 
 		switch req.GetTask().GetStep() {
 		case pb.Steps_Maker:
@@ -323,7 +324,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		}
 
 		sqlBuilder.In = fmt.Sprintf("company_id:%s", stringHoldingID)
-		sqlBuilder.CompanyID = fmt.Sprint(currentUser.CompanyID)
+		companyID = currentUser.CompanyID
 
 		if req.GetTask().GetStep() != pb.Steps_NullStep {
 
@@ -351,7 +352,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	result.Pagination = setPagination(req)
 
-	list, err := s.provider.GetListTaskNormal(ctx, dataORM, result.Pagination, sqlBuilder, userID, roleIDs, accountIDs)
+	list, err := s.provider.GetListTaskNormal(ctx, dataORM, result.Pagination, sqlBuilder, companyID, userID, roleIDs, accountIDs)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTask] Failed when execute GetListTaskNormal:", err)
 		return nil, err
