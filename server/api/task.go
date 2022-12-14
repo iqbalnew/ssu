@@ -291,6 +291,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		}
 
 		sqlBuilder.In = fmt.Sprintf("company_id:%s", stringHoldingID)
+		sqlBuilder.CompanyID = fmt.Sprint(currentUser.CompanyID)
 
 		switch req.GetTask().GetStep() {
 		case pb.Steps_Maker:
@@ -322,6 +323,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		}
 
 		sqlBuilder.In = fmt.Sprintf("company_id:%s", stringHoldingID)
+		sqlBuilder.CompanyID = fmt.Sprint(currentUser.CompanyID)
 
 		if req.GetTask().GetStep() != pb.Steps_NullStep {
 

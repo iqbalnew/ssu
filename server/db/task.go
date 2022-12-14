@@ -521,6 +521,28 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 	customQuery := ""
 
+	if sql.CompanyID != "" {
+		if customQuery == "" {
+			customQuery = fmt.Sprintf(`%s ( 
+				(
+					"data" -> 'user'->> 'companyID' = '%s' 
+					OR "data" -> 'companyID' = '%s' 
+					OR "data" -> 'company' ->> 'companyID' = '%s'
+					OR  "data" @> '[{"companyID":%s}]'
+				)
+			)`, customQuery, sql.CompanyID, sql.CompanyID, sql.CompanyID, sql.CompanyID)
+		} else {
+			customQuery = fmt.Sprintf(`%s AND ( 
+				(
+					"data" -> 'user'->> 'companyID' = '%s' 
+					OR "data" -> 'companyID' = '%s' 
+					OR "data" -> 'company' ->> 'companyID' = '%s'
+					OR  "data" @> '[{"companyID":%s}]'
+				)
+			)`, customQuery, sql.CompanyID, sql.CompanyID, sql.CompanyID, sql.CompanyID)
+		}
+	}
+
 	if len(workflowRoleIDFilter) > 0 {
 		value := strings.ReplaceAll(fmt.Sprint(workflowRoleIDFilter), " ", "','")
 		value = strings.ReplaceAll(value, "[", "'")

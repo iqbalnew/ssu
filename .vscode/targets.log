@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Wed Dec 14 13:10:07 2022
+# Make data base, printed on Wed Dec 14 14:51:15 2022
 
 # Variables
 
@@ -147,7 +147,6 @@ NVM_DIR = /Users/farizrachmanyusuf/.nvm
 XPC_SERVICE_NAME = application.com.microsoft.VSCode.15577764.15577770
 # environment
 HOMEBREW_PREFIX = /opt/homebrew
- 
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # makefile (from `Makefile', line 6)
@@ -174,6 +173,7 @@ BUILD_VERSION = 0.1.0
 ^F = $(notdir $^)
 # default
 SUFFIXES := 
+ 
 # environment
 MAKELEVEL := 0
 # environment
@@ -349,7 +349,6 @@ unit-test:
 	
 
 run:
- 
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -392,6 +391,6 @@ install: depend build
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Wed Dec 14 13:10:07 2022
+# Finished Make data base on Wed Dec 14 14:51:15 2022
 
  
