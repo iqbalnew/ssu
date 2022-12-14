@@ -546,7 +546,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		}
 	}
 
-	if customQuery != "" {
+	if customQuery != "" && workflowUserIDFilter > 0 {
 		customQuery = fmt.Sprintf("(%s AND created_by_id != '%d')", customQuery, workflowUserIDFilter)
 	}
 
