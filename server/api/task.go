@@ -331,7 +331,21 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 			dataORM.Step = int32(req.GetTask().GetStep())
 
 			if req.GetTask().GetStep() == pb.Steps_Checker || req.GetTask().GetStep() == pb.Steps_Signer || req.GetTask().GetStep() == pb.Steps_Releaser {
-				dataORM.Status = 1
+
+				if sqlBuilder.Filter != "" {
+					sqlBuilder.Filter = fmt.Sprintf("%s,%s", sqlBuilder.Filter, "status:<>0,status:<>2,status:<>3,status:<>4,status:<>5,status:<>7")
+				} else {
+					sqlBuilder.Filter = "status:<>0,status:<>2,status:<>3,status:<>4,status:<>5,status:<>7"
+				}
+
+			} else if req.GetTask().GetStep() == pb.Steps_Maker {
+
+				if sqlBuilder.Filter != "" {
+					sqlBuilder.Filter = fmt.Sprintf("%s,%s", sqlBuilder.Filter, "status:<>0,status:<>1,status:<>4,status:<>5,status:<>6,status:<>7")
+				} else {
+					sqlBuilder.Filter = "status:<>0,status:<>1,status:<>4,status:<>5,status:<>6,status:<>7"
+				}
+
 			}
 
 		}
@@ -343,7 +357,21 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 			dataORM.Step = int32(req.GetTask().GetStep())
 
 			if req.GetTask().GetStep() == pb.Steps_Checker || req.GetTask().GetStep() == pb.Steps_Signer || req.GetTask().GetStep() == pb.Steps_Releaser {
-				dataORM.Status = 1
+
+				if sqlBuilder.Filter != "" {
+					sqlBuilder.Filter = fmt.Sprintf("%s,%s", sqlBuilder.Filter, "status:<>0,status:<>2,status:<>3,status:<>4,status:<>5,status:<>7")
+				} else {
+					sqlBuilder.Filter = "status:<>0,status:<>2,status:<>3,status:<>4,status:<>5,status:<>7"
+				}
+
+			} else if req.GetTask().GetStep() == pb.Steps_Maker {
+
+				if sqlBuilder.Filter != "" {
+					sqlBuilder.Filter = fmt.Sprintf("%s,%s", sqlBuilder.Filter, "status:<>0,status:<>1,status:<>4,status:<>5,status:<>6,status:<>7")
+				} else {
+					sqlBuilder.Filter = "status:<>0,status:<>1,status:<>4,status:<>5,status:<>6,status:<>7"
+				}
+
 			}
 
 		}
