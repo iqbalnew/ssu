@@ -149,16 +149,21 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany uint64, servi
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
 		}
-		whereOpt = whereOpt + `( ("data" -> 'user'->> 'companyID' = '` + fmt.Sprint(idCompany) + `' OR "data" -> 'companyID' = '` + fmt.Sprint(idCompany) + `' OR "data" -> 'company' ->> 'companyID' = '` + fmt.Sprint(idCompany) + `'
-		OR  "data" @> '[{"companyID":` + fmt.Sprint(idCompany) + `}]') 
-		or ("type" IN ('BG Issuing', 'Internal Fund Transfer', 'External Fund Transfer', 'Payroll Transfer')  AND  company_id = '` + fmt.Sprint(idCompany) + `'))`
+		whereOpt = fmt.Sprintf(`%s ( 
+			(
+				"data" -> 'user'->> 'companyID' = '%d' 
+				OR "data" -> 'companyID' = '%d' 
+				OR "data" -> 'company' ->> 'companyID' = '%d'
+				OR  "data" @> '[{"companyID":%d}]'
+			)
+		)`, whereOpt, idCompany, idCompany, idCompany, idCompany)
 	}
 
 	if userType == "ca" {
 		if whereOpt != "" {
 			whereOpt = whereOpt + " AND "
 		}
-		whereOpt = whereOpt + ` ("data"->'userTypeID' = '4' OR type != 'Role') AND (data->'user'->>'userTypeName' = 'Customer User' OR type != 'User') `
+		whereOpt = fmt.Sprintf(`%s ("data"->'userTypeID' = '4' OR type != 'Role') AND (data->'user'->>'userTypeName' = 'Customer User' OR type != 'User') `, whereOpt)
 	}
 
 	if !isIncludeApprove {

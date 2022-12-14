@@ -292,20 +292,15 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 		sqlBuilder.In = fmt.Sprintf("company_id:%s", stringHoldingID)
 
-		stepFilterString := ""
 		switch req.GetTask().GetStep() {
 		case pb.Steps_Maker:
 			stepFilter = "status:<>0,status:<>1,status:<>4,status:<>5,status:<>6,status:<>7"
 		case pb.Steps_Checker:
-			stepFilterString = "checker"
+			stepFilter = "status:<>0,status:<>2,status:<>3,status:<>4,status:<>5,status:<>7,workflow_doc.workflow.currentStep:checker"
 		case pb.Steps_Signer:
-			stepFilterString = "signer"
+			stepFilter = "status:<>0,status:<>2,status:<>3,status:<>4,status:<>5,status:<>7,workflow_doc.workflow.currentStep:signer"
 		case pb.Steps_Releaser:
-			stepFilterString = "releaser"
-		}
-
-		if stepFilterString != "" {
-			stepFilter = fmt.Sprintf("status:<>0,status:<>2,status:<>3,status:<>4,status:<>5,status:<>7,workflow_doc.workflow.currentStep:%s", stepFilterString)
+			stepFilter = "status:<>0,status:<>2,status:<>3,status:<>4,status:<>5,status:<>7,workflow_doc.workflow.currentStep:releaser"
 		}
 
 		if sqlBuilder.Filter != "" {
@@ -329,13 +324,25 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		sqlBuilder.In = fmt.Sprintf("company_id:%s", stringHoldingID)
 
 		if req.GetTask().GetStep() != pb.Steps_NullStep {
+
 			dataORM.Step = int32(req.GetTask().GetStep())
+
+			if req.GetTask().GetStep() == pb.Steps_Checker || req.GetTask().GetStep() == pb.Steps_Signer || req.GetTask().GetStep() == pb.Steps_Releaser {
+				dataORM.Status = 1
+			}
+
 		}
 
 	} else {
 
 		if req.GetTask().GetStep() != pb.Steps_NullStep {
+
 			dataORM.Step = int32(req.GetTask().GetStep())
+
+			if req.GetTask().GetStep() == pb.Steps_Checker || req.GetTask().GetStep() == pb.Steps_Signer || req.GetTask().GetStep() == pb.Steps_Releaser {
+				dataORM.Status = 1
+			}
+
 		}
 
 	}
@@ -542,6 +549,15 @@ func (s *Server) GetTaskGraphStep(ctx context.Context, req *pb.GraphStepRequest)
 
 	if me.UserType == "ba" {
 		me.CompanyID = 0
+	}
+
+	switch req.GetStep() {
+	case pb.Steps_Checker:
+		stat = 1
+	case pb.Steps_Signer:
+		stat = 1
+	case pb.Steps_Releaser:
+		stat = 1
 	}
 
 	data, err := s.provider.GetGraphStep(ctx, me.CompanyID, req.Service, uint(step), uint(stat), req.IsIncludeApprove, req.IsIncludeReject, me.UserType)
