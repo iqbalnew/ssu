@@ -281,17 +281,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	if currentUser.UserType == "cu" {
 
-		stringHoldingID := ""
-
-		for i, v := range currentUser.GroupIDs {
-			if i == 0 {
-				stringHoldingID = strconv.FormatUint(v, 10)
-			} else {
-				stringHoldingID = stringHoldingID + "," + strconv.FormatUint(v, 10)
-			}
-		}
-
-		sqlBuilder.In = fmt.Sprintf("company_id:%s", stringHoldingID)
 		companyID = currentUser.CompanyID
 
 		switch req.GetTask().GetStep() {
@@ -313,17 +302,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	} else if currentUser.UserType == "ca" {
 
-		stringHoldingID := ""
-
-		for i, v := range currentUser.GroupIDs {
-			if i == 0 {
-				stringHoldingID = strconv.FormatUint(v, 10)
-			} else {
-				stringHoldingID = stringHoldingID + "," + strconv.FormatUint(v, 10)
-			}
-		}
-
-		sqlBuilder.In = fmt.Sprintf("company_id:%s", stringHoldingID)
 		companyID = currentUser.CompanyID
 
 		if req.GetTask().GetStep() != pb.Steps_NullStep {
