@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/db"
 	customAES "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/aes"
@@ -1951,13 +1952,39 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			companyClient := company_pb.NewApiServiceClient(companyConn)
 
 			if task.Type == "Menu:License" {
-				logrus.Printf("child menu =======> %v", task.Childs)
+				waktu := time.Now()
+				if getEnv("EXPERIMENTAL", "") != "YES" {
+					logrus.Printf("child menu =======> %v", task.Childs)
 
-				if strings.Contains(task.Data, `"isParent": true`) {
+					if strings.Contains(task.Data, `"isParent": true`) {
 
-					for i := range task.Childs {
+						for i := range task.Childs {
+							menu := menu_pb.MenuLicenseSave{}
+							json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+
+							company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
+								CompanyID: menu.CompanyID,
+							})
+							if err != nil {
+								logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
+								return nil, status.Errorf(codes.Internal, "Internal Error")
+							}
+
+							if len(company.Data) == 0 {
+								logrus.Errorln("[api][func: SetTask] Company does not exist")
+								return nil, status.Errorf(codes.NotFound, "Company does not exist")
+							}
+
+						}
+
+					} else {
+
 						menu := menu_pb.MenuLicenseSave{}
-						json.Unmarshal([]byte(task.Childs[i].Data), &menu)
+						err = json.Unmarshal([]byte(task.Data), &menu)
+						if err != nil {
+							logrus.Errorln("[api][func: SetTask] Unable to Umarshal Data:", err)
+							return nil, status.Errorf(codes.Internal, "Internal Error")
+						}
 
 						company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
 							CompanyID: menu.CompanyID,
@@ -1973,18 +2000,23 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 						}
 
 					}
-
 				} else {
+					MenuParents := menu_pb.MenuParent{}
 
-					menu := menu_pb.MenuLicenseSave{}
-					err = json.Unmarshal([]byte(task.Data), &menu)
+					err = json.Unmarshal([]byte(task.Data), &MenuParents)
+
 					if err != nil {
 						logrus.Errorln("[api][func: SetTask] Unable to Umarshal Data:", err)
 						return nil, status.Errorf(codes.Internal, "Internal Error")
 					}
 
+					if currentUser.UserType != "ba" && currentUser.CompanyID != MenuParents.CompanyID {
+						logrus.Errorln("[api][func: SetTask] Permission Denied")
+						return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+					}
+
 					company, err := companyClient.ListCompanyData(ctx, &company_pb.ListCompanyDataReq{
-						CompanyID: menu.CompanyID,
+						CompanyID: MenuParents.CompanyID,
 					})
 					if err != nil {
 						logrus.Errorln("[api][func: SetTask] Failed when ListCompanyData:", err)
@@ -1997,6 +2029,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 					}
 
 				}
+				logrus.Println("[api][SetTask] duration chcking company : ", time.Since(waktu))
 
 			}
 
