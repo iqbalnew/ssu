@@ -720,7 +720,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			}
 
 			accountIDFilter = append(accountIDFilter, &db.ProductAccountFilter{
-				ProductName: req.GetService(),
+				ProductName: listProductRes.GetData()[0].Name,
 				AccountIDs:  accountIDs,
 			})
 
