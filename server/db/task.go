@@ -32,6 +32,11 @@ type GraphResultWorkflowType struct {
 	Total uint64
 }
 
+type ProductAccountFilter struct {
+	ProductName string
+	AccountIDs  []uint64
+}
+
 func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (result *GraphResult, err error) {
 
 	selectOpt := "count(*) as total"
@@ -72,7 +77,7 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 
 }
 
-func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, workflowRoleIDs []uint64, workflowAccountIDs []uint64, userID uint64, companyID uint64) (result []*GraphResultWorkflowType, err error) {
+func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, workflowRoleIDs []uint64, workflowAccountIDs []*ProductAccountFilter, userID uint64, companyID uint64) (result []*GraphResultWorkflowType, err error) {
 
 	if len(workflowRoleIDs) < 1 {
 		return []*GraphResultWorkflowType{}, nil
@@ -101,20 +106,31 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 		}
 	}
 
-	accountIDs := ""
-	for i, accountID := range workflowAccountIDs {
-		if i > 0 {
-			accountIDs = fmt.Sprintf("%s,%d", accountIDs, accountID)
-		} else {
-			accountIDs = fmt.Sprintf("%s%d", accountIDs, accountID)
+	accountIDQuery := ""
+	for _, v := range workflowAccountIDs {
+
+		accountIDs := ""
+		for i, accountID := range v.AccountIDs {
+			if i > 0 {
+				accountIDs = fmt.Sprintf("%s,%d", accountIDs, accountID)
+			} else {
+				accountIDs = fmt.Sprintf("%s%d", accountIDs, accountID)
+			}
 		}
+
+		if accountIDQuery == "" {
+			accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
+		} else {
+			accountIDQuery = fmt.Sprintf("%s OR (type = '%s' (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
+		}
+
 	}
 
-	if roleIDs != "" || accountIDs != "" || userID > 0 {
+	if roleIDs != "" || accountIDQuery != "" || userID > 0 {
 		whereOpt = fmt.Sprintf(`%s AND (
 			(
 				TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]', '{}')::INT[] && ARRAY[%s] 
-				AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s) 
+				AND (%s) 
 				AND (
 					workflow_doc->'workflow'->>'participantUserIDs' IS NULL
 					OR '%d' != ANY (TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])
@@ -122,7 +138,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 				AND (created_by_id != '%d' OR workflow_doc->'workflow'->>'currentStep' = 'releaser')
 			)
 			OR ("type" = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit')
-		)`, whereOpt, roleIDs, accountIDs, userID, userID, userID)
+		)`, whereOpt, roleIDs, accountIDQuery, userID, userID, userID)
 	}
 
 	if whereOpt != "" {

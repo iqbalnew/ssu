@@ -624,18 +624,20 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 	accountClient := account_pb.NewApiServiceClient(accountConn)
 
+	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9090"), opts...)
+	if err != nil {
+		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to connect Product Service:", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	defer productConn.Close()
+
+	productClient := product_pb.NewApiServiceClient(productConn)
+
+	accountIDFilter := []*db.ProductAccountFilter{}
+
 	listAccountByRoleReq := &account_pb.ListAccountRequest{}
 
 	if req.GetService() != "" {
-
-		productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9090"), opts...)
-		if err != nil {
-			logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to connect Product Service:", err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
-		}
-		defer productConn.Close()
-
-		productClient := product_pb.NewApiServiceClient(productConn)
 
 		listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
 			Product: &product_pb.Product{
@@ -655,20 +657,78 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			ProductID: listProductRes.GetData()[0].GetProductID(),
 		}
 
+		listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
+			return nil, err
+		}
+
+		accountIDs := []uint64{}
+		for _, v := range listAccountRes.Data {
+			accountIDs = append(accountIDs, v.AccountID)
+		}
+
+		accountIDFilter = append(accountIDFilter, &db.ProductAccountFilter{
+			ProductName: req.GetService(),
+			AccountIDs:  accountIDs,
+		})
+
+	} else {
+
+		listAccountByRoleReq = &account_pb.ListAccountRequest{}
+
+		listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
+			return nil, err
+		}
+
+		for _, v := range listAccountRes.GetData() {
+
+			productID, err := strconv.ParseUint(v.GetProductCode(), 10, 64)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+
+			listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
+				Product: &product_pb.Product{
+					ProductID: productID,
+				},
+			})
+			if err != nil {
+				logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get List Product:", err.Error())
+				return nil, err
+			}
+
+			if len(listProductRes.GetData()) < 1 {
+				return nil, status.Errorf(codes.NotFound, "Product Not Found")
+			}
+
+			listAccountByRoleReq = &account_pb.ListAccountRequest{
+				ProductID: listProductRes.GetData()[0].GetProductID(),
+			}
+
+			listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
+			if err != nil {
+				logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
+				return nil, err
+			}
+
+			accountIDs := []uint64{}
+			for _, v := range listAccountRes.Data {
+				accountIDs = append(accountIDs, v.AccountID)
+			}
+
+			accountIDFilter = append(accountIDFilter, &db.ProductAccountFilter{
+				ProductName: req.GetService(),
+				AccountIDs:  accountIDs,
+			})
+
+		}
+
 	}
 
-	listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
-	if err != nil {
-		logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
-		return nil, err
-	}
-
-	accountIDs := []uint64{}
-	for _, v := range listAccountRes.Data {
-		accountIDs = append(accountIDs, v.AccountID)
-	}
-
-	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, accountIDs, currentUser.UserID, currentUser.CompanyID)
+	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, accountIDFilter, currentUser.UserID, currentUser.CompanyID)
 	if err != nil {
 		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
 		return nil, err
