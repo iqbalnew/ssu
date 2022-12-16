@@ -690,43 +690,46 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			return nil, err
 		}
 
-		for _, v := range listRoleRes.GetProductRoles() {
+		listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
+			Product: &product_pb.Product{
+				IsTransactional: true,
+				IsCu:            true,
+			},
+		})
+		if err != nil {
+			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get List Product:", err.Error())
+			return nil, err
+		}
 
-			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Product Name:", v.GetProductName())
+		for _, v := range listProductRes.GetData() {
 
-			listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
-				Product: &product_pb.Product{
-					Name: v.GetProductName(),
-				},
-			})
-			if err != nil {
-				logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get List Product:", err.Error())
-				return nil, err
+			for _, d := range listRoleRes.GetProductRoles() {
+
+				if d.ProductName == v.Name {
+
+					listAccountByRoleReq := &account_pb.ListAccountRequest{
+						ProductID: v.GetProductID(),
+					}
+
+					listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
+					if err != nil {
+						logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
+						return nil, err
+					}
+
+					accountIDs := []uint64{}
+					for _, v := range listAccountRes.Data {
+						accountIDs = append(accountIDs, v.AccountID)
+					}
+
+					accountIDFilter = append(accountIDFilter, &db.ProductAccountFilter{
+						ProductName: v.GetName(),
+						AccountIDs:  accountIDs,
+					})
+
+				}
+
 			}
-
-			if len(listProductRes.GetData()) < 1 {
-				return nil, status.Errorf(codes.NotFound, "Product Not Found")
-			}
-
-			listAccountByRoleReq := &account_pb.ListAccountRequest{
-				ProductID: listProductRes.GetData()[0].GetProductID(),
-			}
-
-			listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
-			if err != nil {
-				logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
-				return nil, err
-			}
-
-			accountIDs := []uint64{}
-			for _, v := range listAccountRes.Data {
-				accountIDs = append(accountIDs, v.AccountID)
-			}
-
-			accountIDFilter = append(accountIDFilter, &db.ProductAccountFilter{
-				ProductName: listProductRes.GetData()[0].GetName(),
-				AccountIDs:  accountIDs,
-			})
 
 		}
 
