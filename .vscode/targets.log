@@ -8,15 +8,18 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Wed Dec 14 14:51:15 2022
+# Make data base, printed on Fri Dec 16 09:55:15 2022
 
 # Variables
 
 # automatic
 <D = $(patsubst %/,%,$(dir $<))
 # automatic
- 
 ?F = $(notdir $?)
+# environment
+ELECTRON_NO_ATTACH_CONSOLE = 1
+# environment
+LC_CTYPE = UTF-8
 # environment
 NVM_INC = /Users/farizrachmanyusuf/.nvm/versions/node/v18.9.0/include/node
 # automatic
@@ -32,7 +35,7 @@ SHELL = /bin/sh
 # makefile (from `Makefile', line 8)
 BUILD_DATE = $(shell date -u +'%Y-%m-%dT00:00:00Z')
 # environment
-VSCODE_NLS_CONFIG = {"locale":"en-id","availableLanguages":{},"_languagePackSupport":true}
+VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
 # environment
 _ = /usr/bin/make
 # makefile (from `Makefile', line 1)
@@ -50,7 +53,7 @@ INFOPATH = /opt/homebrew/share/info:
 # environment
 P9K_SSH = 0
 # environment
-VSCODE_CWD = /
+VSCODE_CWD = /Users/farizrachmanyusuf
 # environment
 GOPROXY = https://proxy.golang.org,direct
 # environment
@@ -61,6 +64,9 @@ LSCOLORS = Gxfxcxdxbxegedabagacad
 GOPATH = /Users/farizrachmanyusuf/go
 # environment
 NVM_BIN = /Users/farizrachmanyusuf/.nvm/versions/node/v18.9.0/bin
+# environment
+LaunchInstanceID = B23B426F-B5A6-4CE2-BE81-687E65FE64D5
+ 
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # default
@@ -83,10 +89,10 @@ GOMODCACHE = /Users/farizrachmanyusuf/go/pkg/mod
 HOME = /Users/farizrachmanyusuf
 # default
 MAKEFILEPATH := /Applications/Xcode.app/Contents/Developer/Makefiles
-# makefile (from `Makefile', line 12)
-BINARY = ddons-task-service
 # environment
-VSCODE_CODE_CACHE_PATH = /Users/farizrachmanyusuf/Library/Application Support/Code/CachedData/5235c6bb189b60b01b1f49062f4ffa42384f8c91
+VSCODE_CLI = 1
+# environment
+VSCODE_CODE_CACHE_PATH = /Users/farizrachmanyusuf/Library/Application Support/Code/CachedData/1ad8d514439d5077d2b0b7ee64d2ce82a9308e5a
 # environment
 LOGNAME = farizrachmanyusuf
 # environment
@@ -101,20 +107,26 @@ VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 ^D = $(patsubst %/,%,$(dir $^))
 # environment
 XPC_FLAGS = 0x0
+# environment
+COLORTERM = truecolor
 # default
 MAKE = $(MAKE_COMMAND)
-# default
-MAKECMDGOALS := all
 # environment
-SHLVL = 1
+LC_TERMINAL = iTerm2
+# environment
+SHLVL = 3
 # default
 MAKE_VERSION := 3.81
 # environment
 USER = farizrachmanyusuf
 # makefile
 .DEFAULT_GOAL := build
+# default
+MAKECMDGOALS := all
 # makefile (from `Makefile', line 4)
 DOCKER_CONTAINER_IMAGE = addons-task-service:latest
+# environment
+TERM_SESSION_ID = w0t1p0:C816C0FC-5ECB-4E1F-9CFA-EBF3478F2880
 # environment
 LESS = -R
 # automatic
@@ -123,6 +135,8 @@ LESS = -R
 MAKE_COMMAND := /Applications/Xcode.app/Contents/Developer/usr/bin/make
 # makefile (from `Makefile', line 5)
 DOCKER_BUILD_ARGS = 
+# environment
+TERM_PROGRAM = iTerm.app
 # default
 .VARIABLES := 
 # environment
@@ -132,7 +146,7 @@ TOPDIR = $(PWD)
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /Users/farizrachmanyusuf/Library/Application Support/Code/1.74.0-main.sock
+VSCODE_IPC_HOOK = /Users/farizrachmanyusuf/Library/Application Support/Code/1.74.1-main.sock
 # environment
 MallocNanoZone = 0
 # makefile
@@ -142,9 +156,13 @@ MFLAGS = -Rrqp
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
 # environment
+TERM_PROGRAM_VERSION = 3.4.18
+# environment
 NVM_DIR = /Users/farizrachmanyusuf/.nvm
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.15577764.15577770
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.15577764.15577770.EA0DCAB3-AAE1-4078-B14A-75A061ADF81F
+# environment
+LC_TERMINAL_VERSION = 3.4.18
 # environment
 HOMEBREW_PREFIX = /opt/homebrew
 # automatic
@@ -154,7 +172,11 @@ DOCKER_DEBIAN_MIRROR = http://deb.debian.org/debian
 # automatic
 +F = $(notdir $+)
 # environment
+ITERM_SESSION_ID = w0t1p0:C816C0FC-5ECB-4E1F-9CFA-EBF3478F2880
+# environment
 HOMEBREW_REPOSITORY = /opt/homebrew
+# environment
+COLORFGBG = 7;0
 # environment
 __CF_USER_TEXT_ENCODING = 0x1F5:0x0:0x0
 # environment
@@ -164,24 +186,35 @@ MAKEFILES :=
 # automatic
 <F = $(notdir $<)
 # environment
+ITERM_PROFILE = Default
+# makefile (from `Makefile', line 12)
+BINARY = ddons-task-service
+# environment
 PAGER = less
 # environment
 LC_ALL = C
 # makefile (from `Makefile', line 9)
 BUILD_VERSION = 0.1.0
+# environment
+SECURITYSESSIONID = 186b5
+# environment
+P9K_TTY = old
 # automatic
 ^F = $(notdir $^)
 # default
 SUFFIXES := 
- 
 # environment
 MAKELEVEL := 0
 # environment
 LANG = C
 # environment
-VSCODE_PID = 89128
+TERM = xterm-256color
+# environment
+_P9K_TTY = /dev/ttys000
+# environment
+VSCODE_PID = 69627
 # variable set hash-table stats:
-# Load=83/1024=8%, Rehash=0, Collisions=2/114=2%
+# Load=100/1024=10%, Rehash=0, Collisions=6/131=5%
 
 # Pattern-specific Variable Values
 
@@ -322,6 +355,7 @@ depend:
 	go mod tidy
 	@echo "You can now run 'make build' to compile all packages"
 	
+ 
 
 migrate-db:
 #  Implicit rule search has not been done.
@@ -391,6 +425,6 @@ install: depend build
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Wed Dec 14 14:51:15 2022
+# Finished Make data base on Fri Dec 16 09:55:15 2022
 
  
