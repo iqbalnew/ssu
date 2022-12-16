@@ -121,7 +121,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 		if accountIDQuery == "" {
 			accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
 		} else {
-			accountIDQuery = fmt.Sprintf("%s OR (type = '%s' (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
+			accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
 		}
 
 	}
