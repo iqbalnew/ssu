@@ -692,6 +692,8 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 		for _, v := range listRoleRes.GetProductRoles() {
 
+			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Product Name:", v.GetProductName())
+
 			listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
 				Product: &product_pb.Product{
 					Name: v.GetProductName(),
@@ -722,13 +724,15 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			}
 
 			accountIDFilter = append(accountIDFilter, &db.ProductAccountFilter{
-				ProductName: listProductRes.GetData()[0].Name,
+				ProductName: listProductRes.GetData()[0].GetName(),
 				AccountIDs:  accountIDs,
 			})
 
 		}
 
 	}
+
+	logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Retrieving Data...")
 
 	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, accountIDFilter, currentUser.UserID, currentUser.CompanyID)
 	if err != nil {
