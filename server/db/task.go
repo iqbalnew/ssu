@@ -154,9 +154,11 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 	}
 
 	return result, nil
+
 }
 
 func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany uint64, service string, step uint, stat uint, isIncludeApprove bool, isIncludeReject bool, userType string) (result []*GraphResult, err error) {
+
 	selectOpt := "step as name, type, count(*) as total"
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := ""
@@ -228,9 +230,11 @@ func (p *GormProvider) GetGraphStep(ctx context.Context, idCompany uint64, servi
 	}
 
 	return result, nil
+
 }
 
 func (p *GormProvider) GetGraphServiceType(ctx context.Context, service string, stat uint, filter string) (result []*GraphResultColumnType, err error) {
+
 	if filter == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "column cant be empty")
 	}
@@ -266,9 +270,11 @@ func (p *GormProvider) GetGraphServiceType(ctx context.Context, service string, 
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 	return result, nil
+
 }
 
 func (p *GormProvider) GetGraphStatus(ctx context.Context, service string, stat uint) (result []*GraphResult, err error) {
+
 	selectOpt := "status as name, type, count(*) as total"
 	query := p.db_main.Model(&pb.TaskORM{}).Select(selectOpt)
 	whereOpt := ""
@@ -299,6 +305,7 @@ func (p *GormProvider) GetGraphStatus(ctx context.Context, service string, stat 
 		return nil, status.Errorf(codes.Internal, "DB Internal Error: %v", err)
 	}
 	return result, nil
+
 }
 
 func (p *GormProvider) CreateTask(ctx context.Context, task *pb.TaskORM) (*pb.TaskORM, error) {

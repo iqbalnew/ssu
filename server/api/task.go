@@ -615,6 +615,15 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
 
+	roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
+	if err != nil {
+		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to connect Role Service:", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	defer roleConn.Close()
+
+	roleClient := role_pb.NewApiServiceClient(roleConn)
+
 	accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9090"), opts...)
 	if err != nil {
 		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to connect Account Service:", err)
@@ -635,8 +644,6 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 	accountIDFilter := []*db.ProductAccountFilter{}
 
-	listAccountByRoleReq := &account_pb.ListAccountRequest{}
-
 	if req.GetService() != "" {
 
 		listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
@@ -653,7 +660,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			return nil, status.Errorf(codes.NotFound, "Product Not Found")
 		}
 
-		listAccountByRoleReq = &account_pb.ListAccountRequest{
+		listAccountByRoleReq := &account_pb.ListAccountRequest{
 			ProductID: listProductRes.GetData()[0].GetProductID(),
 		}
 
@@ -675,24 +682,19 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 	} else {
 
-		listAccountByRoleReq = &account_pb.ListAccountRequest{}
-
-		listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		listRoleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
+			ID: currentUser.UserID,
+		})
 		if err != nil {
-			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
+			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Role By User ID:", err.Error())
 			return nil, err
 		}
 
-		for _, v := range listAccountRes.GetData() {
-
-			productID, err := strconv.ParseUint(v.GetProductCode(), 10, 64)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
+		for _, v := range listRoleRes.GetProductRoles() {
 
 			listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
 				Product: &product_pb.Product{
-					ProductID: productID,
+					Name: v.GetProductName(),
 				},
 			})
 			if err != nil {
@@ -704,7 +706,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 				return nil, status.Errorf(codes.NotFound, "Product Not Found")
 			}
 
-			listAccountByRoleReq = &account_pb.ListAccountRequest{
+			listAccountByRoleReq := &account_pb.ListAccountRequest{
 				ProductID: listProductRes.GetData()[0].GetProductID(),
 			}
 
