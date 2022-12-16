@@ -145,6 +145,8 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 		query = query.Where(whereOpt)
 	}
 
+	logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Custom Query:", whereOpt)
+
 	query = query.Group("name, type")
 
 	if err = query.Find(&result).Error; err != nil {
