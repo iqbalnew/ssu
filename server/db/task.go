@@ -616,6 +616,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	logrus.Println("[db][func: GetListTaskNormal] Custom Query list:", customQuery)
 
 	query = query.Scopes(FilterScoope(sql.Filter))
+	query = query.Scopes(FilterOrScoope(sql.FilterOr, ""))
 	query = query.Where(customQuery)
 
 	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn), NotConditionalScoope(sql.FilterNot))
