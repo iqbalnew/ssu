@@ -1603,10 +1603,6 @@
         },
         "pagination": {
           "$ref": "#/definitions/v1PaginationResponse"
-        },
-        "totalPending": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -1644,6 +1640,10 @@
         "totalPages": {
           "type": "integer",
           "format": "int32"
+        },
+        "totalFilteredRows": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

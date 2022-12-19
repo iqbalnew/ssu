@@ -240,7 +240,8 @@ message PaginationResponse {
     int32 limit = 1;
     int32 page = 2;
     int64 totalRows = 3;   
-    int32 totalPages = 4;   
+    int32 totalPages = 4; 
+    int64 totalFilteredRows = 5;  
 }
 
 message Sort {
@@ -267,7 +268,6 @@ message ListTaskWithTokenResponse {
     string message = 3;
     repeated Task data = 4;
     PaginationResponse pagination = 5;
-    int64 totalPending = 6;
 }
 
 message GraphStatusRequest {
