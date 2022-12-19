@@ -293,6 +293,8 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 			stepFilter = "status:<>0,status:<>2,status:<>3,status:<>4,status:<>5,status:<>7,workflow_doc.workflow.currentStep:signer"
 		case pb.Steps_Releaser:
 			stepFilter = "status:<>0,status:<>2,status:<>3,status:<>4,status:<>5,status:<>7,workflow_doc.workflow.currentStep:releaser"
+		default:
+			stepFilter = "status:<>0,status:<>7"
 		}
 
 		if sqlBuilder.Filter != "" {
@@ -325,6 +327,14 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 					sqlBuilder.Filter = "status:<>0,status:<>1,status:<>4,status:<>5,status:<>6,status:<>7"
 				}
 
+			} else {
+
+				if sqlBuilder.Filter != "" {
+					sqlBuilder.Filter = fmt.Sprintf("%s,%s", sqlBuilder.Filter, "status:<>0,status:<>7")
+				} else {
+					sqlBuilder.Filter = "status:<>0,status:<>7"
+				}
+
 			}
 
 		}
@@ -349,6 +359,14 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 					sqlBuilder.Filter = fmt.Sprintf("%s,%s", sqlBuilder.Filter, "status:<>0,status:<>1,status:<>4,status:<>5,status:<>6,status:<>7")
 				} else {
 					sqlBuilder.Filter = "status:<>0,status:<>1,status:<>4,status:<>5,status:<>6,status:<>7"
+				}
+
+			} else {
+
+				if sqlBuilder.Filter != "" {
+					sqlBuilder.Filter = fmt.Sprintf("%s,%s", sqlBuilder.Filter, "status:<>0,status:<>7")
+				} else {
+					sqlBuilder.Filter = "status:<>0,status:<>7"
 				}
 
 			}
