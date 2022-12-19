@@ -273,9 +273,9 @@ func (file *ActivityLogFile) ToXls(ctx context.Context) (*httpbody.HttpBody, err
 	_ = f.SetCellValue("Sheet1", "D1", "Company Name")
 	_ = f.SetCellValue("Sheet1", "E1", "Key")
 	_ = f.SetCellValue("Sheet1", "F1", "Command")
-	_ = f.SetCellValue("Sheet1", "F1", "Action")
-	_ = f.SetCellValue("Sheet1", "G1", "Date")
-	_ = f.SetCellValue("Sheet1", "H1", "Description")
+	_ = f.SetCellValue("Sheet1", "G1", "Action")
+	_ = f.SetCellValue("Sheet1", "H1", "Date")
+	_ = f.SetCellValue("Sheet1", "I1", "Description")
 	// _ = f.SetCellValue("Sheet1", "I1", "Task ID")
 
 	for k, v := range file.res.Data {
