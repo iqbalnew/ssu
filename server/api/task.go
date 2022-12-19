@@ -211,7 +211,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	companyID := uint64(0)
 	roleIDs := []uint64{}
 	accountIDs := []uint64{}
-	productName := ""
 
 	if currentUser.UserType == "cu" {
 
@@ -245,8 +244,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 			listAccountByRoleReq = &account_pb.ListAccountRequest{
 				ProductID: listProductRes.GetData()[0].GetProductID(),
 			}
-
-			productName = req.GetTask().GetType()
 
 		}
 
@@ -395,29 +392,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		}
 
 		result.Data = append(result.Data, &task)
-
-	}
-
-	if currentUser.UserType == "cu" {
-
-		productAccountIDFilter := []*db.ProductAccountFilter{
-			{
-				ProductName: productName,
-				AccountIDs:  accountIDs,
-			},
-		}
-
-		pending, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, productName, currentUser.RoleIDs, productAccountIDFilter, currentUser.UserID, currentUser.CompanyID)
-		if err != nil {
-			logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
-			return nil, err
-		}
-
-		for _, v := range pending {
-
-			result.Pagination.TotalFilteredRows += int64(v.Total)
-
-		}
 
 	}
 

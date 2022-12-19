@@ -241,7 +241,6 @@ message PaginationResponse {
     int32 page = 2;
     int64 totalRows = 3;   
     int32 totalPages = 4; 
-    int64 totalFilteredRows = 5;  
 }
 
 message Sort {
