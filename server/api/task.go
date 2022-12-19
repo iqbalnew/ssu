@@ -171,9 +171,9 @@ func (s *Server) GetListTaskEV(ctx context.Context, req *pb.ListTaskRequestEV) (
 	return res, nil
 }
 
-func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskResponse, error) {
+func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskRequest) (*pb.ListTaskWithTokenResponse, error) {
 
-	result := pb.ListTaskResponse{
+	result := pb.ListTaskWithTokenResponse{
 		Error:   false,
 		Code:    200,
 		Message: "Task List",
@@ -379,7 +379,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	list, err := s.provider.GetListTaskNormal(ctx, dataORM, result.Pagination, sqlBuilder, companyID, userID, roleIDs, accountIDs)
 	if err != nil {
-		logrus.Errorln("[api][func: GetListTask] Failed when execute GetListTaskNormal:", err)
+		logrus.Errorln("[api][func: GetListTask] Failed when execute GetListTaskNormal:", err.Error())
 		return nil, err
 	}
 
@@ -392,6 +392,40 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		}
 
 		result.Data = append(result.Data, &task)
+
+	}
+
+	if currentUser.UserType == "ba" {
+
+		pendingRes, err := s.GetTaskGraphStep(ctx, &pb.GraphStepRequest{
+			Service: req.GetTask().GetType(),
+		})
+		if err != nil {
+			logrus.Errorln("[api][func: GetListTask] Failed when execute GetMyPendingTaskWithWorkflowGraph:", err.Error())
+			return nil, err
+		}
+
+		for _, v := range pendingRes.GetData() {
+
+			result.TotalPending += int64(v.GetTotal())
+
+		}
+
+	} else {
+
+		pendingRes, err := s.GetMyPendingTaskWithWorkflowGraph(ctx, &pb.GetMyPendingTaskWithWorkflowGraphRequest{
+			Service: req.GetTask().GetType(),
+		})
+		if err != nil {
+			logrus.Errorln("[api][func: GetListTask] Failed when execute GetMyPendingTaskWithWorkflowGraph:", err.Error())
+			return nil, err
+		}
+
+		for _, v := range pendingRes.GetData() {
+
+			result.TotalPending += int64(v.GetTotal())
+
+		}
 
 	}
 

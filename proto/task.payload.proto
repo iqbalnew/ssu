@@ -261,6 +261,15 @@ message ListTaskResponse {
     PaginationResponse pagination = 5;
 }
 
+message ListTaskWithTokenResponse {
+    bool error = 1;
+    uint32 code = 2;
+    string message = 3;
+    repeated Task data = 4;
+    PaginationResponse pagination = 5;
+    int64 totalPending = 6;
+}
+
 message GraphStatusRequest {
     
     statuses status = 1;

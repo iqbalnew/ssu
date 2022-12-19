@@ -78,7 +78,7 @@ service TaskService {
         };
     };
 
-    rpc GetListTaskWithToken(ListTaskRequest) returns (ListTaskResponse) {
+    rpc GetListTaskWithToken(ListTaskRequest) returns (ListTaskWithTokenResponse) {
         option (google.api.http) = {
             get: "/api/task/normal"
         };

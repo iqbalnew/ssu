@@ -641,7 +641,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ListTaskResponse"
+              "$ref": "#/definitions/v1ListTaskWithTokenResponse"
             }
           },
           "default": {
@@ -1579,6 +1579,34 @@
         },
         "pagination": {
           "$ref": "#/definitions/v1PaginationResponse"
+        }
+      }
+    },
+    "v1ListTaskWithTokenResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "boolean"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Task"
+          }
+        },
+        "pagination": {
+          "$ref": "#/definitions/v1PaginationResponse"
+        },
+        "totalPending": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

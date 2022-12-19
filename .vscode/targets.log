@@ -6,9 +6,8 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
- 
 
-# Make data base, printed on Mon Dec 19 09:58:48 2022
+# Make data base, printed on Mon Dec 19 10:54:05 2022
 
 # Variables
 
@@ -38,8 +37,6 @@ _ = /usr/bin/make
 MAKEFILE_LIST :=  Makefile
 # makefile (from `Makefile', line 1)
 DOCKERCMD = docker
-# environment
-VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # makefile (from `Makefile', line 3)
 DOCKER_CONTAINER_NAME = addons-task-service
 # environment
@@ -51,14 +48,9 @@ P9K_SSH = 0
 # environment
 VSCODE_CWD = /
 # environment
-GOPROXY = https://proxy.golang.org,direct
-# environment
 PATH = /opt/homebrew/opt/php@8.0/sbin:/opt/homebrew/opt/php@8.0/bin:/Users/farizrachmanyusuf/.nvm/versions/node/v18.9.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin
 # environment
 LSCOLORS = Gxfxcxdxbxegedabagacad
- 
-# environment
-GOPATH = /Users/farizrachmanyusuf/go
 # environment
 NVM_BIN = /Users/farizrachmanyusuf/.nvm/versions/node/v18.9.0/bin
 # environment
@@ -78,7 +70,7 @@ ORIGINAL_XDG_CURRENT_DESKTOP = undefined
 # environment
 MANPATH = /Users/farizrachmanyusuf/.nvm/versions/node/v18.9.0/share/man:/opt/homebrew/share/man::
 # environment
-GOMODCACHE = /Users/farizrachmanyusuf/go/pkg/mod
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
 HOME = /Users/farizrachmanyusuf
 # default
@@ -180,7 +172,7 @@ LANG = C
 # environment
 VSCODE_PID = 80258
 # variable set hash-table stats:
-# Load=83/1024=8%, Rehash=0, Collisions=2/114=2%
+# Load=80/1024=8%, Rehash=0, Collisions=1/111=1%
 
 # Pattern-specific Variable Values
 
@@ -263,7 +255,6 @@ vet:
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
 #  File does not exist.
- 
 #  File has not been updated.
 #  commands to execute (from `Makefile', line 36):
 	@echo "Running Go static code analysis with go vet"
@@ -305,6 +296,7 @@ depend:
 # * := 
 # automatic
 # + := 
+ 
 # automatic
 # | := 
 # automatic
@@ -391,6 +383,6 @@ install: depend build
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Mon Dec 19 09:58:48 2022
+# Finished Make data base on Mon Dec 19 10:54:05 2022
 
  
