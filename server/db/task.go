@@ -137,8 +137,8 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 				)
 				AND (created_by_id != '%d' OR workflow_doc->'workflow'->>'currentStep' = 'releaser')
 			)
-			OR ("type" = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit')
-		)`, whereOpt, roleIDs, accountIDQuery, userID, userID, userID)
+			OR ((type = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND created_by_id = '%d' AND status IN (2, 3)))
+		)`, whereOpt, roleIDs, accountIDQuery, userID, userID, userID, userID)
 	}
 
 	if whereOpt != "" {
