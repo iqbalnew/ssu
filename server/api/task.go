@@ -273,9 +273,12 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	}
 
 	sqlBuilder := &db.QueryBuilder{
-		Filter:   req.GetFilter(),
-		FilterOr: req.GetFilterOr(),
-		Sort:     sort,
+		Filter:      req.GetFilter(),
+		FilterOr:    req.GetFilterOr(),
+		In:          req.GetIn(),
+		CustomOrder: req.GetCustomOrder(),
+		Sort:        sort,
+		FilterNot:   req.GetFilterNot(),
 	}
 
 	stepFilter := ""

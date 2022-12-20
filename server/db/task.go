@@ -607,9 +607,9 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf(`(("type" = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR ("type" != 'Payroll Transfer' AND created_by_id = '%d'))`, workflowUserIDFilter, workflowUserIDFilter)
+			customQuery = fmt.Sprintf(`((type = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND created_by_id = '%d' AND status IN (2, 3)))`, workflowUserIDFilter, workflowUserIDFilter)
 		} else {
-			customQuery = fmt.Sprintf(`%s OR (("type" = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR ("type" != 'Payroll Transfer' AND created_by_id = '%d'))`, customQuery, workflowUserIDFilter, workflowUserIDFilter)
+			customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND created_by_id = '%d' AND status IN (2, 3)))`, customQuery, workflowUserIDFilter, workflowUserIDFilter)
 		}
 	}
 
