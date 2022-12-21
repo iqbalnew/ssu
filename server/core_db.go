@@ -33,7 +33,12 @@ func initDBMain() {
 	// 	_ = startSSHTunnel()
 	// }
 	var err error
-	db_main, err = gorm.Open(postgres.Open(config.Dsn), &gorm.Config{})
+	cfg := postgres.Config{
+		DSN:                  config.Dsn,
+		PreferSimpleProtocol: true,
+	}
+
+	db_main, err = gorm.Open(postgres.New(cfg), &gorm.Config{})
 	if err != nil {
 		logrus.Fatalf("Failed connect to DB main: %v", err)
 		os.Exit(1)
