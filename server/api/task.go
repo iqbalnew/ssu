@@ -1697,6 +1697,26 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 		return nil, status.Errorf(codes.Internal, "Internal Error")
 	}
 
+	if getEnv("SUSPICIOS_LIMITER", "") != "" && req.Action == "delete" {
+		logrus.Println("Suspicious limter", getEnv("SUSPICIOS_LIMITER", ""))
+		SUSPICIOS_LIMITER := strings.Split(getEnv("SUSPICIOS_LIMITER", ""), ":")
+		apisd := db.APILimitObject{
+			FuncRPC:         "SetTaskWithWorkflow",
+			Method:          "delete",
+			Duration:        SUSPICIOS_LIMITER[0],
+			CountMax:        SUSPICIOS_LIMITER[1],
+			DurationBlocked: SUSPICIOS_LIMITER[2],
+			CountBlockedMax: SUSPICIOS_LIMITER[3],
+		}
+		err = s.provider.SuspiciousActivityLimiter(ctx, md, apisd, db.TaskRedisCount{
+			TaskID:   task.TaskID,
+			TypeTask: task.Type,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	switch task.Type {
 	case "Internal Fund Transfer":
 

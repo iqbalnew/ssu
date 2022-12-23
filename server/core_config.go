@@ -41,6 +41,10 @@ type Config struct {
 
 	// AccountService      string `config:"ACCOUNT_SERVICE"`
 	// CompanyService      string `config:"COMPANY_SERVICE"`
+
+	RedisAddr string `config:"REDIS_ADDR"`
+	RedisPass string `config:"REDIS_PASS"`
+	RedisDB   int    `config:"REDIS_DB"`
 }
 
 var config *Config
@@ -69,6 +73,11 @@ func initConfig() {
 		LoggerTag:           getEnv("LOGGER_TAG", ""),
 		// AccountService:      os.Getenv("ACCOUNT_SERVICE"),
 		// CompanyService:      os.Getenv("COMPANY_SERVICE"),
+
+		// Redis Config
+		RedisAddr: getEnv("REDIS_ADDR", "localhost:6379"),
+		RedisPass: getEnv("REDIS_PASS", ""),
+		RedisDB:   0,
 	}
 
 }

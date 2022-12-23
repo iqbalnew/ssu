@@ -13,6 +13,7 @@ import (
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	addonsLogger "bitbucket.bri.co.id/scm/addons/addons-task-service/server/logger"
 	mongoClient "bitbucket.bri.co.id/scm/addons/addons-task-service/server/mongodb"
+	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/redis"
 
 	"github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
@@ -33,6 +34,7 @@ type Server struct {
 	logger           *addonsLogger.Logger
 
 	sid *shortid.Shortid
+	rdb *redis.Redis
 
 	pb.TaskServiceServer
 }
@@ -44,15 +46,16 @@ func New(
 	conn01 *grpc.ClientConn,
 	mongo01 *mongoClient.MongoDB,
 	logger *addonsLogger.Logger,
+	rdb *redis.Redis,
 ) *Server {
 	server := &Server{
-		provider:         db.NewProvider(db01, mongo01),
+		provider:         db.NewProvider(db01, mongo01, rdb),
 		announcementConn: conn01,
 		manager:          authManager,
 		logger:           logger,
 
-		sid: sid,
-
+		sid:               sid,
+		rdb:               rdb,
 		TaskServiceServer: nil,
 	}
 

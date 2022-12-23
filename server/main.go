@@ -19,6 +19,7 @@ import (
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	addonsLogger "bitbucket.bri.co.id/scm/addons/addons-task-service/server/logger"
 	mongoClient "bitbucket.bri.co.id/scm/addons/addons-task-service/server/mongodb"
+	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/redis"
 
 	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/api"
 
@@ -249,6 +250,9 @@ func grpcServer(port int, authManager *manager.JWTManager, sid *shortid.Shortid,
 		return err
 	}
 
+	logrus.Println("[starting utility] Redis Client ")
+	rdb := redis.NewRedis(config.RedisAddr, config.RedisPass, config.RedisDB)
+
 	var mongodbClient *mongoClient.MongoDB
 	if getEnv("ENV", "LOCAL") != "LOCAL" {
 		logrus.Println("[starting utilit] Connecting to Mongo ")
@@ -256,7 +260,15 @@ func grpcServer(port int, authManager *manager.JWTManager, sid *shortid.Shortid,
 		defer mongodbClient.Close()
 	}
 
-	apiServer := api.New(db_main, authManager, sid, announcementConn, mongodbClient, logger)
+	apiServer := api.New(
+		db_main,
+		authManager,
+		sid,
+		announcementConn,
+		mongodbClient,
+		logger,
+		rdb,
+	)
 	authInterceptor := api.NewAuthInterceptor(apiServer.GetManager())
 
 	unaryInterceptorOpt := grpc.UnaryInterceptor(api.UnaryInterceptors(authInterceptor))

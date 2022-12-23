@@ -6,6 +6,7 @@ import (
 
 	pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/server"
 	mongoClient "bitbucket.bri.co.id/scm/addons/addons-task-service/server/mongodb"
+	"bitbucket.bri.co.id/scm/addons/addons-task-service/server/redis"
 	"gorm.io/gorm"
 )
 
@@ -24,9 +25,10 @@ type Provider interface {
 type GormProvider struct {
 	db_main *gorm.DB
 	mongo   *mongoClient.MongoDB
+	rdb     *redis.Redis
 }
 
-func NewProvider(db *gorm.DB, mongo *mongoClient.MongoDB) *GormProvider {
+func NewProvider(db *gorm.DB, mongo *mongoClient.MongoDB, rdb *redis.Redis) *GormProvider {
 	db_main := db
 	if getEnv("DEBUG", "false") == "true" {
 		db_main = db_main.Debug()
@@ -34,6 +36,7 @@ func NewProvider(db *gorm.DB, mongo *mongoClient.MongoDB) *GormProvider {
 	return &GormProvider{
 		db_main: db_main,
 		mongo:   mongo,
+		rdb:     rdb,
 	}
 }
 
