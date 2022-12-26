@@ -3358,11 +3358,6 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		}
 
-		task.LastApprovedByID = 0
-		task.LastApprovedByName = ""
-		task.LastRejectedByID = 0
-		task.LastRejectedByName = ""
-
 		task.Status = 8
 		task.Step = 0
 
