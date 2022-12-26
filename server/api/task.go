@@ -3321,7 +3321,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		}
 
-	case "cancelled":
+	case "cancel":
 
 		taskPb, _ := task.ToPB(ctx)
 
