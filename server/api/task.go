@@ -3321,6 +3321,51 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 		}
 
+	case "cancelled":
+
+		taskPb, _ := task.ToPB(ctx)
+
+		if currentStatus == 3 {
+
+			return &pb.SetTaskResponse{
+				Error:   false,
+				Code:    200,
+				Message: "Task Status Already Returned",
+				Data:    &taskPb,
+			}, nil
+
+		}
+
+		if currentStatus == 5 {
+
+			return &pb.SetTaskResponse{
+				Error:   false,
+				Code:    200,
+				Message: "Task Status Already Rejected",
+				Data:    &taskPb,
+			}, nil
+
+		}
+
+		if currentStatus == 7 {
+
+			return &pb.SetTaskResponse{
+				Error:   false,
+				Code:    200,
+				Message: "Task Already Deleted",
+				Data:    &taskPb,
+			}, nil
+
+		}
+
+		task.LastApprovedByID = 0
+		task.LastApprovedByName = ""
+		task.LastRejectedByID = 0
+		task.LastRejectedByName = ""
+
+		task.Status = 8
+		task.Step = 0
+
 	}
 
 	for i := range task.Childs {
