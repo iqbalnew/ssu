@@ -1986,7 +1986,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 	if task.Type != "System" && task.Type != "Menu:License" {
 
-		if strings.ToLower(req.Action) == "delete" {
+		if strings.ToLower(req.Action) == "delete" || strings.ToLower(req.Action) == "cancel" {
 
 			allowed := checkAllowedApproval(userMd, task.Type, "data_entry:maker")
 			if !allowed {
