@@ -34,6 +34,7 @@ enum statuses{
     Rejected = 5;
     DeleteRequest = 6;
     Deleted = 7;
+    Cancelled = 8;
 }
 
 enum steps{

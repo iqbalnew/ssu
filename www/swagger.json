@@ -64,7 +64,8 @@
               "Approved",
               "Rejected",
               "DeleteRequest",
-              "Deleted"
+              "Deleted",
+              "Cancelled"
             ],
             "default": "NullStatus"
           },
@@ -445,7 +446,8 @@
               "Approved",
               "Rejected",
               "DeleteRequest",
-              "Deleted"
+              "Deleted",
+              "Cancelled"
             ],
             "default": "NullStatus"
           },
@@ -502,7 +504,8 @@
               "Approved",
               "Rejected",
               "DeleteRequest",
-              "Deleted"
+              "Deleted",
+              "Cancelled"
             ],
             "default": "NullStatus"
           },
@@ -568,7 +571,8 @@
               "Approved",
               "Rejected",
               "DeleteRequest",
-              "Deleted"
+              "Deleted",
+              "Cancelled"
             ],
             "default": "NullStatus"
           },
@@ -678,7 +682,8 @@
               "Approved",
               "Rejected",
               "DeleteRequest",
-              "Deleted"
+              "Deleted",
+              "Cancelled"
             ],
             "default": "NullStatus"
           },
@@ -1916,7 +1921,8 @@
         "Approved",
         "Rejected",
         "DeleteRequest",
-        "Deleted"
+        "Deleted",
+        "Cancelled"
       ],
       "default": "NullStatus"
     },
