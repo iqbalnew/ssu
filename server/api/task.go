@@ -4036,7 +4036,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 
 			} else {
 
-				_, err := client.CreateWorkflow(ctx, &workflowTask, grpc.Header(&header), grpc.Trailer(&trailer))
+				_, err := client.CreateWorkflowV2(ctx, &workflowTask, grpc.Header(&header), grpc.Trailer(&trailer))
 				if err != nil {
 					logrus.Errorln("[api][func: SetTask] Failed when CreateWorkflow:", err)
 					return nil, err

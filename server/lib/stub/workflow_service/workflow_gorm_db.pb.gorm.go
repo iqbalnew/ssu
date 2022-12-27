@@ -23,7 +23,7 @@ type WorkflowORM struct {
 	Description           string              `gorm:"column:Description;type:varchar(255)"`
 	IsCreatedInputAccount bool                `gorm:"column:IsCreatedInputAccount"`
 	IsCustomInputAccount  bool                `gorm:"column:IsCustomInputAccount"`
-	Logics                []*WorkflowLogicORM `gorm:"foreignkey:WorkflowID;association_foreignkey:WorkflowID;preload:true;append:true"`
+	Logics                []*WorkflowLogicORM `gorm:"foreignkey:WorkflowID;association_foreignkey:WorkflowID;append:true"`
 	ModuleID              uint64              `gorm:"column:ModuleID;not null"`
 	UpdatedAt             *time.Time          `gorm:"column:UpdatedAt;not null"`
 	UpdatedByID           uint64              `gorm:"column:UpdatedByID;not null"`
@@ -162,7 +162,7 @@ type WorkflowLogicORM struct {
 	BottomRange     uint64                    `gorm:"column:BottomRange;not null"`
 	CreatedAt       *time.Time                `gorm:"column:CreatedAt;not null"`
 	CreatedByID     uint64                    `gorm:"column:CreatedByID;not null"`
-	Requirements    []*WorkflowRequirementORM `gorm:"foreignkey:WorkflowLogicID;association_foreignkey:WorkflowLogicID;preload:true;append:true"`
+	Requirements    []*WorkflowRequirementORM `gorm:"foreignkey:WorkflowLogicID;association_foreignkey:WorkflowLogicID;append:true"`
 	TopRange        uint64                    `gorm:"column:TopRange;not null"`
 	UpdatedAt       *time.Time                `gorm:"column:UpdatedAt;not null"`
 	UpdatedByID     uint64                    `gorm:"column:UpdatedByID;not null"`

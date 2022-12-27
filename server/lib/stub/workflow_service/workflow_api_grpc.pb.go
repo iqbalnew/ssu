@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ApiServiceClient interface {
 	HealthCheck(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	ListWorkflow(ctx context.Context, in *ListWorkflowRequest, opts ...grpc.CallOption) (*ListWorkflowResponse, error)
+	CreateWorkflowV2(ctx context.Context, in *WorkflowTask, opts ...grpc.CallOption) (*CreateWorkflowResponse, error)
 	CreateWorkflow(ctx context.Context, in *WorkflowTask, opts ...grpc.CallOption) (*CreateWorkflowResponse, error)
 	DeleteWorkflow(ctx context.Context, in *WorkflowTask, opts ...grpc.CallOption) (*CreateWorkflowResponse, error)
 	CreateWorkflowTask(ctx context.Context, in *CreateWorkflowTaskRequest, opts ...grpc.CallOption) (*CreateWorkflowTaskResponse, error)
@@ -62,6 +63,15 @@ func (c *apiServiceClient) HealthCheck(ctx context.Context, in *Empty, opts ...g
 func (c *apiServiceClient) ListWorkflow(ctx context.Context, in *ListWorkflowRequest, opts ...grpc.CallOption) (*ListWorkflowResponse, error) {
 	out := new(ListWorkflowResponse)
 	err := c.cc.Invoke(ctx, "/workflow.service.v1.ApiService/ListWorkflow", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) CreateWorkflowV2(ctx context.Context, in *WorkflowTask, opts ...grpc.CallOption) (*CreateWorkflowResponse, error) {
+	out := new(CreateWorkflowResponse)
+	err := c.cc.Invoke(ctx, "/workflow.service.v1.ApiService/CreateWorkflowV2", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -209,6 +219,7 @@ func (c *apiServiceClient) DeleteRequirement(ctx context.Context, in *DeleteRequ
 type ApiServiceServer interface {
 	HealthCheck(context.Context, *Empty) (*HealthCheckResponse, error)
 	ListWorkflow(context.Context, *ListWorkflowRequest) (*ListWorkflowResponse, error)
+	CreateWorkflowV2(context.Context, *WorkflowTask) (*CreateWorkflowResponse, error)
 	CreateWorkflow(context.Context, *WorkflowTask) (*CreateWorkflowResponse, error)
 	DeleteWorkflow(context.Context, *WorkflowTask) (*CreateWorkflowResponse, error)
 	CreateWorkflowTask(context.Context, *CreateWorkflowTaskRequest) (*CreateWorkflowTaskResponse, error)
@@ -236,6 +247,9 @@ func (UnimplementedApiServiceServer) HealthCheck(context.Context, *Empty) (*Heal
 }
 func (UnimplementedApiServiceServer) ListWorkflow(context.Context, *ListWorkflowRequest) (*ListWorkflowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListWorkflow not implemented")
+}
+func (UnimplementedApiServiceServer) CreateWorkflowV2(context.Context, *WorkflowTask) (*CreateWorkflowResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateWorkflowV2 not implemented")
 }
 func (UnimplementedApiServiceServer) CreateWorkflow(context.Context, *WorkflowTask) (*CreateWorkflowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateWorkflow not implemented")
@@ -327,6 +341,24 @@ func _ApiService_ListWorkflow_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ApiServiceServer).ListWorkflow(ctx, req.(*ListWorkflowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_CreateWorkflowV2_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WorkflowTask)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).CreateWorkflowV2(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/workflow.service.v1.ApiService/CreateWorkflowV2",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).CreateWorkflowV2(ctx, req.(*WorkflowTask))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -615,6 +647,10 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListWorkflow",
 			Handler:    _ApiService_ListWorkflow_Handler,
+		},
+		{
+			MethodName: "CreateWorkflowV2",
+			Handler:    _ApiService_CreateWorkflowV2_Handler,
 		},
 		{
 			MethodName: "CreateWorkflow",
