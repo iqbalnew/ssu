@@ -1281,7 +1281,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	product := productData.Data[0]
 
 	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Import LC", "Internal Fund Transfer", "BI-Fast", "Payroll Transfer",
-		"Amend Cancel LC", "Deposito", "Online Transfer"}
+		"Amend Cancel LC", "Deposito", "Online Transfer", "Upload Transfer"}
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
 
@@ -1612,7 +1612,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"BG Mapping", "BG Mapping Digital", "Internal Fund Transfer", "BI-Fast", "Payroll Transfer", "Online Transfer"}
+	skipProduct := []string{"BG Mapping", "BG Mapping Digital", "Internal Fund Transfer", "BI-Fast", "Payroll Transfer", "Online Transfer", "Upload Transfer"}
 
 	logrus.Print(taskType)
 
@@ -1768,7 +1768,7 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 		}
 
 	case "Beneficiary Account":
-		logrus.Println("TEST masuk ga????")
+
 		var opts []grpc.DialOption
 		opts = append(opts, grpc.WithInsecure())
 
