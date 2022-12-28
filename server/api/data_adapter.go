@@ -13,6 +13,7 @@ import (
 	beneficiary_account_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/beneficiary_account_service"
 	bg_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/bg_service"
 	bifast_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/bifast_service"
+	bulk_transfer_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/bulk_transfer_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	cut_off_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/cut_off_service"
 	deposito_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/deposito_service"
@@ -113,6 +114,9 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 
 	case "BI-Fast":
 		_, key, err = TaskDataBiFastToPB(task.Data, task.TaskID)
+
+	case "Upload Transfer":
+		_, key, err = TaskDataBulkTransferToPB(task.Data, task.TaskID)
 
 	}
 
@@ -406,4 +410,14 @@ func TaskDataBiFastToPB(data string, taskID uint64) (val *bifast_pb.ExternalTran
 	}
 
 	return external, fmt.Sprintf("BIF%v", taskID), nil
+}
+
+func TaskDataBulkTransferToPB(data string, taskID uint64) (val *bulk_transfer_pb.BulkTransferData, key string, err error) {
+	external := &bulk_transfer_pb.BulkTransferData{}
+	err = json.Unmarshal([]byte(data), &external)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return external, fmt.Sprintf("BFT%v", taskID), nil
 }
