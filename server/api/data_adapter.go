@@ -17,6 +17,7 @@ import (
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	cut_off_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/cut_off_service"
 	deposito_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/deposito_service"
+	kliring_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/kliring_service"
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
@@ -114,6 +115,9 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 
 	case "BI-Fast":
 		_, key, err = TaskDataBiFastToPB(task.Data, task.TaskID)
+
+	case "Kliring":
+		_, key, err = TaskDataKliringToPB(task.Data, task.TaskID)
 
 	case "Upload Transfer":
 		_, key, err = TaskDataBulkTransferToPB(task.Data, task.TaskID)
@@ -410,6 +414,16 @@ func TaskDataBiFastToPB(data string, taskID uint64) (val *bifast_pb.ExternalTran
 	}
 
 	return external, fmt.Sprintf("BIF%v", taskID), nil
+}
+
+func TaskDataKliringToPB(data string, taskID uint64) (val *kliring_pb.KliringData, key string, err error) {
+	external := &kliring_pb.KliringData{}
+	err = json.Unmarshal([]byte(data), &external)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return external, fmt.Sprintf("KLR%v", taskID), nil
 }
 
 func TaskDataBulkTransferToPB(data string, taskID uint64) (val *bulk_transfer_pb.BulkTransferData, key string, err error) {

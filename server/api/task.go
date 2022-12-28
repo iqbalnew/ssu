@@ -21,6 +21,7 @@ import (
 	bifast_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/bifast_service"
 	company_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/company_service"
 	deposito_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/deposito_service"
+	kliring_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/kliring_service"
 	liquidity_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/liquidity_service"
 	menu_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/menu_service"
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
@@ -1281,7 +1282,7 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 	product := productData.Data[0]
 
 	taskType := []string{"Swift", "Cash Pooling", "BG Issuing", "Import LC", "Internal Fund Transfer", "BI-Fast", "Payroll Transfer",
-		"Amend Cancel LC", "Deposito", "Online Transfer", "Upload Transfer"}
+		"Amend Cancel LC", "Deposito", "Online Transfer", "Upload Transfer", "Kliring"}
 
 	if product.IsTransactional && contains(taskType, task.Type) && !req.IsDraft { //skip for difference variable name, revisit later
 
@@ -1612,7 +1613,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"BG Mapping", "BG Mapping Digital", "Internal Fund Transfer", "BI-Fast", "Payroll Transfer", "Online Transfer", "Upload Transfer"}
+	skipProduct := []string{"BG Mapping", "BG Mapping Digital", "Internal Fund Transfer", "BI-Fast", "Payroll Transfer", "Online Transfer", "Upload Transfer", "Kliring"}
 
 	logrus.Print(taskType)
 
@@ -1931,6 +1932,30 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 		onlineTransferClient := online_transfer_pb.NewApiServiceClient(onlineTransferConn)
 
 		_, err = onlineTransferClient.SetTaskOnlineTransfer(newCtx, &online_transfer_pb.SetTaskOnlineTransferRequest{
+			TaskID:  req.GetTaskID(),
+			Action:  req.GetAction(),
+			Comment: req.GetComment(),
+			Reasons: req.GetReasons(),
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			return nil, err
+		}
+
+	case "Kliring":
+
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		kliringConn, err := grpc.Dial(getEnv("KLIRING_SERVICE", ":9130"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Unable to connect BiFast Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer kliringConn.Close()
+
+		kliringClient := kliring_pb.NewApiServiceClient(kliringConn)
+
+		_, err = kliringClient.UpdateKliringTask(newCtx, &kliring_pb.UpdateKliringTaskRequest{
 			TaskID:  req.GetTaskID(),
 			Action:  req.GetAction(),
 			Comment: req.GetComment(),
@@ -3305,7 +3330,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Step = 3
 				task.Data = task.DataBak
 
-				if contains([]string{"Internal Fund Transfer", "Payroll Transfer", "BI-Fast", "Online Transfer"}, task.Type) {
+				if contains([]string{"Internal Fund Transfer", "Payroll Transfer", "BI-Fast", "Online Transfer", "Kliring"}, task.Type) {
 
 					task.Status = 7
 					task.Step = 1
