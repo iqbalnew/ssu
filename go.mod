@@ -29,6 +29,7 @@ require (
 
 require (
 	github.com/elliotchance/sshtunnel v1.3.1
+	github.com/envoyproxy/protoc-gen-validate v0.1.0
 	github.com/felixge/httpsnoop v1.0.3
 	github.com/fluent/fluent-logger-golang v1.9.0
 	github.com/go-bongo/bongo v0.10.4
