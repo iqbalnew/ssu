@@ -7,10 +7,10 @@ import (
 	fmt "fmt"
 	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/infobloxopen/protoc-gen-gorm/options"
-	_ "github.com/mwitkow/go-proto-validators"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	_ "github.com/infobloxopen/protoc-gen-gorm/options"
+	_ "github.com/mwitkow/go-proto-validators"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
@@ -19,6 +19,57 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+func (this *SenderData) Validate() error {
+	if !(this.AccountBalance >= 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("AccountBalance", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.AccountBalance))
+	}
+	return nil
+}
+func (this *BeneficiaryData) Validate() error {
+	if !(this.AccountBalance >= 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("AccountBalance", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.AccountBalance))
+	}
+	return nil
+}
+func (this *OnlineTransferData) Validate() error {
+	if this.Sender != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Sender); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Sender", err)
+		}
+	}
+	if this.Beneficiary != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Beneficiary); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Beneficiary", err)
+		}
+	}
+	if !(this.FeeAmount >= 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("FeeAmount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.FeeAmount))
+	}
+	if !(this.Amount >= 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Amount", fmt.Errorf(`value '%v' must be greater than or equal to '0'`, this.Amount))
+	}
+	if this.ScheduledAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ScheduledAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("ScheduledAt", err)
+		}
+	}
+	if this.RecurringPeriodStart != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RecurringPeriodStart); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("RecurringPeriodStart", err)
+		}
+	}
+	if this.RecurringPeriodEnd != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RecurringPeriodEnd); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("RecurringPeriodEnd", err)
+		}
+	}
+	if this.ExecutedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ExecutedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("ExecutedAt", err)
+		}
+	}
+	return nil
+}
 func (this *OnlineTransferTransaction) Validate() error {
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
@@ -65,6 +116,24 @@ func (this *OnlineTransferSingleTemplate) Validate() error {
 	if this.UpdatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	return nil
+}
+func (this *OnlineTransferTaskData) Validate() error {
+	if this.Task != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Task); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Task", err)
+		}
+	}
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	if this.Workflow != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Workflow); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Workflow", err)
 		}
 	}
 	return nil

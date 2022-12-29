@@ -110,8 +110,10 @@ type OnlineTransferSingleTemplateORM struct {
 	AccountType             int32
 	Amount                  float64
 	BankCode                string
+	BankIDCode              string
 	BankName                string
 	CreatedAt               *time.Time `gorm:"not null"`
+	CreatedByID             uint64
 	Currency                int32
 	DealCode                string
 	Email                   string
@@ -210,6 +212,7 @@ func (m *OnlineTransferSingleTemplate) ToORM(ctx context.Context) (OnlineTransfe
 		to.ScheduledAt = &t
 	}
 	to.TemplateName = m.TemplateName
+	to.CreatedByID = m.CreatedByID
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -223,6 +226,7 @@ func (m *OnlineTransferSingleTemplate) ToORM(ctx context.Context) (OnlineTransfe
 	to.Email = m.Email
 	to.BankCode = m.BankCode
 	to.BankName = m.BankName
+	to.BankIDCode = m.BankIDCode
 	if posthook, ok := interface{}(m).(OnlineTransferSingleTemplateWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -280,6 +284,7 @@ func (m *OnlineTransferSingleTemplateORM) ToPB(ctx context.Context) (OnlineTrans
 		to.ScheduledAt = timestamppb.New(*m.ScheduledAt)
 	}
 	to.TemplateName = m.TemplateName
+	to.CreatedByID = m.CreatedByID
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -291,6 +296,7 @@ func (m *OnlineTransferSingleTemplateORM) ToPB(ctx context.Context) (OnlineTrans
 	to.Email = m.Email
 	to.BankCode = m.BankCode
 	to.BankName = m.BankName
+	to.BankIDCode = m.BankIDCode
 	if posthook, ok := interface{}(m).(OnlineTransferSingleTemplateWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -1210,6 +1216,10 @@ func DefaultApplyFieldMaskOnlineTransferSingleTemplate(ctx context.Context, patc
 			patchee.TemplateName = patcher.TemplateName
 			continue
 		}
+		if f == prefix+"CreatedByID" {
+			patchee.CreatedByID = patcher.CreatedByID
+			continue
+		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {
 			if patcher.CreatedAt == nil {
 				patchee.CreatedAt = nil
@@ -1274,6 +1284,10 @@ func DefaultApplyFieldMaskOnlineTransferSingleTemplate(ctx context.Context, patc
 		}
 		if f == prefix+"BankName" {
 			patchee.BankName = patcher.BankName
+			continue
+		}
+		if f == prefix+"BankIDCode" {
+			patchee.BankIDCode = patcher.BankIDCode
 			continue
 		}
 	}

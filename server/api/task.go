@@ -1931,11 +1931,12 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 
 		onlineTransferClient := online_transfer_pb.NewApiServiceClient(onlineTransferConn)
 
-		_, err = onlineTransferClient.SetTaskOnlineTransfer(newCtx, &online_transfer_pb.SetTaskOnlineTransferRequest{
-			TaskID:  req.GetTaskID(),
-			Action:  req.GetAction(),
-			Comment: req.GetComment(),
-			Reasons: req.GetReasons(),
+		_, err = onlineTransferClient.UpdateOnlineTransferTask(newCtx, &online_transfer_pb.UpdateOnlineTransferTaskRequest{
+			TaskID:   req.GetTaskID(),
+			Action:   req.GetAction(),
+			Comment:  req.GetComment(),
+			Reasons:  req.GetReasons(),
+			PassCode: req.GetPassCode(),
 		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 		if err != nil {
 			return nil, err

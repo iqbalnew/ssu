@@ -50,43 +50,43 @@ func local_request_ApiService_HealthCheck_0(ctx context.Context, marshaler runti
 }
 
 var (
-	filter_ApiService_GetTaskOnlineTransferSingleTemplate_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_ApiService_GetOnlineTransferTask_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_ApiService_GetTaskOnlineTransferSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTaskOnlineTransferSingleTemplateRequest
+func request_ApiService_GetOnlineTransferTask_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetOnlineTransferTaskRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ApiService_GetTaskOnlineTransferSingleTemplate_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ApiService_GetOnlineTransferTask_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.GetTaskOnlineTransferSingleTemplate(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetOnlineTransferTask(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_ApiService_GetTaskOnlineTransferSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTaskOnlineTransferSingleTemplateRequest
+func local_request_ApiService_GetOnlineTransferTask_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetOnlineTransferTaskRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ApiService_GetTaskOnlineTransferSingleTemplate_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ApiService_GetOnlineTransferTask_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.GetTaskOnlineTransferSingleTemplate(ctx, &protoReq)
+	msg, err := server.GetOnlineTransferTask(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_ApiService_GetTaskOnlineTransferSingleTemplateDetail_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTaskOnlineTransferSingleTemplateDetailRequest
+func request_ApiService_GetOnlineTransferTaskDetail_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetOnlineTransferTaskDetailRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -96,23 +96,23 @@ func request_ApiService_GetTaskOnlineTransferSingleTemplateDetail_0(ctx context.
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["taskID"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "taskID")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.TaskID, err = runtime.Uint64(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "taskID", err)
 	}
 
-	msg, err := client.GetTaskOnlineTransferSingleTemplateDetail(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetOnlineTransferTaskDetail(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_ApiService_GetTaskOnlineTransferSingleTemplateDetail_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTaskOnlineTransferSingleTemplateDetailRequest
+func local_request_ApiService_GetOnlineTransferTaskDetail_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetOnlineTransferTaskDetailRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -122,217 +122,27 @@ func local_request_ApiService_GetTaskOnlineTransferSingleTemplateDetail_0(ctx co
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["taskID"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "taskID")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.TaskID, err = runtime.Uint64(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "taskID", err)
 	}
 
-	msg, err := server.GetTaskOnlineTransferSingleTemplateDetail(ctx, &protoReq)
-	return msg, metadata, err
-
-}
-
-func request_ApiService_CreateTaskOnlineTransferSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq OnlineTransferSingleTemplate
-	var metadata runtime.ServerMetadata
-
-	newReader, berr := utilities.IOReaderFactory(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	msg, err := client.CreateTaskOnlineTransferSingleTemplate(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func local_request_ApiService_CreateTaskOnlineTransferSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq OnlineTransferSingleTemplate
-	var metadata runtime.ServerMetadata
-
-	newReader, berr := utilities.IOReaderFactory(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	msg, err := server.CreateTaskOnlineTransferSingleTemplate(ctx, &protoReq)
-	return msg, metadata, err
-
-}
-
-func request_ApiService_CreateTaskOnlineTransferSingleTemplate_1(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq OnlineTransferSingleTemplate
-	var metadata runtime.ServerMetadata
-
-	newReader, berr := utilities.IOReaderFactory(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
-	}
-
-	protoReq.Id, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
-	}
-
-	msg, err := client.CreateTaskOnlineTransferSingleTemplate(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func local_request_ApiService_CreateTaskOnlineTransferSingleTemplate_1(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq OnlineTransferSingleTemplate
-	var metadata runtime.ServerMetadata
-
-	newReader, berr := utilities.IOReaderFactory(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
-	}
-
-	protoReq.Id, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
-	}
-
-	msg, err := server.CreateTaskOnlineTransferSingleTemplate(ctx, &protoReq)
-	return msg, metadata, err
-
-}
-
-func request_ApiService_DeleteTaskOnlineTransferSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DeleteTaskOnlineTransferSingleTemplateRequest
-	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
-	}
-
-	protoReq.Id, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
-	}
-
-	msg, err := client.DeleteTaskOnlineTransferSingleTemplate(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func local_request_ApiService_DeleteTaskOnlineTransferSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DeleteTaskOnlineTransferSingleTemplateRequest
-	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
-	}
-
-	protoReq.Id, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
-	}
-
-	msg, err := server.DeleteTaskOnlineTransferSingleTemplate(ctx, &protoReq)
+	msg, err := server.GetOnlineTransferTaskDetail(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 var (
-	filter_ApiService_GetTaskOnlineTransfer_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_ApiService_GetOnlineTransferTaskFile_0 = &utilities.DoubleArray{Encoding: map[string]int{"fileFormat": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
 )
 
-func request_ApiService_GetTaskOnlineTransfer_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTaskOnlineTransferRequest
-	var metadata runtime.ServerMetadata
-
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ApiService_GetTaskOnlineTransfer_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	msg, err := client.GetTaskOnlineTransfer(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func local_request_ApiService_GetTaskOnlineTransfer_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTaskOnlineTransferRequest
-	var metadata runtime.ServerMetadata
-
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ApiService_GetTaskOnlineTransfer_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	msg, err := server.GetTaskOnlineTransfer(ctx, &protoReq)
-	return msg, metadata, err
-
-}
-
-var (
-	filter_ApiService_GetTaskOnlineTransferFile_0 = &utilities.DoubleArray{Encoding: map[string]int{"fileFormat": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
-)
-
-func request_ApiService_GetTaskOnlineTransferFile_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTaskOnlineTransferFileRequest
+func request_ApiService_GetOnlineTransferTaskFile_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetOnlineTransferTaskFileRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -358,17 +168,17 @@ func request_ApiService_GetTaskOnlineTransferFile_0(ctx context.Context, marshal
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ApiService_GetTaskOnlineTransferFile_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ApiService_GetOnlineTransferTaskFile_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.GetTaskOnlineTransferFile(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetOnlineTransferTaskFile(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_ApiService_GetTaskOnlineTransferFile_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTaskOnlineTransferFileRequest
+func local_request_ApiService_GetOnlineTransferTaskFile_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetOnlineTransferTaskFileRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -394,69 +204,17 @@ func local_request_ApiService_GetTaskOnlineTransferFile_0(ctx context.Context, m
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ApiService_GetTaskOnlineTransferFile_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ApiService_GetOnlineTransferTaskFile_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.GetTaskOnlineTransferFile(ctx, &protoReq)
+	msg, err := server.GetOnlineTransferTaskFile(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_ApiService_GetTaskOnlineTransferDetail_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTaskOnlineTransferDetailRequest
-	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["taskID"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "taskID")
-	}
-
-	protoReq.TaskID, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "taskID", err)
-	}
-
-	msg, err := client.GetTaskOnlineTransferDetail(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func local_request_ApiService_GetTaskOnlineTransferDetail_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTaskOnlineTransferDetailRequest
-	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["taskID"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "taskID")
-	}
-
-	protoReq.TaskID, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "taskID", err)
-	}
-
-	msg, err := server.GetTaskOnlineTransferDetail(ctx, &protoReq)
-	return msg, metadata, err
-
-}
-
-func request_ApiService_SetTaskOnlineTransfer_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SetTaskOnlineTransferRequest
+func request_ApiService_UpdateOnlineTransferTask_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq UpdateOnlineTransferTaskRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -484,13 +242,13 @@ func request_ApiService_SetTaskOnlineTransfer_0(ctx context.Context, marshaler r
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "taskID", err)
 	}
 
-	msg, err := client.SetTaskOnlineTransfer(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.UpdateOnlineTransferTask(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_ApiService_SetTaskOnlineTransfer_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SetTaskOnlineTransferRequest
+func local_request_ApiService_UpdateOnlineTransferTask_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq UpdateOnlineTransferTaskRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -518,13 +276,101 @@ func local_request_ApiService_SetTaskOnlineTransfer_0(ctx context.Context, marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "taskID", err)
 	}
 
-	msg, err := server.SetTaskOnlineTransfer(ctx, &protoReq)
+	msg, err := server.UpdateOnlineTransferTask(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_ApiService_CreateTaskOnlineTransferSingle_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CreateTaskOnlineTransferSingleRequest
+var (
+	filter_ApiService_GetOnlineTransferTaskSingleTemplate_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+)
+
+func request_ApiService_GetOnlineTransferTaskSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetOnlineTransferTaskSingleTemplateRequest
+	var metadata runtime.ServerMetadata
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ApiService_GetOnlineTransferTaskSingleTemplate_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.GetOnlineTransferTaskSingleTemplate(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_ApiService_GetOnlineTransferTaskSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetOnlineTransferTaskSingleTemplateRequest
+	var metadata runtime.ServerMetadata
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ApiService_GetOnlineTransferTaskSingleTemplate_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := server.GetOnlineTransferTaskSingleTemplate(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_ApiService_GetOnlineTransferTaskSingleTemplateDetail_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetOnlineTransferTaskSingleTemplateDetailRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+
+	protoReq.Id, err = runtime.Uint64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	msg, err := client.GetOnlineTransferTaskSingleTemplateDetail(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_ApiService_GetOnlineTransferTaskSingleTemplateDetail_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetOnlineTransferTaskSingleTemplateDetailRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+
+	protoReq.Id, err = runtime.Uint64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	msg, err := server.GetOnlineTransferTaskSingleTemplateDetail(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_ApiService_CreateOnlineTransferTaskSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq OnlineTransferSingleTemplate
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -535,13 +381,13 @@ func request_ApiService_CreateTaskOnlineTransferSingle_0(ctx context.Context, ma
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.CreateTaskOnlineTransferSingle(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.CreateOnlineTransferTaskSingleTemplate(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_ApiService_CreateTaskOnlineTransferSingle_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CreateTaskOnlineTransferSingleRequest
+func local_request_ApiService_CreateOnlineTransferTaskSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq OnlineTransferSingleTemplate
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -552,13 +398,167 @@ func local_request_ApiService_CreateTaskOnlineTransferSingle_0(ctx context.Conte
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.CreateTaskOnlineTransferSingle(ctx, &protoReq)
+	msg, err := server.CreateOnlineTransferTaskSingleTemplate(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_ApiService_CreateTaskOnlineTransferSingle_1(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CreateTaskOnlineTransferSingleRequest
+func request_ApiService_CreateOnlineTransferTaskSingleTemplate_1(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq OnlineTransferSingleTemplate
+	var metadata runtime.ServerMetadata
+
+	newReader, berr := utilities.IOReaderFactory(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+
+	protoReq.Id, err = runtime.Uint64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	msg, err := client.CreateOnlineTransferTaskSingleTemplate(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_ApiService_CreateOnlineTransferTaskSingleTemplate_1(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq OnlineTransferSingleTemplate
+	var metadata runtime.ServerMetadata
+
+	newReader, berr := utilities.IOReaderFactory(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+
+	protoReq.Id, err = runtime.Uint64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	msg, err := server.CreateOnlineTransferTaskSingleTemplate(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_ApiService_DeleteOnlineTransferTaskSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq DeleteOnlineTransferTaskSingleTemplateRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+
+	protoReq.Id, err = runtime.Uint64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	msg, err := client.DeleteOnlineTransferTaskSingleTemplate(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_ApiService_DeleteOnlineTransferTaskSingleTemplate_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq DeleteOnlineTransferTaskSingleTemplateRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+	}
+
+	protoReq.Id, err = runtime.Uint64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	msg, err := server.DeleteOnlineTransferTaskSingleTemplate(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_ApiService_CreateOnlineTransferTaskSingle_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CreateOnlineTransferTaskSingleRequest
+	var metadata runtime.ServerMetadata
+
+	newReader, berr := utilities.IOReaderFactory(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.CreateOnlineTransferTaskSingle(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_ApiService_CreateOnlineTransferTaskSingle_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CreateOnlineTransferTaskSingleRequest
+	var metadata runtime.ServerMetadata
+
+	newReader, berr := utilities.IOReaderFactory(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := server.CreateOnlineTransferTaskSingle(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_ApiService_CreateOnlineTransferTaskSingle_1(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CreateOnlineTransferTaskSingleRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -586,13 +586,13 @@ func request_ApiService_CreateTaskOnlineTransferSingle_1(ctx context.Context, ma
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "taskID", err)
 	}
 
-	msg, err := client.CreateTaskOnlineTransferSingle(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.CreateOnlineTransferTaskSingle(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_ApiService_CreateTaskOnlineTransferSingle_1(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CreateTaskOnlineTransferSingleRequest
+func local_request_ApiService_CreateOnlineTransferTaskSingle_1(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CreateOnlineTransferTaskSingleRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -620,13 +620,13 @@ func local_request_ApiService_CreateTaskOnlineTransferSingle_1(ctx context.Conte
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "taskID", err)
 	}
 
-	msg, err := server.CreateTaskOnlineTransferSingle(ctx, &protoReq)
+	msg, err := server.CreateOnlineTransferTaskSingle(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_ApiService_CreateTaskOnlineTransferMultiple_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CreateTaskOnlineTransferMultipleRequest
+func request_ApiService_CreateOnlineTransferTaskMultiple_0(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CreateOnlineTransferTaskMultipleRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -637,13 +637,13 @@ func request_ApiService_CreateTaskOnlineTransferMultiple_0(ctx context.Context, 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.CreateTaskOnlineTransferMultiple(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.CreateOnlineTransferTaskMultiple(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_ApiService_CreateTaskOnlineTransferMultiple_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CreateTaskOnlineTransferMultipleRequest
+func local_request_ApiService_CreateOnlineTransferTaskMultiple_0(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CreateOnlineTransferTaskMultipleRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -654,7 +654,75 @@ func local_request_ApiService_CreateTaskOnlineTransferMultiple_0(ctx context.Con
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.CreateTaskOnlineTransferMultiple(ctx, &protoReq)
+	msg, err := server.CreateOnlineTransferTaskMultiple(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_ApiService_CreateOnlineTransferTaskMultiple_1(ctx context.Context, marshaler runtime.Marshaler, client ApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CreateOnlineTransferTaskMultipleRequest
+	var metadata runtime.ServerMetadata
+
+	newReader, berr := utilities.IOReaderFactory(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["taskID"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "taskID")
+	}
+
+	protoReq.TaskID, err = runtime.Uint64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "taskID", err)
+	}
+
+	msg, err := client.CreateOnlineTransferTaskMultiple(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_ApiService_CreateOnlineTransferTaskMultiple_1(ctx context.Context, marshaler runtime.Marshaler, server ApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CreateOnlineTransferTaskMultipleRequest
+	var metadata runtime.ServerMetadata
+
+	newReader, berr := utilities.IOReaderFactory(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["taskID"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "taskID")
+	}
+
+	protoReq.TaskID, err = runtime.Uint64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "taskID", err)
+	}
+
+	msg, err := server.CreateOnlineTransferTaskMultiple(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -690,7 +758,7 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("GET", pattern_ApiService_GetTaskOnlineTransferSingleTemplate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_ApiService_GetOnlineTransferTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -698,12 +766,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetTaskOnlineTransferSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetOnlineTransferTask", runtime.WithHTTPPathPattern("/api/online-transfer/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetTaskOnlineTransferSingleTemplate_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetOnlineTransferTask_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -711,11 +779,11 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_ApiService_GetTaskOnlineTransferSingleTemplate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_GetOnlineTransferTask_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ApiService_GetTaskOnlineTransferSingleTemplateDetail_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_ApiService_GetOnlineTransferTaskDetail_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -723,12 +791,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetTaskOnlineTransferSingleTemplateDetail", runtime.WithHTTPPathPattern("/api/online-transfer/single/template/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetOnlineTransferTaskDetail", runtime.WithHTTPPathPattern("/api/online-transfer/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetTaskOnlineTransferSingleTemplateDetail_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetOnlineTransferTaskDetail_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -736,11 +804,11 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_ApiService_GetTaskOnlineTransferSingleTemplateDetail_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_GetOnlineTransferTaskDetail_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_CreateTaskOnlineTransferSingleTemplate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_ApiService_GetOnlineTransferTaskFile_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -748,12 +816,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateTaskOnlineTransferSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetOnlineTransferTaskFile", runtime.WithHTTPPathPattern("/api/online-transfer/task/export/{fileFormat}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_CreateTaskOnlineTransferSingleTemplate_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetOnlineTransferTaskFile_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -761,11 +829,11 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_ApiService_CreateTaskOnlineTransferSingleTemplate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_GetOnlineTransferTaskFile_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_CreateTaskOnlineTransferSingleTemplate_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_UpdateOnlineTransferTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -773,12 +841,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateTaskOnlineTransferSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/UpdateOnlineTransferTask", runtime.WithHTTPPathPattern("/api/online-transfer/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_CreateTaskOnlineTransferSingleTemplate_1(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_UpdateOnlineTransferTask_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -786,11 +854,11 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_ApiService_CreateTaskOnlineTransferSingleTemplate_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_UpdateOnlineTransferTask_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_DeleteTaskOnlineTransferSingleTemplate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_ApiService_GetOnlineTransferTaskSingleTemplate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -798,12 +866,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/DeleteTaskOnlineTransferSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template/{id}/delete"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetOnlineTransferTaskSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_DeleteTaskOnlineTransferSingleTemplate_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetOnlineTransferTaskSingleTemplate_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -811,11 +879,11 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_ApiService_DeleteTaskOnlineTransferSingleTemplate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_GetOnlineTransferTaskSingleTemplate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ApiService_GetTaskOnlineTransfer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_ApiService_GetOnlineTransferTaskSingleTemplateDetail_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -823,12 +891,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetTaskOnlineTransfer", runtime.WithHTTPPathPattern("/api/online-transfer/task"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetOnlineTransferTaskSingleTemplateDetail", runtime.WithHTTPPathPattern("/api/online-transfer/single/template/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetTaskOnlineTransfer_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_GetOnlineTransferTaskSingleTemplateDetail_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -836,11 +904,11 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_ApiService_GetTaskOnlineTransfer_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_GetOnlineTransferTaskSingleTemplateDetail_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ApiService_GetTaskOnlineTransferFile_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateOnlineTransferTaskSingleTemplate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -848,12 +916,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetTaskOnlineTransferFile", runtime.WithHTTPPathPattern("/api/online-transfer/task/template/{fileFormat}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateOnlineTransferTaskSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetTaskOnlineTransferFile_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_CreateOnlineTransferTaskSingleTemplate_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -861,11 +929,11 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_ApiService_GetTaskOnlineTransferFile_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_CreateOnlineTransferTaskSingleTemplate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ApiService_GetTaskOnlineTransferDetail_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateOnlineTransferTaskSingleTemplate_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -873,12 +941,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetTaskOnlineTransferDetail", runtime.WithHTTPPathPattern("/api/online-transfer/task/{taskID}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateOnlineTransferTaskSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_GetTaskOnlineTransferDetail_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_CreateOnlineTransferTaskSingleTemplate_1(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -886,11 +954,11 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_ApiService_GetTaskOnlineTransferDetail_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_CreateOnlineTransferTaskSingleTemplate_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_SetTaskOnlineTransfer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_DeleteOnlineTransferTaskSingleTemplate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -898,12 +966,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/SetTaskOnlineTransfer", runtime.WithHTTPPathPattern("/api/online-transfer/task/{taskID}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/DeleteOnlineTransferTaskSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template/{id}/delete"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_SetTaskOnlineTransfer_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_DeleteOnlineTransferTaskSingleTemplate_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -911,11 +979,11 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_ApiService_SetTaskOnlineTransfer_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_DeleteOnlineTransferTaskSingleTemplate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_CreateTaskOnlineTransferSingle_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateOnlineTransferTaskSingle_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -923,12 +991,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateTaskOnlineTransferSingle", runtime.WithHTTPPathPattern("/api/online-transfer/single/task"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateOnlineTransferTaskSingle", runtime.WithHTTPPathPattern("/api/online-transfer/single/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_CreateTaskOnlineTransferSingle_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_CreateOnlineTransferTaskSingle_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -936,11 +1004,11 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_ApiService_CreateTaskOnlineTransferSingle_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_CreateOnlineTransferTaskSingle_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_CreateTaskOnlineTransferSingle_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateOnlineTransferTaskSingle_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -948,12 +1016,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateTaskOnlineTransferSingle", runtime.WithHTTPPathPattern("/api/online-transfer/single/task/{taskID}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateOnlineTransferTaskSingle", runtime.WithHTTPPathPattern("/api/online-transfer/single/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_CreateTaskOnlineTransferSingle_1(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_CreateOnlineTransferTaskSingle_1(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -961,11 +1029,11 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_ApiService_CreateTaskOnlineTransferSingle_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_CreateOnlineTransferTaskSingle_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_CreateTaskOnlineTransferMultiple_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateOnlineTransferTaskMultiple_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -973,12 +1041,12 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateTaskOnlineTransferMultiple", runtime.WithHTTPPathPattern("/api/online-transfer/multiple/task"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateOnlineTransferTaskMultiple", runtime.WithHTTPPathPattern("/api/online-transfer/multiple/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ApiService_CreateTaskOnlineTransferMultiple_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ApiService_CreateOnlineTransferTaskMultiple_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -986,7 +1054,32 @@ func RegisterApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			return
 		}
 
-		forward_ApiService_CreateTaskOnlineTransferMultiple_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_CreateOnlineTransferTaskMultiple_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_ApiService_CreateOnlineTransferTaskMultiple_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateOnlineTransferTaskMultiple", runtime.WithHTTPPathPattern("/api/online-transfer/multiple/task/{taskID}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_ApiService_CreateOnlineTransferTaskMultiple_1(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_ApiService_CreateOnlineTransferTaskMultiple_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1053,267 +1146,289 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("GET", pattern_ApiService_GetTaskOnlineTransferSingleTemplate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_ApiService_GetOnlineTransferTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetTaskOnlineTransferSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetOnlineTransferTask", runtime.WithHTTPPathPattern("/api/online-transfer/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetTaskOnlineTransferSingleTemplate_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetOnlineTransferTask_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ApiService_GetTaskOnlineTransferSingleTemplate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_GetOnlineTransferTask_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ApiService_GetTaskOnlineTransferSingleTemplateDetail_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_ApiService_GetOnlineTransferTaskDetail_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetTaskOnlineTransferSingleTemplateDetail", runtime.WithHTTPPathPattern("/api/online-transfer/single/template/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetOnlineTransferTaskDetail", runtime.WithHTTPPathPattern("/api/online-transfer/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetTaskOnlineTransferSingleTemplateDetail_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetOnlineTransferTaskDetail_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ApiService_GetTaskOnlineTransferSingleTemplateDetail_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_GetOnlineTransferTaskDetail_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_CreateTaskOnlineTransferSingleTemplate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_ApiService_GetOnlineTransferTaskFile_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateTaskOnlineTransferSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetOnlineTransferTaskFile", runtime.WithHTTPPathPattern("/api/online-transfer/task/export/{fileFormat}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_CreateTaskOnlineTransferSingleTemplate_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetOnlineTransferTaskFile_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ApiService_CreateTaskOnlineTransferSingleTemplate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_GetOnlineTransferTaskFile_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_CreateTaskOnlineTransferSingleTemplate_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_UpdateOnlineTransferTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateTaskOnlineTransferSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/UpdateOnlineTransferTask", runtime.WithHTTPPathPattern("/api/online-transfer/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_CreateTaskOnlineTransferSingleTemplate_1(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_UpdateOnlineTransferTask_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ApiService_CreateTaskOnlineTransferSingleTemplate_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_UpdateOnlineTransferTask_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_DeleteTaskOnlineTransferSingleTemplate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_ApiService_GetOnlineTransferTaskSingleTemplate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/DeleteTaskOnlineTransferSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template/{id}/delete"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetOnlineTransferTaskSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_DeleteTaskOnlineTransferSingleTemplate_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetOnlineTransferTaskSingleTemplate_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ApiService_DeleteTaskOnlineTransferSingleTemplate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_GetOnlineTransferTaskSingleTemplate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ApiService_GetTaskOnlineTransfer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_ApiService_GetOnlineTransferTaskSingleTemplateDetail_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetTaskOnlineTransfer", runtime.WithHTTPPathPattern("/api/online-transfer/task"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetOnlineTransferTaskSingleTemplateDetail", runtime.WithHTTPPathPattern("/api/online-transfer/single/template/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetTaskOnlineTransfer_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_GetOnlineTransferTaskSingleTemplateDetail_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ApiService_GetTaskOnlineTransfer_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_GetOnlineTransferTaskSingleTemplateDetail_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ApiService_GetTaskOnlineTransferFile_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateOnlineTransferTaskSingleTemplate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetTaskOnlineTransferFile", runtime.WithHTTPPathPattern("/api/online-transfer/task/template/{fileFormat}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateOnlineTransferTaskSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetTaskOnlineTransferFile_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_CreateOnlineTransferTaskSingleTemplate_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ApiService_GetTaskOnlineTransferFile_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_CreateOnlineTransferTaskSingleTemplate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ApiService_GetTaskOnlineTransferDetail_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateOnlineTransferTaskSingleTemplate_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/GetTaskOnlineTransferDetail", runtime.WithHTTPPathPattern("/api/online-transfer/task/{taskID}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateOnlineTransferTaskSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_GetTaskOnlineTransferDetail_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_CreateOnlineTransferTaskSingleTemplate_1(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ApiService_GetTaskOnlineTransferDetail_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_CreateOnlineTransferTaskSingleTemplate_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_SetTaskOnlineTransfer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_DeleteOnlineTransferTaskSingleTemplate_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/SetTaskOnlineTransfer", runtime.WithHTTPPathPattern("/api/online-transfer/task/{taskID}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/DeleteOnlineTransferTaskSingleTemplate", runtime.WithHTTPPathPattern("/api/online-transfer/single/template/{id}/delete"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_SetTaskOnlineTransfer_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_DeleteOnlineTransferTaskSingleTemplate_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ApiService_SetTaskOnlineTransfer_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_DeleteOnlineTransferTaskSingleTemplate_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_CreateTaskOnlineTransferSingle_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateOnlineTransferTaskSingle_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateTaskOnlineTransferSingle", runtime.WithHTTPPathPattern("/api/online-transfer/single/task"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateOnlineTransferTaskSingle", runtime.WithHTTPPathPattern("/api/online-transfer/single/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_CreateTaskOnlineTransferSingle_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_CreateOnlineTransferTaskSingle_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ApiService_CreateTaskOnlineTransferSingle_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_CreateOnlineTransferTaskSingle_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_CreateTaskOnlineTransferSingle_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateOnlineTransferTaskSingle_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateTaskOnlineTransferSingle", runtime.WithHTTPPathPattern("/api/online-transfer/single/task/{taskID}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateOnlineTransferTaskSingle", runtime.WithHTTPPathPattern("/api/online-transfer/single/task/{taskID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_CreateTaskOnlineTransferSingle_1(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_CreateOnlineTransferTaskSingle_1(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ApiService_CreateTaskOnlineTransferSingle_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_CreateOnlineTransferTaskSingle_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_ApiService_CreateTaskOnlineTransferMultiple_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_ApiService_CreateOnlineTransferTaskMultiple_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateTaskOnlineTransferMultiple", runtime.WithHTTPPathPattern("/api/online-transfer/multiple/task"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateOnlineTransferTaskMultiple", runtime.WithHTTPPathPattern("/api/online-transfer/multiple/task"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ApiService_CreateTaskOnlineTransferMultiple_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ApiService_CreateOnlineTransferTaskMultiple_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ApiService_CreateTaskOnlineTransferMultiple_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ApiService_CreateOnlineTransferTaskMultiple_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_ApiService_CreateOnlineTransferTaskMultiple_1, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/onlinetransfer.service.v1.ApiService/CreateOnlineTransferTaskMultiple", runtime.WithHTTPPathPattern("/api/online-transfer/multiple/task/{taskID}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_ApiService_CreateOnlineTransferTaskMultiple_1(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_ApiService_CreateOnlineTransferTaskMultiple_1(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1323,55 +1438,59 @@ func RegisterApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 var (
 	pattern_ApiService_HealthCheck_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "online-transfer", "health"}, ""))
 
-	pattern_ApiService_GetTaskOnlineTransferSingleTemplate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "online-transfer", "single", "template"}, ""))
+	pattern_ApiService_GetOnlineTransferTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "online-transfer", "task"}, ""))
 
-	pattern_ApiService_GetTaskOnlineTransferSingleTemplateDetail_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "online-transfer", "single", "template", "id"}, ""))
+	pattern_ApiService_GetOnlineTransferTaskDetail_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "online-transfer", "task", "taskID"}, ""))
 
-	pattern_ApiService_CreateTaskOnlineTransferSingleTemplate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "online-transfer", "single", "template"}, ""))
+	pattern_ApiService_GetOnlineTransferTaskFile_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "online-transfer", "task", "export", "fileFormat"}, ""))
 
-	pattern_ApiService_CreateTaskOnlineTransferSingleTemplate_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "online-transfer", "single", "template", "id"}, ""))
+	pattern_ApiService_UpdateOnlineTransferTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "online-transfer", "task", "taskID"}, ""))
 
-	pattern_ApiService_DeleteTaskOnlineTransferSingleTemplate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "online-transfer", "single", "template", "id", "delete"}, ""))
+	pattern_ApiService_GetOnlineTransferTaskSingleTemplate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "online-transfer", "single", "template"}, ""))
 
-	pattern_ApiService_GetTaskOnlineTransfer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "online-transfer", "task"}, ""))
+	pattern_ApiService_GetOnlineTransferTaskSingleTemplateDetail_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "online-transfer", "single", "template", "id"}, ""))
 
-	pattern_ApiService_GetTaskOnlineTransferFile_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "online-transfer", "task", "template", "fileFormat"}, ""))
+	pattern_ApiService_CreateOnlineTransferTaskSingleTemplate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "online-transfer", "single", "template"}, ""))
 
-	pattern_ApiService_GetTaskOnlineTransferDetail_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "online-transfer", "task", "taskID"}, ""))
+	pattern_ApiService_CreateOnlineTransferTaskSingleTemplate_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "online-transfer", "single", "template", "id"}, ""))
 
-	pattern_ApiService_SetTaskOnlineTransfer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "online-transfer", "task", "taskID"}, ""))
+	pattern_ApiService_DeleteOnlineTransferTaskSingleTemplate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "online-transfer", "single", "template", "id", "delete"}, ""))
 
-	pattern_ApiService_CreateTaskOnlineTransferSingle_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "online-transfer", "single", "task"}, ""))
+	pattern_ApiService_CreateOnlineTransferTaskSingle_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "online-transfer", "single", "task"}, ""))
 
-	pattern_ApiService_CreateTaskOnlineTransferSingle_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "online-transfer", "single", "task", "taskID"}, ""))
+	pattern_ApiService_CreateOnlineTransferTaskSingle_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "online-transfer", "single", "task", "taskID"}, ""))
 
-	pattern_ApiService_CreateTaskOnlineTransferMultiple_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "online-transfer", "multiple", "task"}, ""))
+	pattern_ApiService_CreateOnlineTransferTaskMultiple_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "online-transfer", "multiple", "task"}, ""))
+
+	pattern_ApiService_CreateOnlineTransferTaskMultiple_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "online-transfer", "multiple", "task", "taskID"}, ""))
 )
 
 var (
 	forward_ApiService_HealthCheck_0 = runtime.ForwardResponseMessage
 
-	forward_ApiService_GetTaskOnlineTransferSingleTemplate_0 = runtime.ForwardResponseMessage
+	forward_ApiService_GetOnlineTransferTask_0 = runtime.ForwardResponseMessage
 
-	forward_ApiService_GetTaskOnlineTransferSingleTemplateDetail_0 = runtime.ForwardResponseMessage
+	forward_ApiService_GetOnlineTransferTaskDetail_0 = runtime.ForwardResponseMessage
 
-	forward_ApiService_CreateTaskOnlineTransferSingleTemplate_0 = runtime.ForwardResponseMessage
+	forward_ApiService_GetOnlineTransferTaskFile_0 = runtime.ForwardResponseMessage
 
-	forward_ApiService_CreateTaskOnlineTransferSingleTemplate_1 = runtime.ForwardResponseMessage
+	forward_ApiService_UpdateOnlineTransferTask_0 = runtime.ForwardResponseMessage
 
-	forward_ApiService_DeleteTaskOnlineTransferSingleTemplate_0 = runtime.ForwardResponseMessage
+	forward_ApiService_GetOnlineTransferTaskSingleTemplate_0 = runtime.ForwardResponseMessage
 
-	forward_ApiService_GetTaskOnlineTransfer_0 = runtime.ForwardResponseMessage
+	forward_ApiService_GetOnlineTransferTaskSingleTemplateDetail_0 = runtime.ForwardResponseMessage
 
-	forward_ApiService_GetTaskOnlineTransferFile_0 = runtime.ForwardResponseMessage
+	forward_ApiService_CreateOnlineTransferTaskSingleTemplate_0 = runtime.ForwardResponseMessage
 
-	forward_ApiService_GetTaskOnlineTransferDetail_0 = runtime.ForwardResponseMessage
+	forward_ApiService_CreateOnlineTransferTaskSingleTemplate_1 = runtime.ForwardResponseMessage
 
-	forward_ApiService_SetTaskOnlineTransfer_0 = runtime.ForwardResponseMessage
+	forward_ApiService_DeleteOnlineTransferTaskSingleTemplate_0 = runtime.ForwardResponseMessage
 
-	forward_ApiService_CreateTaskOnlineTransferSingle_0 = runtime.ForwardResponseMessage
+	forward_ApiService_CreateOnlineTransferTaskSingle_0 = runtime.ForwardResponseMessage
 
-	forward_ApiService_CreateTaskOnlineTransferSingle_1 = runtime.ForwardResponseMessage
+	forward_ApiService_CreateOnlineTransferTaskSingle_1 = runtime.ForwardResponseMessage
 
-	forward_ApiService_CreateTaskOnlineTransferMultiple_0 = runtime.ForwardResponseMessage
+	forward_ApiService_CreateOnlineTransferTaskMultiple_0 = runtime.ForwardResponseMessage
+
+	forward_ApiService_CreateOnlineTransferTaskMultiple_1 = runtime.ForwardResponseMessage
 )
