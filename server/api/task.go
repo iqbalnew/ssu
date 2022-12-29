@@ -1248,6 +1248,11 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 
 	}
 
+	if task.Type == "Swift" {
+		task.CreatedByID = currentUser.UserID
+		task.CreatedByName = currentUser.Username
+	}
+
 	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9097"), opts...)
 	if err != nil {
 		logrus.Errorln("[api][func: SaveTaskWithData] Unable to connect Product Service:", err)
