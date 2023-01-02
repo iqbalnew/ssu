@@ -137,8 +137,8 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 				)
 				AND (created_by_id != '%d' OR workflow_doc->'workflow'->>'currentStep' = 'releaser')
 			)
-			OR ((type = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND created_by_id = '%d' AND status IN (2, 3)))
-		)`, whereOpt, roleIDs, accountIDQuery, userID, userID, userID, userID)
+			OR ((type = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND status IN (2, 3)))
+		)`, whereOpt, roleIDs, accountIDQuery, userID, userID, userID)
 	}
 
 	if whereOpt != "" {
@@ -511,7 +511,11 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	logrus.Println("[db][func: GetListTask] Custom Query list:", customQuery)
 
 	query = query.Scopes(FilterScoope(sql.Filter))
-	query = query.Scopes(FilterOrScoope(sql.FilterOr, customQuery))
+	query = query.Scopes(FilterOrScoope(sql.FilterOr, ""))
+
+	if customQuery != "" {
+		query = query.Where(fmt.Sprintf("(%s)", customQuery))
+	}
 
 	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn), NotConditionalScoope(sql.FilterNot))
 	if sql.CompanyID != "" {
@@ -607,9 +611,9 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf(`((type = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND created_by_id = '%d' AND status IN (2, 3)))`, workflowUserIDFilter, workflowUserIDFilter)
+			customQuery = fmt.Sprintf(`((type = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND status IN (2, 3)))`, workflowUserIDFilter)
 		} else {
-			customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND created_by_id = '%d' AND status IN (2, 3)))`, customQuery, workflowUserIDFilter, workflowUserIDFilter)
+			customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND status IN (2, 3)))`, customQuery, workflowUserIDFilter)
 		}
 	}
 
@@ -617,7 +621,10 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 	query = query.Scopes(FilterScoope(sql.Filter))
 	query = query.Scopes(FilterOrScoope(sql.FilterOr, ""))
-	query = query.Where(customQuery)
+
+	if customQuery != "" {
+		query = query.Where(fmt.Sprintf("(%s)", customQuery))
+	}
 
 	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn), NotConditionalScoope(sql.FilterNot))
 	query = query.Scopes(DistinctScoope(sql.Distinct))
