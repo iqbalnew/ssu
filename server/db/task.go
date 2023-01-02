@@ -137,8 +137,8 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 				)
 				AND (created_by_id != '%d' OR workflow_doc->'workflow'->>'currentStep' = 'releaser')
 			)
-			OR ((type = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND status IN (2, 3)))
-		)`, whereOpt, roleIDs, accountIDQuery, userID, userID, userID)
+			OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND status IN (2, 3)))
+		)`, whereOpt, roleIDs, accountIDQuery, userID, userID)
 	}
 
 	if whereOpt != "" {
@@ -508,6 +508,14 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		}
 	}
 
+	if workflowUserIDFilter > 0 {
+		if customQuery == "" {
+			customQuery = "((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND status IN (2, 3)))"
+		} else {
+			customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND status IN (2, 3)))`, customQuery)
+		}
+	}
+
 	logrus.Println("[db][func: GetListTask] Custom Query list:", customQuery)
 
 	query = query.Scopes(FilterScoope(sql.Filter))
@@ -611,9 +619,9 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf(`((type = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND status IN (2, 3)))`, workflowUserIDFilter)
+			customQuery = "((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND status IN (2, 3)))"
 		} else {
-			customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND created_by_id = '%d' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND status IN (2, 3)))`, customQuery, workflowUserIDFilter)
+			customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND status IN (2, 3)))`, customQuery)
 		}
 	}
 
