@@ -135,7 +135,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 					workflow_doc->'workflow'->>'participantUserIDs' IS NULL
 					OR '%d' != ANY (TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])
 				)
-				AND ((workflow_doc->'workflow'->'createdBy'->>'userID' != '%d' ) OR (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' OR workflow_doc->'workflow'->>'currentStep' = 'releaser'))
+				AND ((workflow_doc->'workflow'->'createdBy'->>'userID' != '%d') OR (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser'))
 			)
 			OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL))
 		)`, whereOpt, roleIDs, accountIDQuery, userID, userID, userID)
@@ -614,7 +614,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	}
 
 	if customQuery != "" && workflowUserIDFilter > 0 {
-		customQuery = fmt.Sprintf("(%s AND ((workflow_doc->'workflow'->'createdBy'->>'userID' != '%d' ) OR (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' OR workflow_doc->'workflow'->>'currentStep' = 'releaser')))", customQuery, workflowUserIDFilter, workflowUserIDFilter)
+		customQuery = fmt.Sprintf("(%s AND ((workflow_doc->'workflow'->'createdBy'->>'userID' != '%d' ) OR (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser')))", customQuery, workflowUserIDFilter, workflowUserIDFilter)
 	}
 
 	if customQuery == "" {
