@@ -137,7 +137,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 				)
 				AND ((workflow_doc->'workflow'->'createdBy'->>'userID' != '%d') OR (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser'))
 			)
-			OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL))
+			OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL))
 		)`, whereOpt, roleIDs, accountIDQuery, userID, userID, userID)
 	}
 
@@ -510,9 +510,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf("((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND (workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL OR workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' = '%d')))", workflowUserIDFilter)
+			customQuery = fmt.Sprintf("(workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL OR workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' = '%d')", workflowUserIDFilter)
 		} else {
-			customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND (workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL OR workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' = '%d')))`, customQuery, workflowUserIDFilter)
+			customQuery = fmt.Sprintf(`%s OR (workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL OR workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' = '%d')`, customQuery, workflowUserIDFilter)
 		}
 	}
 
@@ -618,9 +618,9 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	}
 
 	if customQuery == "" {
-		customQuery = "((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL))"
+		customQuery = "((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL))"
 	} else {
-		customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL))`, customQuery)
+		customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL))`, customQuery)
 	}
 
 	logrus.Println("[db][func: GetListTaskNormal] Custom Query list:", customQuery)
