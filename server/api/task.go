@@ -1947,6 +1947,31 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 			return nil, err
 		}
 
+	case "Cash Pooling":
+
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		liquidityConn, err := grpc.Dial(getEnv("LIQUIDITY_SERVICE", ":9010"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Unable to connect Cash Pooling Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer liquidityConn.Close()
+
+		liquidityClient := liquidity_pb.NewApiServiceClient(liquidityConn)
+
+		_, err = liquidityClient.TaskAction(newCtx, &liquidity_pb.TaskActionRequest{
+			TaskID:   req.GetTaskID(),
+			Action:   req.GetAction(),
+			Comment:  req.GetComment(),
+			Reasons:  req.GetReasons(),
+			PassCode: req.GetPassCode(),
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			return nil, err
+		}
+
 	case "Kliring":
 
 		var opts []grpc.DialOption
