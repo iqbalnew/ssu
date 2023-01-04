@@ -1987,7 +1987,7 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 
 		depositoClient := deposito_pb.NewDepositoServiceClient(depositoConn)
 
-		depositoClient.DepositoActionTask(newCtx, &deposito_pb.TaskActionRequest{
+		_, err = depositoClient.DepositoActionTask(newCtx, &deposito_pb.TaskActionRequest{
 			TaskID:   req.GetTaskID(),
 			Action:   req.GetAction(),
 			Comment:  req.GetComment(),
