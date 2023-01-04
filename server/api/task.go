@@ -98,7 +98,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{})
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{}, true)
 	if err != nil {
 		logrus.Errorln("[api][func: GetTaskByTypeID] Failed when execute GetListTask:", err)
 		return nil, err
@@ -412,9 +412,85 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		Data:    []*pb.Task{},
 	}
 
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		ctx = metadata.NewOutgoingContext(context.Background(), md)
+	}
+
+	// var trailer metadata.MD
+
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithInsecure())
+
 	var dataorm pb.TaskORM
 	if req.Task != nil {
 		dataorm, _ = req.Task.ToORM(ctx)
+	}
+
+	hasAuthorityMaker := false
+
+	if req.UserIDFilter > 0 {
+
+		roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: GetListTask] Unable to connect Role Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer roleConn.Close()
+
+		roleClient := role_pb.NewApiServiceClient(roleConn)
+
+		roleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
+			ID: req.UserIDFilter,
+		})
+		if err != nil {
+			logrus.Errorln("[api][func: GetListTask] Failed when execute GetRoleUserByUserID function:", err)
+			return nil, err
+		}
+
+		if req.GetTask() != nil && req.GetTask().GetType() != "" {
+
+			for _, v := range roleRes.ProductRoles {
+
+				if v.ProductName == req.GetTask().GetType() {
+
+					hasAuthorityMaker = contains(v.Authorities, "data_entry:maker") || contains(v.Authorities, "modify:maker") || contains(v.Authorities, "delete:maker")
+
+				}
+
+			}
+
+		} else if strings.Contains(req.In, "type:") {
+
+			inReq := strings.Split(req.In, ":")
+
+			if len(inReq) > 1 {
+
+				column := inReq[0]
+				values := inReq[1]
+
+				if column == "type" {
+
+					for _, v := range strings.Split(values, ",") {
+
+						for _, d := range roleRes.ProductRoles {
+
+							if d.ProductName == v {
+
+								hasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
+
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+
 	}
 
 	sort := &pb.Sort{
@@ -434,7 +510,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 	result.Pagination = setPagination(req)
 
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.UserIDFilter, req.RoleIDFilter, req.AccountIDFilter)
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.UserIDFilter, req.RoleIDFilter, req.AccountIDFilter, hasAuthorityMaker)
 	if err != nil {
 		return nil, err
 	}
@@ -3326,7 +3402,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			mappingDigitalTask, err := s.provider.GetListTask(ctx, &pb.TaskORM{
 				Type:      "BG Mapping Digital",
 				CompanyID: task.CompanyID,
-			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, 0, []uint64{}, []uint64{})
+			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, 0, []uint64{}, []uint64{}, true)
 			if err != nil {
 				logrus.Errorln("[api][func: SetTask] Failed when GetListTask:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -4561,7 +4637,7 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 		Sort:          &pb.Sort{},
 	}
 
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{})
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{}, true)
 	if err != nil {
 		return nil, err
 	}

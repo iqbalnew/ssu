@@ -452,7 +452,7 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64, hasAuthorityMaker bool) (tasks []*pb.TaskORM, err error) {
 
 	query := p.db_main
 	if filter.Type != "" {
@@ -509,10 +509,14 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	}
 
 	if workflowUserIDFilter > 0 {
+		makerQuery := ""
+		if hasAuthorityMaker {
+			makerQuery = "workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL OR"
+		}
 		if customQuery == "" {
-			customQuery = fmt.Sprintf("(workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL OR workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' = '%d')", workflowUserIDFilter)
+			customQuery = fmt.Sprintf("(%s workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' = '%d')", makerQuery, workflowUserIDFilter)
 		} else {
-			customQuery = fmt.Sprintf(`%s OR (workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL OR workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' = '%d')`, customQuery, workflowUserIDFilter)
+			customQuery = fmt.Sprintf(`%s OR (%s workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' = '%d')`, customQuery, makerQuery, workflowUserIDFilter)
 		}
 	}
 
