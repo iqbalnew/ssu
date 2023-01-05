@@ -23,6 +23,7 @@ import (
 	notification_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/notification_service"
 	online_transfer_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/online_transfer_service"
 	payroll_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/payroll_service"
+	proxy_management_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/proxy_management_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
 	swift_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/swift_service"
@@ -122,6 +123,8 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 	case "Upload Transfer":
 		_, key, err = TaskDataBulkTransferToPB(task.Data, task.TaskID)
 
+	case "Proxy Management":
+		_, key, err = TaskDataProxyManagementToPB(task.Data, task.TaskID)
 	}
 
 	if err != nil {
@@ -434,4 +437,14 @@ func TaskDataBulkTransferToPB(data string, taskID uint64) (val *bulk_transfer_pb
 	}
 
 	return external, fmt.Sprintf("BFT%v", taskID), nil
+}
+
+func TaskDataProxyManagementToPB(data string, taskID uint64) (val *proxy_management_pb.ProxyManagementData, key string, err error) {
+	taskData := &proxy_management_pb.ProxyManagementData{}
+	err = json.Unmarshal([]byte(data), &taskData)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return taskData, fmt.Sprintf("BFT%v", taskID), nil
 }

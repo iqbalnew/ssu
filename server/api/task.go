@@ -28,6 +28,7 @@ import (
 	online_transfer_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/online_transfer_service"
 	payroll_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/payroll_service"
 	product_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/product_service"
+	proxy_management_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/proxy_management_service"
 	role_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/role_service"
 	sso_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/sso_service"
 	swift_pb "bitbucket.bri.co.id/scm/addons/addons-task-service/server/lib/stub/swift_service"
@@ -1965,16 +1966,16 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 		var opts []grpc.DialOption
 		opts = append(opts, grpc.WithInsecure())
 
-		bifastConn, err := grpc.Dial(getEnv("BIFAST_SERVICE", ":9127"), opts...)
+		proxyManagementConn, err := grpc.Dial(getEnv("BIFAST_SERVICE", ":9127"), opts...)
 		if err != nil {
 			logrus.Errorln("[api][func: SetTask] Unable to connect BiFast Service:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
-		defer bifastConn.Close()
+		defer proxyManagementConn.Close()
 
-		bifastClient := bifast_pb.NewApiServiceClient(bifastConn)
+		proxyManagementClient := bifast_pb.NewApiServiceClient(proxyManagementConn)
 
-		_, err = bifastClient.SetTaskExternalTransfer(newCtx, &bifast_pb.SetTaskExternalTransferRequest{
+		_, err = proxyManagementClient.SetTaskExternalTransfer(newCtx, &bifast_pb.SetTaskExternalTransferRequest{
 			TaskID:  req.GetTaskID(),
 			Action:  req.GetAction(),
 			Comment: req.GetComment(),
@@ -2198,6 +2199,30 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 		kliringClient := kliring_pb.NewApiServiceClient(kliringConn)
 
 		_, err = kliringClient.UpdateKliringTask(newCtx, &kliring_pb.UpdateKliringTaskRequest{
+			TaskID:  req.GetTaskID(),
+			Action:  req.GetAction(),
+			Comment: req.GetComment(),
+			Reasons: req.GetReasons(),
+		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
+		if err != nil {
+			return nil, err
+		}
+
+	case "Proxy Registration":
+
+		var opts []grpc.DialOption
+		opts = append(opts, grpc.WithInsecure())
+
+		proxyManagementConn, err := grpc.Dial(getEnv("PROXY_MANAGEMENT_SERVICE", ":9231"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: SetTask] Unable to connect Proxy Management Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer proxyManagementConn.Close()
+
+		proxyManagementClient := proxy_management_pb.NewApiServiceClient(proxyManagementConn)
+
+		_, err = proxyManagementClient.SetActionTaskProxyManagement(newCtx, &proxy_management_pb.SetTaskProxyManagementRequest{
 			TaskID:  req.GetTaskID(),
 			Action:  req.GetAction(),
 			Comment: req.GetComment(),
