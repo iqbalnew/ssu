@@ -133,9 +133,20 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 			if v.HasAuthorityMaker {
 
 				if makerQuery == "" {
-					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf(`(
+						type = '%s' 
+						AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL 
+						AND (
+							data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)
+						)
+					)`, v.ProductName, accountIDs)
 				} else {
-					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf(`%s 
+						OR (
+							type = '%s' 
+							AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL 
+							AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s))
+						)`, makerQuery, v.ProductName, accountIDs)
 				}
 
 			}
@@ -153,9 +164,21 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 					workflow_doc->'workflow'->>'participantUserIDs' IS NULL
 					OR '%d' != ANY (TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])
 				)
-				AND ((%s) OR (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser'))
+				AND (
+					(%s) 
+					OR (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser')
+				)
 			)
-			OR ((type = 'Payroll Transfer' AND (data->>'status' = 'Ready to Submit' OR workflow_doc->>'nextStatus' = 'returned')) OR (type != 'Payroll Transfer' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned')))
+			OR (
+				type = 'Payroll Transfer' 
+				AND (
+					data->>'status' = 'Ready to Submit' 
+					OR workflow_doc->>'nextStatus' = 'returned'
+				) OR (
+					type != 'Payroll Transfer' 
+					AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned')
+				)	
+			)
 		)`, whereOpt, roleIDs, accountIDQuery, userID, makerQuery, userID)
 	}
 
