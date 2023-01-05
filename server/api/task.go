@@ -99,7 +99,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{}, []*db.HasMakerFilter{})
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []*db.ProductAccountFilter{})
 	if err != nil {
 		logrus.Errorln("[api][func: GetTaskByTypeID] Failed when execute GetListTask:", err)
 		return nil, err
@@ -209,29 +209,44 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	accountClient := account_pb.NewApiServiceClient(accountConn)
 
+	roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
+	if err != nil {
+		logrus.Errorln("[api][func: GetListTaskWithToken] Unable to connect Account Service:", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	defer roleConn.Close()
+
+	roleClient := role_pb.NewApiServiceClient(roleConn)
+
+	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9090"), opts...)
+	if err != nil {
+		logrus.Errorln("[api][func: GetListTaskWithToken] Unable to connect Account Service:", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	defer productConn.Close()
+
+	productClient := product_pb.NewApiServiceClient(productConn)
+
 	userID := uint64(0)
 	companyID := uint64(0)
 	roleIDs := []uint64{}
-	accountIDs := []uint64{}
+	productAccountFilters := []*db.ProductAccountFilter{}
 
 	if currentUser.UserType == "cu" {
 
-		listAccountByRoleReq := &account_pb.ListAccountRequest{}
+		if req.GetServices() != "" {
 
-		if req.GetTask() != nil && req.GetTask().GetType() != "" {
-
-			productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9090"), opts...)
+			listRoleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
+				ID: currentUser.UserID,
+			})
 			if err != nil {
-				logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to connect Product Service:", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
+				logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Role By User ID:", err.Error())
+				return nil, err
 			}
-			defer productConn.Close()
-
-			productClient := product_pb.NewApiServiceClient(productConn)
 
 			listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
 				Product: &product_pb.Product{
-					Name: req.GetTask().GetType(),
+					IsTransactional: true,
 				},
 			})
 			if err != nil {
@@ -239,24 +254,50 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 				return nil, err
 			}
 
-			if len(listProductRes.GetData()) < 1 {
-				return nil, status.Errorf(codes.NotFound, "Product Not Found")
+			for _, v := range listProductRes.GetData() {
+
+				for _, productName := range strings.Split(req.GetServices(), ",") {
+
+					if v.GetName() == productName {
+
+						listAccountByRoleReq := &account_pb.ListAccountRequest{
+							ProductID: v.GetProductID(),
+						}
+
+						listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
+						if err != nil {
+							logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
+							return nil, err
+						}
+
+						productAccountFilter := &db.ProductAccountFilter{
+							ProductName:       v.GetName(),
+							AccountIDs:        []uint64{},
+							HasAuthorityMaker: false,
+						}
+
+						for _, d := range listRoleRes.GetProductRoles() {
+
+							if d.ProductName == v.Name {
+
+								for _, v := range listAccountRes.Data {
+									productAccountFilter.AccountIDs = append(productAccountFilter.AccountIDs, v.AccountID)
+								}
+
+								productAccountFilter.HasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
+
+							}
+
+						}
+
+						productAccountFilters = append(productAccountFilters, productAccountFilter)
+
+					}
+
+				}
+
 			}
 
-			listAccountByRoleReq = &account_pb.ListAccountRequest{
-				ProductID: listProductRes.GetData()[0].GetProductID(),
-			}
-
-		}
-
-		listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
-		if err != nil {
-			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
-			return nil, err
-		}
-
-		for _, v := range listAccountRes.Data {
-			accountIDs = append(accountIDs, v.AccountID)
 		}
 
 		userID = currentUser.UserID
@@ -283,7 +324,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		FilterNot:   req.GetFilterNot(),
 	}
 
-	hasAuthorityMaker := []*db.HasMakerFilter{}
 	stepFilter := ""
 
 	if currentUser.UserType == "cu" {
@@ -307,72 +347,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 			sqlBuilder.Filter = fmt.Sprintf("%s,%s", sqlBuilder.Filter, stepFilter)
 		} else {
 			sqlBuilder.Filter = stepFilter
-		}
-
-		roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
-		if err != nil {
-			logrus.Errorln("[api][func: GetListTask] Unable to connect Role Service:", err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
-		}
-		defer roleConn.Close()
-
-		roleClient := role_pb.NewApiServiceClient(roleConn)
-
-		roleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
-			ID: currentUser.UserID,
-		})
-		if err != nil {
-			logrus.Errorln("[api][func: GetListTask] Failed when execute GetRoleUserByUserID function:", err)
-			return nil, err
-		}
-
-		if req.GetTask() != nil && req.GetTask().GetType() != "" {
-
-			for _, v := range roleRes.ProductRoles {
-
-				if v.ProductName == req.GetTask().GetType() {
-
-					hasAuthorityMaker = append(hasAuthorityMaker, &db.HasMakerFilter{
-						ProductName:       v.ProductName,
-						HasAuthorityMaker: contains(v.Authorities, "data_entry:maker") || contains(v.Authorities, "modify:maker") || contains(v.Authorities, "delete:maker"),
-					})
-
-				}
-
-			}
-
-		} else if strings.Contains(req.In, "type:") {
-
-			inReq := strings.Split(req.In, ":")
-
-			if len(inReq) > 1 {
-
-				column := inReq[0]
-				values := inReq[1]
-
-				if column == "type" {
-
-					for _, v := range strings.Split(values, ",") {
-
-						for _, d := range roleRes.ProductRoles {
-
-							if d.ProductName == v {
-
-								hasAuthorityMaker = append(hasAuthorityMaker, &db.HasMakerFilter{
-									ProductName:       d.ProductName,
-									HasAuthorityMaker: contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker"),
-								})
-
-							}
-
-						}
-
-					}
-
-				}
-
-			}
-
 		}
 
 	} else if currentUser.UserType == "ca" {
@@ -449,7 +423,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	result.Pagination = setPagination(req)
 
-	list, err := s.provider.GetListTaskNormal(ctx, dataORM, result.Pagination, sqlBuilder, companyID, userID, roleIDs, accountIDs, hasAuthorityMaker)
+	list, err := s.provider.GetListTaskNormal(ctx, dataORM, result.Pagination, sqlBuilder, companyID, userID, roleIDs, productAccountFilters)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTask] Failed when execute GetListTaskNormal:", err.Error())
 		return nil, err
@@ -485,79 +459,108 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		ctx = metadata.NewOutgoingContext(context.Background(), md)
 	}
 
-	// var trailer metadata.MD
-
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
+
+	accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9090"), opts...)
+	if err != nil {
+		logrus.Errorln("[api][func: GetListTaskWithToken] Unable to connect Account Service:", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	defer accountConn.Close()
+
+	accountClient := account_pb.NewApiServiceClient(accountConn)
+
+	roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
+	if err != nil {
+		logrus.Errorln("[api][func: GetListTaskWithToken] Unable to connect Account Service:", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	defer roleConn.Close()
+
+	roleClient := role_pb.NewApiServiceClient(roleConn)
+
+	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9090"), opts...)
+	if err != nil {
+		logrus.Errorln("[api][func: GetListTaskWithToken] Unable to connect Account Service:", err)
+		return nil, status.Errorf(codes.Internal, "Internal Error")
+	}
+	defer productConn.Close()
+
+	productClient := product_pb.NewApiServiceClient(productConn)
 
 	var dataorm pb.TaskORM
 	if req.Task != nil {
 		dataorm, _ = req.Task.ToORM(ctx)
 	}
 
-	hasAuthorityMaker := []*db.HasMakerFilter{}
+	productAccountFilters := []*db.ProductAccountFilter{}
 
-	if req.UserIDFilter > 0 {
+	if req.GetServices() != "" {
 
-		roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
-		if err != nil {
-			logrus.Errorln("[api][func: GetListTask] Unable to connect Role Service:", err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
-		}
-		defer roleConn.Close()
-
-		roleClient := role_pb.NewApiServiceClient(roleConn)
-
-		roleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
+		listRoleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
 			ID: req.UserIDFilter,
 		})
 		if err != nil {
-			logrus.Errorln("[api][func: GetListTask] Failed when execute GetRoleUserByUserID function:", err)
+			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Role By User ID:", err.Error())
 			return nil, err
 		}
 
-		if req.GetTask() != nil && req.GetTask().GetType() != "" {
+		listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
+			Product: &product_pb.Product{
+				IsTransactional: true,
+			},
+		})
+		if err != nil {
+			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get List Product:", err.Error())
+			return nil, err
+		}
 
-			for _, v := range roleRes.ProductRoles {
+		listAccountByRoleReq := &account_pb.ListAccountByRoleRPCRequest{
+			Roles: req.GetRoleIDFilter(),
+		}
 
-				if v.ProductName == req.GetTask().GetType() {
+		listAccountRes, err := accountClient.ListAccountByRoleRPC(ctx, listAccountByRoleReq)
+		if err != nil {
+			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
+			return nil, err
+		}
 
-					hasAuthorityMaker = append(hasAuthorityMaker, &db.HasMakerFilter{
-						ProductName:       v.ProductName,
-						HasAuthorityMaker: contains(v.Authorities, "data_entry:maker") || contains(v.Authorities, "modify:maker") || contains(v.Authorities, "delete:maker"),
-					})
+		for _, v := range listProductRes.GetData() {
 
-				}
+			for _, productName := range strings.Split(req.GetServices(), ",") {
 
-			}
+				if v.GetName() == productName {
 
-		} else if strings.Contains(req.In, "type:") {
+					productAccountFilter := &db.ProductAccountFilter{
+						ProductName:       v.GetName(),
+						AccountIDs:        []uint64{},
+						HasAuthorityMaker: false,
+					}
 
-			inReq := strings.Split(req.In, ":")
+					for _, d := range listRoleRes.GetProductRoles() {
 
-			if len(inReq) > 1 {
+						if d.ProductName == v.Name {
 
-				column := inReq[0]
-				values := inReq[1]
+							for _, a := range listAccountRes.Data {
 
-				if column == "type" {
+								productID, _ := strconv.ParseUint(a.ProductCode, 10, 64)
 
-					for _, v := range strings.Split(values, ",") {
+								if productID == v.GetProductID() {
 
-						for _, d := range roleRes.ProductRoles {
+									productAccountFilter.AccountIDs = append(productAccountFilter.AccountIDs, a.AccountID)
 
-							if d.ProductName == v {
-
-								hasAuthorityMaker = append(hasAuthorityMaker, &db.HasMakerFilter{
-									ProductName:       v,
-									HasAuthorityMaker: contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker"),
-								})
+								}
 
 							}
+
+							productAccountFilter.HasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
 
 						}
 
 					}
+
+					productAccountFilters = append(productAccountFilters, productAccountFilter)
 
 				}
 
@@ -584,7 +587,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 	result.Pagination = setPagination(req)
 
-	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.UserIDFilter, req.RoleIDFilter, req.AccountIDFilter, hasAuthorityMaker)
+	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.UserIDFilter, req.RoleIDFilter, productAccountFilters)
 	if err != nil {
 		return nil, err
 	}
@@ -816,156 +819,52 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 	accountIDFilter := []*db.ProductAccountFilter{}
 
-	hasAuthorityMaker := []*db.HasMakerFilter{}
+	listRoleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
+		ID: currentUser.UserID,
+	})
+	if err != nil {
+		logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Role By User ID:", err.Error())
+		return nil, err
+	}
 
-	if req.GetService() != "" {
+	listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
+		Product: &product_pb.Product{
+			Name:            req.GetService(),
+			IsTransactional: true,
+		},
+	})
+	if err != nil {
+		logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get List Product:", err.Error())
+		return nil, err
+	}
 
-		listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
-			Product: &product_pb.Product{
-				Name: req.GetService(),
-			},
-		})
-		if err != nil {
-			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get List Product:", err.Error())
-			return nil, err
+	for _, v := range listProductRes.GetData() {
+
+		productAccountFiler := &db.ProductAccountFilter{
+			ProductName:       v.GetName(),
+			AccountIDs:        []uint64{},
+			HasAuthorityMaker: false,
 		}
 
-		if len(listProductRes.GetData()) < 1 {
-			return nil, status.Errorf(codes.NotFound, "Product Not Found")
-		}
+		for _, d := range listRoleRes.GetProductRoles() {
 
-		listAccountByRoleReq := &account_pb.ListAccountRequest{
-			ProductID: listProductRes.GetData()[0].GetProductID(),
-		}
+			if d.ProductName == v.Name {
 
-		listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
-		if err != nil {
-			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
-			return nil, err
-		}
-
-		accountIDs := []uint64{}
-		for _, v := range listAccountRes.Data {
-			accountIDs = append(accountIDs, v.AccountID)
-		}
-
-		accountIDFilter = append(accountIDFilter, &db.ProductAccountFilter{
-			ProductName: req.GetService(),
-			AccountIDs:  accountIDs,
-		})
-
-		roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
-		if err != nil {
-			logrus.Errorln("[api][func: GetListTask] Unable to connect Role Service:", err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
-		}
-		defer roleConn.Close()
-
-		roleClient := role_pb.NewApiServiceClient(roleConn)
-
-		roleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
-			ID: currentUser.UserID,
-		})
-		if err != nil {
-			logrus.Errorln("[api][func: GetListTask] Failed when execute GetRoleUserByUserID function:", err)
-			return nil, err
-		}
-
-		for _, v := range roleRes.ProductRoles {
-
-			if v.ProductName == req.GetService() {
-
-				hasAuthorityMaker = append(hasAuthorityMaker, &db.HasMakerFilter{
-					ProductName:       req.GetService(),
-					HasAuthorityMaker: contains(v.Authorities, "data_entry:maker") || contains(v.Authorities, "modify:maker") || contains(v.Authorities, "delete:maker"),
-				})
-
-			}
-
-		}
-
-	} else {
-
-		listRoleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
-			ID: currentUser.UserID,
-		})
-		if err != nil {
-			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Role By User ID:", err.Error())
-			return nil, err
-		}
-
-		listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
-			Product: &product_pb.Product{
-				IsTransactional: true,
-				IsCu:            true,
-			},
-		})
-		if err != nil {
-			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get List Product:", err.Error())
-			return nil, err
-		}
-
-		roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
-		if err != nil {
-			logrus.Errorln("[api][func: GetListTask] Unable to connect Role Service:", err)
-			return nil, status.Errorf(codes.Internal, "Internal Error")
-		}
-		defer roleConn.Close()
-
-		roleClient := role_pb.NewApiServiceClient(roleConn)
-
-		roleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
-			ID: currentUser.UserID,
-		})
-		if err != nil {
-			logrus.Errorln("[api][func: GetListTask] Failed when execute GetRoleUserByUserID function:", err)
-			return nil, err
-		}
-
-		for _, v := range listProductRes.GetData() {
-
-			for _, d := range listRoleRes.GetProductRoles() {
-
-				if d.ProductName == v.Name {
-
-					listAccountByRoleReq := &account_pb.ListAccountRequest{
-						ProductID: v.GetProductID(),
-					}
-
-					listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
-					if err != nil {
-						logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
-						return nil, err
-					}
-
-					accountIDs := []uint64{}
-					for _, v := range listAccountRes.Data {
-						accountIDs = append(accountIDs, v.AccountID)
-					}
-
-					if len(accountIDs) > 0 {
-
-						accountIDFilter = append(accountIDFilter, &db.ProductAccountFilter{
-							ProductName: v.GetName(),
-							AccountIDs:  accountIDs,
-						})
-
-					}
-
+				listAccountByRoleReq := &account_pb.ListAccountRequest{
+					ProductID: v.GetProductID(),
 				}
 
-				for _, s := range roleRes.ProductRoles {
-
-					if s.ProductName == d.ProductName {
-
-						hasAuthorityMaker = append(hasAuthorityMaker, &db.HasMakerFilter{
-							ProductName:       d.ProductName,
-							HasAuthorityMaker: contains(s.Authorities, "data_entry:maker") || contains(s.Authorities, "modify:maker") || contains(s.Authorities, "delete:maker"),
-						})
-
-					}
-
+				listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
+				if err != nil {
+					logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
+					return nil, err
 				}
+
+				for _, v := range listAccountRes.Data {
+					productAccountFiler.AccountIDs = append(productAccountFiler.AccountIDs, v.AccountID)
+				}
+
+				productAccountFiler.HasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
 
 			}
 
@@ -975,7 +874,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 	logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Retrieving Data...")
 
-	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, accountIDFilter, currentUser.UserID, currentUser.CompanyID, hasAuthorityMaker)
+	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, accountIDFilter, currentUser.UserID, currentUser.CompanyID)
 	if err != nil {
 		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
 		return nil, err
@@ -3562,7 +3461,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			mappingDigitalTask, err := s.provider.GetListTask(ctx, &pb.TaskORM{
 				Type:      "BG Mapping Digital",
 				CompanyID: task.CompanyID,
-			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, 0, []uint64{}, []uint64{}, []*db.HasMakerFilter{})
+			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, 0, []uint64{}, []*db.ProductAccountFilter{})
 			if err != nil {
 				logrus.Errorln("[api][func: SetTask] Failed when GetListTask:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -4797,7 +4696,7 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 		Sort:          &pb.Sort{},
 	}
 
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{}, []*db.HasMakerFilter{})
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []*db.ProductAccountFilter{})
 	if err != nil {
 		return nil, err
 	}

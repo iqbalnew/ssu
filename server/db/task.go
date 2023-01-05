@@ -33,12 +33,8 @@ type GraphResultWorkflowType struct {
 }
 
 type ProductAccountFilter struct {
-	ProductName string
-	AccountIDs  []uint64
-}
-
-type HasMakerFilter struct {
 	ProductName       string
+	AccountIDs        []uint64
 	HasAuthorityMaker bool
 }
 
@@ -82,7 +78,7 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 
 }
 
-func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, workflowRoleIDs []uint64, workflowAccountIDs []*ProductAccountFilter, userID uint64, companyID uint64, hasMakerFilter []*HasMakerFilter) (result []*GraphResultWorkflowType, err error) {
+func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, workflowRoleIDs []uint64, workflowAccountIDs []*ProductAccountFilter, userID uint64, companyID uint64) (result []*GraphResultWorkflowType, err error) {
 
 	if len(workflowRoleIDs) < 1 {
 		return []*GraphResultWorkflowType{}, nil
@@ -113,33 +109,35 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 
 	accountIDQuery := ""
 	makerQuery := ""
+
 	for _, v := range workflowAccountIDs {
 
 		accountIDs := ""
-		for i, accountID := range v.AccountIDs {
-			if i > 0 {
-				accountIDs = fmt.Sprintf("%s,%d", accountIDs, accountID)
-			} else {
-				accountIDs = fmt.Sprintf("%s%d", accountIDs, accountID)
-			}
-		}
 
-		if accountIDQuery == "" {
-			accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
-		} else {
-			accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
-		}
+		if len(v.AccountIDs) > 0 {
 
-		for _, d := range hasMakerFilter {
-
-			if d.HasAuthorityMaker {
-
-				if makerQuery == "" {
-					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", d.ProductName, accountIDs)
+			for i, accountID := range v.AccountIDs {
+				if i > 0 {
+					accountIDs = fmt.Sprintf("%s,%d", accountIDs, accountID)
 				} else {
-					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, d.ProductName, accountIDs)
+					accountIDs = fmt.Sprintf("%s%d", accountIDs, accountID)
 				}
+			}
 
+			if accountIDQuery == "" {
+				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
+			} else {
+				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
+			}
+
+		}
+
+		if v.HasAuthorityMaker {
+
+			if makerQuery == "" {
+				makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+			} else {
+				makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
 			}
 
 		}
@@ -472,7 +470,7 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64, hasAuthorityMaker []*HasMakerFilter) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []*ProductAccountFilter) (tasks []*pb.TaskORM, err error) {
 
 	query := p.db_main
 	if filter.Type != "" {
@@ -497,14 +495,59 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		}
 	}
 
-	if len(workflowAccountIDFilter) > 0 {
-		valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
-		valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
-		valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
+	accountIDQuery := ""
+	makerQuery := ""
+
+	// if len(workflowAccountIDFilter) > 0 {
+	// 	valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
+	// 	valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
+	// 	valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
+	// 	if customQuery == "" {
+	// 		customQuery = fmt.Sprintf("workflow_doc->'workflow'->'header'->'uaID' IN (%s)", valueAccount)
+	// 	} else {
+	// 		customQuery = fmt.Sprintf("%s AND workflow_doc->'workflow'->'header'->'uaID' IN (%s)", customQuery, valueAccount)
+	// 	}
+	// }
+
+	for _, v := range workflowAccountIDFilter {
+
+		accountIDs := ""
+
+		if len(v.AccountIDs) > 0 {
+
+			for i, accountID := range v.AccountIDs {
+				if i > 0 {
+					accountIDs = fmt.Sprintf("%s,%d", accountIDs, accountID)
+				} else {
+					accountIDs = fmt.Sprintf("%s%d", accountIDs, accountID)
+				}
+			}
+
+			if accountIDQuery == "" {
+				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
+			} else {
+				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
+			}
+
+		}
+
+		if v.HasAuthorityMaker {
+
+			if makerQuery == "" {
+				makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+			} else {
+				makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
+			}
+
+		}
+
+	}
+
+	if accountIDQuery != "" {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf("workflow_doc->'workflow'->'header'->'uaID' IN (%s)", valueAccount)
+			customQuery = fmt.Sprintf("(%s)", accountIDQuery)
 		} else {
-			customQuery = fmt.Sprintf("%s AND workflow_doc->'workflow'->'header'->'uaID' IN (%s)", customQuery, valueAccount)
+			customQuery = fmt.Sprintf("%s AND (%s)", customQuery, accountIDQuery)
 		}
 	}
 
@@ -528,25 +571,11 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		}
 	}
 
+	if makerQuery != "" {
+		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
+	}
+
 	if workflowUserIDFilter > 0 && len(workflowAccountIDFilter) > 0 {
-		makerQuery := ""
-		if len(hasAuthorityMaker) > 0 {
-			valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
-			valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
-			valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
-			for _, v := range hasAuthorityMaker {
-				if v.HasAuthorityMaker {
-					if makerQuery == "" {
-						makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s)))", v.ProductName, valueAccount)
-					} else {
-						makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s)))", makerQuery, v.ProductName, valueAccount)
-					}
-				}
-			}
-			if makerQuery != "" {
-				makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
-			}
-		}
 		if customQuery == "" {
 			customQuery = fmt.Sprintf("(%s workflow_doc->'workflow'->'createdBy'->>'userID' = '%d')", makerQuery, workflowUserIDFilter)
 		} else {
@@ -583,7 +612,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 }
 
-func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, companyIDFilter uint64, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64, hasAuthorityMaker []*HasMakerFilter) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, companyIDFilter uint64, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []*ProductAccountFilter) (tasks []*pb.TaskORM, err error) {
 
 	query := p.db_main
 	if filter.Type != "" {
@@ -632,14 +661,48 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		}
 	}
 
-	if len(workflowAccountIDFilter) > 0 {
-		valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
-		valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
-		valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
+	accountIDQuery := ""
+	makerQuery := ""
+
+	for _, v := range workflowAccountIDFilter {
+
+		accountIDs := ""
+
+		if len(v.AccountIDs) > 0 {
+
+			for i, accountID := range v.AccountIDs {
+				if i > 0 {
+					accountIDs = fmt.Sprintf("%s,%d", accountIDs, accountID)
+				} else {
+					accountIDs = fmt.Sprintf("%s%d", accountIDs, accountID)
+				}
+			}
+
+			if accountIDQuery == "" {
+				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
+			} else {
+				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
+			}
+
+		}
+
+		if v.HasAuthorityMaker {
+
+			if makerQuery == "" {
+				makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+			} else {
+				makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
+			}
+
+		}
+
+	}
+
+	if accountIDQuery != "" {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf("workflow_doc->'workflow'->'header'->'uaID' IN (%s)", valueAccount)
+			customQuery = fmt.Sprintf("(%s)", accountIDQuery)
 		} else {
-			customQuery = fmt.Sprintf("%s AND workflow_doc->'workflow'->'header'->'uaID' IN (%s)", customQuery, valueAccount)
+			customQuery = fmt.Sprintf("%s AND (%s)", customQuery, accountIDQuery)
 		}
 	}
 
@@ -651,23 +714,8 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		}
 	}
 
-	makerQuery := ""
-	if len(hasAuthorityMaker) > 0 {
-		valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
-		valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
-		valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
-		for _, v := range hasAuthorityMaker {
-			if v.HasAuthorityMaker {
-				if makerQuery == "" {
-					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, valueAccount)
-				} else {
-					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, valueAccount)
-				}
-			}
-		}
-		if makerQuery != "" {
-			makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
-		}
+	if makerQuery != "" {
+		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
 	}
 
 	if customQuery != "" && workflowUserIDFilter > 0 {
