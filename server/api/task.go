@@ -98,7 +98,7 @@ func (s *Server) GetTaskByTypeID(ctx context.Context, req *pb.GetTaskByTypeIDReq
 		CustomOrder:   "",
 		Sort:          &pb.Sort{},
 	}
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{}, true)
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{}, []*db.HasMakerFilter{})
 	if err != nil {
 		logrus.Errorln("[api][func: GetTaskByTypeID] Failed when execute GetListTask:", err)
 		return nil, err
@@ -488,7 +488,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		dataorm, _ = req.Task.ToORM(ctx)
 	}
 
-	hasAuthorityMaker := false
+	hasAuthorityMaker := []*db.HasMakerFilter{}
 
 	if req.UserIDFilter > 0 {
 
@@ -515,7 +515,10 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 				if v.ProductName == req.GetTask().GetType() {
 
-					hasAuthorityMaker = contains(v.Authorities, "data_entry:maker") || contains(v.Authorities, "modify:maker") || contains(v.Authorities, "delete:maker")
+					hasAuthorityMaker = append(hasAuthorityMaker, &db.HasMakerFilter{
+						ProductName:       v.ProductName,
+						HasAuthorityMaker: contains(v.Authorities, "data_entry:maker") || contains(v.Authorities, "modify:maker") || contains(v.Authorities, "delete:maker"),
+					})
 
 				}
 
@@ -538,7 +541,10 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 							if d.ProductName == v {
 
-								hasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
+								hasAuthorityMaker = append(hasAuthorityMaker, &db.HasMakerFilter{
+									ProductName:       v,
+									HasAuthorityMaker: contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker"),
+								})
 
 							}
 
@@ -3525,7 +3531,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 			mappingDigitalTask, err := s.provider.GetListTask(ctx, &pb.TaskORM{
 				Type:      "BG Mapping Digital",
 				CompanyID: task.CompanyID,
-			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, 0, []uint64{}, []uint64{}, true)
+			}, &pb.PaginationResponse{}, &db.QueryBuilder{Filter: "status:<>5,status:<>7"}, 0, []uint64{}, []uint64{}, []*db.HasMakerFilter{})
 			if err != nil {
 				logrus.Errorln("[api][func: SetTask] Failed when GetListTask:", err)
 				return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -4760,7 +4766,7 @@ func (s *Server) GetTaskByID(ctx context.Context, req *pb.GetTaskByIDReq) (*pb.G
 		Sort:          &pb.Sort{},
 	}
 
-	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{}, true)
+	list, err := s.provider.GetListTask(ctx, &filter, &pb.PaginationResponse{}, sqlBuilder, 0, []uint64{}, []uint64{}, []*db.HasMakerFilter{})
 	if err != nil {
 		return nil, err
 	}

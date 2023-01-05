@@ -472,7 +472,7 @@ func (p *GormProvider) FindTaskById(ctx context.Context, id uint64) (*pb.TaskORM
 	return task, nil
 }
 
-func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64, hasAuthorityMaker bool) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64, hasAuthorityMaker []*HasMakerFilter) (tasks []*pb.TaskORM, err error) {
 
 	query := p.db_main
 	if filter.Type != "" {
@@ -530,11 +530,22 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 	if workflowUserIDFilter > 0 && len(workflowAccountIDFilter) > 0 {
 		makerQuery := ""
-		if hasAuthorityMaker {
+		if len(hasAuthorityMaker) > 0 {
 			valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
 			valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
 			valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
-			makerQuery = fmt.Sprintf("(workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s))) OR", valueAccount)
+			for _, v := range hasAuthorityMaker {
+
+				if makerQuery == "" {
+					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s)))", v.ProductName, valueAccount)
+				} else {
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s)))", makerQuery, v.ProductName, valueAccount)
+				}
+
+			}
+			if makerQuery != "" {
+				makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
+			}
 		}
 		if customQuery == "" {
 			customQuery = fmt.Sprintf("(%s workflow_doc->'workflow'->'createdBy'->>'userID' = '%d')", makerQuery, workflowUserIDFilter)
