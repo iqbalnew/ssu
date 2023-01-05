@@ -308,57 +308,53 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 			sqlBuilder.Filter = stepFilter
 		}
 
-		if req.UserIDFilter > 0 {
+		roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: GetListTask] Unable to connect Role Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer roleConn.Close()
 
-			roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
-			if err != nil {
-				logrus.Errorln("[api][func: GetListTask] Unable to connect Role Service:", err)
-				return nil, status.Errorf(codes.Internal, "Internal Error")
-			}
-			defer roleConn.Close()
+		roleClient := role_pb.NewApiServiceClient(roleConn)
 
-			roleClient := role_pb.NewApiServiceClient(roleConn)
+		roleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
+			ID: currentUser.UserID,
+		})
+		if err != nil {
+			logrus.Errorln("[api][func: GetListTask] Failed when execute GetRoleUserByUserID function:", err)
+			return nil, err
+		}
 
-			roleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
-				ID: req.UserIDFilter,
-			})
-			if err != nil {
-				logrus.Errorln("[api][func: GetListTask] Failed when execute GetRoleUserByUserID function:", err)
-				return nil, err
-			}
+		if req.GetTask() != nil && req.GetTask().GetType() != "" {
 
-			if req.GetTask() != nil && req.GetTask().GetType() != "" {
+			for _, v := range roleRes.ProductRoles {
 
-				for _, v := range roleRes.ProductRoles {
+				if v.ProductName == req.GetTask().GetType() {
 
-					if v.ProductName == req.GetTask().GetType() {
-
-						hasAuthorityMaker = contains(v.Authorities, "data_entry:maker") || contains(v.Authorities, "modify:maker") || contains(v.Authorities, "delete:maker")
-
-					}
+					hasAuthorityMaker = contains(v.Authorities, "data_entry:maker") || contains(v.Authorities, "modify:maker") || contains(v.Authorities, "delete:maker")
 
 				}
 
-			} else if strings.Contains(req.In, "type:") {
+			}
 
-				inReq := strings.Split(req.In, ":")
+		} else if strings.Contains(req.In, "type:") {
 
-				if len(inReq) > 1 {
+			inReq := strings.Split(req.In, ":")
 
-					column := inReq[0]
-					values := inReq[1]
+			if len(inReq) > 1 {
 
-					if column == "type" {
+				column := inReq[0]
+				values := inReq[1]
 
-						for _, v := range strings.Split(values, ",") {
+				if column == "type" {
 
-							for _, d := range roleRes.ProductRoles {
+					for _, v := range strings.Split(values, ",") {
 
-								if d.ProductName == v {
+						for _, d := range roleRes.ProductRoles {
 
-									hasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
+							if d.ProductName == v {
 
-								}
+								hasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
 
 							}
 
