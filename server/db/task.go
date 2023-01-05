@@ -508,15 +508,18 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		}
 	}
 
-	if workflowUserIDFilter > 0 {
+	if workflowUserIDFilter > 0 && len(workflowAccountIDFilter) > 0 {
 		makerQuery := ""
 		if hasAuthorityMaker {
-			makerQuery = "workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' IS NULL OR"
+			valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
+			valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
+			valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
+			makerQuery = fmt.Sprintf("(workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND data->'uaID' IN (%s))", valueAccount)
 		}
 		if customQuery == "" {
-			customQuery = fmt.Sprintf("(%s workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' = '%d')", makerQuery, workflowUserIDFilter)
+			customQuery = fmt.Sprintf("(%s workflow_doc->'workflow'->'createdBy'->>'userID' = '%d')", makerQuery, workflowUserIDFilter)
 		} else {
-			customQuery = fmt.Sprintf(`%s OR (%s workflow_doc -> 'workflow' -> 'createdBy' ->> 'userID' = '%d')`, customQuery, makerQuery, workflowUserIDFilter)
+			customQuery = fmt.Sprintf(`%s OR (%s workflow_doc->'workflow'->'createdBy'->>'userID' = '%d')`, customQuery, makerQuery, workflowUserIDFilter)
 		}
 	}
 
