@@ -1830,7 +1830,7 @@ func checkAllowedApproval(md metadata.MD, taskType string, permission string) bo
 	allowed := false
 	authorities := []string{}
 	//TODO: REVISIT LATTER, skip beneficary and cash polling
-	skipProduct := []string{"BG Mapping", "BG Mapping Digital", "Internal Fund Transfer", "BI-Fast", "Payroll Transfer", "Online Transfer", "Upload Transfer", "Kliring"}
+	skipProduct := []string{"BG Mapping", "BG Mapping Digital", "Internal Fund Transfer", "BI-Fast", "Payroll Transfer", "Online Transfer", "Upload Transfer", "Kliring", "Proxy Registration"}
 
 	logrus.Print(taskType)
 
@@ -3597,7 +3597,7 @@ func (s *Server) SetTask(ctx context.Context, req *pb.SetTaskRequest) (*pb.SetTa
 				task.Step = 3
 				task.Data = task.DataBak
 
-				if contains([]string{"Internal Fund Transfer", "Payroll Transfer", "BI-Fast", "Online Transfer", "Kliring"}, task.Type) {
+				if contains([]string{"Internal Fund Transfer", "Payroll Transfer", "BI-Fast", "Online Transfer", "Kliring", "Proxy Registration"}, task.Type) {
 
 					task.Status = 7
 					task.Step = 1

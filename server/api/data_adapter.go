@@ -123,7 +123,7 @@ func ActivityLogSetKey(task *pb.TaskORM) (*db.ActivityLog, error) {
 	case "Upload Transfer":
 		_, key, err = TaskDataBulkTransferToPB(task.Data, task.TaskID)
 
-	case "Proxy Management":
+	case "Proxy Registration":
 		_, key, err = TaskDataProxyManagementToPB(task.Data, task.TaskID)
 	}
 
