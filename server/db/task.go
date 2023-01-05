@@ -516,17 +516,6 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	accountIDQuery := ""
 	makerQuery := ""
 
-	// if len(workflowAccountIDFilter) > 0 {
-	// 	valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
-	// 	valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
-	// 	valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
-	// 	if customQuery == "" {
-	// 		customQuery = fmt.Sprintf("workflow_doc->'workflow'->'header'->'uaID' IN (%s)", valueAccount)
-	// 	} else {
-	// 		customQuery = fmt.Sprintf("%s AND workflow_doc->'workflow'->'header'->'uaID' IN (%s)", customQuery, valueAccount)
-	// 	}
-	// }
-
 	for _, v := range workflowAccountIDFilter {
 
 		accountIDs := ""
@@ -601,9 +590,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		}
 	}
 
-	logrus.Println("[db][func: GetListTask] Custom Query list ==========")
+	logrus.Println("[db][func: GetListTask] Custom Query list ========== ========== ==========")
 	logrus.Println("[db][func: GetListTask] Custom Query list:", customQuery)
-	logrus.Println("[db][func: GetListTask] Custom Query list ==========")
+	logrus.Println("[db][func: GetListTask] Custom Query list ========== ========== ==========")
 
 	query = query.Scopes(FilterScoope(sql.Filter))
 	query = query.Scopes(FilterOrScoope(sql.FilterOr, ""))
@@ -613,11 +602,14 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	}
 
 	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn), NotConditionalScoope(sql.FilterNot))
+
 	if sql.CompanyID != "" {
 		query = query.Where(`("company_id" = $1 OR "data" ->> 'companyID' = $2)`, sql.CompanyID, sql.CompanyID)
 	}
+
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
+
 	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
 		logrus.Errorln("[db][func: GetListTask] Failed:", err.Error())
 		if !errors.Is(err, gorm.ErrModelValueRequired) {
