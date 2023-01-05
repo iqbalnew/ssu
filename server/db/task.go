@@ -519,7 +519,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 		}
 
-		query = query.Where("type IN (%s)", productIn)
+		if productIn != "" {
+			query = query.Where("type IN (%s)", productIn)
+		}
 
 	}
 
@@ -673,7 +675,9 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 		}
 
-		query = query.Where("type IN (%s)", productIn)
+		if productIn != "" {
+			query = query.Where("type IN (%s)", productIn)
+		}
 
 	}
 
