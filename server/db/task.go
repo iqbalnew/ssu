@@ -514,7 +514,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
 			valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
 			valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
-			makerQuery = fmt.Sprintf("(workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND data->'uaID' IN (%s)) OR", valueAccount)
+			makerQuery = fmt.Sprintf("(workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s))) OR", valueAccount)
 		}
 		if customQuery == "" {
 			customQuery = fmt.Sprintf("(%s workflow_doc->'workflow'->'createdBy'->>'userID' = '%d')", makerQuery, workflowUserIDFilter)
