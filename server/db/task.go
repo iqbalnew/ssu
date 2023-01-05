@@ -535,13 +535,13 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
 			valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
 			for _, v := range hasAuthorityMaker {
-
-				if makerQuery == "" {
-					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s)))", v.ProductName, valueAccount)
-				} else {
-					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s)))", makerQuery, v.ProductName, valueAccount)
+				if v.HasAuthorityMaker {
+					if makerQuery == "" {
+						makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s)))", v.ProductName, valueAccount)
+					} else {
+						makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s)))", makerQuery, v.ProductName, valueAccount)
+					}
 				}
-
 			}
 			if makerQuery != "" {
 				makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
