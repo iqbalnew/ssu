@@ -88,7 +88,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
 
-	whereOpt := "( status != 0 AND status != 4 AND status != 5 AND status != 7 AND status != 8)"
+	whereOpt := "( status != 0 AND status != 4 AND status != 5 AND status != 7 AND status != 8 )"
 
 	if companyID > 0 {
 		whereOpt = fmt.Sprintf("%s AND company_id = %d", whereOpt, companyID)
@@ -130,14 +130,14 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
 			}
 
-		}
+			if v.HasAuthorityMaker {
 
-		if v.HasAuthorityMaker {
+				if makerQuery == "" {
+					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+				} else {
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
+				}
 
-			if makerQuery == "" {
-				makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
-			} else {
-				makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
 			}
 
 		}
@@ -547,14 +547,14 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
 			}
 
-		}
+			if v.HasAuthorityMaker {
 
-		if v.HasAuthorityMaker {
+				if makerQuery == "" {
+					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+				} else {
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
+				}
 
-			if makerQuery == "" {
-				makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
-			} else {
-				makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
 			}
 
 		}
@@ -722,14 +722,14 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
 			}
 
-		}
+			if v.HasAuthorityMaker {
 
-		if v.HasAuthorityMaker {
+				if makerQuery == "" {
+					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+				} else {
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
+				}
 
-			if makerQuery == "" {
-				makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
-			} else {
-				makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
 			}
 
 		}
