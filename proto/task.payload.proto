@@ -210,7 +210,7 @@ message ListTaskRequest {
     repeated uint64 accountIDFilter = 13;
     uint64 userIDFilter = 14;
     string filterNot = 15;
-    bool isTransactional = 16;
+    string services = 16;
 }
 
 message ListTaskPluckRequest {
