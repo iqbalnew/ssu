@@ -519,6 +519,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 		}
 
+		logrus.Println("[db][func: GetListTask] Product IN:", productIn)
+
 		if productIn != "" {
 			query = query.Where("type IN (%s)", productIn)
 		}
@@ -674,6 +676,8 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 			}
 
 		}
+
+		logrus.Println("[db][func: GetListTaskNormal] Product IN:", productIn)
 
 		if productIn != "" {
 			query = query.Where("type IN (%s)", productIn)
