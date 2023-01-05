@@ -114,15 +114,15 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 
 		accountIDs := ""
 
-		if len(v.AccountIDs) > 0 {
-
-			for i, accountID := range v.AccountIDs {
-				if i > 0 {
-					accountIDs = fmt.Sprintf("%s,%d", accountIDs, accountID)
-				} else {
-					accountIDs = fmt.Sprintf("%s%d", accountIDs, accountID)
-				}
+		for i, accountID := range v.AccountIDs {
+			if i > 0 {
+				accountIDs = fmt.Sprintf("%s,%d", accountIDs, accountID)
+			} else {
+				accountIDs = fmt.Sprint(accountID)
 			}
+		}
+
+		if accountIDs != "" {
 
 			if accountIDQuery == "" {
 				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
@@ -531,15 +531,15 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 		accountIDs := ""
 
-		if len(v.AccountIDs) > 0 {
-
-			for i, accountID := range v.AccountIDs {
-				if i > 0 {
-					accountIDs = fmt.Sprintf("%s,%d", accountIDs, accountID)
-				} else {
-					accountIDs = fmt.Sprintf("%s%d", accountIDs, accountID)
-				}
+		for i, accountID := range v.AccountIDs {
+			if i > 0 {
+				accountIDs = fmt.Sprintf("%s,%d", accountIDs, accountID)
+			} else {
+				accountIDs = fmt.Sprint(accountID)
 			}
+		}
+
+		if accountIDs != "" {
 
 			if accountIDQuery == "" {
 				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
@@ -706,15 +706,15 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 		accountIDs := ""
 
-		if len(v.AccountIDs) > 0 {
-
-			for i, accountID := range v.AccountIDs {
-				if i > 0 {
-					accountIDs = fmt.Sprintf("%s,%d", accountIDs, accountID)
-				} else {
-					accountIDs = fmt.Sprintf("%s%d", accountIDs, accountID)
-				}
+		for i, accountID := range v.AccountIDs {
+			if i > 0 {
+				accountIDs = fmt.Sprintf("%s,%d", accountIDs, accountID)
+			} else {
+				accountIDs = fmt.Sprint(accountID)
 			}
+		}
+
+		if accountIDs != "" {
 
 			if accountIDQuery == "" {
 				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
