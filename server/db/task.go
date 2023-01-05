@@ -135,9 +135,9 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 			if d.HasAuthorityMaker {
 
 				if makerQuery == "" {
-					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s)))", d.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", d.ProductName, accountIDs)
 				} else {
-					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s)))", makerQuery, d.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, d.ProductName, accountIDs)
 				}
 
 			}
