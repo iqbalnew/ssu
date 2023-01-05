@@ -282,6 +282,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		FilterNot:   req.GetFilterNot(),
 	}
 
+	hasAuthorityMaker := false
 	stepFilter := ""
 
 	if currentUser.UserType == "cu" {
@@ -305,6 +306,70 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 			sqlBuilder.Filter = fmt.Sprintf("%s,%s", sqlBuilder.Filter, stepFilter)
 		} else {
 			sqlBuilder.Filter = stepFilter
+		}
+
+		if req.UserIDFilter > 0 {
+
+			roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
+			if err != nil {
+				logrus.Errorln("[api][func: GetListTask] Unable to connect Role Service:", err)
+				return nil, status.Errorf(codes.Internal, "Internal Error")
+			}
+			defer roleConn.Close()
+
+			roleClient := role_pb.NewApiServiceClient(roleConn)
+
+			roleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
+				ID: req.UserIDFilter,
+			})
+			if err != nil {
+				logrus.Errorln("[api][func: GetListTask] Failed when execute GetRoleUserByUserID function:", err)
+				return nil, err
+			}
+
+			if req.GetTask() != nil && req.GetTask().GetType() != "" {
+
+				for _, v := range roleRes.ProductRoles {
+
+					if v.ProductName == req.GetTask().GetType() {
+
+						hasAuthorityMaker = contains(v.Authorities, "data_entry:maker") || contains(v.Authorities, "modify:maker") || contains(v.Authorities, "delete:maker")
+
+					}
+
+				}
+
+			} else if strings.Contains(req.In, "type:") {
+
+				inReq := strings.Split(req.In, ":")
+
+				if len(inReq) > 1 {
+
+					column := inReq[0]
+					values := inReq[1]
+
+					if column == "type" {
+
+						for _, v := range strings.Split(values, ",") {
+
+							for _, d := range roleRes.ProductRoles {
+
+								if d.ProductName == v {
+
+									hasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
+
+								}
+
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+
 		}
 
 	} else if currentUser.UserType == "ca" {
@@ -381,7 +446,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	result.Pagination = setPagination(req)
 
-	list, err := s.provider.GetListTaskNormal(ctx, dataORM, result.Pagination, sqlBuilder, companyID, userID, roleIDs, accountIDs)
+	list, err := s.provider.GetListTaskNormal(ctx, dataORM, result.Pagination, sqlBuilder, companyID, userID, roleIDs, accountIDs, hasAuthorityMaker)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTask] Failed when execute GetListTaskNormal:", err.Error())
 		return nil, err
@@ -742,6 +807,8 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 	accountIDFilter := []*db.ProductAccountFilter{}
 
+	hasAuthorityMaker := []*db.HasMakerFilter{}
+
 	if req.GetService() != "" {
 
 		listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
@@ -778,6 +845,36 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			AccountIDs:  accountIDs,
 		})
 
+		roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: GetListTask] Unable to connect Role Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer roleConn.Close()
+
+		roleClient := role_pb.NewApiServiceClient(roleConn)
+
+		roleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
+			ID: currentUser.UserID,
+		})
+		if err != nil {
+			logrus.Errorln("[api][func: GetListTask] Failed when execute GetRoleUserByUserID function:", err)
+			return nil, err
+		}
+
+		for _, v := range roleRes.ProductRoles {
+
+			if v.ProductName == req.GetService() {
+
+				hasAuthorityMaker = append(hasAuthorityMaker, &db.HasMakerFilter{
+					ProductName:       req.GetService(),
+					HasAuthorityMaker: contains(v.Authorities, "data_entry:maker") || contains(v.Authorities, "modify:maker") || contains(v.Authorities, "delete:maker"),
+				})
+
+			}
+
+		}
+
 	} else {
 
 		listRoleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
@@ -796,6 +893,23 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 		})
 		if err != nil {
 			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get List Product:", err.Error())
+			return nil, err
+		}
+
+		roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
+		if err != nil {
+			logrus.Errorln("[api][func: GetListTask] Unable to connect Role Service:", err)
+			return nil, status.Errorf(codes.Internal, "Internal Error")
+		}
+		defer roleConn.Close()
+
+		roleClient := role_pb.NewApiServiceClient(roleConn)
+
+		roleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
+			ID: currentUser.UserID,
+		})
+		if err != nil {
+			logrus.Errorln("[api][func: GetListTask] Failed when execute GetRoleUserByUserID function:", err)
 			return nil, err
 		}
 
@@ -831,6 +945,19 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 				}
 
+				for _, s := range roleRes.ProductRoles {
+
+					if s.ProductName == d.ProductName {
+
+						hasAuthorityMaker = append(hasAuthorityMaker, &db.HasMakerFilter{
+							ProductName:       d.ProductName,
+							HasAuthorityMaker: contains(s.Authorities, "data_entry:maker") || contains(s.Authorities, "modify:maker") || contains(s.Authorities, "delete:maker"),
+						})
+
+					}
+
+				}
+
 			}
 
 		}
@@ -839,7 +966,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 	logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Retrieving Data...")
 
-	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, accountIDFilter, currentUser.UserID, currentUser.CompanyID)
+	data, err := s.provider.GetGraphPendingTaskWithWorkflow(ctx, req.Service, currentUser.RoleIDs, accountIDFilter, currentUser.UserID, currentUser.CompanyID, hasAuthorityMaker)
 	if err != nil {
 		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Failed when execute GetGraphPendingTaskWithWorkflow:", err)
 		return nil, err

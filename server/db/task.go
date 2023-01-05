@@ -37,6 +37,11 @@ type ProductAccountFilter struct {
 	AccountIDs  []uint64
 }
 
+type HasMakerFilter struct {
+	ProductName       string
+	HasAuthorityMaker bool
+}
+
 func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (result *GraphResult, err error) {
 
 	selectOpt := "count(*) as total"
@@ -77,7 +82,7 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 
 }
 
-func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, workflowRoleIDs []uint64, workflowAccountIDs []*ProductAccountFilter, userID uint64, companyID uint64) (result []*GraphResultWorkflowType, err error) {
+func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, workflowRoleIDs []uint64, workflowAccountIDs []*ProductAccountFilter, userID uint64, companyID uint64, hasMakerFilter []*HasMakerFilter) (result []*GraphResultWorkflowType, err error) {
 
 	if len(workflowRoleIDs) < 1 {
 		return []*GraphResultWorkflowType{}, nil
@@ -107,6 +112,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 	}
 
 	accountIDQuery := ""
+	makerQuery := ""
 	for _, v := range workflowAccountIDs {
 
 		accountIDs := ""
@@ -124,6 +130,20 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 			accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
 		}
 
+		for _, d := range hasMakerFilter {
+
+			if d.HasAuthorityMaker {
+
+				if makerQuery == "" {
+					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s)))", d.ProductName, accountIDs)
+				} else {
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s)))", makerQuery, d.ProductName, accountIDs)
+				}
+
+			}
+
+		}
+
 	}
 
 	if roleIDs != "" || accountIDQuery != "" || userID > 0 {
@@ -135,10 +155,10 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 					workflow_doc->'workflow'->>'participantUserIDs' IS NULL
 					OR '%d' != ANY (TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])
 				)
-				AND ((workflow_doc->'workflow'->'createdBy'->>'userID' != '%d') OR (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser'))
+				AND ((%s) OR (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser'))
 			)
 			OR ((type = 'Payroll Transfer' AND (data->>'status' = 'Ready to Submit' OR workflow_doc->>'nextStatus' = 'returned')) OR (type != 'Payroll Transfer' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned')))
-		)`, whereOpt, roleIDs, accountIDQuery, userID, userID, userID)
+		)`, whereOpt, roleIDs, accountIDQuery, userID, makerQuery, userID)
 	}
 
 	if whereOpt != "" {
@@ -552,7 +572,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 }
 
-func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, companyIDFilter uint64, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, companyIDFilter uint64, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64, hasAuthorityMaker bool) (tasks []*pb.TaskORM, err error) {
 
 	query := p.db_main
 	if filter.Type != "" {
@@ -620,8 +640,22 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		}
 	}
 
+	makerQuery := ""
+	if hasAuthorityMaker {
+		valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
+		valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
+		valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
+		makerQuery = fmt.Sprintf("(workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s))) OR", valueAccount)
+	}
+
 	if customQuery != "" && workflowUserIDFilter > 0 {
-		customQuery = fmt.Sprintf("(%s AND ((workflow_doc->'workflow'->'createdBy'->>'userID' != '%d' ) OR (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser')))", customQuery, workflowUserIDFilter, workflowUserIDFilter)
+		customQuery = fmt.Sprintf(`(%s 
+			AND (
+				%s (
+					workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' 
+					AND workflow_doc->'workflow'->>'currentStep' = 'releaser')
+				)
+		)`, customQuery, makerQuery, workflowUserIDFilter)
 	}
 
 	if customQuery == "" {
