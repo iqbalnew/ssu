@@ -583,7 +583,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 }
 
-func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, companyIDFilter uint64, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64, hasAuthorityMaker bool) (tasks []*pb.TaskORM, err error) {
+func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM, pagination *pb.PaginationResponse, sql *QueryBuilder, companyIDFilter uint64, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []uint64, hasAuthorityMaker []*HasMakerFilter) (tasks []*pb.TaskORM, err error) {
 
 	query := p.db_main
 	if filter.Type != "" {
@@ -652,11 +652,22 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	}
 
 	makerQuery := ""
-	if hasAuthorityMaker {
+	if len(hasAuthorityMaker) > 0 {
 		valueAccount := strings.ReplaceAll(fmt.Sprint(workflowAccountIDFilter), " ", "','")
 		valueAccount = strings.ReplaceAll(valueAccount, "[", "'")
 		valueAccount = strings.ReplaceAll(valueAccount, "]", "'")
-		makerQuery = fmt.Sprintf("(workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR data->'uaID' IN (%s))) OR", valueAccount)
+		for _, v := range hasAuthorityMaker {
+			if v.HasAuthorityMaker {
+				if makerQuery == "" {
+					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, valueAccount)
+				} else {
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, valueAccount)
+				}
+			}
+		}
+		if makerQuery != "" {
+			makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
+		}
 	}
 
 	if customQuery != "" && workflowUserIDFilter > 0 {

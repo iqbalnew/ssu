@@ -282,7 +282,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		FilterNot:   req.GetFilterNot(),
 	}
 
-	hasAuthorityMaker := false
+	hasAuthorityMaker := []*db.HasMakerFilter{}
 	stepFilter := ""
 
 	if currentUser.UserType == "cu" {
@@ -331,7 +331,10 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 				if v.ProductName == req.GetTask().GetType() {
 
-					hasAuthorityMaker = contains(v.Authorities, "data_entry:maker") || contains(v.Authorities, "modify:maker") || contains(v.Authorities, "delete:maker")
+					hasAuthorityMaker = append(hasAuthorityMaker, &db.HasMakerFilter{
+						ProductName:       v.ProductName,
+						HasAuthorityMaker: contains(v.Authorities, "data_entry:maker") || contains(v.Authorities, "modify:maker") || contains(v.Authorities, "delete:maker"),
+					})
 
 				}
 
@@ -354,7 +357,10 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 							if d.ProductName == v {
 
-								hasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
+								hasAuthorityMaker = append(hasAuthorityMaker, &db.HasMakerFilter{
+									ProductName:       d.ProductName,
+									HasAuthorityMaker: contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker"),
+								})
 
 							}
 
