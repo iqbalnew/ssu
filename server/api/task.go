@@ -234,27 +234,27 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	if currentUser.UserType == "cu" {
 
-		if req.GetServices() != "" {
+		listRoleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
+			ID: currentUser.UserID,
+		})
+		if err != nil {
+			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Role By User ID:", err.Error())
+			return nil, err
+		}
 
-			listRoleRes, err := roleClient.GetRoleUserByUserID(ctx, &role_pb.GetRoleUserByUserIDReq{
-				ID: currentUser.UserID,
-			})
-			if err != nil {
-				logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Role By User ID:", err.Error())
-				return nil, err
-			}
+		listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
+			Product: &product_pb.Product{
+				IsTransactional: true,
+			},
+		})
+		if err != nil {
+			logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get List Product:", err.Error())
+			return nil, err
+		}
 
-			listProductRes, err := productClient.ListProduct(ctx, &product_pb.ListProductRequest{
-				Product: &product_pb.Product{
-					IsTransactional: true,
-				},
-			})
-			if err != nil {
-				logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get List Product:", err.Error())
-				return nil, err
-			}
+		for _, v := range listProductRes.GetData() {
 
-			for _, v := range listProductRes.GetData() {
+			if req.GetServices() != "" {
 
 				for _, productName := range strings.Split(req.GetServices(), ",") {
 
@@ -296,6 +296,40 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 				}
 
+			} else {
+
+				listAccountByRoleReq := &account_pb.ListAccountRequest{
+					ProductID: v.GetProductID(),
+				}
+
+				listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
+				if err != nil {
+					logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
+					return nil, err
+				}
+
+				productAccountFilter := &db.ProductAccountFilter{
+					ProductName:       v.GetName(),
+					AccountIDs:        []uint64{},
+					HasAuthorityMaker: false,
+				}
+
+				for _, d := range listRoleRes.GetProductRoles() {
+
+					if d.ProductName == v.Name {
+
+						for _, v := range listAccountRes.Data {
+							productAccountFilter.AccountIDs = append(productAccountFilter.AccountIDs, v.AccountID)
+						}
+
+						productAccountFilter.HasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
+
+					}
+
+				}
+
+				productAccountFilters = append(productAccountFilters, productAccountFilter)
+
 			}
 
 		}
@@ -306,9 +340,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	}
 
 	dataORM := &pb.TaskORM{}
-	if req.GetTask() != nil {
-		dataORM.Type = req.GetTask().GetType()
-	}
 
 	sort := &pb.Sort{
 		Column:    req.GetSort(),
@@ -322,6 +353,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 		CustomOrder: req.GetCustomOrder(),
 		Sort:        sort,
 		FilterNot:   req.GetFilterNot(),
+		ProductIn:   strings.Split(req.GetServices(), ","),
 	}
 
 	stepFilter := ""
@@ -583,6 +615,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 		CustomOrder:   req.GetCustomOrder(),
 		Sort:          sort,
 		FilterNot:     req.GetFilterNot(),
+		ProductIn:     strings.Split(req.GetServices(), ","),
 	}
 
 	result.Pagination = setPagination(req)

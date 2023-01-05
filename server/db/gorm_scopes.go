@@ -20,6 +20,7 @@ type QueryBuilder struct {
 	Sort          *pb.Sort
 	CompanyID     string
 	FilterNot     string
+	ProductIn     []string
 }
 
 func Paginate(value interface{}, v *pb.PaginationResponse, db *gorm.DB) func(db *gorm.DB) *gorm.DB {

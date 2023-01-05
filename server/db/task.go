@@ -482,6 +482,24 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		query = query.Where(&filter)
 	}
 
+	if len(sql.ProductIn) > 0 {
+
+		productIn := ""
+
+		for _, v := range sql.ProductIn {
+
+			if productIn == "" {
+				productIn = fmt.Sprintf("'%s'", v)
+			} else {
+				productIn = fmt.Sprintf(",'%s'", v)
+			}
+
+		}
+
+		query = query.Where("type IN (%s)", productIn)
+
+	}
+
 	customQuery := ""
 
 	if len(workflowRoleIDFilter) > 0 {
@@ -583,7 +601,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		}
 	}
 
+	logrus.Println("[db][func: GetListTask] Custom Query list ==========")
 	logrus.Println("[db][func: GetListTask] Custom Query list:", customQuery)
+	logrus.Println("[db][func: GetListTask] Custom Query list ==========")
 
 	query = query.Scopes(FilterScoope(sql.Filter))
 	query = query.Scopes(FilterOrScoope(sql.FilterOr, ""))
@@ -622,6 +642,24 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	query = query.Select("*", " CASE WHEN status = '3' or status = '5' THEN last_rejected_by_name ELSE last_approved_by_name END AS reviewed_by").Where("status != 7")
 	if filter != nil {
 		query = query.Where(&filter)
+	}
+
+	if len(sql.ProductIn) > 0 {
+
+		productIn := ""
+
+		for _, v := range sql.ProductIn {
+
+			if productIn == "" {
+				productIn = fmt.Sprintf("'%s'", v)
+			} else {
+				productIn = fmt.Sprintf(",'%s'", v)
+			}
+
+		}
+
+		query = query.Where("type IN (%s)", productIn)
+
 	}
 
 	customQuery := ""
