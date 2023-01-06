@@ -617,8 +617,14 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 	result.Pagination = setPagination(req)
 	//Delete later
-	if req.accountIDFilter != "" {
-		productAccountFilters = req.accountIDFilter
+	if len(req.AccountIDFilter) > 0 {
+		productAccountFilters = []*db.ProductAccountFilter{}
+		productAccountFilter := &db.ProductAccountFilter{
+			ProductName:       req.Services,
+			AccountIDs:        req.AccountIDFilter,
+			HasAuthorityMaker: false,
+		}
+		productAccountFilters = append(productAccountFilters, productAccountFilter)
 	}
 
 	list, err := s.provider.GetListTask(ctx, &dataorm, result.Pagination, sqlBuilder, req.UserIDFilter, req.RoleIDFilter, productAccountFilters)
