@@ -702,13 +702,13 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 	if companyIDFilter > 0 {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf(`%s AND (
+			customQuery = fmt.Sprintf(`(
 				"data" -> 'user'->> 'companyID' = '%d' 
 				OR "data" -> 'companyID' = '%d' 
 				OR "data" -> 'company' ->> 'companyID' = '%d'
 				OR  "data" @> '[{"companyID":%d}]'
 				OR "company_id" = '%d'
-			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
+			)`, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
 		} else {
 			customQuery = fmt.Sprintf(`%s AND ( 
 				"data" -> 'user'->> 'companyID' = '%d' 
