@@ -565,9 +565,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		if accountIDs != "" {
 
 			if accountIDQuery == "" {
-				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
 			} else {
-				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)))", accountIDQuery, v.ProductName, accountIDs)
 			}
 
 			if v.HasAuthorityMaker {
@@ -755,9 +755,9 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		if accountIDs != "" {
 
 			if accountIDQuery == "" {
-				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
 			} else {
-				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)))", accountIDQuery, v.ProductName, accountIDs)
 			}
 
 			hasAuthorityMaker = v.HasAuthorityMaker
