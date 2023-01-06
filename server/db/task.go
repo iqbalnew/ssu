@@ -511,10 +511,12 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 		for _, v := range sql.ProductIn {
 
-			if productIn == "" {
-				productIn = fmt.Sprintf("'%s'", v)
-			} else {
-				productIn = fmt.Sprintf(",'%s'", v)
+			if v != "" {
+				if productIn == "" {
+					productIn = fmt.Sprintf("'%s'", v)
+				} else {
+					productIn = fmt.Sprintf(",'%s'", v)
+				}
 			}
 
 		}
@@ -555,7 +557,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			}
 		}
 
-		logrus.Println("[db][func: GetListTask] Account IDs:", accountIDs)
+		logrus.Println("[db][func: GetListTask] Account IDs:", v.AccountIDs)
+		logrus.Println("[db][func: GetListTask] Account ID String:", accountIDs)
 
 		if accountIDs != "" {
 
@@ -743,7 +746,8 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 			}
 		}
 
-		logrus.Println("[db][func: GetListTaskNormal] Account IDs:", accountIDs)
+		logrus.Println("[db][func: GetListTaskNormal] Account IDs:", v.AccountIDs)
+		logrus.Println("[db][func: GetListTaskNormal] Account ID String:", accountIDs)
 
 		if accountIDs != "" {
 
