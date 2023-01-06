@@ -557,6 +557,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			}
 		}
 
+		logrus.Printf("[db][func: GetListTask] Product Name: %s, Has Authority Maker: %v", v.ProductName, v.HasAuthorityMaker)
+
 		logrus.Println("[db][func: GetListTask] Account IDs:", v.AccountIDs)
 		logrus.Println("[db][func: GetListTask] Account ID String:", accountIDs)
 
@@ -753,6 +755,8 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 				accountIDs = fmt.Sprint(accountID)
 			}
 		}
+
+		logrus.Printf("[db][func: GetListTask] Product Name: %s, Has Authority Maker: %v", v.ProductName, v.HasAuthorityMaker)
 
 		logrus.Println("[db][func: GetListTaskNormal] Account IDs:", v.AccountIDs)
 		logrus.Println("[db][func: GetListTaskNormal] Account ID String:", accountIDs)
