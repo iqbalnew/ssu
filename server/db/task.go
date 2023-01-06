@@ -557,7 +557,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			}
 		}
 
-		logrus.Printf("[db][func: GetListTask] Product Name: %s, Has Authority Maker: %v", v.ProductName, v.HasAuthorityMaker)
+		logrus.Printf("[db][func: GetListTask] Product Name: %s, UserID: %v, Has Authority Maker: %v", v.ProductName, workflowUserIDFilter, v.HasAuthorityMaker)
 
 		logrus.Println("[db][func: GetListTask] Account IDs:", v.AccountIDs)
 		logrus.Println("[db][func: GetListTask] Account ID String:", accountIDs)
@@ -702,24 +702,20 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 	if companyIDFilter > 0 {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf(`%s ( 
-				(
-					"data" -> 'user'->> 'companyID' = '%d' 
-					OR "data" -> 'companyID' = '%d' 
-					OR "data" -> 'company' ->> 'companyID' = '%d'
-					OR  "data" @> '[{"companyID":%d}]'
-					OR "company_id" = '%d'
-				)
+			customQuery = fmt.Sprintf(`%s AND (
+				"data" -> 'user'->> 'companyID' = '%d' 
+				OR "data" -> 'companyID' = '%d' 
+				OR "data" -> 'company' ->> 'companyID' = '%d'
+				OR  "data" @> '[{"companyID":%d}]'
+				OR "company_id" = '%d'
 			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
 		} else {
 			customQuery = fmt.Sprintf(`%s AND ( 
-				(
-					"data" -> 'user'->> 'companyID' = '%d' 
-					OR "data" -> 'companyID' = '%d' 
-					OR "data" -> 'company' ->> 'companyID' = '%d'
-					OR  "data" @> '[{"companyID":%d}]'
-					OR "company_id" = '%d'
-				)
+				"data" -> 'user'->> 'companyID' = '%d' 
+				OR "data" -> 'companyID' = '%d' 
+				OR "data" -> 'company' ->> 'companyID' = '%d'
+				OR  "data" @> '[{"companyID":%d}]'
+				OR "company_id" = '%d'
 			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
 		}
 	}
@@ -735,6 +731,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		}
 	}
 
+	hasAuthorityMaker := false
 	accountIDQuery := ""
 	makerQuery := ""
 
@@ -750,7 +747,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 			}
 		}
 
-		logrus.Printf("[db][func: GetListTask] Product Name: %s, Has Authority Maker: %v", v.ProductName, v.HasAuthorityMaker)
+		logrus.Printf("[db][func: GetListTaskNormal] Product Name: %s, UserID: %v, Has Authority Maker: %v", v.ProductName, workflowUserIDFilter, v.HasAuthorityMaker)
 
 		logrus.Println("[db][func: GetListTaskNormal] Account IDs:", v.AccountIDs)
 		logrus.Println("[db][func: GetListTaskNormal] Account ID String:", accountIDs)
@@ -762,6 +759,8 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 			} else {
 				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
 			}
+
+			hasAuthorityMaker = v.HasAuthorityMaker
 
 			if v.HasAuthorityMaker {
 
@@ -805,10 +804,12 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		customQuery = fmt.Sprintf(`(%s AND (%s (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser')))`, customQuery, makerQuery, workflowUserIDFilter)
 	}
 
-	if customQuery == "" {
-		customQuery = "((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned')))"
-	} else {
-		customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned')))`, customQuery)
+	if hasAuthorityMaker {
+		if customQuery == "" {
+			customQuery = "((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned')))"
+		} else {
+			customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned')))`, customQuery)
+		}
 	}
 
 	logrus.Println("[db][func: GetListTaskNormal] Custom Query list:", customQuery)
