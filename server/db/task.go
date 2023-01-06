@@ -801,7 +801,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	logrus.Println("[db][func: GetListTaskNormal] Maker Query:", makerQuery)
 
 	if customQuery != "" && workflowUserIDFilter > 0 {
-		customQuery = fmt.Sprintf(`(%s AND (%s (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser')))`, customQuery, makerQuery, workflowUserIDFilter)
+		customQuery = fmt.Sprintf(`(%s OR (%s (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser')))`, customQuery, makerQuery, workflowUserIDFilter)
 	}
 
 	if hasAuthorityMaker {
