@@ -509,13 +509,13 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 		productIn := ""
 
-		for _, v := range sql.ProductIn {
+		for i, v := range sql.ProductIn {
 
 			if v != "" {
-				if productIn == "" {
-					productIn = fmt.Sprintf("'%s'", v)
-				} else {
+				if i > 0 {
 					productIn = fmt.Sprintf(",'%s'", v)
+				} else {
+					productIn = fmt.Sprintf("'%s'", v)
 				}
 			}
 
@@ -676,12 +676,14 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 		productIn := ""
 
-		for _, v := range sql.ProductIn {
+		for i, v := range sql.ProductIn {
 
-			if productIn == "" {
-				productIn = fmt.Sprintf("'%s'", v)
-			} else {
-				productIn = fmt.Sprintf(",'%s'", v)
+			if v != "" {
+				if i > 0 {
+					productIn = fmt.Sprintf(",'%s'", v)
+				} else {
+					productIn = fmt.Sprintf("'%s'", v)
+				}
 			}
 
 		}
