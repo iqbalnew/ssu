@@ -513,9 +513,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 			if v != "" {
 				if i > 0 {
-					productIn = fmt.Sprintf(",'%s'", v)
+					productIn += fmt.Sprintf(",'%s'", v)
 				} else {
-					productIn = fmt.Sprintf("'%s'", v)
+					productIn += fmt.Sprintf("'%s'", v)
 				}
 			}
 
