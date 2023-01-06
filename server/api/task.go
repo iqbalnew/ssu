@@ -282,8 +282,6 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 								for _, a := range listAccountRes.Data {
 
-									logrus.Printf("[api][func: GetListTaskWithToken] Product ID: %d, Product ID Role: %s, Account ID: %d", v.ProductID, a.ProductCode, a.AccountID)
-
 									productAccountFilter.AccountIDs = append(productAccountFilter.AccountIDs, a.AccountID)
 
 								}
@@ -580,8 +578,6 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 						if d.ProductName == v.Name {
 
 							for _, a := range listAccountRes.Data {
-
-								logrus.Printf("[api][func: GetListTaskWithToken] Product ID: %d, Product ID Role: %s, Account ID: %d", v.ProductID, a.ProductCode, a.AccountID)
 
 								productAccountFilter.AccountIDs = append(productAccountFilter.AccountIDs, a.AccountID)
 

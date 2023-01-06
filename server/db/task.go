@@ -616,14 +616,20 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
 	}
 
-	logrus.Println("[db][func: GetListTask] Account ID Query:", makerQuery)
+	logrus.Println("[db][func: GetListTask] Maker Query:", makerQuery)
 
-	if workflowUserIDFilter > 0 && len(workflowAccountIDFilter) > 0 {
+	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
 			customQuery = fmt.Sprintf("(%s workflow_doc->'workflow'->'createdBy'->>'userID' = '%d')", makerQuery, workflowUserIDFilter)
 		} else {
 			customQuery = fmt.Sprintf(`%s OR (%s workflow_doc->'workflow'->'createdBy'->>'userID' = '%d')`, customQuery, makerQuery, workflowUserIDFilter)
 		}
+	}
+
+	if customQuery == "" {
+		customQuery = "((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned')))"
+	} else {
+		customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned')))`, customQuery)
 	}
 
 	logrus.Println("[db][func: GetListTask] Custom Query list ========== ========== ==========")
@@ -795,16 +801,10 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
 	}
 
-	logrus.Println("[db][func: GetListTaskNormal] Account ID Query:", makerQuery)
+	logrus.Println("[db][func: GetListTaskNormal] Maker Query:", makerQuery)
 
 	if customQuery != "" && workflowUserIDFilter > 0 {
-		customQuery = fmt.Sprintf(`(%s 
-			AND (
-				%s (
-					workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' 
-					AND workflow_doc->'workflow'->>'currentStep' = 'releaser')
-				)
-		)`, customQuery, makerQuery, workflowUserIDFilter)
+		customQuery = fmt.Sprintf(`(%s AND (%s (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser')))`, customQuery, makerQuery, workflowUserIDFilter)
 	}
 
 	if customQuery == "" {
