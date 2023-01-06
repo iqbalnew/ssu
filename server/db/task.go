@@ -764,10 +764,15 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 			if v.HasAuthorityMaker {
 
+				payrollQuery := ""
+				if v.ProductName == "Payroll Transfer" {
+					payrollQuery = "AND data->>'status' = 'Ready to Submit'"
+				}
+
 				if makerQuery == "" {
-					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)) %s)", v.ProductName, accountIDs, payrollQuery)
 				} else {
-					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)) %s)", makerQuery, v.ProductName, accountIDs, payrollQuery)
 				}
 
 			}
