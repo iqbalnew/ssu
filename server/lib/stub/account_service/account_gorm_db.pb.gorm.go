@@ -1284,7 +1284,7 @@ func DefaultReadAccountRole(ctx context.Context, in *AccountRole, db *gorm.DB) (
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.RoleID == 0 {
+	if ormObj.AccountID == 0 {
 		return nil, errors.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(AccountRoleORMWithBeforeReadApplyQuery); ok {

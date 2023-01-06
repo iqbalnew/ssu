@@ -552,21 +552,22 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 			return nil, err
 		}
 
-		listAccountByRoleReq := &account_pb.ListAccountByRoleRPCRequest{
-			Roles: req.GetRoleIDFilter(),
-		}
-
-		listAccountRes, err := accountClient.ListAccountByRoleRPC(ctx, listAccountByRoleReq)
-		if err != nil {
-			logrus.Println("[api][func: GetListTask] Unable to Get Account By Role:", err.Error())
-			return nil, err
-		}
-
 		for _, v := range listProductRes.GetData() {
 
 			for _, productName := range strings.Split(req.GetServices(), ",") {
 
 				if v.GetName() == productName {
+
+					listAccountByRoleReq := &account_pb.ListAccountByRoleRPCRequest{
+						Roles:     req.GetRoleIDFilter(),
+						ProductID: v.GetProductID(),
+					}
+
+					listAccountRes, err := accountClient.ListAccountByRoleRPC(ctx, listAccountByRoleReq)
+					if err != nil {
+						logrus.Println("[api][func: GetListTask] Unable to Get Account By Role:", err.Error())
+						return nil, err
+					}
 
 					productAccountFilter := &db.ProductAccountFilter{
 						ProductName:       v.GetName(),
@@ -580,7 +581,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 							for _, a := range listAccountRes.Data {
 
-								logrus.Printf("[api][func: GetListTask] Product ID: %d, Product ID Role: %s, Account ID: %d", v.ProductID, a.ProductCode, a.AccountID)
+								logrus.Printf("[api][func: GetListTaskWithToken] Product ID: %d, Product ID Role: %s, Account ID: %d", v.ProductID, a.ProductCode, a.AccountID)
 
 								productAccountFilter.AccountIDs = append(productAccountFilter.AccountIDs, a.AccountID)
 
