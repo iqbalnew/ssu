@@ -555,6 +555,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			}
 		}
 
+		logrus.Println("[db][func: GetListTask] Account IDs:", accountIDs)
+
 		if accountIDs != "" {
 
 			if accountIDQuery == "" {
@@ -585,6 +587,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		}
 	}
 
+	logrus.Println("[db][func: GetListTask] Account ID Query:", accountIDQuery)
+
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
 			customQuery = fmt.Sprintf("(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
@@ -608,6 +612,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	if makerQuery != "" {
 		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
 	}
+
+	logrus.Println("[db][func: GetListTask] Account ID Query:", makerQuery)
 
 	if workflowUserIDFilter > 0 && len(workflowAccountIDFilter) > 0 {
 		if customQuery == "" {
@@ -737,6 +743,8 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 			}
 		}
 
+		logrus.Println("[db][func: GetListTaskNormal] Account IDs:", accountIDs)
+
 		if accountIDs != "" {
 
 			if accountIDQuery == "" {
@@ -767,6 +775,8 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		}
 	}
 
+	logrus.Println("[db][func: GetListTaskNormal] Account ID Query:", accountIDQuery)
+
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
 			customQuery = fmt.Sprintf("(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
@@ -778,6 +788,8 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	if makerQuery != "" {
 		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
 	}
+
+	logrus.Println("[db][func: GetListTaskNormal] Account ID Query:", makerQuery)
 
 	if customQuery != "" && workflowUserIDFilter > 0 {
 		customQuery = fmt.Sprintf(`(%s 
