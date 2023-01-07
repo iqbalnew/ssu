@@ -882,7 +882,6 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			listAccountRes, err := accountClient.ListAccountByRoleRPC(ctx, ListAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
 			if err != nil {
 				logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
-				return nil, err
 			}
 
 			productAccountFilter := &db.ProductAccountFilter{
@@ -893,9 +892,9 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 			for _, d := range listRoleRes.GetProductRoles() {
 
-				if d.ProductName == v.Name {
+				if d.ProductName == v.Name && listAccountRes != nil && !listAccountRes.GetError() {
 
-					for _, v := range listAccountRes.Data {
+					for _, v := range listAccountRes.GetData() {
 						productAccountFilter.AccountIDs = append(productAccountFilter.AccountIDs, v.AccountID)
 					}
 
