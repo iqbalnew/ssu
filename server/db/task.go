@@ -86,13 +86,13 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, comp
 
 	selectOpt := `CASE WHEN workflow_doc->'workflow'->>'currentStep' IS NULL THEN 'maker' ELSE workflow_doc->'workflow'->>'currentStep' END AS name, "type", count(*) as total`
 
-	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
+	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt).Where("status NOT IN (0, 4, 5, 7, 8)")
 
 	if companyIDFilter > 0 {
 		query = query.Where(fmt.Sprintf(`("data"->'user'->>'companyID' = '%d' OR "data"->'companyID' = '%d' OR "data"->'company'->>'companyID' = '%d' OR "data" @> '[{"companyID":%d}]' OR "company_id" = '%d')`, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter))
 	}
 
-	customQuery := "status NOT IN (0, 4, 5, 7, 8)"
+	customQuery := ""
 
 	if len(workflowRoleIDFilter) > 0 {
 		value := strings.ReplaceAll(fmt.Sprint(workflowRoleIDFilter), " ", "','")
