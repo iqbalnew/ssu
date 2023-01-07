@@ -568,7 +568,6 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 		logrus.Printf("[db][func: GetListTask] Product Name: %s, UserID: %v, Has Authority Maker: %v", v.ProductName, workflowUserIDFilter, v.HasAuthorityMaker)
 
-		logrus.Println("[db][func: GetListTask] Account IDs:", v.AccountIDs)
 		logrus.Println("[db][func: GetListTask] Account ID String:", accountIDs)
 
 		if accountIDs != "" {
@@ -737,10 +736,9 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 			}
 		}
 
-		logrus.Printf("[db][func: GetListTask] Product Name: %s, UserID: %v, Has Authority Maker: %v", v.ProductName, workflowUserIDFilter, v.HasAuthorityMaker)
+		logrus.Printf("[db][func: GetListTaskNormal] Product Name: %s, UserID: %v, Has Authority Maker: %v", v.ProductName, workflowUserIDFilter, v.HasAuthorityMaker)
 
-		logrus.Println("[db][func: GetListTask] Account IDs:", v.AccountIDs)
-		logrus.Println("[db][func: GetListTask] Account ID String:", accountIDs)
+		logrus.Println("[db][func: GetListTaskNormal] Account ID String:", accountIDs)
 
 		if accountIDs != "" {
 
@@ -772,7 +770,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		}
 	}
 
-	logrus.Println("[db][func: GetListTask] Account ID Query:", accountIDQuery)
+	logrus.Println("[db][func: GetListTaskNormal] Account ID Query:", accountIDQuery)
 
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
@@ -798,7 +796,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
 	}
 
-	logrus.Println("[db][func: GetListTask] Maker Query:", makerQuery)
+	logrus.Println("[db][func: GetListTaskNormal] Maker Query:", makerQuery)
 
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
