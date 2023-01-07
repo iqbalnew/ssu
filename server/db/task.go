@@ -750,10 +750,6 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		customQuery = fmt.Sprintf("(%s AND status = '1')", customQuery)
 	}
 
-	if makerQuery != "" {
-		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
-	}
-
 	logrus.Println("[db][func: GetListTaskNormal] Maker Query:", makerQuery)
 
 	if makerQuery != "" {
