@@ -564,7 +564,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 					listAccountRes, err := accountClient.ListAccountByRoleRPC(ctx, listAccountByRoleReq)
 					if err != nil {
 						logrus.Println("[api][func: GetListTask] Unable to Get Account By Role:", err.Error())
-						return nil, err
+						break
 					}
 
 					productAccountFilter := &db.ProductAccountFilter{
