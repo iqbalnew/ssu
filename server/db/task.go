@@ -120,10 +120,10 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, comp
 			}
 		}
 
-		logrus.Printf("[db][func: GetListTask] Product Name: %s, UserID: %v, Has Authority Maker: %v", v.ProductName, workflowUserIDFilter, v.HasAuthorityMaker)
+		logrus.Printf("[db][func: GetGraphPendingTaskWithWorkflow] Product Name: %s, UserID: %v, Has Authority Maker: %v", v.ProductName, workflowUserIDFilter, v.HasAuthorityMaker)
 
-		logrus.Println("[db][func: GetListTask] Account IDs:", v.AccountIDs)
-		logrus.Println("[db][func: GetListTask] Account ID String:", accountIDs)
+		logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Account IDs:", v.AccountIDs)
+		logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Account ID String:", accountIDs)
 
 		if accountIDs != "" {
 
@@ -155,7 +155,7 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, comp
 		}
 	}
 
-	logrus.Println("[db][func: GetListTask] Account ID Query:", accountIDQuery)
+	logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Account ID Query:", accountIDQuery)
 
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
@@ -166,34 +166,22 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, comp
 	}
 
 	if customQuery != "" {
-		customQuery = fmt.Sprintf("(%s)", customQuery)
+		customQuery = fmt.Sprintf("(%s AND status = '1')", customQuery)
 	}
 
-	if workflowUserIDFilter > 0 {
-		if customQuery == "" {
-			customQuery = fmt.Sprintf("('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
-		} else {
-			customQuery = fmt.Sprintf("%s OR ('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", customQuery, workflowUserIDFilter)
-		}
-	}
+	logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Maker Query:", makerQuery)
 
 	if makerQuery != "" {
-		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
-	}
-
-	logrus.Println("[db][func: GetListTask] Maker Query:", makerQuery)
-
-	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf("(%s workflow_doc->'workflow'->'createdBy'->>'userID' = '%d')", makerQuery, workflowUserIDFilter)
+			customQuery = fmt.Sprintf("(%s)", makerQuery)
 		} else {
-			customQuery = fmt.Sprintf(`%s OR (%s workflow_doc->'workflow'->'createdBy'->>'userID' = '%d')`, customQuery, makerQuery, workflowUserIDFilter)
+			customQuery = fmt.Sprintf(`%s OR (%s)`, customQuery, makerQuery)
 		}
 	}
 
-	logrus.Println("[db][func: GetListTaskNormal] Custom Query list ========== ========== ==========")
-	logrus.Println("[db][func: GetListTaskNormal] Custom Query list:", customQuery)
-	logrus.Println("[db][func: GetListTaskNormal] Custom Query list ========== ========== ==========")
+	logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Custom Query list ========== ========== ==========")
+	logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Custom Query list:", customQuery)
+	logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Custom Query list ========== ========== ==========")
 
 	if customQuery != "" {
 		query = query.Where(fmt.Sprintf("(%s)", customQuery))
@@ -671,7 +659,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	}
 
 	if companyIDFilter > 0 {
-		query = query.Where(fmt.Sprintf(`("data"->'user'->>'companyID' = '%d' OR "data"->'companyID' = '%d' OR "data"->'company'->>'companyID' = '%d' OR "data" @> '[{"companyID":%d}]' OR "company_id" = '%d')`, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter))
+		query = query.Where(fmt.Sprintf(`"data"->'user'->>'companyID' = '%d' OR "data"->'companyID' = '%d' OR "data"->'company'->>'companyID' = '%d' OR "data" @> '[{"companyID":%d}]' OR "company_id" = '%d'`, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter))
 	}
 
 	customQuery := ""
