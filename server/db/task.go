@@ -750,14 +750,6 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		customQuery = fmt.Sprintf("(%s)", customQuery)
 	}
 
-	if workflowUserIDFilter > 0 {
-		if customQuery == "" {
-			customQuery = fmt.Sprintf("('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
-		} else {
-			customQuery = fmt.Sprintf("%s OR ('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", customQuery, workflowUserIDFilter)
-		}
-	}
-
 	if makerQuery != "" {
 		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
 	}
@@ -766,9 +758,9 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
-			customQuery = fmt.Sprintf("(%s workflow_doc->'workflow'->'createdBy'->>'userID' = '%d')", makerQuery, workflowUserIDFilter)
+			customQuery = fmt.Sprintf("(%s)", makerQuery)
 		} else {
-			customQuery = fmt.Sprintf(`%s OR (%s workflow_doc->'workflow'->'createdBy'->>'userID' = '%d')`, customQuery, makerQuery, workflowUserIDFilter)
+			customQuery = fmt.Sprintf(`%s OR (%s)`, customQuery, makerQuery)
 		}
 	}
 
