@@ -747,7 +747,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	}
 
 	if customQuery != "" {
-		customQuery = fmt.Sprintf("(%s)", customQuery)
+		customQuery = fmt.Sprintf("(%s AND status = '1')", customQuery)
 	}
 
 	if makerQuery != "" {
