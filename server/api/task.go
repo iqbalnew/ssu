@@ -267,7 +267,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 						listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
 						if err != nil {
 							logrus.Println("[api][func: GetListTaskWithToken] Unable to Get Account By Role:", err.Error())
-							return nil, err
+							break
 						}
 
 						productAccountFilter := &db.ProductAccountFilter{
@@ -307,7 +307,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 				listAccountRes, err := accountClient.ListAccountByRole(ctx, listAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
 				if err != nil {
 					logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
-					return nil, err
+					continue
 				}
 
 				productAccountFilter := &db.ProductAccountFilter{
@@ -882,6 +882,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 			listAccountRes, err := accountClient.ListAccountByRoleRPC(ctx, ListAccountByRoleReq, grpc.Header(&userMD), grpc.Trailer(&trailer))
 			if err != nil {
 				logrus.Println("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to Get Account By Role:", err.Error())
+				continue
 			}
 
 			productAccountFilter := &db.ProductAccountFilter{
@@ -892,7 +893,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 			for _, d := range listRoleRes.GetProductRoles() {
 
-				if d.ProductName == v.Name && listAccountRes != nil && !listAccountRes.GetError() {
+				if d.ProductName == v.Name {
 
 					for _, v := range listAccountRes.GetData() {
 						productAccountFilter.AccountIDs = append(productAccountFilter.AccountIDs, v.AccountID)
