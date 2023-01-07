@@ -88,27 +88,11 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, comp
 
 	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
 
-	customQuery := "status NOT IN (0, 4, 5, 7, 8)"
-
 	if companyIDFilter > 0 {
-		if customQuery == "" {
-			customQuery = fmt.Sprintf(`(
-				"data" -> 'user'->> 'companyID' = '%d' 
-				OR "data" -> 'companyID' = '%d' 
-				OR "data" -> 'company' ->> 'companyID' = '%d'
-				OR  "data" @> '[{"companyID":%d}]'
-				OR "company_id" = '%d'
-			)`, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
-		} else {
-			customQuery = fmt.Sprintf(`%s AND ( 
-				"data" -> 'user'->> 'companyID' = '%d' 
-				OR "data" -> 'companyID' = '%d' 
-				OR "data" -> 'company' ->> 'companyID' = '%d'
-				OR  "data" @> '[{"companyID":%d}]'
-				OR "company_id" = '%d'
-			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
-		}
+		query = query.Where(fmt.Sprintf(`("data"->'user'->>'companyID' = '%d' OR "data"->'companyID' = '%d' OR "data"->'company'->>'companyID' = '%d' OR "data" @> '[{"companyID":%d}]' OR "company_id" = '%d')`, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter))
 	}
+
+	customQuery := "status NOT IN (0, 4, 5, 7, 8)"
 
 	if len(workflowRoleIDFilter) > 0 {
 		value := strings.ReplaceAll(fmt.Sprint(workflowRoleIDFilter), " ", "','")
@@ -683,32 +667,14 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	}
 
 	if len(sql.ProductIn) > 0 {
-
 		query = query.Where("type IN ?", sql.ProductIn)
+	}
 
+	if companyIDFilter > 0 {
+		query = query.Where(fmt.Sprintf(`("data"->'user'->>'companyID' = '%d' OR "data"->'companyID' = '%d' OR "data"->'company'->>'companyID' = '%d' OR "data" @> '[{"companyID":%d}]' OR "company_id" = '%d')`, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter))
 	}
 
 	customQuery := ""
-
-	if companyIDFilter > 0 {
-		if customQuery == "" {
-			customQuery = fmt.Sprintf(`(
-				"data" -> 'user'->> 'companyID' = '%d' 
-				OR "data" -> 'companyID' = '%d' 
-				OR "data" -> 'company' ->> 'companyID' = '%d'
-				OR  "data" @> '[{"companyID":%d}]'
-				OR "company_id" = '%d'
-			)`, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
-		} else {
-			customQuery = fmt.Sprintf(`%s AND ( 
-				"data" -> 'user'->> 'companyID' = '%d' 
-				OR "data" -> 'companyID' = '%d' 
-				OR "data" -> 'company' ->> 'companyID' = '%d'
-				OR  "data" @> '[{"companyID":%d}]'
-				OR "company_id" = '%d'
-			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
-		}
-	}
 
 	if len(workflowRoleIDFilter) > 0 {
 		value := strings.ReplaceAll(fmt.Sprint(workflowRoleIDFilter), " ", "','")
