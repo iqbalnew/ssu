@@ -756,7 +756,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 	logrus.Println("[db][func: GetListTaskNormal] Maker Query:", makerQuery)
 
-	if workflowUserIDFilter > 0 {
+	if makerQuery != "" {
 		if customQuery == "" {
 			customQuery = fmt.Sprintf("(%s)", makerQuery)
 		} else {
