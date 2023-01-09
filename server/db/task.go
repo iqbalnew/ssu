@@ -544,10 +544,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 	logrus.Println("[db][func: GetListTask] Product IN Length:", len(sql.ProductIn))
 
-	if len(sql.ProductIn) > 0 {
-
+	if len(sql.ProductIn) > 0 && sql.ProductIn[0] != "" {
 		query = query.Where("type IN ?", sql.ProductIn)
-
 	}
 
 	customQuery := ""
@@ -724,7 +722,7 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		query = query.Where(&filter)
 	}
 
-	if len(sql.ProductIn) > 0 {
+	if len(sql.ProductIn) > 0 && sql.ProductIn[0] != "" {
 		query = query.Where("type IN ?", sql.ProductIn)
 	}
 
