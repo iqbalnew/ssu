@@ -542,7 +542,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		query = query.Where(&filter)
 	}
 
-	logrus.Println("[api][func: GetListTask] Product IN Length:", len(sql.ProductIn))
+	logrus.Println("[db][func: GetListTask] Product IN Length:", len(sql.ProductIn))
 
 	if len(sql.ProductIn) > 0 {
 
