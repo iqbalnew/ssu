@@ -200,7 +200,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
 
-	accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9090"), opts...)
+	accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9093"), opts...)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTaskWithToken] Unable to connect Account Service:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -209,7 +209,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	accountClient := account_pb.NewApiServiceClient(accountConn)
 
-	roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
+	roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9098"), opts...)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTaskWithToken] Unable to connect Account Service:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -218,7 +218,7 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 
 	roleClient := role_pb.NewApiServiceClient(roleConn)
 
-	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9090"), opts...)
+	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9097"), opts...)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTaskWithToken] Unable to connect Account Service:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -494,7 +494,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
 
-	accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9090"), opts...)
+	accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9093"), opts...)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTaskWithToken] Unable to connect Account Service:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -503,7 +503,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 	accountClient := account_pb.NewApiServiceClient(accountConn)
 
-	roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
+	roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9098"), opts...)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTaskWithToken] Unable to connect Account Service:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -512,7 +512,7 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 
 	roleClient := role_pb.NewApiServiceClient(roleConn)
 
-	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9090"), opts...)
+	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9097"), opts...)
 	if err != nil {
 		logrus.Errorln("[api][func: GetListTaskWithToken] Unable to connect Account Service:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -823,7 +823,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
 
-	roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9090"), opts...)
+	roleConn, err := grpc.Dial(getEnv("ROLE_SERVICE", ":9098"), opts...)
 	if err != nil {
 		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to connect Role Service:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -832,7 +832,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 	roleClient := role_pb.NewApiServiceClient(roleConn)
 
-	accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9090"), opts...)
+	accountConn, err := grpc.Dial(getEnv("ACCOUNT_SERVICE", ":9093"), opts...)
 	if err != nil {
 		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to connect Account Service:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -841,7 +841,7 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 
 	accountClient := account_pb.NewApiServiceClient(accountConn)
 
-	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9090"), opts...)
+	productConn, err := grpc.Dial(getEnv("PRODUCT_SERVICE", ":9097"), opts...)
 	if err != nil {
 		logrus.Errorln("[api][func: GetMyPendingTaskWithWorkflowGraph] Unable to connect Product Service:", err)
 		return nil, status.Errorf(codes.Internal, "Internal Error")
@@ -1638,6 +1638,14 @@ func (s *Server) SaveTaskWithData(ctx context.Context, req *pb.SaveTaskRequest) 
 		action := "save"
 		if req.IsDraft {
 			action = "draft"
+		}
+		if req.Task.Type == "Cash Pooling" {
+			liquidityData := &liquidity_pb.CreateTaskLiquidityRequest{}
+			json.Unmarshal([]byte(req.Task.Data), &liquidityData)
+
+			if liquidityData.Request != "" {
+				action = liquidityData.Request
+			}
 		}
 
 		logrus.Println("[api][func: SaveTaskWithData] Set Save Log for Task Type:", task.Type)

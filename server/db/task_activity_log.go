@@ -44,6 +44,16 @@ func (p *GormProvider) SaveLog(ctx context.Context, log *ActivityLog) error {
 
 	case "delete":
 		log.Action = "request for deleted"
+		
+	case "cancel":
+		log.Action = "request for cancel"
+		
+	case "suspend":
+		log.Action = "request for suspend"
+		
+	case "activate":
+		log.Action = "request for activate"
+
 	}
 
 	if log.Data.Status == 7 {

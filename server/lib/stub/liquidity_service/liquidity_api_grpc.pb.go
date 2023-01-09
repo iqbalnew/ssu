@@ -41,6 +41,8 @@ type ApiServiceClient interface {
 	ValidateDate(ctx context.Context, in *ValidateDateRequest, opts ...grpc.CallOption) (*ValidateDateResponse, error)
 	ListLiquidityAuthorize(ctx context.Context, in *ListTaskLiquidityRequest, opts ...grpc.CallOption) (*ListLiquidityTaskResponse, error)
 	TaskAction(ctx context.Context, in *TaskActionRequest, opts ...grpc.CallOption) (*TaskActionResponse, error)
+	DeactivateLiquidityScheme(ctx context.Context, in *DeactivateLiquiditySchemeRequest, opts ...grpc.CallOption) (*DeactivateLiquiditySchemeResponse, error)
+	ReactivateLiquidityScheme(ctx context.Context, in *DeactivateLiquiditySchemeRequest, opts ...grpc.CallOption) (*DeactivateLiquiditySchemeResponse, error)
 	ExecCashPooling(ctx context.Context, in *ExecCashPoolingRequest, opts ...grpc.CallOption) (*ExecCashPoolingResponse, error)
 }
 
@@ -214,6 +216,24 @@ func (c *apiServiceClient) TaskAction(ctx context.Context, in *TaskActionRequest
 	return out, nil
 }
 
+func (c *apiServiceClient) DeactivateLiquidityScheme(ctx context.Context, in *DeactivateLiquiditySchemeRequest, opts ...grpc.CallOption) (*DeactivateLiquiditySchemeResponse, error) {
+	out := new(DeactivateLiquiditySchemeResponse)
+	err := c.cc.Invoke(ctx, "/liquidity.service.v1.ApiService/DeactivateLiquidityScheme", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *apiServiceClient) ReactivateLiquidityScheme(ctx context.Context, in *DeactivateLiquiditySchemeRequest, opts ...grpc.CallOption) (*DeactivateLiquiditySchemeResponse, error) {
+	out := new(DeactivateLiquiditySchemeResponse)
+	err := c.cc.Invoke(ctx, "/liquidity.service.v1.ApiService/ReactivateLiquidityScheme", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *apiServiceClient) ExecCashPooling(ctx context.Context, in *ExecCashPoolingRequest, opts ...grpc.CallOption) (*ExecCashPoolingResponse, error) {
 	out := new(ExecCashPoolingResponse)
 	err := c.cc.Invoke(ctx, "/liquidity.service.v1.ApiService/ExecCashPooling", in, out, opts...)
@@ -245,6 +265,8 @@ type ApiServiceServer interface {
 	ValidateDate(context.Context, *ValidateDateRequest) (*ValidateDateResponse, error)
 	ListLiquidityAuthorize(context.Context, *ListTaskLiquidityRequest) (*ListLiquidityTaskResponse, error)
 	TaskAction(context.Context, *TaskActionRequest) (*TaskActionResponse, error)
+	DeactivateLiquidityScheme(context.Context, *DeactivateLiquiditySchemeRequest) (*DeactivateLiquiditySchemeResponse, error)
+	ReactivateLiquidityScheme(context.Context, *DeactivateLiquiditySchemeRequest) (*DeactivateLiquiditySchemeResponse, error)
 	ExecCashPooling(context.Context, *ExecCashPoolingRequest) (*ExecCashPoolingResponse, error)
 	mustEmbedUnimplementedApiServiceServer()
 }
@@ -306,6 +328,12 @@ func (UnimplementedApiServiceServer) ListLiquidityAuthorize(context.Context, *Li
 }
 func (UnimplementedApiServiceServer) TaskAction(context.Context, *TaskActionRequest) (*TaskActionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TaskAction not implemented")
+}
+func (UnimplementedApiServiceServer) DeactivateLiquidityScheme(context.Context, *DeactivateLiquiditySchemeRequest) (*DeactivateLiquiditySchemeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeactivateLiquidityScheme not implemented")
+}
+func (UnimplementedApiServiceServer) ReactivateLiquidityScheme(context.Context, *DeactivateLiquiditySchemeRequest) (*DeactivateLiquiditySchemeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReactivateLiquidityScheme not implemented")
 }
 func (UnimplementedApiServiceServer) ExecCashPooling(context.Context, *ExecCashPoolingRequest) (*ExecCashPoolingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecCashPooling not implemented")
@@ -647,6 +675,42 @@ func _ApiService_TaskAction_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiService_DeactivateLiquidityScheme_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeactivateLiquiditySchemeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).DeactivateLiquidityScheme(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/liquidity.service.v1.ApiService/DeactivateLiquidityScheme",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).DeactivateLiquidityScheme(ctx, req.(*DeactivateLiquiditySchemeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ApiService_ReactivateLiquidityScheme_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeactivateLiquiditySchemeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServiceServer).ReactivateLiquidityScheme(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/liquidity.service.v1.ApiService/ReactivateLiquidityScheme",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServiceServer).ReactivateLiquidityScheme(ctx, req.(*DeactivateLiquiditySchemeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApiService_ExecCashPooling_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ExecCashPoolingRequest)
 	if err := dec(in); err != nil {
@@ -743,6 +807,14 @@ var ApiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TaskAction",
 			Handler:    _ApiService_TaskAction_Handler,
+		},
+		{
+			MethodName: "DeactivateLiquidityScheme",
+			Handler:    _ApiService_DeactivateLiquidityScheme_Handler,
+		},
+		{
+			MethodName: "ReactivateLiquidityScheme",
+			Handler:    _ApiService_ReactivateLiquidityScheme_Handler,
 		},
 		{
 			MethodName: "ExecCashPooling",

@@ -610,8 +610,6 @@ func (m *LiquidityCashflow) validate(all bool) error {
 		}
 	}
 
-	// no validation rules for CreatedByID
-
 	if all {
 		switch v := interface{}(m.GetUpdatedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -641,8 +639,6 @@ func (m *LiquidityCashflow) validate(all bool) error {
 		}
 	}
 
-	// no validation rules for UpdatedByID
-
 	if all {
 		switch v := interface{}(m.GetDeletedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -671,8 +667,6 @@ func (m *LiquidityCashflow) validate(all bool) error {
 			}
 		}
 	}
-
-	// no validation rules for DeletedByID
 
 	for idx, item := range m.GetSources() {
 		_, _ = idx, item
@@ -885,8 +879,6 @@ func (m *LiquiditySources) validate(all bool) error {
 		}
 	}
 
-	// no validation rules for CreatedByID
-
 	if all {
 		switch v := interface{}(m.GetUpdatedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -916,8 +908,6 @@ func (m *LiquiditySources) validate(all bool) error {
 		}
 	}
 
-	// no validation rules for UpdatedByID
-
 	if all {
 		switch v := interface{}(m.GetDeletedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -946,8 +936,6 @@ func (m *LiquiditySources) validate(all bool) error {
 			}
 		}
 	}
-
-	// no validation rules for DeletedByID
 
 	if len(errors) > 0 {
 		return LiquiditySourcesMultiError(errors)
@@ -1094,8 +1082,6 @@ func (m *LiquidityBeneficiaries) validate(all bool) error {
 		}
 	}
 
-	// no validation rules for CreatedByID
-
 	if all {
 		switch v := interface{}(m.GetUpdatedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -1125,8 +1111,6 @@ func (m *LiquidityBeneficiaries) validate(all bool) error {
 		}
 	}
 
-	// no validation rules for UpdatedByID
-
 	if all {
 		switch v := interface{}(m.GetDeletedAt()).(type) {
 		case interface{ ValidateAll() error }:
@@ -1155,8 +1139,6 @@ func (m *LiquidityBeneficiaries) validate(all bool) error {
 			}
 		}
 	}
-
-	// no validation rules for DeletedByID
 
 	if len(errors) > 0 {
 		return LiquidityBeneficiariesMultiError(errors)
@@ -1264,11 +1246,69 @@ func (m *LiquiditySchedules) validate(all bool) error {
 
 	// no validation rules for CashflowID
 
+	if all {
+		switch v := interface{}(m.GetCashflow()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, LiquiditySchedulesValidationError{
+					field:  "Cashflow",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, LiquiditySchedulesValidationError{
+					field:  "Cashflow",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCashflow()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return LiquiditySchedulesValidationError{
+				field:  "Cashflow",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	// no validation rules for LiquidityID
+
+	if all {
+		switch v := interface{}(m.GetLiquidity()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, LiquiditySchedulesValidationError{
+					field:  "Liquidity",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, LiquiditySchedulesValidationError{
+					field:  "Liquidity",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetLiquidity()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return LiquiditySchedulesValidationError{
+				field:  "Liquidity",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	// no validation rules for TaskId
 
-	// no validation rules for StatusMessage
+	// no validation rules for Executed
 
 	if all {
 		switch v := interface{}(m.GetScheduleTime()).(type) {
@@ -1322,6 +1362,64 @@ func (m *LiquiditySchedules) validate(all bool) error {
 		if err := v.Validate(); err != nil {
 			return LiquiditySchedulesValidationError{
 				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, LiquiditySchedulesValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, LiquiditySchedulesValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return LiquiditySchedulesValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetDeletedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, LiquiditySchedulesValidationError{
+					field:  "DeletedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, LiquiditySchedulesValidationError{
+					field:  "DeletedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetDeletedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return LiquiditySchedulesValidationError{
+				field:  "DeletedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -1437,6 +1535,8 @@ func (m *Histories) validate(all bool) error {
 	// no validation rules for TaskId
 
 	// no validation rules for Status
+
+	// no validation rules for FeeData
 
 	// no validation rules for FeeStatus
 
