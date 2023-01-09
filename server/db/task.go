@@ -134,25 +134,25 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, comp
 
 			if v.HasAuthorityChecker {
 				if csrQuery == "" {
-					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'checker')"
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'checker')"
 				} else {
-					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'checker')", csrQuery)
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'checker')", csrQuery)
 				}
 			}
 
 			if v.HasAuthoritySigner {
 				if csrQuery == "" {
-					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'approver')"
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'approver')"
 				} else {
-					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'approver')", csrQuery)
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'approver')", csrQuery)
 				}
 			}
 
 			if v.HasAuthorityReleaser {
 				if csrQuery == "" {
-					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'verifier')"
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'verifier')"
 				} else {
-					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'verifier')", csrQuery)
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'verifier')", csrQuery)
 				}
 			}
 
@@ -586,25 +586,25 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 			if v.HasAuthorityChecker {
 				if csrQuery == "" {
-					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'checker')"
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'checker')"
 				} else {
-					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'checker')", csrQuery)
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'checker')", csrQuery)
 				}
 			}
 
 			if v.HasAuthoritySigner {
 				if csrQuery == "" {
-					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'approver')"
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'approver')"
 				} else {
-					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'approver')", csrQuery)
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'approver')", csrQuery)
 				}
 			}
 
 			if v.HasAuthorityReleaser {
 				if csrQuery == "" {
-					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'verifier')"
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'verifier')"
 				} else {
-					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'verifier')", csrQuery)
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'verifier')", csrQuery)
 				}
 			}
 
@@ -768,25 +768,25 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 			if v.HasAuthorityChecker {
 				if csrQuery == "" {
-					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'checker')"
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'checker')"
 				} else {
-					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'checker')", csrQuery)
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'checker')", csrQuery)
 				}
 			}
 
 			if v.HasAuthoritySigner {
 				if csrQuery == "" {
-					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'approver')"
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'approver')"
 				} else {
-					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'approver')", csrQuery)
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'approver')", csrQuery)
 				}
 			}
 
 			if v.HasAuthorityReleaser {
 				if csrQuery == "" {
-					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'verifier')"
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'verifier')"
 				} else {
-					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'verifier')", csrQuery)
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'verifier')", csrQuery)
 				}
 			}
 
