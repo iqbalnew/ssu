@@ -33,9 +33,12 @@ type GraphResultWorkflowType struct {
 }
 
 type ProductAccountFilter struct {
-	ProductName       string
-	AccountIDs        []uint64
-	HasAuthorityMaker bool
+	ProductName          string
+	AccountIDs           []uint64
+	HasAuthorityMaker    bool
+	HasAuthorityChecker  bool
+	HasAuthoritySigner   bool
+	HasAuthorityReleaser bool
 }
 
 func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (result *GraphResult, err error) {
@@ -127,10 +130,40 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, comp
 
 		if accountIDs != "" {
 
+			csrQuery := ""
+
+			if v.HasAuthorityChecker {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'checker')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'checker')", csrQuery)
+				}
+			}
+
+			if v.HasAuthoritySigner {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'approver')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'approver')", csrQuery)
+				}
+			}
+
+			if v.HasAuthorityReleaser {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'verifier')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'verifier')", csrQuery)
+				}
+			}
+
+			if csrQuery != "" {
+				csrQuery = fmt.Sprintf("AND (%s)", csrQuery)
+			}
+
 			if accountIDQuery == "" {
-				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", v.ProductName, accountIDs, csrQuery)
 			} else {
-				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)))", accountIDQuery, v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", accountIDQuery, v.ProductName, accountIDs, csrQuery)
 			}
 
 			if v.HasAuthorityMaker {
@@ -549,10 +582,40 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 
 		if accountIDs != "" {
 
+			csrQuery := ""
+
+			if v.HasAuthorityChecker {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'checker')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'checker')", csrQuery)
+				}
+			}
+
+			if v.HasAuthoritySigner {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'approver')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'approver')", csrQuery)
+				}
+			}
+
+			if v.HasAuthorityReleaser {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'verifier')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'verifier')", csrQuery)
+				}
+			}
+
+			if csrQuery != "" {
+				csrQuery = fmt.Sprintf("AND (%s)", csrQuery)
+			}
+
 			if accountIDQuery == "" {
-				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", v.ProductName, accountIDs, csrQuery)
 			} else {
-				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)))", accountIDQuery, v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", accountIDQuery, v.ProductName, accountIDs, csrQuery)
 			}
 
 			if v.HasAuthorityMaker {
@@ -701,10 +764,40 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 
 		if accountIDs != "" {
 
+			csrQuery := ""
+
+			if v.HasAuthorityChecker {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'checker')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'checker')", csrQuery)
+				}
+			}
+
+			if v.HasAuthoritySigner {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'approver')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'approver')", csrQuery)
+				}
+			}
+
+			if v.HasAuthorityReleaser {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' == 'verifier')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' == 'verifier')", csrQuery)
+				}
+			}
+
+			if csrQuery != "" {
+				csrQuery = fmt.Sprintf("AND (%s)", csrQuery)
+			}
+
 			if accountIDQuery == "" {
-				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", v.ProductName, accountIDs, csrQuery)
 			} else {
-				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)))", accountIDQuery, v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", accountIDQuery, v.ProductName, accountIDs, csrQuery)
 			}
 
 			if v.HasAuthorityMaker {

@@ -287,6 +287,9 @@ func (s *Server) GetListTaskWithToken(ctx context.Context, req *pb.ListTaskReque
 								}
 
 								productAccountFilter.HasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
+								productAccountFilter.HasAuthorityChecker = contains(d.Authorities, "verify:checker")
+								productAccountFilter.HasAuthoritySigner = contains(d.Authorities, "approve:signer")
+								productAccountFilter.HasAuthorityReleaser = contains(d.Authorities, "release:releaser")
 
 							}
 
@@ -584,6 +587,9 @@ func (s *Server) GetListTask(ctx context.Context, req *pb.ListTaskRequest) (*pb.
 							}
 
 							productAccountFilter.HasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
+							productAccountFilter.HasAuthorityChecker = contains(d.Authorities, "verify:checker")
+							productAccountFilter.HasAuthoritySigner = contains(d.Authorities, "approve:signer")
+							productAccountFilter.HasAuthorityReleaser = contains(d.Authorities, "release:releaser")
 
 						}
 
@@ -900,6 +906,9 @@ func (s *Server) GetMyPendingTaskWithWorkflowGraph(ctx context.Context, req *pb.
 					}
 
 					productAccountFilter.HasAuthorityMaker = contains(d.Authorities, "data_entry:maker") || contains(d.Authorities, "modify:maker") || contains(d.Authorities, "delete:maker")
+					productAccountFilter.HasAuthorityChecker = contains(d.Authorities, "verify:checker")
+					productAccountFilter.HasAuthoritySigner = contains(d.Authorities, "approve:signer")
+					productAccountFilter.HasAuthorityReleaser = contains(d.Authorities, "release:releaser")
 
 				}
 
