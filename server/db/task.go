@@ -33,9 +33,12 @@ type GraphResultWorkflowType struct {
 }
 
 type ProductAccountFilter struct {
-	ProductName       string
-	AccountIDs        []uint64
-	HasAuthorityMaker bool
+	ProductName          string
+	AccountIDs           []uint64
+	HasAuthorityMaker    bool
+	HasAuthorityChecker  bool
+	HasAuthoritySigner   bool
+	HasAuthorityReleaser bool
 }
 
 func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (result *GraphResult, err error) {
@@ -78,39 +81,37 @@ func (p *GormProvider) GetGraphStepAll(ctx context.Context, idCompany string) (r
 
 }
 
-func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, service string, workflowRoleIDs []uint64, workflowAccountIDs []*ProductAccountFilter, userID uint64, companyID uint64) (result []*GraphResultWorkflowType, err error) {
+func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, companyIDFilter uint64, workflowUserIDFilter uint64, workflowRoleIDFilter []uint64, workflowAccountIDFilter []*ProductAccountFilter) (result []*GraphResultWorkflowType, err error) {
 
-	if len(workflowRoleIDs) < 1 {
+	if len(workflowRoleIDFilter) < 1 {
 		return []*GraphResultWorkflowType{}, nil
 	}
 
 	selectOpt := `CASE WHEN workflow_doc->'workflow'->>'currentStep' IS NULL THEN 'maker' ELSE workflow_doc->'workflow'->>'currentStep' END AS name, "type", count(*) as total`
 
-	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt)
+	query := p.db_main.Debug().Model(&pb.TaskORM{}).Select(selectOpt).Where("status NOT IN (0, 4, 5, 7, 8)")
 
-	whereOpt := "( status != 0 AND status != 4 AND status != 5 AND status != 7 AND status != 8 )"
-
-	if companyID > 0 {
-		whereOpt = fmt.Sprintf("%s AND company_id = %d", whereOpt, companyID)
+	if companyIDFilter > 0 {
+		query = query.Where(fmt.Sprintf(`("data"->'user'->>'companyID' = '%d' OR "data"->'companyID' = '%d' OR "data"->'company'->>'companyID' = '%d' OR "data" @> '[{"companyID":%d}]' OR "company_id" = '%d')`, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter))
 	}
 
-	if service != "" {
-		whereOpt = fmt.Sprintf("%s AND type = '%v'", whereOpt, service)
-	}
+	customQuery := ""
 
-	roleIDs := ""
-	for i, roleID := range workflowRoleIDs {
-		if i > 0 {
-			roleIDs = fmt.Sprintf("%s,%d", roleIDs, roleID)
+	if len(workflowRoleIDFilter) > 0 {
+		value := strings.ReplaceAll(fmt.Sprint(workflowRoleIDFilter), " ", "','")
+		value = strings.ReplaceAll(value, "[", "'")
+		value = strings.ReplaceAll(value, "]", "'")
+		if customQuery == "" {
+			customQuery = fmt.Sprintf("ARRAY(SELECT jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && ARRAY[%s]", value)
 		} else {
-			roleIDs = fmt.Sprintf("%s%d", roleIDs, roleID)
+			customQuery = fmt.Sprintf("%s AND ARRAY(SELECT jsonb_array_elements_text(workflow_doc->'workflow'->'currentRoleIDs')) && ARRAY[%s]", customQuery, value)
 		}
 	}
 
 	accountIDQuery := ""
 	makerQuery := ""
 
-	for _, v := range workflowAccountIDs {
+	for _, v := range workflowAccountIDFilter {
 
 		accountIDs := ""
 
@@ -122,31 +123,60 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 			}
 		}
 
+		logrus.Printf("[db][func: GetGraphPendingTaskWithWorkflow] Product Name: %s, UserID: %v, Has Authority Maker: %v", v.ProductName, workflowUserIDFilter, v.HasAuthorityMaker)
+
+		logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Account IDs:", v.AccountIDs)
+		logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Account ID String:", accountIDs)
+
 		if accountIDs != "" {
 
+			csrQuery := ""
+
+			if v.HasAuthorityChecker {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'checker' OR workflow_doc->'workflow'->>'currentStep' = 'verifier')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'checker' OR workflow_doc->'workflow'->>'currentStep' = 'verifier')", csrQuery)
+				}
+			}
+
+			if v.HasAuthoritySigner {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'signer')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'signer')", csrQuery)
+				}
+			}
+
+			if v.HasAuthorityReleaser {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'releaser')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'releaser')", csrQuery)
+				}
+			}
+
+			if csrQuery != "" {
+				csrQuery = fmt.Sprintf("AND (%s)", csrQuery)
+			}
+
 			if accountIDQuery == "" {
-				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", v.ProductName, accountIDs, csrQuery)
 			} else {
-				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", accountIDQuery, v.ProductName, accountIDs, csrQuery)
 			}
 
 			if v.HasAuthorityMaker {
 
+				payrollQuery := ""
+				if v.ProductName == "Payroll Transfer" {
+					payrollQuery = "AND data->>'status' = 'Ready to Submit'"
+				}
+
 				if makerQuery == "" {
-					makerQuery = fmt.Sprintf(`(
-						type = '%s' 
-						AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL 
-						AND (
-							data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)
-						)
-					)`, v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)) %s)", v.ProductName, accountIDs, payrollQuery)
 				} else {
-					makerQuery = fmt.Sprintf(`%s 
-						OR (
-							type = '%s' 
-							AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL 
-							AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s))
-						)`, makerQuery, v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)) %s)", makerQuery, v.ProductName, accountIDs, payrollQuery)
 				}
 
 			}
@@ -155,38 +185,45 @@ func (p *GormProvider) GetGraphPendingTaskWithWorkflow(ctx context.Context, serv
 
 	}
 
-	if roleIDs != "" || accountIDQuery != "" || userID > 0 {
-		whereOpt = fmt.Sprintf(`%s AND (
-			(
-				TRANSLATE(workflow_doc->'workflow'->>'currentRoleIDs', '[]', '{}')::INT[] && ARRAY[%s] 
-				AND (%s) 
-				AND (
-					workflow_doc->'workflow'->>'participantUserIDs' IS NULL
-					OR '%d' != ANY (TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])
-				)
-				AND (
-					(%s) 
-					OR (workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' AND workflow_doc->'workflow'->>'currentStep' = 'releaser')
-				)
-			)
-			OR (
-				type = 'Payroll Transfer' 
-				AND (
-					data->>'status' = 'Ready to Submit' 
-					OR workflow_doc->>'nextStatus' = 'returned'
-				) OR (
-					type != 'Payroll Transfer' 
-					AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned')
-				)	
-			)
-		)`, whereOpt, roleIDs, accountIDQuery, userID, makerQuery, userID)
+	if accountIDQuery != "" {
+		if customQuery == "" {
+			customQuery = fmt.Sprintf("(%s)", accountIDQuery)
+		} else {
+			customQuery = fmt.Sprintf("%s AND (%s)", customQuery, accountIDQuery)
+		}
 	}
 
-	if whereOpt != "" {
-		query = query.Where(whereOpt)
+	logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Account ID Query:", accountIDQuery)
+
+	if workflowUserIDFilter > 0 {
+		if customQuery == "" {
+			customQuery = fmt.Sprintf("(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
+		} else {
+			customQuery = fmt.Sprintf("%s AND (workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", customQuery, workflowUserIDFilter)
+		}
 	}
 
-	logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Custom Query:", whereOpt)
+	if customQuery != "" {
+		customQuery = fmt.Sprintf("(%s AND status = '1')", customQuery)
+	}
+
+	logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Maker Query:", makerQuery)
+
+	if makerQuery != "" {
+		if customQuery == "" {
+			customQuery = fmt.Sprintf("(%s)", makerQuery)
+		} else {
+			customQuery = fmt.Sprintf(`%s OR (%s)`, customQuery, makerQuery)
+		}
+	}
+
+	logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Custom Query list ========== ========== ==========")
+	logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Custom Query list:", customQuery)
+	logrus.Println("[db][func: GetGraphPendingTaskWithWorkflow] Custom Query list ========== ========== ==========")
+
+	if customQuery != "" {
+		query = query.Where(fmt.Sprintf("(%s)", customQuery))
+	}
 
 	query = query.Group("name, type")
 
@@ -505,26 +542,10 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		query = query.Where(&filter)
 	}
 
-	if len(sql.ProductIn) > 0 {
+	logrus.Println("[db][func: GetListTask] Product IN Length:", len(sql.ProductIn))
 
-		productIn := ""
-
-		for _, v := range sql.ProductIn {
-
-			if productIn == "" {
-				productIn = fmt.Sprintf("'%s'", v)
-			} else {
-				productIn = fmt.Sprintf(",'%s'", v)
-			}
-
-		}
-
-		logrus.Println("[db][func: GetListTask] Product IN:", productIn)
-
-		if productIn != "" && productIn != "''" {
-			query = query.Where(fmt.Sprintf("type IN (%s)", productIn))
-		}
-
+	if len(sql.ProductIn) > 0 && sql.ProductIn[0] != "" {
+		query = query.Where("type IN ?", sql.ProductIn)
 	}
 
 	customQuery := ""
@@ -555,20 +576,54 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			}
 		}
 
+		logrus.Printf("[db][func: GetListTask] Product Name: %s, UserID: %v, Has Authority Maker: %v", v.ProductName, workflowUserIDFilter, v.HasAuthorityMaker)
+
+		logrus.Println("[db][func: GetListTask] Account ID String:", accountIDs)
+
 		if accountIDs != "" {
 
+			csrQuery := ""
+
+			if v.HasAuthorityChecker {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'checker' OR workflow_doc->'workflow'->>'currentStep' = 'verifier')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'checker' OR workflow_doc->'workflow'->>'currentStep' = 'verifier')", csrQuery)
+				}
+			}
+
+			if v.HasAuthoritySigner {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'signer')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'signer')", csrQuery)
+				}
+			}
+
+			if v.HasAuthorityReleaser {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'releaser')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'releaser')", csrQuery)
+				}
+			}
+
+			if csrQuery != "" {
+				csrQuery = fmt.Sprintf("AND (%s)", csrQuery)
+			}
+
 			if accountIDQuery == "" {
-				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", v.ProductName, accountIDs, csrQuery)
 			} else {
-				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", accountIDQuery, v.ProductName, accountIDs, csrQuery)
 			}
 
 			if v.HasAuthorityMaker {
 
 				if makerQuery == "" {
-					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
 				} else {
-					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
 				}
 
 			}
@@ -584,6 +639,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			customQuery = fmt.Sprintf("%s AND (%s)", customQuery, accountIDQuery)
 		}
 	}
+
+	logrus.Println("[db][func: GetListTask] Account ID Query:", accountIDQuery)
 
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
@@ -609,7 +666,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
 	}
 
-	if workflowUserIDFilter > 0 && len(workflowAccountIDFilter) > 0 {
+	logrus.Println("[db][func: GetListTask] Maker Query:", makerQuery)
+
+	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
 			customQuery = fmt.Sprintf("(%s workflow_doc->'workflow'->'createdBy'->>'userID' = '%d')", makerQuery, workflowUserIDFilter)
 		} else {
@@ -663,53 +722,15 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		query = query.Where(&filter)
 	}
 
-	if len(sql.ProductIn) > 0 {
+	if len(sql.ProductIn) > 0 && sql.ProductIn[0] != "" {
+		query = query.Where("type IN ?", sql.ProductIn)
+	}
 
-		productIn := ""
-
-		for _, v := range sql.ProductIn {
-
-			if productIn == "" {
-				productIn = fmt.Sprintf("'%s'", v)
-			} else {
-				productIn = fmt.Sprintf(",'%s'", v)
-			}
-
-		}
-
-		logrus.Println("[db][func: GetListTaskNormal] Product IN:", productIn)
-
-		if productIn != "" && productIn != "''" {
-			query = query.Where(fmt.Sprintf("type IN (%s)", productIn))
-		}
-
+	if companyIDFilter > 0 {
+		query = query.Where(fmt.Sprintf(`"data"->'user'->>'companyID' = '%d' OR "data"->'companyID' = '%d' OR "data"->'company'->>'companyID' = '%d' OR "data" @> '[{"companyID":%d}]' OR "company_id" = '%d'`, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter))
 	}
 
 	customQuery := ""
-
-	if companyIDFilter > 0 {
-		if customQuery == "" {
-			customQuery = fmt.Sprintf(`%s ( 
-				(
-					"data" -> 'user'->> 'companyID' = '%d' 
-					OR "data" -> 'companyID' = '%d' 
-					OR "data" -> 'company' ->> 'companyID' = '%d'
-					OR  "data" @> '[{"companyID":%d}]'
-					OR "company_id" = '%d'
-				)
-			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
-		} else {
-			customQuery = fmt.Sprintf(`%s AND ( 
-				(
-					"data" -> 'user'->> 'companyID' = '%d' 
-					OR "data" -> 'companyID' = '%d' 
-					OR "data" -> 'company' ->> 'companyID' = '%d'
-					OR  "data" @> '[{"companyID":%d}]'
-					OR "company_id" = '%d'
-				)
-			)`, customQuery, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter, companyIDFilter)
-		}
-	}
 
 	if len(workflowRoleIDFilter) > 0 {
 		value := strings.ReplaceAll(fmt.Sprint(workflowRoleIDFilter), " ", "','")
@@ -737,20 +758,59 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 			}
 		}
 
+		logrus.Printf("[db][func: GetListTaskNormal] Product Name: %s, UserID: %v, Has Authority Maker: %v", v.ProductName, workflowUserIDFilter, v.HasAuthorityMaker)
+
+		logrus.Println("[db][func: GetListTaskNormal] Account ID String:", accountIDs)
+
 		if accountIDs != "" {
 
+			csrQuery := ""
+
+			if v.HasAuthorityChecker {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'checker' OR workflow_doc->'workflow'->>'currentStep' = 'verifier')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'checker' OR workflow_doc->'workflow'->>'currentStep' = 'verifier')", csrQuery)
+				}
+			}
+
+			if v.HasAuthoritySigner {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'signer')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'signer')", csrQuery)
+				}
+			}
+
+			if v.HasAuthorityReleaser {
+				if csrQuery == "" {
+					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'releaser')"
+				} else {
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'releaser')", csrQuery)
+				}
+			}
+
+			if csrQuery != "" {
+				csrQuery = fmt.Sprintf("AND (%s)", csrQuery)
+			}
+
 			if accountIDQuery == "" {
-				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", v.ProductName, accountIDs, csrQuery)
 			} else {
-				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s))", accountIDQuery, v.ProductName, accountIDs)
+				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", accountIDQuery, v.ProductName, accountIDs, csrQuery)
 			}
 
 			if v.HasAuthorityMaker {
 
+				payrollQuery := ""
+				if v.ProductName == "Payroll Transfer" {
+					payrollQuery = "AND data->>'status' = 'Ready to Submit'"
+				}
+
 				if makerQuery == "" {
-					makerQuery = fmt.Sprintf("(type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)) %s)", v.ProductName, accountIDs, payrollQuery)
 				} else {
-					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)) %s)", makerQuery, v.ProductName, accountIDs, payrollQuery)
 				}
 
 			}
@@ -767,6 +827,8 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		}
 	}
 
+	logrus.Println("[db][func: GetListTaskNormal] Account ID Query:", accountIDQuery)
+
 	if workflowUserIDFilter > 0 {
 		if customQuery == "" {
 			customQuery = fmt.Sprintf("(workflow_doc->'workflow'->>'participantUserIDs' IS NULL OR '%d' != ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
@@ -775,27 +837,23 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 		}
 	}
 
+	if customQuery != "" {
+		customQuery = fmt.Sprintf("(%s AND status = '1')", customQuery)
+	}
+
+	logrus.Println("[db][func: GetListTaskNormal] Maker Query:", makerQuery)
+
 	if makerQuery != "" {
-		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
+		if customQuery == "" {
+			customQuery = fmt.Sprintf("(%s)", makerQuery)
+		} else {
+			customQuery = fmt.Sprintf(`%s OR (%s)`, customQuery, makerQuery)
+		}
 	}
 
-	if customQuery != "" && workflowUserIDFilter > 0 {
-		customQuery = fmt.Sprintf(`(%s 
-			AND (
-				%s (
-					workflow_doc->'workflow'->'createdBy'->>'userID' = '%d' 
-					AND workflow_doc->'workflow'->>'currentStep' = 'releaser')
-				)
-		)`, customQuery, makerQuery, workflowUserIDFilter)
-	}
-
-	if customQuery == "" {
-		customQuery = "((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned')))"
-	} else {
-		customQuery = fmt.Sprintf(`%s OR ((type = 'Payroll Transfer' AND data->>'status' = 'Ready to Submit') OR (type != 'Payroll Transfer' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned')))`, customQuery)
-	}
-
+	logrus.Println("[db][func: GetListTaskNormal] Custom Query list ========== ========== ==========")
 	logrus.Println("[db][func: GetListTaskNormal] Custom Query list:", customQuery)
+	logrus.Println("[db][func: GetListTaskNormal] Custom Query list ========== ========== ==========")
 
 	query = query.Scopes(FilterScoope(sql.Filter))
 	query = query.Scopes(FilterOrScoope(sql.FilterOr, ""))
@@ -805,8 +863,14 @@ func (p *GormProvider) GetListTaskNormal(ctx context.Context, filter *pb.TaskORM
 	}
 
 	query = query.Scopes(QueryScoop(sql.CollectiveAnd), WhereInScoop(sql.In), WhereInScoop(sql.MeFilterIn), NotConditionalScoope(sql.FilterNot))
+
+	if sql.CompanyID != "" {
+		query = query.Where(`("company_id" = $1 OR "data" ->> 'companyID' = $2)`, sql.CompanyID, sql.CompanyID)
+	}
+
 	query = query.Scopes(DistinctScoope(sql.Distinct))
 	query = query.Scopes(Paginate(tasks, pagination, query), CustomOrderScoop(sql.CustomOrder), Sort(sql.Sort), Sort(&pb.Sort{Column: "updated_at", Direction: "DESC"}))
+
 	if err := query.Preload(clause.Associations).Debug().Find(&tasks).Error; err != nil {
 		logrus.Errorln("[db][func: GetListTaskNormal] Failed:", err.Error())
 		if !errors.Is(err, gorm.ErrModelValueRequired) {
