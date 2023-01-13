@@ -660,13 +660,13 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		customQuery = fmt.Sprintf("(%s)", customQuery)
 	}
 
-	// if workflowUserIDFilter > 0 {
-	// 	if customQuery == "" {
-	// 		customQuery = fmt.Sprintf("('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
-	// 	} else {
-	// 		customQuery = fmt.Sprintf("%s OR ('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", customQuery, workflowUserIDFilter)
-	// 	}
-	// }
+	if workflowUserIDFilter > 0 {
+		if customQuery == "" {
+			customQuery = fmt.Sprintf("(('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])) AND status IN (1, 4, 5))", workflowUserIDFilter)
+		} else {
+			customQuery = fmt.Sprintf("%s OR (('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])) AND status IN (1, 4, 5))", customQuery, workflowUserIDFilter)
+		}
+	}
 
 	if makerQuery != "" {
 		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
