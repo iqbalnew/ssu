@@ -626,6 +626,12 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
 				}
 
+				if makerQuery == "" {
+					makerQuery = fmt.Sprintf("('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
+				} else {
+					makerQuery = fmt.Sprintf("%s OR ('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", makerQuery, workflowUserIDFilter)
+				}
+
 			}
 
 		}
@@ -654,13 +660,13 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 		customQuery = fmt.Sprintf("(%s)", customQuery)
 	}
 
-	if workflowUserIDFilter > 0 {
-		if customQuery == "" {
-			customQuery = fmt.Sprintf("('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
-		} else {
-			customQuery = fmt.Sprintf("%s OR ('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", customQuery, workflowUserIDFilter)
-		}
-	}
+	// if workflowUserIDFilter > 0 {
+	// 	if customQuery == "" {
+	// 		customQuery = fmt.Sprintf("('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
+	// 	} else {
+	// 		customQuery = fmt.Sprintf("%s OR ('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", customQuery, workflowUserIDFilter)
+	// 	}
+	// }
 
 	if makerQuery != "" {
 		makerQuery = fmt.Sprintf("(%s) OR", makerQuery)
