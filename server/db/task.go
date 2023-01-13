@@ -627,9 +627,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 				}
 
 				if makerQuery == "" {
-					makerQuery = fmt.Sprintf("('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", workflowUserIDFilter)
+					makerQuery = fmt.Sprintf("(type = '%s' AND ('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])))", v.ProductName, workflowUserIDFilter)
 				} else {
-					makerQuery = fmt.Sprintf("%s OR ('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[]))", makerQuery, workflowUserIDFilter)
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND ('%d' = ANY(TRANSLATE(workflow_doc->'workflow'->>'participantUserIDs', '[]', '{}')::INT[])))", makerQuery, v.ProductName, workflowUserIDFilter)
 				}
 
 			}
