@@ -588,7 +588,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 				if csrQuery == "" {
 					csrQuery = "(workflow_doc->'workflow'->>'currentStep' = 'checker' OR workflow_doc->'workflow'->>'currentStep' = 'verifier')"
 				} else {
-					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'checker' OR workflow_doc->'workflow'->>'currentStep' = 'verifier')", csrQuery)
+					csrQuery = fmt.Sprintf("%s OR (workflow_doc->'workflow'->>'currentStep' = 'checker' OR workflow_doc->'workflow'->>'currentStep' = 'verifier'))", csrQuery)
 				}
 			}
 
@@ -609,7 +609,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			}
 
 			if csrQuery != "" {
-				csrQuery = fmt.Sprintf("AND (%s)", csrQuery)
+				csrQuery = fmt.Sprintf("AND (%s AND ('status'=1 OR 'status'=6 OR 'status'=4 'status'=5))", csrQuery)
 			}
 
 			if accountIDQuery == "" {
@@ -621,9 +621,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			if v.HasAuthorityMaker {
 
 				if makerQuery == "" {
-					makerQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND ('status'=2 OR 'status'=3 OR 'status'=1 OR 'status'=6 OR 'status'=4 'status'=5) AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
 				} else {
-					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND ('status'=2 OR 'status'=3 OR 'status'=1 OR 'status'=6 OR 'status'=4 'status'=5) AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
 				}
 
 			}
@@ -680,7 +680,8 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	logrus.Println("[db][func: GetListTask] Custom Query list:", customQuery)
 	logrus.Println("[db][func: GetListTask] Custom Query list ========== ========== ==========")
 
-	query = query.Scopes(FilterScoope(sql.Filter))
+	// query = query.Scopes(FilterScoope(sql.Filter))
+	query = query.Scopes(FilterScoope(""))
 	query = query.Scopes(FilterOrScoope(sql.FilterOr, ""))
 
 	if customQuery != "" {
