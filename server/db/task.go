@@ -609,25 +609,21 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			}
 
 			if csrQuery != "" {
-				// AND (status=1 OR status=6 OR status=4 OR status=5)
-				// AND (status<>0 AND status<>7 AND status<>2 AND status<>3)
-				csrQuery = fmt.Sprintf("AND (%s) AND (status<>0 AND status<>7 AND status<>2 AND status<>3)", csrQuery)
+				csrQuery = fmt.Sprintf("AND (%s)", csrQuery)
 			}
 
 			if accountIDQuery == "" {
-				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", v.ProductName, accountIDs, csrQuery)
+				accountIDQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT AND (status != 2 AND status != 3) IN (%s)) %s)", v.ProductName, accountIDs, csrQuery)
 			} else {
-				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT IN (%s)) %s)", accountIDQuery, v.ProductName, accountIDs, csrQuery)
+				accountIDQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'header'->'uaID' IS NULL OR (workflow_doc->'workflow'->'header'->'uaID')::INT AND (status != 2 AND status != 3) IN (%s)) %s)", accountIDQuery, v.ProductName, accountIDs, csrQuery)
 			}
 
 			if v.HasAuthorityMaker {
 
 				if makerQuery == "" {
-					// AND (status=2 OR status=3 OR status=1 OR status=6 OR status=4 OR status=5)
-					// AND (status<>0 AND status<>7)
-					makerQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (status<>0 AND status<>7) AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
 				} else {
-					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (status<>0 AND status<>7) AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
 				}
 
 			}
