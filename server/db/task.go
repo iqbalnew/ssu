@@ -609,7 +609,9 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			}
 
 			if csrQuery != "" {
-				csrQuery = fmt.Sprintf("AND (%s AND (status=1 OR status=6 OR status=4 OR status=5))", csrQuery)
+				// AND (status=1 OR status=6 OR status=4 OR status=5)
+				// AND (status<>0 AND status<>7 AND status<>2 AND status<>3)
+				csrQuery = fmt.Sprintf("AND (%s) AND (status<>0 AND status<>7 AND status<>2 AND status<>3)", csrQuery)
 			}
 
 			if accountIDQuery == "" {
@@ -621,9 +623,11 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 			if v.HasAuthorityMaker {
 
 				if makerQuery == "" {
-					makerQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (status=2 OR status=3 OR status=1 OR status=6 OR status=4 OR status=5) AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
+					// AND (status=2 OR status=3 OR status=1 OR status=6 OR status=4 OR status=5)
+					// AND (status<>0 AND status<>7)
+					makerQuery = fmt.Sprintf("(type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (status<>0 AND status<>7) AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", v.ProductName, accountIDs)
 				} else {
-					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (status=2 OR status=3 OR status=1 OR status=6 OR status=4 OR status=5) AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
+					makerQuery = fmt.Sprintf("%s OR (type = '%s' AND (workflow_doc->'workflow'->'createdBy'->>'userID' IS NULL OR workflow_doc->>'nextStatus' = 'returned') AND (status<>0 AND status<>7) AND (data->'uaID' IS NULL OR (data->'uaID')::INT IN (%s)))", makerQuery, v.ProductName, accountIDs)
 				}
 
 			}
@@ -680,8 +684,7 @@ func (p *GormProvider) GetListTask(ctx context.Context, filter *pb.TaskORM, pagi
 	logrus.Println("[db][func: GetListTask] Custom Query list:", customQuery)
 	logrus.Println("[db][func: GetListTask] Custom Query list ========== ========== ==========")
 
-	// query = query.Scopes(FilterScoope(sql.Filter))
-	query = query.Scopes(FilterScoope(""))
+	query = query.Scopes(FilterScoope(sql.Filter))
 	query = query.Scopes(FilterOrScoope(sql.FilterOr, ""))
 
 	if customQuery != "" {
