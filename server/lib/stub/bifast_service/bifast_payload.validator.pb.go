@@ -19,6 +19,19 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+func (this *TableExternalTransferTransaction) Validate() error {
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
+	return nil
+}
 func (this *ExternalTransferData) Validate() error {
 	if this.Sender != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Sender); err != nil {
@@ -49,6 +62,11 @@ func (this *ExternalTransferData) Validate() error {
 	if this.RecurringPeriodEnd != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RecurringPeriodEnd); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("RecurringPeriodEnd", err)
+		}
+	}
+	if this.ExecutedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ExecutedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("ExecutedAt", err)
 		}
 	}
 	return nil
@@ -111,6 +129,17 @@ func (this *GetTaskExternalTransferDetailRequest) Validate() error {
 	return nil
 }
 func (this *GetTaskExternalTransferDetailResponse) Validate() error {
+	if this.Data != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+		}
+	}
+	return nil
+}
+func (this *GetTaskExternalTransferDetailByReffNumRequest) Validate() error {
+	return nil
+}
+func (this *GetTaskExternalTransferDetailByReffNumResponse) Validate() error {
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)

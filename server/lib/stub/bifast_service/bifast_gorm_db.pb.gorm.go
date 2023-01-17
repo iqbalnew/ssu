@@ -15,10 +15,14 @@ import (
 type ExternalTransferTransactionORM struct {
 	CreatedAt            *time.Time `gorm:"not null"`
 	Data                 string     `gorm:"type:jsonb"`
-	Id                   uint64     `gorm:"primary_key;not null"`
+	DataStatus           string
+	Id                   uint64 `gorm:"primary_key;not null"`
+	ReferenceNumber      string
 	TaskID               uint64
+	TaskStatus           uint32
 	TransactionID        string
 	TransactionServiceID uint64
+	TransactionStatus    uint32
 	UpdatedAt            *time.Time `gorm:"not null"`
 }
 
@@ -42,6 +46,10 @@ func (m *ExternalTransferTransaction) ToORM(ctx context.Context) (ExternalTransf
 	to.TransactionID = m.TransactionID
 	to.TransactionServiceID = m.TransactionServiceID
 	to.Data = m.Data
+	to.ReferenceNumber = m.ReferenceNumber
+	to.TaskStatus = m.TaskStatus
+	to.DataStatus = m.DataStatus
+	to.TransactionStatus = m.TransactionStatus
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -71,6 +79,10 @@ func (m *ExternalTransferTransactionORM) ToPB(ctx context.Context) (ExternalTran
 	to.TransactionID = m.TransactionID
 	to.TransactionServiceID = m.TransactionServiceID
 	to.Data = m.Data
+	to.ReferenceNumber = m.ReferenceNumber
+	to.TaskStatus = m.TaskStatus
+	to.DataStatus = m.DataStatus
+	to.TransactionStatus = m.TransactionStatus
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -112,6 +124,7 @@ type ExternalTransferSingleTemplateORM struct {
 	BankCode                string
 	BankName                string
 	CreatedAt               *time.Time `gorm:"not null"`
+	CreatedByID             uint64
 	Currency                int32
 	DealCode                string
 	Email                   string
@@ -126,6 +139,7 @@ type ExternalTransferSingleTemplateORM struct {
 	ReceiverAccountAlias    string
 	ReceiverAccountBalance  string
 	ReceiverAccountCurrency string
+	ReceiverAccountEmail    string
 	ReceiverAccountName     string
 	ReceiverAccountNumber   string
 	RecurringDate           string
@@ -176,7 +190,7 @@ func (m *ExternalTransferSingleTemplate) ToORM(ctx context.Context) (ExternalTra
 	to.ReceiverAccountName = m.ReceiverAccountName
 	to.ReceiverAccountAlias = m.ReceiverAccountAlias
 	to.ReceiverAccountBalance = m.ReceiverAccountBalance
-	// Repeated type string is not an ORMable message type
+	to.ReceiverAccountEmail = m.ReceiverAccountEmail
 	to.DealCode = m.DealCode
 	to.Currency = int32(m.Currency)
 	to.Fee = int32(m.Fee)
@@ -209,6 +223,7 @@ func (m *ExternalTransferSingleTemplate) ToORM(ctx context.Context) (ExternalTra
 		to.ScheduledAt = &t
 	}
 	to.TemplateName = m.TemplateName
+	to.CreatedByID = m.CreatedByID
 	if m.CreatedAt != nil {
 		t := m.CreatedAt.AsTime()
 		to.CreatedAt = &t
@@ -249,7 +264,7 @@ func (m *ExternalTransferSingleTemplateORM) ToPB(ctx context.Context) (ExternalT
 	to.ReceiverAccountName = m.ReceiverAccountName
 	to.ReceiverAccountAlias = m.ReceiverAccountAlias
 	to.ReceiverAccountBalance = m.ReceiverAccountBalance
-	// Repeated type string is not an ORMable message type
+	to.ReceiverAccountEmail = m.ReceiverAccountEmail
 	to.DealCode = m.DealCode
 	to.Currency = CurrencyType(m.Currency)
 	to.Fee = Fee(m.Fee)
@@ -279,6 +294,7 @@ func (m *ExternalTransferSingleTemplateORM) ToPB(ctx context.Context) (ExternalT
 		to.ScheduledAt = timestamppb.New(*m.ScheduledAt)
 	}
 	to.TemplateName = m.TemplateName
+	to.CreatedByID = m.CreatedByID
 	if m.CreatedAt != nil {
 		to.CreatedAt = timestamppb.New(*m.CreatedAt)
 	}
@@ -619,6 +635,22 @@ func DefaultApplyFieldMaskExternalTransferTransaction(ctx context.Context, patch
 		}
 		if f == prefix+"Data" {
 			patchee.Data = patcher.Data
+			continue
+		}
+		if f == prefix+"ReferenceNumber" {
+			patchee.ReferenceNumber = patcher.ReferenceNumber
+			continue
+		}
+		if f == prefix+"TaskStatus" {
+			patchee.TaskStatus = patcher.TaskStatus
+			continue
+		}
+		if f == prefix+"DataStatus" {
+			patchee.DataStatus = patcher.DataStatus
+			continue
+		}
+		if f == prefix+"TransactionStatus" {
+			patchee.TransactionStatus = patcher.TransactionStatus
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {
@@ -1207,6 +1239,10 @@ func DefaultApplyFieldMaskExternalTransferSingleTemplate(ctx context.Context, pa
 		}
 		if f == prefix+"TemplateName" {
 			patchee.TemplateName = patcher.TemplateName
+			continue
+		}
+		if f == prefix+"CreatedByID" {
+			patchee.CreatedByID = patcher.CreatedByID
 			continue
 		}
 		if !updatedCreatedAt && strings.HasPrefix(f, prefix+"CreatedAt.") {

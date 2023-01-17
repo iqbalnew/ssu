@@ -1925,20 +1925,21 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 		var opts []grpc.DialOption
 		opts = append(opts, grpc.WithInsecure())
 
-		proxyManagementConn, err := grpc.Dial(getEnv("BIFAST_SERVICE", ":9127"), opts...)
+		bifastConn, err := grpc.Dial(getEnv("BIFAST_SERVICE", ":9127"), opts...)
 		if err != nil {
 			logrus.Errorln("[api][func: SetTask] Unable to connect BiFast Service:", err)
 			return nil, status.Errorf(codes.Internal, "Internal Error")
 		}
-		defer proxyManagementConn.Close()
+		defer bifastConn.Close()
 
-		proxyManagementClient := bifast_pb.NewApiServiceClient(proxyManagementConn)
+		bifastClient := bifast_pb.NewApiServiceClient(bifastConn)
 
-		_, err = proxyManagementClient.SetTaskExternalTransfer(newCtx, &bifast_pb.SetTaskExternalTransferRequest{
-			TaskID:  req.GetTaskID(),
-			Action:  req.GetAction(),
-			Comment: req.GetComment(),
-			Reasons: req.GetReasons(),
+		_, err = bifastClient.SetTaskExternalTransfer(newCtx, &bifast_pb.SetTaskExternalTransferRequest{
+			TaskID:   req.GetTaskID(),
+			Action:   req.GetAction(),
+			Comment:  req.GetComment(),
+			Reasons:  req.GetReasons(),
+			PassCode: req.GetPassCode(),
 		}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 		if err != nil {
 			return nil, err
