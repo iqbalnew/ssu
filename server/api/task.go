@@ -1999,6 +1999,7 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 				TransactionSchedule: taskData.GetTransactionSchedule(),
 				ScheduledAt:         taskData.GetScheduledAt(),
 				IsDraft:             false,
+				PassCode:            req.GetPassCode(),
 			})
 			if err != nil {
 				return nil, err
@@ -2007,10 +2008,11 @@ func (s *Server) SetTaskWithWorkflow(ctx context.Context, req *pb.SetTaskWithWor
 		} else {
 
 			_, err = payrollClient.SetTaskPayroll(newCtx, &payroll_pb.SetTaskPayrollRequest{
-				TaskID:  req.GetTaskID(),
-				Action:  req.GetAction(),
-				Comment: req.GetComment(),
-				Reasons: req.GetReasons(),
+				TaskID:   req.GetTaskID(),
+				Action:   req.GetAction(),
+				Comment:  req.GetComment(),
+				Reasons:  req.GetReasons(),
+				PassCode: req.GetPassCode(),
 			}, grpc.Header(&userMD), grpc.Trailer(&trailer))
 			if err != nil {
 				return nil, err

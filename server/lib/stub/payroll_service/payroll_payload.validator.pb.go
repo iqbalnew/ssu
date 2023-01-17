@@ -82,6 +82,11 @@ func (this *PayrollItemValidation) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Amount", err)
 		}
 	}
+	if this.CustomerReff != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CustomerReff); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CustomerReff", err)
+		}
+	}
 	return nil
 }
 func (this *PayrollItemValidationData) Validate() error {
@@ -151,6 +156,12 @@ func (this *GetTaskPayrollFileRequest) Validate() error {
 	return nil
 }
 func (this *GetTaskPayrollFileResponse) Validate() error {
+	return nil
+}
+func (this *GetTaskPayrollDetailFileRequest) Validate() error {
+	return nil
+}
+func (this *GetTaskPayrollDetailFileResponse) Validate() error {
 	return nil
 }
 func (this *GetTaskPayrollRequest) Validate() error {
